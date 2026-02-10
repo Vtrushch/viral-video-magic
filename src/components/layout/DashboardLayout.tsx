@@ -3,9 +3,9 @@ import DashboardSidebar from "./DashboardSidebar";
 
 const DashboardLayout = () => {
   return (
-    <div className="min-h-screen flex w-full dark overflow-x-hidden">
+    <div className="h-screen flex w-full dark overflow-hidden">
       <DashboardSidebar />
-      <main className="flex-1 overflow-x-hidden overflow-y-auto min-w-0">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0" style={{ maxWidth: "calc(100vw - var(--sidebar-width, 240px))" }}>
         <Outlet />
       </main>
     </div>

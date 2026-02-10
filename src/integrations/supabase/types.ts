@@ -98,6 +98,7 @@ export type Database = {
           file_path: string | null
           file_size: number | null
           id: string
+          settings: Json | null
           status: string
           thumbnail_url: string | null
           title: string
@@ -110,6 +111,7 @@ export type Database = {
           file_path?: string | null
           file_size?: number | null
           id?: string
+          settings?: Json | null
           status?: string
           thumbnail_url?: string | null
           title: string
@@ -122,6 +124,7 @@ export type Database = {
           file_path?: string | null
           file_size?: number | null
           id?: string
+          settings?: Json | null
           status?: string
           thumbnail_url?: string | null
           title?: string
