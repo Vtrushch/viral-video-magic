@@ -62,7 +62,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl overflow-x-hidden" style={{ background: "#0F0F1A", minHeight: "100vh" }}>
+    <div className="p-6 lg:p-8 w-full overflow-x-hidden" style={{ background: "#0F0F1A", minHeight: "100vh" }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
