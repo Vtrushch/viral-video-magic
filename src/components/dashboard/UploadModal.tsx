@@ -8,6 +8,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 interface UploadModalProps {
   open: boolean;
@@ -20,10 +23,12 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
   const [progress, setProgress] = useState(0);
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
 
   const handleFileChange = (selectedFile: File) => {
     const validTypes = ["video/mp4", "video/quicktime", "video/x-msvideo", "video/webm"];
     if (!validTypes.includes(selectedFile.type)) {
+      toast.error("Unsupported file type. Use MP4, MOV, AVI, or WebM.");
       return;
     }
     setFile(selectedFile);
@@ -38,22 +43,43 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
   };
 
   const handleUpload = async () => {
-    if (!file) return;
+    if (!file || !user) return;
     setUploading(true);
-    // Simulate upload progress
-    const interval = setInterval(() => {
-      setProgress((p) => {
-        if (p >= 100) {
-          clearInterval(interval);
-          setUploading(false);
-          onClose();
-          setFile(null);
-          setProgress(0);
-          return 100;
-        }
-        return p + 5;
+    setProgress(10);
+
+    try {
+      const fileName = `${user.id}/${Date.now()}_${file.name}`;
+
+      // Upload to storage
+      const { error: uploadError } = await supabase.storage
+        .from("raw-videos")
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+      setProgress(70);
+
+      // Create database record
+      const { error: dbError } = await supabase.from("videos").insert({
+        user_id: user.id,
+        title: file.name.replace(/\.[^/.]+$/, ""),
+        file_path: fileName,
+        file_size: file.size,
+        status: "uploading",
       });
-    }, 200);
+
+      if (dbError) throw dbError;
+      setProgress(100);
+
+      toast.success("Video uploaded! Processing will begin shortly.");
+      setTimeout(() => {
+        handleCancel();
+      }, 500);
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast.error(error.message || "Upload failed");
+      setUploading(false);
+      setProgress(0);
+    }
   };
 
   const handleCancel = () => {
