@@ -33,12 +33,12 @@ const Dashboard = () => {
   const [uploadOpen, setUploadOpen] = useState(false);
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl">
+    <div className="p-6 lg:p-8 max-w-7xl" style={{ background: "#0F0F1A", minHeight: "100vh" }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold">Your Videos</h1>
-          <p className="text-sm text-muted-foreground mt-1">Manage and repurpose your content</p>
+          <h1 className="text-3xl font-bold" style={{ color: "#fff" }}>Your Videos</h1>
+          <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>Manage and repurpose your content</p>
         </div>
         <Button variant="hero" onClick={() => setUploadOpen(true)}>
           <Upload className="w-4 h-4 mr-2" />
@@ -60,12 +60,15 @@ const Dashboard = () => {
         {/* Add New Card */}
         <button
           onClick={() => setUploadOpen(true)}
-          className="rounded-xl border-2 border-dashed border-border hover:border-primary/30 flex flex-col items-center justify-center min-h-[280px] transition-all group"
+          className="rounded-xl border-2 border-dashed flex flex-col items-center justify-center min-h-[280px] transition-all group"
+          style={{ borderColor: "rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.02)" }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(255,45,85,0.4)"; e.currentTarget.style.background = "rgba(255,45,85,0.03)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.background = "rgba(255,255,255,0.02)"; }}
         >
-          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3 group-hover:bg-primary/10 transition-colors">
-            <Plus className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 transition-colors" style={{ background: "linear-gradient(135deg, rgba(255,45,85,0.15), rgba(94,92,230,0.15))" }}>
+            <Plus className="w-5 h-5 transition-colors" style={{ color: "#FF2D55" }} />
           </div>
-          <p className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Upload a video</p>
+          <p className="text-sm transition-colors" style={{ color: "rgba(255,255,255,0.6)" }}>Upload a video</p>
         </button>
       </div>
 
