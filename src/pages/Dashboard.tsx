@@ -1,39 +1,68 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import StatsCards from "@/components/dashboard/StatsCards";
 import VideoCard from "@/components/dashboard/VideoCard";
 import UploadModal from "@/components/dashboard/UploadModal";
-
-const demoVideos = [
-  {
-    id: "demo-1",
-    title: "How to Build a SaaS in 2025",
-    duration: "45:30",
-    uploadDate: "Feb 7, 2026",
-    status: "ready" as const,
-  },
-  {
-    id: "demo-2",
-    title: "Marketing Strategies That Actually Work",
-    duration: "1:02:15",
-    uploadDate: "Feb 5, 2026",
-    status: "analyzing" as const,
-  },
-  {
-    id: "demo-3",
-    title: "Podcast Episode #42 - Creator Economy",
-    duration: "38:22",
-    uploadDate: "Feb 3, 2026",
-    status: "ready" as const,
-  },
-];
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import type { Tables } from "@/integrations/supabase/types";
 
 const Dashboard = () => {
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [videos, setVideos] = useState<Tables<"videos">[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+
+  const fetchVideos = async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from("videos")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) setVideos(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchVideos();
+  }, [user]);
+
+  // Realtime subscription
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel("videos-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "videos",
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          fetchVideos();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl" style={{ background: "#0F0F1A", minHeight: "100vh" }}>
+    <div className="p-6 lg:p-8 max-w-7xl overflow-x-hidden" style={{ background: "#0F0F1A", minHeight: "100vh" }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -48,29 +77,56 @@ const Dashboard = () => {
 
       {/* Stats */}
       <div className="mb-8">
-        <StatsCards />
+        <StatsCards videos={videos} />
       </div>
 
       {/* Video Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {demoVideos.map((video) => (
-          <VideoCard key={video.id} {...video} />
-        ))}
-
-        {/* Add New Card */}
-        <button
-          onClick={() => setUploadOpen(true)}
-          className="rounded-xl border-2 border-dashed flex flex-col items-center justify-center min-h-[280px] transition-all group"
-          style={{ borderColor: "rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.02)" }}
-          onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(255,45,85,0.4)"; e.currentTarget.style.background = "rgba(255,45,85,0.03)"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.background = "rgba(255,255,255,0.02)"; }}
-        >
-          <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 transition-colors" style={{ background: "linear-gradient(135deg, rgba(255,45,85,0.15), rgba(94,92,230,0.15))" }}>
-            <Plus className="w-5 h-5 transition-colors" style={{ color: "#FF2D55" }} />
+      {loading ? (
+        <div className="text-center py-16" style={{ color: "rgba(255,255,255,0.5)" }}>Loading...</div>
+      ) : videos.length === 0 ? (
+        /* Empty state */
+        <div className="flex flex-col items-center justify-center py-20 rounded-2xl border-2 border-dashed" style={{ borderColor: "rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.02)" }}>
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: "linear-gradient(135deg, rgba(255,45,85,0.15), rgba(94,92,230,0.15))" }}>
+            <Upload className="w-7 h-7" style={{ color: "#FF2D55" }} />
           </div>
-          <p className="text-sm transition-colors" style={{ color: "rgba(255,255,255,0.6)" }}>Upload a video</p>
-        </button>
-      </div>
+          <h3 className="text-lg font-semibold mb-1" style={{ color: "#fff" }}>No videos yet</h3>
+          <p className="text-sm mb-6" style={{ color: "rgba(255,255,255,0.5)" }}>Upload your first video to get started!</p>
+          <Button variant="hero" onClick={() => setUploadOpen(true)}>
+            <Upload className="w-4 h-4 mr-2" />
+            Upload Video
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {videos.map((video) => (
+            <VideoCard
+              key={video.id}
+              id={video.id}
+              title={video.title}
+              duration={video.duration || "—"}
+              uploadDate={formatDate(video.created_at)}
+              status={video.status as "uploading" | "analyzing" | "ready"}
+              thumbnail={video.thumbnail_url || undefined}
+              filePath={video.file_path || undefined}
+              fileSize={video.file_size || undefined}
+            />
+          ))}
+
+          {/* Add New Card */}
+          <button
+            onClick={() => setUploadOpen(true)}
+            className="rounded-xl border-2 border-dashed flex flex-col items-center justify-center min-h-[280px] transition-all group"
+            style={{ borderColor: "rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.02)" }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(255,45,85,0.4)"; e.currentTarget.style.background = "rgba(255,45,85,0.03)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.background = "rgba(255,255,255,0.02)"; }}
+          >
+            <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 transition-colors" style={{ background: "linear-gradient(135deg, rgba(255,45,85,0.15), rgba(94,92,230,0.15))" }}>
+              <Plus className="w-5 h-5 transition-colors" style={{ color: "#FF2D55" }} />
+            </div>
+            <p className="text-sm transition-colors" style={{ color: "rgba(255,255,255,0.6)" }}>Upload a video</p>
+          </button>
+        </div>
+      )}
 
       <UploadModal open={uploadOpen} onClose={() => setUploadOpen(false)} />
     </div>

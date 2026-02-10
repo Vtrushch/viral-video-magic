@@ -1,6 +1,8 @@
-import { MoreHorizontal, Trash2, Eye, Clock, Calendar } from "lucide-react";
+import { Trash2, Eye, Clock, Calendar, HardDrive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface VideoCardProps {
   id: string;
@@ -9,6 +11,8 @@ interface VideoCardProps {
   uploadDate: string;
   status: "uploading" | "analyzing" | "ready";
   thumbnail?: string;
+  filePath?: string;
+  fileSize?: number;
 }
 
 const statusColors: Record<string, string> = {
@@ -17,11 +21,29 @@ const statusColors: Record<string, string> = {
   ready: "bg-accent/10 text-accent",
 };
 
-const VideoCard = ({ id, title, duration, uploadDate, status, thumbnail }: VideoCardProps) => {
+const formatFileSize = (bytes?: number) => {
+  if (!bytes) return "";
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+};
+
+const VideoCard = ({ id, title, duration, uploadDate, status, thumbnail, filePath, fileSize }: VideoCardProps) => {
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const { error } = await supabase.from("videos").delete().eq("id", id);
+    if (error) {
+      toast.error("Failed to delete video");
+    } else {
+      toast.success("Video deleted");
+    }
+  };
+
   return (
     <div
       className="group rounded-xl border overflow-hidden transition-all duration-300 hover:-translate-y-1"
-      style={{ background: "#2A2A3E", borderColor: "rgba(255,255,255,0.08)", boxShadow: "0 4px 20px rgba(0,0,0,0.3)" }}
+      style={{ background: "#252535", borderColor: "rgba(255,255,255,0.08)", boxShadow: "0 4px 20px rgba(0,0,0,0.3)" }}
       onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.boxShadow = "0 8px 40px rgba(0,0,0,0.4)"; }}
       onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; }}
     >
@@ -31,8 +53,8 @@ const VideoCard = ({ id, title, duration, uploadDate, status, thumbnail }: Video
           <img src={thumbnail} alt={title} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.05)" }}>
-              <Eye className="w-6 h-6" style={{ color: "rgba(255,255,255,0.3)" }} />
+            <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: "linear-gradient(135deg, rgba(255,45,85,0.15), rgba(94,92,230,0.15))" }}>
+              <Eye className="w-6 h-6" style={{ color: "rgba(255,255,255,0.4)" }} />
             </div>
           </div>
         )}
@@ -41,20 +63,27 @@ const VideoCard = ({ id, title, duration, uploadDate, status, thumbnail }: Video
             {status.charAt(0).toUpperCase() + status.slice(1)}
           </span>
         </div>
+        {duration && duration !== "—" && (
+          <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded text-xs font-medium" style={{ background: "rgba(0,0,0,0.7)", color: "#fff" }}>
+            {duration}
+          </div>
+        )}
       </div>
 
       {/* Info */}
       <div className="p-4">
         <h3 className="font-semibold text-sm mb-2 truncate" style={{ color: "#fff" }}>{title}</h3>
-        <div className="flex items-center gap-4 text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
-          <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{duration}</span>
+        <div className="flex items-center gap-4 text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>
           <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{uploadDate}</span>
+          {fileSize ? (
+            <span className="flex items-center gap-1"><HardDrive className="w-3 h-3" />{formatFileSize(fileSize)}</span>
+          ) : null}
         </div>
         <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
           <Button variant="ghost" size="sm" className="flex-1 text-xs" style={{ color: "rgba(255,255,255,0.7)" }} asChild>
             <Link to={`/dashboard/videos/${id}`}>View Clips</Link>
           </Button>
-          <Button variant="ghost" size="icon" className="hover:text-destructive h-8 w-8" style={{ color: "rgba(255,255,255,0.4)" }}>
+          <Button variant="ghost" size="icon" className="hover:text-destructive h-8 w-8" style={{ color: "rgba(255,255,255,0.4)" }} onClick={handleDelete}>
             <Trash2 className="w-3.5 h-3.5" />
           </Button>
         </div>

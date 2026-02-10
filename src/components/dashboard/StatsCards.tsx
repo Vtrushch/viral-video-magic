@@ -1,13 +1,33 @@
 import { Video, Film, Calendar, HardDrive } from "lucide-react";
+import type { Tables } from "@/integrations/supabase/types";
 
-const stats = [
-  { icon: Video, label: "Total Videos", value: "0", color: "text-primary" },
-  { icon: Film, label: "Total Clips", value: "0", color: "text-secondary" },
-  { icon: Calendar, label: "Clips This Month", value: "0", color: "text-accent" },
-  { icon: HardDrive, label: "Storage Used", value: "0 MB", color: "text-muted-foreground" },
-];
+interface StatsCardsProps {
+  videos: Tables<"videos">[];
+}
 
-const StatsCards = () => {
+const formatStorage = (bytes: number) => {
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+};
+
+const StatsCards = ({ videos }: StatsCardsProps) => {
+  const totalVideos = videos.length;
+  const totalClips = 0; // TODO: fetch from clips table
+  const now = new Date();
+  const thisMonth = videos.filter((v) => {
+    const d = new Date(v.created_at);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).length;
+  const totalStorage = videos.reduce((acc, v) => acc + (v.file_size || 0), 0);
+
+  const stats = [
+    { icon: Video, label: "Total Videos", value: String(totalVideos) },
+    { icon: Film, label: "Total Clips", value: String(totalClips) },
+    { icon: Calendar, label: "This Month", value: String(thisMonth) },
+    { icon: HardDrive, label: "Storage Used", value: totalStorage > 0 ? formatStorage(totalStorage) : "0 MB" },
+  ];
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((stat) => (
@@ -15,7 +35,7 @@ const StatsCards = () => {
           key={stat.label}
           className="p-5 rounded-xl border backdrop-blur-md transition-all duration-300 hover:scale-[1.02]"
           style={{
-            background: "rgba(31,31,46,0.8)",
+            background: "rgba(42,42,62,0.8)",
             borderColor: "rgba(255,255,255,0.08)",
             boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
           }}
@@ -28,7 +48,7 @@ const StatsCards = () => {
             </div>
           </div>
           <p className="text-4xl font-bold" style={{ color: "#fff" }}>{stat.value}</p>
-          <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>{stat.label}</p>
+          <p className="text-sm mt-1" style={{ color: "#E5E5E5" }}>{stat.label}</p>
         </div>
       ))}
     </div>
