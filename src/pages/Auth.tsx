@@ -69,10 +69,10 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center gradient-hero-bg dark relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center dark relative overflow-hidden" style={{ background: 'linear-gradient(160deg, #1A1A2E 0%, #2A2A3E 50%, #1A1A2E 100%)' }}>
       {/* Decorative orbs */}
-      <div className="absolute top-1/3 left-1/3 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/3 right-1/3 w-64 h-64 bg-secondary/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
+      <div className="absolute top-1/3 left-1/3 w-72 h-72 bg-primary/15 rounded-full blur-3xl animate-float" />
+      <div className="absolute bottom-1/3 right-1/3 w-64 h-64 bg-secondary/15 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
 
       <div className="relative z-10 w-full max-w-md mx-6">
         <div className="mb-8 text-center">
@@ -93,10 +93,10 @@ const Auth = () => {
           </p>
         </div>
 
-        <div className="glass-card rounded-2xl p-8">
+        <div className="rounded-2xl p-8 backdrop-blur-xl border" style={{ background: 'rgba(255, 255, 255, 0.06)', borderColor: 'rgba(255, 255, 255, 0.12)', boxShadow: '0 8px 40px -12px rgba(255, 45, 85, 0.15), 0 0 80px -20px rgba(94, 92, 230, 0.1)' }}>
           <Button
             variant="outline"
-            className="w-full mb-6 h-11"
+            className="w-full mb-6 h-11 bg-white text-gray-800 border-white/20 hover:bg-gray-100 hover:text-gray-900 font-medium"
             onClick={handleGoogleSignIn}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -113,54 +113,57 @@ const Auth = () => {
               <div className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-3 bg-card text-muted-foreground">or continue with email</span>
+              <span className="px-3 text-white/50" style={{ background: 'rgba(255, 255, 255, 0.06)' }}>or continue with email</span>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignUp && (
               <div>
-                <Label htmlFor="name" className="text-sm">Full Name</Label>
+                <Label htmlFor="name" className="text-sm" style={{ color: '#E5E5E5' }}>Full Name</Label>
                 <div className="relative mt-1.5">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                   <Input
                     id="name"
                     type="text"
                     placeholder="John Doe"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 text-white placeholder:text-white/50 border-white/10 focus-visible:ring-primary/50"
+                    style={{ background: 'rgba(255, 255, 255, 0.05)' }}
                     required
                   />
                 </div>
               </div>
             )}
             <div>
-              <Label htmlFor="email" className="text-sm">Email</Label>
+              <Label htmlFor="email" className="text-sm" style={{ color: '#E5E5E5' }}>Email</Label>
               <div className="relative mt-1.5">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 text-white placeholder:text-white/50 border-white/10 focus-visible:ring-primary/50"
+                  style={{ background: 'rgba(255, 255, 255, 0.05)' }}
                   required
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="password" className="text-sm">Password</Label>
+              <Label htmlFor="password" className="text-sm" style={{ color: '#E5E5E5' }}>Password</Label>
               <div className="relative mt-1.5">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                 <Input
                   id="password"
                   type="password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 text-white placeholder:text-white/50 border-white/10 focus-visible:ring-primary/50"
+                  style={{ background: 'rgba(255, 255, 255, 0.05)' }}
                   required
                   minLength={6}
                 />
@@ -171,7 +174,7 @@ const Auth = () => {
             </Button>
           </form>
 
-          <p className="text-sm text-center text-muted-foreground mt-6">
+          <p className="text-sm text-center text-white/60 mt-6">
             {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
             <button
               onClick={() => setIsSignUp(!isSignUp)}
