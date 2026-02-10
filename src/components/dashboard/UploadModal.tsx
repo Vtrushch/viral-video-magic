@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Upload, X, FileVideo } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -23,6 +24,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
   const [progress, setProgress] = useState(0);
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
   const { user } = useAuth();
 
   const handleFileChange = (selectedFile: File) => {
@@ -58,22 +60,24 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
       if (uploadError) throw uploadError;
       setProgress(70);
 
-      // Create database record
-      const { error: dbError } = await supabase.from("videos").insert({
+      const { data: videoData, error: dbError } = await supabase.from("videos").insert({
         user_id: user.id,
         title: file.name.replace(/\.[^/.]+$/, ""),
         file_path: fileName,
         file_size: file.size,
         status: "uploading",
-      });
+      }).select().single();
 
       if (dbError) throw dbError;
       setProgress(100);
 
-      toast.success("Video uploaded! Processing will begin shortly.");
+      toast.success("Video uploaded! Configure your clip settings.");
       setTimeout(() => {
         handleCancel();
-      }, 500);
+        if (videoData) {
+          navigate(`/dashboard/videos/configure/${videoData.id}`);
+        }
+      }, 300);
     } catch (error: any) {
       console.error("Upload error:", error);
       toast.error(error.message || "Upload failed");
