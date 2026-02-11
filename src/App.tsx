@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import VideoDetail from "./pages/VideoDetail";
 import VideoConfig from "./pages/VideoConfig";
+import VideoReview from "./pages/VideoReview";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -34,6 +35,7 @@ const App = () => (
           >
             <Route index element={<Dashboard />} />
             <Route path="videos/configure/:id" element={<VideoConfig />} />
+            <Route path="videos/review/:id" element={<VideoReview />} />
             <Route path="videos/:id" element={<VideoDetail />} />
             <Route path="settings" element={<Settings />} />
             <Route path="clips" element={<Dashboard />} />
