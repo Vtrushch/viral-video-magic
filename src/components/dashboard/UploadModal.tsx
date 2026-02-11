@@ -66,6 +66,12 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
         file_path: fileName,
         file_size: file.size,
         status: "uploading",
+        settings: {
+          clipCount: 10,
+          clipLength: "medium",
+          captionStyle: "hormozi",
+          languages: ["en"],
+        },
       }).select().single();
 
       if (dbError) throw dbError;
