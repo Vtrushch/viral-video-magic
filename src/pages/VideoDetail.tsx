@@ -182,6 +182,63 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
         <span className="text-accent">💡</span>
         <span className="text-accent/80">You can close this page. We'll notify you when it's ready!</span>
       </div>
+
+      {/* Debug button - only in development */}
+      {process.env.NODE_ENV === "development" && (
+        <div className="mt-8 pt-8 border-t border-border/50">
+          <p className="text-xs text-muted-foreground mb-3 flex items-center gap-2">
+            <span>🔧</span> Development Mode
+          </p>
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={async () => {
+              try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                  toast.error("User not found");
+                  return;
+                }
+
+                const fakeClips = [
+                  { title: "Top 5 Productivity Mistakes", viral_score: 9, duration: "0:30" },
+                  { title: "The Secret to Success", viral_score: 8, duration: "0:45" },
+                  { title: "Game Changing Strategy", viral_score: 7, duration: "0:50" },
+                ];
+
+                const { error: clipsError } = await supabase
+                  .from("clips")
+                  .insert(
+                    fakeClips.map((clip) => ({
+                      video_id: video.id,
+                      user_id: user.id,
+                      ...clip,
+                      status: "ready",
+                      thumbnail_url: video.thumbnail_url,
+                    }))
+                  );
+
+                if (clipsError) throw clipsError;
+
+                const { error: videoError } = await supabase
+                  .from("videos")
+                  .update({ status: "ready" })
+                  .eq("id", video.id);
+
+                if (videoError) throw videoError;
+
+                toast.success("Test clips created!");
+                window.location.reload();
+              } catch (error) {
+                console.error("Debug error:", error);
+                toast.error("Failed to create test clips");
+              }
+            }}
+          >
+            Skip to Ready (Create Test Clips)
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
