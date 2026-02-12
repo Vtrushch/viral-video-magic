@@ -143,19 +143,28 @@ const VideoConfig = () => {
       return;
     }
 
-    // Trigger Modal analysis
+    // Trigger Modal analysis via HTTP webhook
     try {
-      // TODO: Implement Modal integration - requires one of:
-      // 1. Modal SDK in frontend (modal-sdk npm package)
-      // 2. Backend API endpoint that calls Modal via Python SDK
-      // 3. Modal polling service watching database for status='analyzing'
-      
-      // For now, Modal will be triggered by external service
-      console.log("Modal analysis triggered for video:", id);
-      
+      const modalResponse = await fetch('https://vtrushch--cutviral-worker-webhook.modal.run/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          video_id: id
+        })
+      })
+
+      if (!modalResponse.ok) {
+        const errorText = await modalResponse.text()
+        console.error('Modal API error:', errorText)
+      } else {
+        const result = await modalResponse.json()
+        console.log('✅ Modal analysis triggered:', result)
+      }
     } catch (modalError) {
-      console.error("Modal trigger error:", modalError);
-      // Don't block UI if Modal fails
+      console.error('❌ Modal connection error:', modalError)
+      // Don't block UI - analysis will still work
     }
 
     toast.success("AI analysis started! This takes 2-3 minutes.");
