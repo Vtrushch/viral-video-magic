@@ -91,6 +91,7 @@ const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
 
 /* ─── Analyzing State ─── */
 const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
+  const navigate = useNavigate();
   const [progress, setProgress] = useState(15);
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -185,13 +186,19 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
 
       {/* Debug button - only in development */}
       {process.env.NODE_ENV === "development" && (
-        <div className="mt-8 pt-8 border-t border-border/50">
-          <p className="text-xs text-muted-foreground mb-3 flex items-center gap-2">
-            <span>🔧</span> Development Mode
+        <div style={{ 
+          marginTop: '2rem', 
+          paddingTop: '2rem', 
+          borderTop: '1px solid rgba(255,255,255,0.1)' 
+        }}>
+          <p style={{ 
+            fontSize: '0.875rem', 
+            color: 'rgba(255,255,255,0.5)', 
+            marginBottom: '0.5rem' 
+          }}>
+            🔧 Development Mode
           </p>
-          <Button 
-            variant="outline" 
-            className="w-full"
+          <Button
             onClick={async () => {
               try {
                 const { data: { user } } = await supabase.auth.getUser();
@@ -200,42 +207,58 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
                   return;
                 }
 
-                const fakeClips = [
-                  { title: "Top 5 Productivity Mistakes", viral_score: 9, duration: "0:30" },
-                  { title: "The Secret to Success", viral_score: 8, duration: "0:45" },
-                  { title: "Game Changing Strategy", viral_score: 7, duration: "0:50" },
-                ];
-
                 const { error: clipsError } = await supabase
                   .from("clips")
-                  .insert(
-                    fakeClips.map((clip) => ({
+                  .insert([
+                    {
                       video_id: video.id,
                       user_id: user.id,
-                      ...clip,
-                      status: "ready",
+                      title: "Top 5 Productivity Mistakes",
+                      duration: "0:30",
+                      viral_score: 9,
+                      status: "preview",
                       thumbnail_url: video.thumbnail_url,
-                    }))
-                  );
+                    },
+                    {
+                      video_id: video.id,
+                      user_id: user.id,
+                      title: "The Secret to Success",
+                      duration: "0:45",
+                      viral_score: 8,
+                      status: "preview",
+                      thumbnail_url: video.thumbnail_url,
+                    },
+                    {
+                      video_id: video.id,
+                      user_id: user.id,
+                      title: "Game Changing Strategy",
+                      duration: "0:50",
+                      viral_score: 7,
+                      status: "preview",
+                      thumbnail_url: video.thumbnail_url,
+                    }
+                  ]);
 
                 if (clipsError) throw clipsError;
 
                 const { error: videoError } = await supabase
                   .from("videos")
-                  .update({ status: "ready" })
+                  .update({ status: "analyzing" })
                   .eq("id", video.id);
 
                 if (videoError) throw videoError;
 
                 toast.success("Test clips created!");
-                window.location.reload();
+                navigate(`/dashboard/videos/review/${video.id}`);
               } catch (error) {
                 console.error("Debug error:", error);
                 toast.error("Failed to create test clips");
               }
             }}
+            className="w-full"
+            variant="outline"
           >
-            Skip to Ready (Create Test Clips)
+            Skip to Review (Create Test Clips)
           </Button>
         </div>
       )}
