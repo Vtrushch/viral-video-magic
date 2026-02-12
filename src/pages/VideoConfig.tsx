@@ -143,6 +143,21 @@ const VideoConfig = () => {
       return;
     }
 
+    // Trigger Modal analysis
+    try {
+      // TODO: Implement Modal integration - requires one of:
+      // 1. Modal SDK in frontend (modal-sdk npm package)
+      // 2. Backend API endpoint that calls Modal via Python SDK
+      // 3. Modal polling service watching database for status='analyzing'
+      
+      // For now, Modal will be triggered by external service
+      console.log("Modal analysis triggered for video:", id);
+      
+    } catch (modalError) {
+      console.error("Modal trigger error:", modalError);
+      // Don't block UI if Modal fails
+    }
+
     toast.success("AI analysis started! This takes 2-3 minutes.");
     navigate(`/dashboard/videos/${id}`);
   };
