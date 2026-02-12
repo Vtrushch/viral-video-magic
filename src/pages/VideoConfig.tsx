@@ -132,6 +132,36 @@ const VideoConfig = () => {
       includeBroll,
     };
 
+    // Log Supabase URL for cross-checking with Modal secrets
+    console.log('🔗 Supabase URL used by Lovable:', import.meta.env.VITE_SUPABASE_URL);
+
+    // Pre-check: verify the video row exists in Supabase before calling Modal
+    const { data: verifyData, error: verifyError } = await supabase
+      .from("videos")
+      .select("id, file_path, status")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (verifyError) {
+      console.error('❌ Pre-check query error:', verifyError);
+      toast.error("Failed to verify video record");
+      setSubmitting(false);
+      return;
+    }
+
+    if (!verifyData) {
+      console.error('❌ VIDEO NOT FOUND in Supabase! id:', id);
+      toast.error("Video record not found in database. Please re-upload.");
+      setSubmitting(false);
+      return;
+    }
+
+    console.log('✅ Pre-check: video exists in Supabase:', {
+      id: verifyData.id,
+      file_path: verifyData.file_path,
+      status: verifyData.status,
+    });
+
     const { error } = await supabase
       .from("videos")
       .update({ status: "analyzing", settings } as any)
@@ -144,15 +174,17 @@ const VideoConfig = () => {
     }
 
     // Trigger Modal analysis via HTTP webhook
+    const requestBody = { video_id: id };
+    console.log('📤 Calling Modal webhook with body:', JSON.stringify(requestBody));
+    console.log('📤 video_id type:', typeof id, '| value:', id);
+
     try {
       const modalResponse = await fetch('https://vtrushch--cutviral-worker-webhook.modal.run/analyze', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          video_id: id
-        })
+        body: JSON.stringify(requestBody)
       })
 
       if (!modalResponse.ok) {
