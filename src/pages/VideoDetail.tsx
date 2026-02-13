@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
+import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
 
 const scoreColor = (score: number) => {
   if (score >= 8) return "bg-accent/15 text-accent";
@@ -268,6 +269,8 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
 
 /* ─── Ready State ─── */
 const ReadyState = ({ video, clips }: { video: Tables<"videos">; clips: Tables<"clips">[] }) => {
+  const [previewClip, setPreviewClip] = useState<Tables<"clips"> | null>(null);
+
   if (clips.length === 0) {
     return (
       <div className="glass-card rounded-2xl p-10 text-center space-y-4">
@@ -317,6 +320,7 @@ const ReadyState = ({ video, clips }: { video: Tables<"videos">; clips: Tables<"
           <div
             key={clip.id}
             className="glass-card-hover rounded-xl p-4 flex items-center gap-4 cursor-pointer group"
+            onClick={() => setPreviewClip(clip)}
           >
             <div className="w-24 h-16 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden bg-background/50">
               {clip.thumbnail_url ? (
@@ -342,6 +346,14 @@ const ReadyState = ({ video, clips }: { video: Tables<"videos">; clips: Tables<"
           </div>
         ))}
       </div>
+
+      {/* Clip Preview Modal */}
+      <ClipPreviewModal
+        clip={previewClip!}
+        video={video}
+        open={!!previewClip}
+        onClose={() => setPreviewClip(null)}
+      />
     </div>
   );
 };

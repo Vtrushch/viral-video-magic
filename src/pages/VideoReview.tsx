@@ -2,16 +2,19 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
+import type { Tables } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/sonner";
 import { ArrowLeft, Play, Pencil, Eye, Flame } from "lucide-react";
+import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
 
 const VideoReview = () => {
   const { id: videoId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedClips, setSelectedClips] = useState<Set<string>>(new Set());
+  const [previewClip, setPreviewClip] = useState<Tables<"clips"> | null>(null);
 
   const { data: video } = useQuery({
     queryKey: ["video", videoId],
@@ -239,7 +242,7 @@ const VideoReview = () => {
                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => e.stopPropagation()}>
                       <Pencil className="w-3 h-3" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => e.stopPropagation()}>
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); setPreviewClip(clip); }}>
                       <Eye className="w-3 h-3" />
                     </Button>
                   </div>
@@ -273,6 +276,16 @@ const VideoReview = () => {
           </Button>
         </div>
       </div>
+
+      {/* Clip Preview Modal */}
+      {video && (
+        <ClipPreviewModal
+          clip={previewClip!}
+          video={video}
+          open={!!previewClip}
+          onClose={() => setPreviewClip(null)}
+        />
+      )}
     </div>
   );
 };
