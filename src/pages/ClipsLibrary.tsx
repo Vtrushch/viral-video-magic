@@ -167,10 +167,16 @@ const ClipsLibrary = () => {
     }
     setDownloading(clip.id);
     try {
+      const response = await fetch(clip.file_path);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = clip.file_path; // R2 public URL set by Modal worker
+      a.href = url;
       a.download = `${clip.title}.mp4`;
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
       toast.success("Downloading clip...");
     } catch {
       toast.error("Failed to download clip");
@@ -191,18 +197,23 @@ const ClipsLibrary = () => {
     for (let i = 0; i < selected.length; i++) {
       const clip = selected[i];
       try {
+        const response = await fetch(clip.file_path!);
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
-        a.href = clip.file_path; // R2 public URL
+        a.href = url;
         a.download = `${clip.title}.mp4`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
         toast.success(`Downloaded ${i + 1} of ${selected.length} clips`);
       } catch {
         toast.error(`Failed to download ${clip.title}`);
       }
       
-      // Add 100ms delay between downloads to avoid browser blocking
       if (i < selected.length - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 300));
       }
     }
   };
