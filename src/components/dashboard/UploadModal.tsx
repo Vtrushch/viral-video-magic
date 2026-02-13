@@ -65,7 +65,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
         title: file.name.replace(/\.[^/.]+$/, ""),
         file_path: fileName,
         file_size: file.size,
-        status: "uploading",
+        status: "uploaded",
         settings: {
           clipCount: 10,
           clipLength: "medium",
@@ -75,6 +75,8 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
       }).select().single();
 
       if (dbError) throw dbError;
+
+      console.log('✅ Video inserted with id:', videoData?.id, 'storage_path:', videoData?.file_path);
       setProgress(100);
 
       toast.success("Video uploaded! Configure your clip settings.");
