@@ -1,9 +1,9 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   ArrowLeft, Play, Download, Star, Clock, Calendar, Settings2,
   Loader2, AlertCircle, HardDrive, RotateCcw, CheckCircle2, Sparkles,
-  Search, Zap, Film, ChevronRight, XCircle
+  Search, Zap, Film, ChevronRight, XCircle, Eye, Pencil, RefreshCw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -268,8 +268,122 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
 };
 
 /* ─── Ready State ─── */
-const ReadyState = ({ video, clips }: { video: Tables<"videos">; clips: Tables<"clips">[] }) => {
+const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; clips: Tables<"clips">[] }) => {
+  const navigate = useNavigate();
+  const [clips, setClips] = useState(initialClips);
   const [previewClip, setPreviewClip] = useState<Tables<"clips"> | null>(null);
+  const [renderingIds, setRenderingIds] = useState<Set<string>>(new Set());
+  const settings = video.settings as any;
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+
+  // Sync clips from parent
+  useEffect(() => { setClips(initialClips); }, [initialClips]);
+
+  // Realtime subscription for clip status changes
+  useEffect(() => {
+    const channel = supabase
+      .channel(`clips-realtime-${video.id}`)
+      .on("postgres_changes", {
+        event: "UPDATE",
+        schema: "public",
+        table: "clips",
+        filter: `video_id=eq.${video.id}`,
+      }, (payload: any) => {
+        const updated = payload.new as Tables<"clips">;
+        setClips(prev => prev.map(c => c.id === updated.id ? updated : c));
+        setRenderingIds(prev => { const n = new Set(prev); n.delete(updated.id); return n; });
+        if (updated.status === "ready") {
+          toast.success(`Clip ready: ${updated.title}`);
+        } else if (updated.status === "failed") {
+          toast.error(`Clip failed: ${updated.title}`);
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [video.id]);
+
+  const renderClip = useCallback(async (clip: Tables<"clips">) => {
+    if (!video.file_path) { toast.error("Video file not found"); return; }
+    setRenderingIds(prev => new Set(prev).add(clip.id));
+    try {
+      const videoUrl = `${supabaseUrl}/storage/v1/object/raw-videos/${video.file_path}`;
+      const res = await fetch("https://vtrushch--cutviral-worker-webhook.modal.run/render", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clip_id: clip.id,
+          video_url: videoUrl,
+          start_time: parseFloat(clip.start_time || "0"),
+          end_time: parseFloat(clip.end_time || "0"),
+          caption_style: settings?.captionStyle || "hormozi",
+        }),
+      });
+      if (!res.ok) throw new Error("Render request failed");
+      await supabase.from("clips").update({ status: "rendering" } as any).eq("id", clip.id);
+      setClips(prev => prev.map(c => c.id === clip.id ? { ...c, status: "rendering" } : c));
+    } catch {
+      setRenderingIds(prev => { const n = new Set(prev); n.delete(clip.id); return n; });
+      toast.error(`Failed to start render for ${clip.title}`);
+    }
+  }, [video, supabaseUrl, settings]);
+
+  const renderAll = async () => {
+    const pending = clips.filter(c => c.status === "pending");
+    if (pending.length === 0) { toast.info("No pending clips to render"); return; }
+    toast.info(`Rendering ${pending.length} clips... This takes 1-2 minutes per clip`);
+    for (const clip of pending) {
+      await renderClip(clip);
+    }
+  };
+
+  const handleDownload = async (clip: Tables<"clips">) => {
+    if (!clip.file_path) return;
+    try {
+      toast.info("Downloading clip...");
+      const response = await fetch(clip.file_path);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${clip.title}.mp4`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error("Failed to download clip");
+    }
+  };
+
+  const formatTime = (s: string | null) => {
+    if (!s) return "0:00";
+    const sec = parseFloat(s);
+    const m = Math.floor(sec / 60);
+    const r = Math.floor(sec % 60);
+    return `${m}:${r.toString().padStart(2, "0")}`;
+  };
+
+  const formatDuration = (s: number) => {
+    const m = Math.floor(s / 60);
+    const r = Math.floor(s % 60);
+    return `${m}:${r.toString().padStart(2, "0")}`;
+  };
+
+  const pendingCount = clips.filter(c => c.status === "pending").length;
+  const readyCount = clips.filter(c => c.status === "ready").length;
+
+  const statusDot = (status: string) => {
+    if (status === "ready") return "bg-accent";
+    if (status === "rendering") return "bg-secondary animate-pulse";
+    if (status === "failed") return "bg-destructive";
+    return "bg-muted-foreground/40";
+  };
+
+  const scoreCircle = (score: number) => {
+    if (score >= 8) return "bg-accent/20 text-accent border-accent/30";
+    if (score >= 6) return "bg-secondary/20 text-secondary border-secondary/30";
+    return "bg-muted text-muted-foreground border-border";
+  };
 
   if (clips.length === 0) {
     return (
@@ -277,74 +391,177 @@ const ReadyState = ({ video, clips }: { video: Tables<"videos">; clips: Tables<"
         <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto" />
         <h2 className="text-lg font-semibold text-foreground">No clips generated</h2>
         <p className="text-sm text-muted-foreground">Something went wrong during processing.</p>
-        <Button variant="hero">
-          <RotateCcw className="w-4 h-4 mr-2" /> Retry Analysis
-        </Button>
+        <Button variant="hero"><RotateCcw className="w-4 h-4 mr-2" /> Retry Analysis</Button>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Video preview */}
-      {video.thumbnail_url ? (
-        <div className="aspect-video rounded-2xl overflow-hidden relative glass-card">
-          <img src={video.thumbnail_url} alt={video.title} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+      {/* Video thumbnail with play overlay */}
+      <div className="glass-card rounded-2xl overflow-hidden">
+        <div className="aspect-video relative">
+          {video.thumbnail_url ? (
+            <img src={video.thumbnail_url} alt={video.title} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-muted/30 flex items-center justify-center">
+              <Film className="w-12 h-12 text-muted-foreground/30" />
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+          <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-16 h-16 rounded-full gradient-bg flex items-center justify-center cursor-pointer hover:scale-110 transition-transform glow-primary">
               <Play className="w-6 h-6 text-primary-foreground ml-1" />
             </div>
           </div>
-        </div>
-      ) : (
-        <div className="aspect-video rounded-2xl flex items-center justify-center glass-card">
-          <div className="w-16 h-16 rounded-full gradient-bg flex items-center justify-center cursor-pointer hover:scale-110 transition-transform glow-primary">
-            <Play className="w-6 h-6 text-primary-foreground ml-1" />
+          {/* Bottom overlay info */}
+          <div className="absolute bottom-0 left-0 right-0 p-5">
+            <div className="flex items-end justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-foreground">{video.title}</h2>
+                <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+                  {video.duration_seconds && (
+                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatDuration(video.duration_seconds)}</span>
+                  )}
+                  <span className="flex items-center gap-1"><HardDrive className="w-3 h-3" />{formatBytes(video.file_size)}</span>
+                  <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{formatDate(video.created_at)}</span>
+                </div>
+              </div>
+              <Badge className="bg-accent/15 text-accent border-accent/20 border text-xs">Ready</Badge>
+            </div>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Clips header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-foreground">Generated Clips ({clips.length})</h2>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" /> Download All
+      {/* Action bar */}
+      <div className="glass-card rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-primary" />
+          <h3 className="text-base font-semibold text-foreground">Generated Clips ({clips.length})</h3>
+          {readyCount > 0 && (
+            <span className="text-xs text-accent bg-accent/10 px-2 py-0.5 rounded-full">{readyCount} ready</span>
+          )}
+        </div>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <Button
+            variant="hero-outline"
+            size="sm"
+            className="flex-1 sm:flex-none"
+            onClick={() => navigate(`/dashboard/videos/review/${video.id}`)}
+          >
+            <Eye className="w-4 h-4 mr-1.5" /> Review & Select
+          </Button>
+          <Button
+            variant="hero"
+            size="sm"
+            className="flex-1 sm:flex-none"
+            onClick={renderAll}
+            disabled={pendingCount === 0}
+          >
+            <Sparkles className="w-4 h-4 mr-1.5" />
+            {pendingCount > 0 ? `Render All (${pendingCount} clips)` : "All Rendered"}
           </Button>
         </div>
       </div>
 
       {/* Clips grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {clips.map((clip) => (
-          <div
-            key={clip.id}
-            className="glass-card-hover rounded-xl p-4 flex items-center gap-4 cursor-pointer group"
-            onClick={() => setPreviewClip(clip)}
-          >
-            <div className="w-24 h-16 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden bg-background/50">
-              {clip.thumbnail_url ? (
-                <img src={clip.thumbnail_url} alt={clip.title} className="w-full h-full object-cover" />
-              ) : (
-                <Play className="w-4 h-4 text-muted-foreground" />
-              )}
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-medium text-foreground truncate">{clip.title}</h3>
-              <div className="flex items-center gap-3 mt-1">
-                {clip.duration && <span className="text-xs text-muted-foreground">{clip.duration}</span>}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {clips.map((clip) => {
+          const isRendering = clip.status === "rendering" || renderingIds.has(clip.id);
+          const isReady = clip.status === "ready";
+          const isFailed = clip.status === "failed";
+          return (
+            <div key={clip.id} className="glass-card-hover rounded-xl p-4 space-y-3">
+              <div className="flex gap-3">
+                {/* 9:16 thumbnail placeholder */}
+                <div
+                  className="w-16 h-28 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden relative cursor-pointer"
+                  style={{ background: "linear-gradient(180deg, hsl(240,15%,14%) 0%, hsl(240,15%,10%) 100%)" }}
+                  onClick={() => setPreviewClip(clip)}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
+                  <Play className="w-5 h-5 text-muted-foreground/60 relative z-10" />
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${statusDot(clip.status)}`} />
+                      <h4 className="text-sm font-semibold text-foreground truncate">{clip.title}</h4>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="font-mono">{formatTime(clip.start_time)} → {formatTime(clip.end_time)}</span>
+                      {clip.duration_seconds != null && (
+                        <span className="px-1.5 py-0.5 rounded bg-muted/50 text-muted-foreground text-[10px] font-medium">{clip.duration_seconds}s</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="flex items-center gap-1.5 mt-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                      onClick={() => setPreviewClip(clip)}
+                    >
+                      <Eye className="w-3 h-3 mr-1" /> Preview
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                      onClick={() => navigate(`/dashboard/videos/edit/${clip.id}`)}
+                    >
+                      <Pencil className="w-3 h-3 mr-1" /> Edit
+                    </Button>
+                    {isReady && clip.file_path ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-xs text-accent hover:text-accent"
+                        onClick={() => handleDownload(clip)}
+                      >
+                        <Download className="w-3 h-3 mr-1" /> Download
+                      </Button>
+                    ) : isFailed ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-xs text-destructive hover:text-destructive"
+                        onClick={() => renderClip(clip)}
+                      >
+                        <RefreshCw className="w-3 h-3 mr-1" /> Retry
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-xs text-primary hover:text-primary"
+                        onClick={() => renderClip(clip)}
+                        disabled={isRendering}
+                      >
+                        {isRendering ? (
+                          <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Rendering</>
+                        ) : (
+                          <><Sparkles className="w-3 h-3 mr-1" /> Render</>
+                        )}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Viral score circle */}
                 {clip.viral_score != null && (
-                  <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${scoreColor(clip.viral_score)}`}>
-                    <Star className="w-3 h-3" /> {clip.viral_score}/10
-                  </span>
+                  <div className={`w-10 h-10 rounded-full border flex items-center justify-center flex-shrink-0 self-start ${scoreCircle(clip.viral_score)}`}>
+                    <span className="text-sm font-bold">{clip.viral_score}</span>
+                  </div>
                 )}
               </div>
             </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" disabled={clip.status !== "ready"}>
-              <Download className="w-4 h-4" />
-            </Button>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Clip Preview Modal */}
