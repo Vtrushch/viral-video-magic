@@ -167,16 +167,11 @@ const ClipsLibrary = () => {
     }
     setDownloading(clip.id);
     try {
-      const { data, error } = await supabase.storage
-        .from("rendered-clips")
-        .createSignedUrl(clip.file_path, 3600);
-      if (error || !data?.signedUrl) throw error;
-
       const a = document.createElement("a");
-      a.href = data.signedUrl;
+      a.href = clip.file_path; // R2 public URL set by Modal worker
       a.download = `${clip.title}.mp4`;
       a.click();
-      toast.success("Download started!");
+      toast.success("Downloading clip...");
     } catch {
       toast.error("Failed to download clip");
     } finally {
@@ -192,9 +187,23 @@ const ClipsLibrary = () => {
       toast.error("No ready clips selected");
       return;
     }
-    toast.info(`Downloading ${selected.length} clips...`);
-    for (const clip of selected) {
-      await handleDownload(clip);
+    
+    for (let i = 0; i < selected.length; i++) {
+      const clip = selected[i];
+      try {
+        const a = document.createElement("a");
+        a.href = clip.file_path; // R2 public URL
+        a.download = `${clip.title}.mp4`;
+        a.click();
+        toast.success(`Downloaded ${i + 1} of ${selected.length} clips`);
+      } catch {
+        toast.error(`Failed to download ${clip.title}`);
+      }
+      
+      // Add 100ms delay between downloads to avoid browser blocking
+      if (i < selected.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
     }
   };
 
