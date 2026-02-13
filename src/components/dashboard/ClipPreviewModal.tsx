@@ -20,13 +20,13 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const startTime = parseFloat(clip.start_time || "0");
-  const endTime = parseFloat(clip.end_time || "0");
+  const startTime = parseFloat(clip?.start_time || "0");
+  const endTime = parseFloat(clip?.end_time || "0");
   const clipDuration = endTime - startTime;
 
   // Get signed URL on open
   useEffect(() => {
-    if (!open || !video.file_path) return;
+    if (!open || !video?.file_path) return;
     setLoading(true);
     setError(null);
     setSignedUrl(null);
