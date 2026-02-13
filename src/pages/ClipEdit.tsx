@@ -36,30 +36,8 @@ const CAPTION_STYLES: { id: CaptionStyle; label: string; preview: string }[] = [
   },
 ];
 
-const captionOverlayStyles: Record<CaptionStyle, React.CSSProperties> = {
-  hormozi: {
-    fontWeight: 900,
-    fontSize: "1.1rem",
-    color: "#FFD600",
-    textShadow:
-      "2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000",
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
-  },
-  mrbeast: {
-    fontWeight: 800,
-    fontSize: "1.15rem",
-    color: "#FFFFFF",
-    textShadow: "0 2px 8px rgba(0,0,0,0.7)",
-    letterSpacing: "0.02em",
-  },
-  minimal: {
-    fontWeight: 500,
-    fontSize: "0.95rem",
-    color: "#FFFFFF",
-    textShadow: "0 1px 4px rgba(0,0,0,0.5)",
-  },
-};
+// Word group size for caption display
+const WORD_GROUP_SIZE = 3;
 
 // Mock transcript words (in production these come from analysis)
 const generateMockTranscript = (startTime: number, endTime: number) => {
@@ -133,14 +111,26 @@ const ClipEdit = () => {
     enabled: !!clip?.video_id,
   });
 
-  // Init clip boundaries
+  // Init clip boundaries and load transcription words
   useEffect(() => {
     if (!clip) return;
     const s = parseFloat(clip.start_time || "0");
     const e = parseFloat(clip.end_time || "0");
     setClipStart(s);
     setClipEnd(e);
-    setTranscript(generateMockTranscript(s, e));
+
+    // Try to load real transcription_words from viral_analysis
+    const analysis = clip.viral_analysis as Record<string, unknown> | null;
+    const realWords = analysis?.transcription_words as
+      | { word: string; start: number; end: number }[]
+      | undefined;
+
+    if (realWords && Array.isArray(realWords) && realWords.length > 0) {
+      setTranscript(realWords.map((w) => ({ ...w, deleted: false })));
+    } else {
+      setTranscript(generateMockTranscript(s, e));
+    }
+
     const settings = video?.settings as Record<string, unknown> | null;
     if (settings?.captionStyle) {
       setCaptionStyle(settings.captionStyle as CaptionStyle);
@@ -245,16 +235,27 @@ const ClipEdit = () => {
     return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}.${ms.toString().padStart(2, "0")}`;
   };
 
-  // Current caption text
-  const currentCaption = transcript
-    .filter(
-      (w) =>
-        !w.deleted &&
-        currentTime >= w.start &&
-        currentTime <= w.end + 0.3
-    )
-    .map((w) => w.word)
-    .join(" ");
+  // Build active word groups for caption overlay
+  const activeWords = transcript.filter((w) => !w.deleted);
+
+  // Find the current word index within active words
+  const currentWordIdx = activeWords.findIndex(
+    (w) => currentTime >= w.start && currentTime < w.end + 0.05
+  );
+
+  // Determine the 3-word group containing the current word
+  const groupStart =
+    currentWordIdx >= 0
+      ? Math.floor(currentWordIdx / WORD_GROUP_SIZE) * WORD_GROUP_SIZE
+      : -1;
+  const currentGroup =
+    groupStart >= 0
+      ? activeWords.slice(groupStart, groupStart + WORD_GROUP_SIZE)
+      : [];
+  const currentGroupKey =
+    groupStart >= 0
+      ? currentGroup.map((w) => w.word).join("-") + groupStart
+      : "";
 
   // Save changes
   const handleSave = async () => {
@@ -417,16 +418,104 @@ const ClipEdit = () => {
                   />
                 )}
 
-                {/* Caption overlay */}
-                {currentCaption && (
+                {/* Caption overlay — 3-word group with per-word highlight */}
+                {currentGroup.length > 0 && (
                   <div
-                    className={`absolute left-3 right-3 text-center pointer-events-none z-20 ${
-                      captionStyle === "minimal" ? "bottom-16" : "bottom-1/3"
-                    }`}
+                    className="absolute left-2 right-2 text-center pointer-events-none z-20"
+                    style={{ bottom: "20%" }}
                   >
-                    <span style={captionOverlayStyles[captionStyle]}>
-                      {currentCaption}
-                    </span>
+                    <div
+                      key={currentGroupKey}
+                      className="inline-flex flex-wrap justify-center gap-x-1.5 px-2 py-1.5 rounded-lg"
+                      style={{
+                        background:
+                          captionStyle === "minimal"
+                            ? "rgba(0,0,0,0.45)"
+                            : "rgba(0,0,0,0.3)",
+                        backdropFilter: "blur(4px)",
+                        animation: "captionPop 0.2s ease-out",
+                      }}
+                    >
+                      {currentGroup.map((w, wi) => {
+                        const isActive =
+                          currentTime >= w.start && currentTime < w.end + 0.05;
+
+                        // Hormozi: white base, current word YELLOW
+                        if (captionStyle === "hormozi") {
+                          return (
+                            <span
+                              key={wi}
+                              style={{
+                                fontFamily: "Impact, 'Arial Black', sans-serif",
+                                fontWeight: 900,
+                                fontSize: "1.2rem",
+                                color: isActive ? "#FFD600" : "#FFFFFF",
+                                textShadow:
+                                  "2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 0 8px rgba(0,0,0,0.5)",
+                                textTransform: "uppercase",
+                                letterSpacing: "0.04em",
+                                transform: isActive ? "scale(1.15)" : "scale(1)",
+                                transition: "transform 0.15s ease, color 0.1s ease",
+                                display: "inline-block",
+                              }}
+                            >
+                              {w.word}
+                            </span>
+                          );
+                        }
+
+                        // MrBeast: ALL CAPS, alternating RED/WHITE
+                        if (captionStyle === "mrbeast") {
+                          const isRed = wi % 2 === 0;
+                          return (
+                            <span
+                              key={wi}
+                              style={{
+                                fontWeight: 900,
+                                fontSize: "1.25rem",
+                                color: isActive
+                                  ? isRed
+                                    ? "#FF3333"
+                                    : "#FFFFFF"
+                                  : isRed
+                                    ? "#FF6666"
+                                    : "rgba(255,255,255,0.7)",
+                                textShadow:
+                                  "0 2px 10px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.4)",
+                                textTransform: "uppercase",
+                                letterSpacing: "0.03em",
+                                transform: isActive ? "scale(1.18)" : "scale(1)",
+                                transition: "transform 0.15s ease, color 0.1s ease",
+                                display: "inline-block",
+                              }}
+                            >
+                              {w.word}
+                            </span>
+                          );
+                        }
+
+                        // Minimal: clean white, subtle
+                        return (
+                          <span
+                            key={wi}
+                            style={{
+                              fontWeight: isActive ? 600 : 400,
+                              fontSize: "0.95rem",
+                              color: isActive
+                                ? "#FFFFFF"
+                                : "rgba(255,255,255,0.65)",
+                              textShadow: "0 1px 6px rgba(0,0,0,0.4)",
+                              transition:
+                                "font-weight 0.15s ease, color 0.1s ease, transform 0.15s ease",
+                              transform: isActive ? "scale(1.08)" : "scale(1)",
+                              display: "inline-block",
+                            }}
+                          >
+                            {w.word}
+                          </span>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
 
