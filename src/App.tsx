@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import ClipsLibrary from "./pages/ClipsLibrary";
 import VideoDetail from "./pages/VideoDetail";
 import VideoConfig from "./pages/VideoConfig";
 import VideoReview from "./pages/VideoReview";
@@ -40,7 +41,7 @@ const App = () => (
             <Route path="videos/:id" element={<VideoDetail />} />
             <Route path="videos/edit/:clipId" element={<ClipEdit />} />
             <Route path="settings" element={<Settings />} />
-            <Route path="clips" element={<Dashboard />} />
+            <Route path="clips" element={<ClipsLibrary />} />
             <Route path="analytics" element={<Dashboard />} />
             <Route path="upgrade" element={<Dashboard />} />
           </Route>
