@@ -71,6 +71,38 @@ const VideoReview = () => {
         .eq("id", videoId!);
       if (videoError) throw videoError;
 
+      // Fire render requests to Modal for each selected clip
+      if (video) {
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const videoUrl = `${supabaseUrl}/storage/v1/object/raw-videos/${video.file_path}`;
+        const captionStyle = (video.settings as any)?.captionStyle || "hormozi";
+
+        const selectedClipData = clips.filter((c) => selectedClips.has(c.id));
+        const renderPromises = selectedClipData.map((clip) =>
+          fetch("https://vtrushch--cutviral-worker-webhook.modal.run/render", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              clip_id: clip.id,
+              video_url: videoUrl,
+              start_time: parseFloat(clip.start_time || "0"),
+              end_time: parseFloat(clip.end_time || "0"),
+              caption_style: captionStyle,
+            }),
+          }).then((res) => {
+            if (!res.ok) console.error(`Render request failed for clip ${clip.id}: ${res.status}`);
+            return res;
+          }).catch((err) => {
+            console.error(`Render request error for clip ${clip.id}:`, err);
+          })
+        );
+
+        // Fire all in parallel, don't block navigation
+        Promise.all(renderPromises).then(() => {
+          console.log("All render requests sent to Modal");
+        });
+      }
+
       toast.success(`Generating ${selectedClips.size} clips!`);
       queryClient.invalidateQueries({ queryKey: ["video", videoId] });
       navigate(`/dashboard/videos/${videoId}`);
