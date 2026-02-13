@@ -5,8 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
 interface ClipPreviewModalProps {
-  clip: Tables<"clips">;
-  video: Tables<"videos">;
+  clip: Tables<"clips"> | null;
+  video: Tables<"videos"> | null;
   open: boolean;
   onClose: () => void;
 }
@@ -103,7 +103,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     return () => window.removeEventListener("keydown", handleKey);
   }, [open, playing]);
 
-  if (!open) return null;
+  if (!open || !clip || !video) return null;
 
   const progress = clipDuration > 0 ? ((currentTime - startTime) / clipDuration) * 100 : 0;
   const viralAnalysis = clip.viral_analysis as { reason?: string; hook_strength?: number } | null;
