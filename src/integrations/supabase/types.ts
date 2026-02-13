@@ -18,37 +18,49 @@ export type Database = {
         Row: {
           created_at: string
           duration: string | null
+          duration_seconds: number | null
+          end_time: string | null
           file_path: string | null
           id: string
+          start_time: string | null
           status: string
           thumbnail_url: string | null
           title: string
           user_id: string
           video_id: string
+          viral_analysis: Json | null
           viral_score: number | null
         }
         Insert: {
           created_at?: string
           duration?: string | null
+          duration_seconds?: number | null
+          end_time?: string | null
           file_path?: string | null
           id?: string
+          start_time?: string | null
           status?: string
           thumbnail_url?: string | null
           title: string
           user_id: string
           video_id: string
+          viral_analysis?: Json | null
           viral_score?: number | null
         }
         Update: {
           created_at?: string
           duration?: string | null
+          duration_seconds?: number | null
+          end_time?: string | null
           file_path?: string | null
           id?: string
+          start_time?: string | null
           status?: string
           thumbnail_url?: string | null
           title?: string
           user_id?: string
           video_id?: string
+          viral_analysis?: Json | null
           viral_score?: number | null
         }
         Relationships: [
@@ -93,8 +105,10 @@ export type Database = {
       }
       videos: {
         Row: {
+          analysis_result: Json | null
           created_at: string
           duration: string | null
+          duration_seconds: number | null
           file_path: string | null
           file_size: number | null
           id: string
@@ -106,8 +120,10 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          analysis_result?: Json | null
           created_at?: string
           duration?: string | null
+          duration_seconds?: number | null
           file_path?: string | null
           file_size?: number | null
           id?: string
@@ -119,8 +135,10 @@ export type Database = {
           user_id: string
         }
         Update: {
+          analysis_result?: Json | null
           created_at?: string
           duration?: string | null
+          duration_seconds?: number | null
           file_path?: string | null
           file_size?: number | null
           id?: string
