@@ -405,6 +405,40 @@ const VideoDetail = () => {
       setLoading(false);
     };
     fetchData();
+
+    // Poll every 5s while status is analyzing
+    const poll = setInterval(async () => {
+      const { data } = await supabase.from("videos").select("*").eq("id", id).single();
+      if (data && data.status !== video?.status) {
+        setVideo(data);
+        if (data.status === "ready" || data.status === "failed") {
+          const { data: clipsData } = await supabase.from("clips").select("*").eq("video_id", id).order("viral_score", { ascending: false });
+          if (clipsData) setClips(clipsData);
+        }
+      }
+    }, 5000);
+
+    // Realtime subscription
+    const channel = supabase
+      .channel(`video-detail-${id}`)
+      .on("postgres_changes", {
+        event: "UPDATE",
+        schema: "public",
+        table: "videos",
+        filter: `id=eq.${id}`,
+      }, async (payload: any) => {
+        setVideo(payload.new);
+        if (payload.new.status === "ready" || payload.new.status === "failed") {
+          const { data: clipsData } = await supabase.from("clips").select("*").eq("video_id", id).order("viral_score", { ascending: false });
+          if (clipsData) setClips(clipsData);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      clearInterval(poll);
+      supabase.removeChannel(channel);
+    };
   }, [id]);
 
   if (loading) {
