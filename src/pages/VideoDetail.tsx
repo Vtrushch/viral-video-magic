@@ -274,7 +274,6 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
   const [previewClip, setPreviewClip] = useState<Tables<"clips"> | null>(null);
   const [renderingIds, setRenderingIds] = useState<Set<string>>(new Set());
   const settings = video.settings as any;
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 
   // Sync clips from parent
   useEffect(() => { setClips(initialClips); }, [initialClips]);
@@ -306,13 +305,12 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
     if (!video.file_path) { toast.error("Video file not found"); return; }
     setRenderingIds(prev => new Set(prev).add(clip.id));
     try {
-      const videoUrl = `${supabaseUrl}/storage/v1/object/raw-videos/${video.file_path}`;
       const res = await fetch("https://vtrushch--cutviral-worker-webhook.modal.run/render", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           clip_id: clip.id,
-          video_url: videoUrl,
+          video_storage_path: video.file_path,
           start_time: parseFloat(clip.start_time || "0"),
           end_time: parseFloat(clip.end_time || "0"),
           caption_style: settings?.captionStyle || "hormozi",
@@ -325,7 +323,7 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
       setRenderingIds(prev => { const n = new Set(prev); n.delete(clip.id); return n; });
       toast.error(`Failed to start render for ${clip.title}`);
     }
-  }, [video, supabaseUrl, settings]);
+  }, [video, settings]);
 
   const renderAll = async () => {
     const pending = clips.filter(c => c.status === "pending");
