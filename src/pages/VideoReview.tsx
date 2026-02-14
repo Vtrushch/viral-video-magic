@@ -76,8 +76,6 @@ const VideoReview = () => {
 
       // Fire render requests to Modal for each selected clip
       if (video) {
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        const videoUrl = `${supabaseUrl}/storage/v1/object/raw-videos/${video.file_path}`;
         const captionStyle = (video.settings as any)?.captionStyle || "hormozi";
 
         const selectedClipData = clips.filter((c) => selectedClips.has(c.id));
@@ -87,7 +85,7 @@ const VideoReview = () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               clip_id: clip.id,
-              video_url: videoUrl,
+              video_storage_path: video.file_path,
               start_time: parseFloat(clip.start_time || "0"),
               end_time: parseFloat(clip.end_time || "0"),
               caption_style: captionStyle,
@@ -136,7 +134,7 @@ const VideoReview = () => {
   }
 
   return (
-    <div className="max-w-[1400px] mx-auto space-y-6">
+    <div className="p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6 w-full" style={{ background: "#0F0F1A", minHeight: "100vh" }}>
       {/* Header */}
       <div className="flex flex-col gap-4">
         <Button
