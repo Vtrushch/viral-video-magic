@@ -16,48 +16,66 @@ export type Database = {
     Tables: {
       clips: {
         Row: {
+          caption_style: string | null
           created_at: string
           duration: string | null
           duration_seconds: number | null
           end_time: string | null
+          error_message: string | null
           file_path: string | null
           id: string
+          render_completed_at: string | null
+          render_started_at: string | null
           start_time: string | null
           status: string
           thumbnail_url: string | null
           title: string
+          transcription: string | null
+          transcription_words: Json | null
           user_id: string
           video_id: string
           viral_analysis: Json | null
           viral_score: number | null
         }
         Insert: {
+          caption_style?: string | null
           created_at?: string
           duration?: string | null
           duration_seconds?: number | null
           end_time?: string | null
+          error_message?: string | null
           file_path?: string | null
           id?: string
+          render_completed_at?: string | null
+          render_started_at?: string | null
           start_time?: string | null
           status?: string
           thumbnail_url?: string | null
           title: string
+          transcription?: string | null
+          transcription_words?: Json | null
           user_id: string
           video_id: string
           viral_analysis?: Json | null
           viral_score?: number | null
         }
         Update: {
+          caption_style?: string | null
           created_at?: string
           duration?: string | null
           duration_seconds?: number | null
           end_time?: string | null
+          error_message?: string | null
           file_path?: string | null
           id?: string
+          render_completed_at?: string | null
+          render_started_at?: string | null
           start_time?: string | null
           status?: string
           thumbnail_url?: string | null
           title?: string
+          transcription?: string | null
+          transcription_words?: Json | null
           user_id?: string
           video_id?: string
           viral_analysis?: Json | null
