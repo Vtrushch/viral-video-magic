@@ -285,9 +285,6 @@ const ClipEdit = () => {
     if (!clip || !video) return;
     setRendering(true);
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const videoUrl = `${supabaseUrl}/storage/v1/object/raw-videos/${video.file_path}`;
-
       await supabase
         .from("clips")
         .update({ status: "queued" } as any)
@@ -300,10 +297,10 @@ const ClipEdit = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             clip_id: clip.id,
-            video_url: videoUrl,
-            start_time: clipStart,
-            end_time: clipEnd,
-            caption_style: captionStyle,
+            video_storage_path: video.file_path,
+            start_time: parseFloat(clip.start_time || "0"),
+            end_time: parseFloat(clip.end_time || "0"),
+            caption_style: captionStyle || "hormozi",
           }),
         }
       );
