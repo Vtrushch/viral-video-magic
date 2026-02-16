@@ -127,10 +127,12 @@ export type Database = {
           created_at: string
           duration: string | null
           duration_seconds: number | null
+          error_message: string | null
           file_path: string | null
           file_size: number | null
           id: string
           settings: Json | null
+          source_url: string | null
           status: string
           thumbnail_url: string | null
           title: string
@@ -142,10 +144,12 @@ export type Database = {
           created_at?: string
           duration?: string | null
           duration_seconds?: number | null
+          error_message?: string | null
           file_path?: string | null
           file_size?: number | null
           id?: string
           settings?: Json | null
+          source_url?: string | null
           status?: string
           thumbnail_url?: string | null
           title: string
@@ -157,10 +161,12 @@ export type Database = {
           created_at?: string
           duration?: string | null
           duration_seconds?: number | null
+          error_message?: string | null
           file_path?: string | null
           file_size?: number | null
           id?: string
           settings?: Json | null
+          source_url?: string | null
           status?: string
           thumbnail_url?: string | null
           title?: string
