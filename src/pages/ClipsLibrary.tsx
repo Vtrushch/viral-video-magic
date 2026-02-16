@@ -19,6 +19,7 @@ import {
   ArrowUpDown,
   CheckSquare,
 } from "lucide-react";
+import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
 
 type StatusFilter = "all" | "ready" | "rendering" | "pending" | "failed";
 type SortBy = "viral_score" | "created_at" | "duration_seconds";
@@ -108,7 +109,7 @@ const ClipsLibrary = () => {
       if (videoIds.length === 0) return [];
       const { data, error } = await supabase
         .from("videos")
-        .select("id, title")
+        .select("id, title, file_path")
         .in("id", videoIds);
       if (error) throw error;
       return data || [];
@@ -117,7 +118,7 @@ const ClipsLibrary = () => {
   });
 
   const videoMap = useMemo(
-    () => Object.fromEntries(videos.map((v) => [v.id, v.title])),
+    () => Object.fromEntries(videos.map((v) => [v.id, { title: v.title, file_path: v.file_path }])),
     [videos]
   );
 
@@ -367,7 +368,7 @@ const ClipsLibrary = () => {
                 onClick={() => navigate(`/dashboard/videos/edit/${clip.id}`)}
               >
                 {/* 9:16 Thumbnail area */}
-                <div className="relative aspect-[9/16] overflow-hidden bg-muted/20">
+                <div className="relative aspect-[9/16] max-h-[50vh] overflow-hidden bg-muted/20">
                   {clip.thumbnail_url ? (
                     <img
                       src={clip.thumbnail_url}
@@ -375,9 +376,11 @@ const ClipsLibrary = () => {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-muted/10 to-muted/30">
-                      <Play className="w-10 h-10 text-muted-foreground/30" />
-                    </div>
+                    <ClipVideoThumbnail
+                      filePath={videoMap[clip.video_id]?.file_path || null}
+                      startTime={clip.start_time}
+                      alt={clip.title}
+                    />
                   )}
 
                   {/* Overlay gradient */}
@@ -446,7 +449,7 @@ const ClipsLibrary = () => {
                 {/* Bottom bar */}
                 <div className="p-3 flex items-center justify-between">
                   <span className="text-[11px] text-muted-foreground truncate max-w-[60%]">
-                    From: {videoMap[clip.video_id] || "Unknown video"}
+                    From: {videoMap[clip.video_id]?.title || "Unknown video"}
                   </span>
 
                   {isReady && clip.file_path && (
