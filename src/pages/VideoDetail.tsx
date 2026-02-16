@@ -21,6 +21,7 @@ const scoreColor = (score: number) => {
 
 const statusConfig: Record<string, { class: string; label: string }> = {
   uploading: { class: "bg-yellow-500/15 text-yellow-400 border-yellow-500/20", label: "Uploaded" },
+  downloading: { class: "bg-secondary/15 text-secondary border-secondary/20", label: "Downloading" },
   analyzing: { class: "bg-secondary/15 text-secondary border-secondary/20", label: "Analyzing" },
   ready: { class: "bg-accent/15 text-accent border-accent/20", label: "Ready" },
   failed: { class: "bg-destructive/15 text-destructive border-destructive/20", label: "Failed" },
@@ -35,6 +36,48 @@ function formatBytes(bytes: number | null) {
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
+
+/* ─── Downloading State (YouTube import) ─── */
+const DownloadingState = ({ video }: { video: Tables<"videos"> }) => {
+  useEffect(() => {
+    const channel = supabase
+      .channel(`video-download-${video.id}`)
+      .on("postgres_changes", {
+        event: "UPDATE",
+        schema: "public",
+        table: "videos",
+        filter: `id=eq.${video.id}`,
+      }, (payload: any) => {
+        if (payload.new.status !== "downloading") {
+          window.location.reload();
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [video.id]);
+
+  return (
+    <div className="glass-card rounded-2xl p-10 text-center space-y-6">
+      <div className="relative w-20 h-20 mx-auto">
+        <div className="absolute inset-0 rounded-full gradient-bg opacity-20 animate-ping" />
+        <div className="relative w-20 h-20 rounded-full gradient-bg flex items-center justify-center shadow-lg glow-primary">
+          <Loader2 className="w-9 h-9 text-primary-foreground animate-spin" />
+        </div>
+      </div>
+      <div>
+        <h2 className="text-xl font-bold text-foreground mb-2">Downloading from YouTube...</h2>
+        <p className="text-sm text-muted-foreground">This usually takes 1–2 minutes depending on video length</p>
+      </div>
+      <div className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs"
+        style={{ background: "hsl(177,100%,39%,0.06)", border: "1px solid hsl(177,100%,39%,0.15)" }}
+      >
+        <span className="text-accent">💡</span>
+        <span className="text-accent/80">You can close this page. We'll notify you when it's ready!</span>
+      </div>
+    </div>
+  );
+};
 
 /* ─── Uploaded State ─── */
 const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
@@ -710,7 +753,9 @@ const VideoDetail = () => {
       </div>
 
       {/* Status-based content */}
+      {video.status === "downloading" && <DownloadingState video={video} />}
       {video.status === "uploading" && <UploadedState video={video} />}
+      {video.status === "uploaded" && <UploadedState video={video} />}
       {video.status === "analyzing" && <AnalyzingState video={video} />}
       {video.status === "ready" && <ReadyState video={video} clips={clips} />}
       {video.status === "failed" && <FailedState video={video} />}
