@@ -18,6 +18,7 @@ import {
   Filter,
   ArrowUpDown,
   CheckSquare,
+  Sparkles,
 } from "lucide-react";
 import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
 
@@ -26,37 +27,42 @@ type SortBy = "viral_score" | "created_at" | "duration_seconds";
 
 const STATUS_CONFIG: Record<
   string,
-  { label: string; color: string; bg: string; icon: React.ReactNode; pulse?: boolean }
+  { label: string; color: string; bg: string; border: string; icon: React.ReactNode; pulse?: boolean }
 > = {
   pending: {
     label: "Pending",
     color: "text-yellow-400",
-    bg: "bg-yellow-400/15",
+    bg: "bg-yellow-500/10",
+    border: "border-yellow-500/20",
     icon: <Timer className="w-3 h-3" />,
   },
   queued: {
     label: "Queued",
     color: "text-yellow-400",
-    bg: "bg-yellow-400/15",
+    bg: "bg-yellow-500/10",
+    border: "border-yellow-500/20",
     icon: <Timer className="w-3 h-3" />,
   },
   rendering: {
     label: "Rendering",
     color: "text-blue-400",
-    bg: "bg-blue-400/15",
+    bg: "bg-blue-500/10",
+    border: "border-blue-500/20",
     icon: <Loader2 className="w-3 h-3 animate-spin" />,
     pulse: true,
   },
   ready: {
     label: "Ready",
     color: "text-accent",
-    bg: "bg-accent/15",
+    bg: "bg-accent/10",
+    border: "border-accent/20",
     icon: <CheckCircle2 className="w-3 h-3" />,
   },
   failed: {
     label: "Failed",
     color: "text-red-400",
-    bg: "bg-red-400/15",
+    bg: "bg-red-500/10",
+    border: "border-red-500/20",
     icon: <AlertCircle className="w-3 h-3" />,
   },
 };
@@ -83,7 +89,6 @@ const ClipsLibrary = () => {
   const [selectedClips, setSelectedClips] = useState<Set<string>>(new Set());
   const [downloading, setDownloading] = useState<string | null>(null);
 
-  // Fetch all clips
   const { data: clips = [], isLoading: clipsLoading } = useQuery({
     queryKey: ["all-clips", user?.id],
     queryFn: async () => {
@@ -97,7 +102,6 @@ const ClipsLibrary = () => {
     enabled: !!user,
   });
 
-  // Fetch videos for titles
   const videoIds = useMemo(
     () => [...new Set(clips.map((c) => c.video_id))],
     [clips]
@@ -122,10 +126,8 @@ const ClipsLibrary = () => {
     [videos]
   );
 
-  // Filter & sort
   const filteredClips = useMemo(() => {
     let result = clips;
-
     if (filter !== "all") {
       if (filter === "pending") {
         result = result.filter((c) => c.status === "pending" || c.status === "queued");
@@ -135,7 +137,6 @@ const ClipsLibrary = () => {
         result = result.filter((c) => c.status === filter);
       }
     }
-
     return [...result].sort((a, b) => {
       if (sortBy === "viral_score") return (b.viral_score ?? 0) - (a.viral_score ?? 0);
       if (sortBy === "duration_seconds") return (b.duration_seconds ?? 0) - (a.duration_seconds ?? 0);
@@ -194,7 +195,6 @@ const ClipsLibrary = () => {
       toast.error("No ready clips selected");
       return;
     }
-    
     for (let i = 0; i < selected.length; i++) {
       const clip = selected[i];
       try {
@@ -212,19 +212,17 @@ const ClipsLibrary = () => {
       } catch {
         toast.error(`Failed to download ${clip.title}`);
       }
-      
       if (i < selected.length - 1) {
         await new Promise((resolve) => setTimeout(resolve, 300));
       }
     }
   };
 
-  const getScoreBadge = (score: number | null) => {
-    if (score === null || score === undefined)
-      return { color: "text-muted-foreground", bg: "bg-muted/30" };
-    if (score >= 8) return { color: "text-accent", bg: "bg-accent/15" };
-    if (score >= 6) return { color: "text-yellow-400", bg: "bg-yellow-400/15" };
-    return { color: "text-muted-foreground", bg: "bg-muted/30" };
+  const getScoreStyle = (score: number | null) => {
+    if (score === null || score === undefined) return { ring: "ring-muted-foreground/20", text: "text-muted-foreground", glow: "" };
+    if (score >= 8) return { ring: "ring-accent/60", text: "text-accent", glow: "shadow-[0_0_12px_hsl(177,100%,39%,0.3)]" };
+    if (score >= 6) return { ring: "ring-yellow-400/50", text: "text-yellow-400", glow: "shadow-[0_0_12px_hsl(50,100%,60%,0.2)]" };
+    return { ring: "ring-muted-foreground/20", text: "text-muted-foreground", glow: "" };
   };
 
   const statusCounts = useMemo(() => {
@@ -239,110 +237,108 @@ const ClipsLibrary = () => {
   if (clipsLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <span className="text-sm text-muted-foreground">Loading clips...</span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div
-      className="p-6 lg:p-8 w-full overflow-x-hidden"
-      style={{ background: "#0F0F1A", minHeight: "100vh" }}
-    >
+    <div className="p-6 lg:p-8 w-full overflow-x-hidden" style={{ background: "#0F0F1A", minHeight: "100vh" }}>
       {/* Header */}
-      <div className="flex flex-col gap-1 mb-6">
-        <h1 className="text-3xl font-bold text-foreground">
-          Your <span className="gradient-text">Clips</span>
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {clips.length} clip{clips.length !== 1 ? "s" : ""} across{" "}
-          {videoIds.length} video{videoIds.length !== 1 ? "s" : ""}
-        </p>
-      </div>
-
-      {/* Filters & Sort Bar */}
-      <div className="glass-card rounded-xl p-3 mb-6 flex flex-col sm:flex-row sm:items-center gap-3">
-        {/* Filter tabs */}
-        <div className="flex items-center gap-1 flex-1">
-          <Filter className="w-4 h-4 text-muted-foreground mr-1 flex-shrink-0" />
-          {FILTER_TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setFilter(tab.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                filter === tab.id
-                  ? "gradient-bg text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-              }`}
-            >
-              {tab.label}
-              {statusCounts[tab.id] !== undefined && (
-                <span className="ml-1 opacity-70">({statusCounts[tab.id] || 0})</span>
-              )}
-            </button>
-          ))}
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <div className="flex items-center gap-3 mb-1">
+            <h1 className="text-3xl font-bold text-foreground tracking-tight">
+              Your <span className="gradient-text">Clips</span>
+            </h1>
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
+              <span className="text-xs font-semibold text-primary">{clips.length}</span>
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {videoIds.length} source video{videoIds.length !== 1 ? "s" : ""} • {readyClips.length} ready to download
+          </p>
         </div>
 
-        {/* Sort */}
-        <div className="flex items-center gap-2">
-          <ArrowUpDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortBy)}
-            className="bg-muted/30 border border-border/30 rounded-lg px-2 py-1.5 text-xs text-foreground outline-none cursor-pointer"
-          >
-            {SORT_OPTIONS.map((opt) => (
-              <option key={opt.id} value={opt.id}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Batch Actions */}
-      {readyClips.length > 0 && (
-        <div className="flex items-center gap-3 mb-4">
-          <Button variant="outline" size="sm" onClick={selectAllReady}>
-            <CheckSquare className="w-4 h-4 mr-1" />
-            Select All Ready ({readyClips.length})
+        {selectedClips.size > 0 && (
+          <Button variant="hero" size="sm" onClick={handleBatchDownload} className="shrink-0">
+            <Download className="w-4 h-4 mr-1.5" />
+            Download {selectedClips.size}
           </Button>
-          {selectedClips.size > 0 && (
-            <>
-              <Button variant="outline" size="sm" onClick={() => setSelectedClips(new Set())}>
-                Deselect All
-              </Button>
-              <Button variant="hero" size="sm" onClick={handleBatchDownload}>
-                <Download className="w-4 h-4 mr-1" />
-                Download {selectedClips.size} Clip{selectedClips.size !== 1 ? "s" : ""}
-              </Button>
-            </>
-          )}
+        )}
+      </div>
+
+      {/* Filters & Sort */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+        <div className="flex items-center gap-1 p-1 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm flex-1">
+          {FILTER_TABS.map((tab) => {
+            const count = statusCounts[tab.id] || 0;
+            const isActive = filter === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setFilter(tab.id)}
+                className={`relative px-3.5 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+                  isActive
+                    ? "gradient-bg text-primary-foreground shadow-lg shadow-primary/20"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
+                }`}
+              >
+                {tab.label}
+                {count > 0 && (
+                  <span className={`ml-1.5 ${isActive ? "opacity-80" : "opacity-50"}`}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
-      )}
+
+        <div className="flex items-center gap-2">
+          {readyClips.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={selectedClips.size > 0 ? () => setSelectedClips(new Set()) : selectAllReady}
+              className="text-xs h-9"
+            >
+              <CheckSquare className="w-3.5 h-3.5 mr-1.5" />
+              {selectedClips.size > 0 ? "Deselect" : `Select ${readyClips.length}`}
+            </Button>
+          )}
+
+          <div className="flex items-center gap-1.5 px-3 h-9 rounded-lg bg-card/50 border border-border/50">
+            <ArrowUpDown className="w-3.5 h-3.5 text-muted-foreground" />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortBy)}
+              className="bg-transparent text-xs text-foreground outline-none cursor-pointer pr-1"
+            >
+              {SORT_OPTIONS.map((opt) => (
+                <option key={opt.id} value={opt.id} className="bg-card text-foreground">
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
 
       {/* Empty State */}
       {filteredClips.length === 0 ? (
-        <div
-          className="flex flex-col items-center justify-center py-20 rounded-2xl border-2 border-dashed"
-          style={{
-            borderColor: "rgba(255,255,255,0.1)",
-            background: "rgba(255,255,255,0.02)",
-          }}
-        >
-          <div
-            className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(255,45,85,0.15), rgba(94,92,230,0.15))",
-            }}
-          >
-            <Play className="w-7 h-7 text-primary" />
+        <div className="flex flex-col items-center justify-center py-24 rounded-2xl border border-dashed border-border/50 bg-card/20">
+          <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-5 bg-gradient-to-br from-primary/15 to-secondary/15 border border-primary/10">
+            <Play className="w-8 h-8 text-primary/60" />
           </div>
-          <h3 className="text-lg font-semibold text-foreground mb-1">
+          <h3 className="text-lg font-semibold text-foreground mb-1.5">
             {filter === "all" ? "No clips yet" : `No ${filter} clips`}
           </h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground max-w-xs text-center">
             {filter === "all"
               ? "Upload a video and run AI analysis to generate clips"
               : "Try a different filter to see your clips"}
@@ -350,113 +346,121 @@ const ClipsLibrary = () => {
         </div>
       ) : (
         /* Clip Grid */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {filteredClips.map((clip) => {
             const status = STATUS_CONFIG[clip.status] || STATUS_CONFIG.pending;
-            const scoreBadge = getScoreBadge(clip.viral_score);
+            const scoreStyle = getScoreStyle(clip.viral_score);
             const isSelected = selectedClips.has(clip.id);
             const isReady = clip.status === "ready";
 
             return (
               <div
                 key={clip.id}
-                className={`glass-card-hover rounded-xl overflow-hidden cursor-pointer group transition-all duration-300 ${
+                className={`group relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 ${
                   isSelected
-                    ? "ring-2 ring-primary/60 shadow-[0_0_24px_hsl(349,100%,59%,0.15)]"
-                    : ""
+                    ? "ring-2 ring-primary shadow-[0_0_30px_hsl(349,100%,59%,0.2)]"
+                    : "ring-1 ring-border/30 hover:ring-border/60"
                 }`}
+                style={{
+                  background: "hsl(240, 15%, 10%)",
+                }}
                 onClick={() => navigate(`/dashboard/videos/edit/${clip.id}`)}
               >
-                {/* 9:16 Thumbnail area */}
-                <div className="relative aspect-[9/16] max-h-[50vh] overflow-hidden bg-muted/20">
+                {/* 9:16 Thumbnail */}
+                <div className="relative aspect-[9/16] overflow-hidden">
                   {clip.thumbnail_url ? (
                     <img
                       src={clip.thumbnail_url}
                       alt={clip.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
                   ) : (
                     <ClipVideoThumbnail
                       filePath={videoMap[clip.video_id]?.file_path || null}
                       startTime={clip.start_time}
                       alt={clip.title}
+                      className="group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
                   )}
 
-                  {/* Overlay gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 pointer-events-none" />
+                  {/* Gradient overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/5 to-black/30 pointer-events-none" />
 
-                  {/* Top badges */}
-                  <div className="absolute top-2 left-2 right-2 flex items-start justify-between">
-                    {/* Status */}
+                  {/* Play button on hover */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                    <div className="w-12 h-12 rounded-full bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20">
+                      <Play className="w-5 h-5 text-white fill-white ml-0.5" />
+                    </div>
+                  </div>
+
+                  {/* Status badge */}
+                  <div className="absolute top-2.5 left-2.5">
                     <span
-                      className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-md ${status.color} ${status.bg} backdrop-blur-sm ${
+                      className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2.5 py-1 rounded-lg ${status.color} ${status.bg} border ${status.border} backdrop-blur-md ${
                         status.pulse ? "animate-pulse" : ""
                       }`}
                     >
                       {status.icon}
                       {status.label}
                     </span>
-
-                    {/* Select checkbox area */}
-                    {isReady && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleSelect(clip.id);
-                        }}
-                        className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${
-                          isSelected
-                            ? "border-primary bg-primary"
-                            : "border-white/40 bg-black/30 hover:border-white/70"
-                        }`}
-                      >
-                        {isSelected && (
-                          <CheckCircle2 className="w-4 h-4 text-primary-foreground" />
-                        )}
-                      </button>
-                    )}
                   </div>
 
-                  {/* Bottom overlay info */}
-                  <div className="absolute bottom-2 left-2 right-2">
-                    <h4 className="font-semibold text-sm text-white line-clamp-2 mb-1.5 drop-shadow-md">
+                  {/* Select checkbox */}
+                  {isReady && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleSelect(clip.id);
+                      }}
+                      className={`absolute top-2.5 right-2.5 w-6 h-6 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                        isSelected
+                          ? "bg-primary border-2 border-primary shadow-lg shadow-primary/30"
+                          : "border-2 border-white/30 bg-black/30 backdrop-blur-sm hover:border-white/60 hover:bg-black/50"
+                      }`}
+                    >
+                      {isSelected && (
+                        <CheckCircle2 className="w-3.5 h-3.5 text-primary-foreground" />
+                      )}
+                    </button>
+                  )}
+
+                  {/* Viral score circle */}
+                  {clip.viral_score != null && (
+                    <div className={`absolute bottom-12 right-2.5 w-10 h-10 rounded-full ring-2 ${scoreStyle.ring} ${scoreStyle.glow} bg-black/50 backdrop-blur-md flex flex-col items-center justify-center`}>
+                      <span className={`text-xs font-black leading-none ${scoreStyle.text}`}>
+                        {clip.viral_score}
+                      </span>
+                      <span className="text-[7px] text-white/40 font-medium">/10</span>
+                    </div>
+                  )}
+
+                  {/* Bottom info overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3">
+                    <h4 className="font-semibold text-[13px] text-white line-clamp-2 leading-snug mb-1.5 drop-shadow-lg">
                       {clip.title}
                     </h4>
 
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      {/* Viral score */}
-                      {clip.viral_score != null && (
-                        <span
-                          className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md ${scoreBadge.color} ${scoreBadge.bg} backdrop-blur-sm`}
-                        >
-                          <Flame className="w-3 h-3" />
-                          {clip.viral_score}/10
-                        </span>
-                      )}
-
-                      {/* Duration */}
+                    <div className="flex items-center gap-2">
                       {clip.duration && (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md text-white/80 bg-black/40 backdrop-blur-sm">
-                          <Clock className="w-3 h-3" />
+                        <span className="inline-flex items-center gap-1 text-[10px] font-medium text-white/70">
+                          <Clock className="w-2.5 h-2.5" />
                           {clip.duration}
                         </span>
                       )}
+                      <span className="text-[10px] text-white/40 truncate">
+                        {videoMap[clip.video_id]?.title || ""}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Bottom bar */}
-                <div className="p-3 flex items-center justify-between">
-                  <span className="text-[11px] text-muted-foreground truncate max-w-[60%]">
-                    From: {videoMap[clip.video_id]?.title || "Unknown video"}
-                  </span>
-
-                  {isReady && clip.file_path && (
+                {/* Bottom action bar */}
+                {isReady && clip.file_path && (
+                  <div className="absolute bottom-0 left-0 right-0 p-2 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gradient-to-t from-black/60 to-transparent">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-7 w-7 text-accent hover:text-accent hover:bg-accent/10"
+                      className="h-8 w-8 rounded-lg text-white/80 hover:text-white hover:bg-white/10"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDownload(clip);
@@ -464,13 +468,13 @@ const ClipsLibrary = () => {
                       disabled={downloading === clip.id}
                     >
                       {downloading === clip.id ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
-                        <Download className="w-3.5 h-3.5" />
+                        <Download className="w-4 h-4" />
                       )}
                     </Button>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             );
           })}
