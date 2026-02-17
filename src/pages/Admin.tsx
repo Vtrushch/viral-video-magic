@@ -3,13 +3,14 @@ import { Navigate } from "react-router-dom";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Scissors, Users, Video, Film, CheckCircle, Plus, ChevronDown, ChevronUp, Eye, Coins } from "lucide-react";
+import { Scissors, Users, Video, Film, CheckCircle, Plus, ChevronDown, ChevronUp, Eye, Coins, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 
@@ -64,7 +65,6 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
   const [addClipOpen, setAddClipOpen] = useState(false);
-  const [addCreditsOpen, setAddCreditsOpen] = useState<string | null>(null);
   const [creditsToAdd, setCreditsToAdd] = useState("");
 
   // Add clip form
@@ -158,7 +158,6 @@ const Admin = () => {
       });
       if (res.error) throw new Error("Failed");
       toast.success(`Added ${amount} credits`);
-      setAddCreditsOpen(null);
       setCreditsToAdd("");
       fetchData();
     } catch (e: any) {
@@ -255,47 +254,97 @@ const Admin = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {Object.entries(users).map(([uid, u]) => (
+              {Object.entries(users).map(([uid, u]) => {
+                const remaining = u.total_credits - u.used_credits;
+                return (
                 <>
                   <TableRow key={uid} className="border-b" style={{ borderColor: "hsl(0,0%,100%,0.06)" }}>
                     <TableCell className="text-foreground font-medium">
-                      <div>
+                      <div className="space-y-1">
                         {u.full_name && <span className="block text-xs text-muted-foreground">{u.full_name}</span>}
-                        {u.email}
+                        <span>{u.email}</span>
+                        <span
+                          className="inline-flex items-center gap-1 ml-2 text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                          style={{
+                            background: remaining > 0 ? "hsl(177,100%,39%,0.15)" : "hsl(0,62%,50%,0.15)",
+                            color: remaining > 0 ? "hsl(177,100%,39%)" : "hsl(0,62%,50%)",
+                          }}
+                        >
+                          <Sparkles className="w-2.5 h-2.5" />
+                          {remaining} credits
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground text-sm">{formatDate(u.joined)}</TableCell>
                     <TableCell className="text-center text-foreground">{u.videos}</TableCell>
                     <TableCell className="text-center text-foreground">{u.clips}</TableCell>
                     <TableCell className="text-center text-foreground">{u.rendered}</TableCell>
-                    <TableCell className="text-center text-foreground">{u.total_credits}</TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <span className="text-foreground">{u.total_credits}</span>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button
+                              className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold transition-colors hover:scale-110"
+                              style={{ background: "hsl(177,100%,39%,0.2)", color: "hsl(177,100%,39%)" }}
+                              onClick={() => setCreditsToAdd("")}
+                            >
+                              +
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-56 p-3" align="center" side="bottom">
+                            <div className="space-y-3">
+                              <Label className="text-xs font-semibold">Add credits</Label>
+                              <Input
+                                type="number"
+                                min="1"
+                                placeholder="Amount"
+                                value={creditsToAdd}
+                                onChange={e => setCreditsToAdd(e.target.value)}
+                                className="h-8 text-sm"
+                              />
+                              <div className="flex gap-1.5">
+                                {[5, 10, 50, 100].map(n => (
+                                  <button
+                                    key={n}
+                                    onClick={() => setCreditsToAdd(String(n))}
+                                    className="flex-1 text-xs font-medium py-1 rounded-md transition-colors hover:bg-primary/20"
+                                    style={{ background: "hsl(0,0%,100%,0.06)", color: "hsl(0,0%,90%)" }}
+                                  >
+                                    +{n}
+                                  </button>
+                                ))}
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="hero"
+                                className="w-full h-7 text-xs"
+                                disabled={submitting || !creditsToAdd}
+                                onClick={() => handleAddCredits(uid)}
+                              >
+                                {submitting ? "Adding..." : "Add"}
+                              </Button>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TableCell>
                     <TableCell className="text-center text-foreground">{u.used_credits}</TableCell>
                     <TableCell className="text-center">
-                      <span className="font-semibold" style={{ color: (u.total_credits - u.used_credits) > 0 ? "hsl(177,100%,39%)" : "hsl(0,62%,50%)" }}>
-                        {u.total_credits - u.used_credits}
+                      <span className="font-semibold" style={{ color: remaining > 0 ? "hsl(177,100%,39%)" : "hsl(0,62%,50%)" }}>
+                        {remaining}
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => { setAddCreditsOpen(uid); setCreditsToAdd(""); }}
-                          className="text-accent hover:text-accent/80"
-                          title="Add Credits"
-                        >
-                          <Coins className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setExpandedUser(expandedUser === uid ? null : uid)}
-                          className="text-primary hover:text-primary/80"
-                        >
-                          <Eye className="w-4 h-4 mr-1" />
-                          {expandedUser === uid ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                        </Button>
-                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setExpandedUser(expandedUser === uid ? null : uid)}
+                        className="text-primary hover:text-primary/80"
+                      >
+                        <Eye className="w-4 h-4 mr-1" />
+                        {expandedUser === uid ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                      </Button>
                     </TableCell>
                   </TableRow>
                   {expandedUser === uid && (
@@ -345,7 +394,8 @@ const Admin = () => {
                     </TableRow>
                   )}
                 </>
-              ))}
+                );
+              })}
             </TableBody>
           </Table>
         </div>
@@ -405,27 +455,6 @@ const Admin = () => {
             </div>
             <Button variant="hero" className="w-full" onClick={handleAddClip} disabled={submitting}>
               {submitting ? "Adding..." : "Add Clip"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Add Credits Dialog */}
-      <Dialog open={!!addCreditsOpen} onOpenChange={(open) => { if (!open) setAddCreditsOpen(null); }}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Add Credits</DialogTitle>
-            <DialogDescription>
-              Add credits for {addCreditsOpen && users[addCreditsOpen]?.email}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 mt-2">
-            <div>
-              <Label>Credits to add</Label>
-              <Input className="mt-1" type="number" min="1" value={creditsToAdd} onChange={e => setCreditsToAdd(e.target.value)} placeholder="10" />
-            </div>
-            <Button variant="hero" className="w-full" onClick={() => addCreditsOpen && handleAddCredits(addCreditsOpen)} disabled={submitting}>
-              {submitting ? "Adding..." : "Add Credits"}
             </Button>
           </div>
         </DialogContent>
