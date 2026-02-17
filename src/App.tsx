@@ -12,6 +12,7 @@ import VideoConfig from "./pages/VideoConfig";
 import VideoReview from "./pages/VideoReview";
 import Settings from "./pages/Settings";
 import ClipEdit from "./pages/ClipEdit";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import DashboardLayout from "./components/layout/DashboardLayout";
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="clips" element={<ClipsLibrary />} />
             <Route path="analytics" element={<Dashboard />} />
             <Route path="upgrade" element={<Dashboard />} />
+            <Route path="admin" element={<Admin />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
