@@ -1,8 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
+import { useCredits } from "@/hooks/useCredits";
 import {
-  Scissors, Video, Film, BarChart3, Settings, CreditCard, LogOut, ChevronLeft, ChevronRight, Shield,
+  Scissors, Video, Film, BarChart3, Settings, CreditCard, LogOut, ChevronLeft, ChevronRight, Shield, Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -20,6 +21,7 @@ const DashboardSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdminCheck();
+  const { credits } = useCredits();
   const location = useLocation();
 
   const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
@@ -84,6 +86,24 @@ const DashboardSidebar = () => {
           );
         })}
       </nav>
+
+      {/* Credits */}
+      {!collapsed && credits && (
+        <div className="mx-2 mb-2 p-3 rounded-xl" style={{ background: "linear-gradient(135deg, rgba(255,45,85,0.1), rgba(94,92,230,0.1))", border: "1px solid rgba(255,45,85,0.15)" }}>
+          <div className="flex items-center gap-2 mb-1">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <span className="text-xs font-semibold text-foreground">Credits</span>
+          </div>
+          <p className="text-lg font-bold text-foreground">{credits.remaining}</p>
+          <p className="text-[10px] text-muted-foreground">{credits.used_credits} used of {credits.total_credits}</p>
+        </div>
+      )}
+      {collapsed && credits && (
+        <div className="mx-2 mb-2 flex flex-col items-center">
+          <Sparkles className="w-4 h-4 text-primary mb-1" />
+          <span className="text-xs font-bold text-foreground">{credits.remaining}</span>
+        </div>
+      )}
 
       {/* Collapse toggle */}
       <button
