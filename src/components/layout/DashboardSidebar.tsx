@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdminCheck } from "@/hooks/useAdminCheck";
 import {
-  Scissors, Video, Film, BarChart3, Settings, CreditCard, LogOut, ChevronLeft, ChevronRight,
+  Scissors, Video, Film, BarChart3, Settings, CreditCard, LogOut, ChevronLeft, ChevronRight, Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -18,6 +19,7 @@ const menuItems = [
 const DashboardSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdminCheck();
   const location = useLocation();
 
   const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
@@ -47,6 +49,21 @@ const DashboardSidebar = () => {
 
       {/* Menu */}
       <nav className="flex-1 py-4 px-2 space-y-1">
+        {isAdmin && (
+          <Link
+            to="/dashboard/admin"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all mb-2",
+              location.pathname === "/dashboard/admin"
+                ? "font-medium"
+                : "hover:bg-white/5"
+            )}
+            style={location.pathname === "/dashboard/admin" ? { background: "linear-gradient(135deg, rgba(255,45,85,0.2), rgba(94,92,230,0.2))", color: "#fff" } : { color: "#FF2D55" }}
+          >
+            <Shield className="w-5 h-5 flex-shrink-0" />
+            {!collapsed && <span>Admin</span>}
+          </Link>
+        )}
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
