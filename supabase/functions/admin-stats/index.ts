@@ -42,6 +42,8 @@ Deno.serve(async (req) => {
     const { data: clips } = await adminClient.from("clips").select("id, user_id, video_id, title, status, viral_score, start_time, end_time, duration_seconds, caption_style, created_at");
     // Get all profiles
     const { data: profiles } = await adminClient.from("profiles").select("user_id, full_name, avatar_url");
+    // Get all credits
+    const { data: creditsData } = await adminClient.from("user_credits").select("user_id, total_credits, used_credits, plan");
     // Get all users from auth
     const { data: { users: authUsers } } = await adminClient.auth.admin.listUsers();
 
@@ -56,21 +58,31 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Build credits map
+    const creditsMap: Record<string, { total_credits: number; used_credits: number; plan: string }> = {};
+    for (const c of creditsData || []) {
+      creditsMap[c.user_id] = { total_credits: c.total_credits, used_credits: c.used_credits, plan: c.plan };
+    }
+
     // Build per-user stats
-    const userStats: Record<string, { email: string; full_name?: string; joined: string; videos: number; clips: number; rendered: number }> = {};
+    const userStats: Record<string, { email: string; full_name?: string; joined: string; videos: number; clips: number; rendered: number; total_credits: number; used_credits: number; plan: string }> = {};
     const allUserIds = new Set<string>();
+    for (const u of authUsers || []) { allUserIds.add(u.id); }
     for (const v of videos || []) { allUserIds.add(v.user_id); }
     for (const uid of allUserIds) {
       const uVideos = (videos || []).filter(v => v.user_id === uid);
       const uClips = (clips || []).filter(c => c.user_id === uid);
-      const firstVideo = uVideos.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())[0];
+      const cr = creditsMap[uid] || { total_credits: 0, used_credits: 0, plan: "free" };
       userStats[uid] = {
         email: userMap[uid]?.email || uid,
         full_name: userMap[uid]?.full_name,
-        joined: userMap[uid]?.created_at || firstVideo?.created_at || "",
+        joined: userMap[uid]?.created_at || "",
         videos: uVideos.length,
         clips: uClips.length,
         rendered: uClips.filter(c => c.status === "ready").length,
+        total_credits: cr.total_credits,
+        used_credits: cr.used_credits,
+        plan: cr.plan,
       };
     }
 

@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Scissors, Users, Video, Film, CheckCircle, Plus, ChevronDown, ChevronUp, Eye } from "lucide-react";
+import { Scissors, Users, Video, Film, CheckCircle, Plus, ChevronDown, ChevronUp, Eye, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +27,9 @@ interface UserStat {
   videos: number;
   clips: number;
   rendered: number;
+  total_credits: number;
+  used_credits: number;
+  plan: string;
 }
 
 interface VideoItem {
@@ -61,6 +64,8 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
   const [addClipOpen, setAddClipOpen] = useState(false);
+  const [addCreditsOpen, setAddCreditsOpen] = useState<string | null>(null);
+  const [creditsToAdd, setCreditsToAdd] = useState("");
 
   // Add clip form
   const [clipVideoId, setClipVideoId] = useState("");
@@ -131,6 +136,33 @@ const Admin = () => {
       fetchData();
     } catch (e: any) {
       toast.error(e.message || "Failed to add clip");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleAddCredits = async (uid: string) => {
+    const amount = parseInt(creditsToAdd);
+    if (!amount || amount <= 0) {
+      toast.error("Enter a valid number");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("No session");
+
+      const res = await supabase.functions.invoke("admin-add-credits", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: { user_id: uid, credits: amount },
+      });
+      if (res.error) throw new Error("Failed");
+      toast.success(`Added ${amount} credits`);
+      setAddCreditsOpen(null);
+      setCreditsToAdd("");
+      fetchData();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to add credits");
     } finally {
       setSubmitting(false);
     }
@@ -216,6 +248,9 @@ const Admin = () => {
                 <TableHead className="text-muted-foreground text-center">Videos</TableHead>
                 <TableHead className="text-muted-foreground text-center">Clips</TableHead>
                 <TableHead className="text-muted-foreground text-center">Rendered</TableHead>
+                <TableHead className="text-muted-foreground text-center">Credits</TableHead>
+                <TableHead className="text-muted-foreground text-center">Used</TableHead>
+                <TableHead className="text-muted-foreground text-center">Remaining</TableHead>
                 <TableHead className="text-muted-foreground text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -233,21 +268,39 @@ const Admin = () => {
                     <TableCell className="text-center text-foreground">{u.videos}</TableCell>
                     <TableCell className="text-center text-foreground">{u.clips}</TableCell>
                     <TableCell className="text-center text-foreground">{u.rendered}</TableCell>
+                    <TableCell className="text-center text-foreground">{u.total_credits}</TableCell>
+                    <TableCell className="text-center text-foreground">{u.used_credits}</TableCell>
+                    <TableCell className="text-center">
+                      <span className="font-semibold" style={{ color: (u.total_credits - u.used_credits) > 0 ? "hsl(177,100%,39%)" : "hsl(0,62%,50%)" }}>
+                        {u.total_credits - u.used_credits}
+                      </span>
+                    </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setExpandedUser(expandedUser === uid ? null : uid)}
-                        className="text-primary hover:text-primary/80"
-                      >
-                        <Eye className="w-4 h-4 mr-1" />
-                        {expandedUser === uid ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                      </Button>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => { setAddCreditsOpen(uid); setCreditsToAdd(""); }}
+                          className="text-accent hover:text-accent/80"
+                          title="Add Credits"
+                        >
+                          <Coins className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setExpandedUser(expandedUser === uid ? null : uid)}
+                          className="text-primary hover:text-primary/80"
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          {expandedUser === uid ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                   {expandedUser === uid && (
                     <TableRow key={`${uid}-detail`}>
-                      <TableCell colSpan={6} className="p-4">
+                      <TableCell colSpan={9} className="p-4">
                         <div className="space-y-4">
                           {/* User's videos */}
                           <div>
@@ -352,6 +405,27 @@ const Admin = () => {
             </div>
             <Button variant="hero" className="w-full" onClick={handleAddClip} disabled={submitting}>
               {submitting ? "Adding..." : "Add Clip"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Credits Dialog */}
+      <Dialog open={!!addCreditsOpen} onOpenChange={(open) => { if (!open) setAddCreditsOpen(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Add Credits</DialogTitle>
+            <DialogDescription>
+              Add credits for {addCreditsOpen && users[addCreditsOpen]?.email}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div>
+              <Label>Credits to add</Label>
+              <Input className="mt-1" type="number" min="1" value={creditsToAdd} onChange={e => setCreditsToAdd(e.target.value)} placeholder="10" />
+            </div>
+            <Button variant="hero" className="w-full" onClick={() => addCreditsOpen && handleAddCredits(addCreditsOpen)} disabled={submitting}>
+              {submitting ? "Adding..." : "Add Credits"}
             </Button>
           </div>
         </DialogContent>

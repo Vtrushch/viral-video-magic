@@ -1,6 +1,6 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState, useMemo } from "react";
-import { ArrowLeft, Sparkles, Loader2, Clock, HardDrive, Calendar, ChevronDown, Zap, Globe, Info } from "lucide-react";
+import { ArrowLeft, Sparkles, Loader2, Clock, HardDrive, Calendar, ChevronDown, Zap, Globe, Info, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -8,6 +8,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
+import { useCredits } from "@/hooks/useCredits";
 
 const clipCountOptions = [
   { value: 5, label: "5 clips", desc: "Quick · Best for testing" },
@@ -90,6 +91,7 @@ const VideoConfig = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  const { credits, loading: creditsLoading, refetch: refetchCredits } = useCredits();
 
   const [clipCount, setClipCount] = useState(10);
   const [clipLength, setClipLength] = useState("medium");
@@ -121,6 +123,13 @@ const VideoConfig = () => {
 
   const handleStartAnalysis = async () => {
     if (!id) return;
+
+    // Credit check
+    if (!credits || credits.remaining <= 0) {
+      toast.error("No credits remaining. Upgrade your plan or contact support.");
+      return;
+    }
+
     setSubmitting(true);
     const settings = {
       clipCount,
@@ -198,6 +207,13 @@ const VideoConfig = () => {
       console.error('❌ Modal connection error:', modalError)
       // Don't block UI - analysis will still work
     }
+
+    // Deduct 1 credit
+    await supabase
+      .from("user_credits" as any)
+      .update({ used_credits: (credits?.used_credits || 0) + 1 } as any)
+      .eq("user_id", (await supabase.auth.getUser()).data.user?.id);
+    refetchCredits();
 
     toast.success("AI analysis started! This takes 2-3 minutes.");
     navigate(`/dashboard/videos/${id}`);
@@ -441,8 +457,15 @@ const VideoConfig = () => {
             </div>
           </div>
           <p className="text-xs text-muted-foreground flex items-center gap-1">
-            <Info className="w-3 h-3" /> You have 30 credits remaining this month
+            <Info className="w-3 h-3" /> 
+            {creditsLoading ? "Loading credits..." : credits ? `You have ${credits.remaining} credits remaining` : "Credits unavailable"}
           </p>
+          {credits && credits.remaining <= 0 && (
+            <div className="flex items-center gap-2 mt-2 p-2 rounded-lg" style={{ background: "hsl(0,62%,30%,0.2)", border: "1px solid hsl(0,62%,30%,0.3)" }}>
+              <AlertTriangle className="w-4 h-4 text-destructive flex-shrink-0" />
+              <span className="text-xs text-destructive">No credits remaining. Upgrade your plan to continue.</span>
+            </div>
+          )}
         </div>
 
         {/* 6. Action Buttons */}

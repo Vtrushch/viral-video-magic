@@ -121,6 +121,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_credits: {
+        Row: {
+          created_at: string | null
+          id: string
+          plan: string | null
+          total_credits: number | null
+          updated_at: string | null
+          used_credits: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          plan?: string | null
+          total_credits?: number | null
+          updated_at?: string | null
+          used_credits?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          plan?: string | null
+          total_credits?: number | null
+          updated_at?: string | null
+          used_credits?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -143,6 +173,7 @@ export type Database = {
         Row: {
           analysis_result: Json | null
           created_at: string
+          credits_used: number | null
           duration: string | null
           duration_seconds: number | null
           error_message: string | null
@@ -160,6 +191,7 @@ export type Database = {
         Insert: {
           analysis_result?: Json | null
           created_at?: string
+          credits_used?: number | null
           duration?: string | null
           duration_seconds?: number | null
           error_message?: string | null
@@ -177,6 +209,7 @@ export type Database = {
         Update: {
           analysis_result?: Json | null
           created_at?: string
+          credits_used?: number | null
           duration?: string | null
           duration_seconds?: number | null
           error_message?: string | null
