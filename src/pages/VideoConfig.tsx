@@ -208,12 +208,12 @@ const VideoConfig = () => {
       // Don't block UI - analysis will still work
     }
 
-    // Deduct 1 credit
-    await supabase
-      .from("user_credits" as any)
-      .update({ used_credits: (credits?.used_credits || 0) + 1 } as any)
-      .eq("user_id", (await supabase.auth.getUser()).data.user?.id);
-    refetchCredits();
+    // Deduct 1 credit atomically via RPC-style raw update
+    const { data: userData } = await supabase.auth.getUser();
+    if (userData.user) {
+      await supabase.rpc('increment_used_credits' as any, { _user_id: userData.user.id });
+      refetchCredits();
+    }
 
     toast.success("AI analysis started! This takes 2-3 minutes.");
     navigate(`/dashboard/videos/${id}`);
@@ -458,7 +458,7 @@ const VideoConfig = () => {
           </div>
           <p className="text-xs text-muted-foreground flex items-center gap-1">
             <Info className="w-3 h-3" /> 
-            {creditsLoading ? "Loading credits..." : credits ? `You have ${credits.remaining} credits remaining` : "Credits unavailable"}
+            This will use 1 credit. {creditsLoading ? "Loading credits..." : credits ? `You have ${credits.remaining} credits remaining.` : "Credits unavailable."}
           </p>
           {credits && credits.remaining <= 0 && (
             <div className="flex items-center gap-2 mt-2 p-2 rounded-lg" style={{ background: "hsl(0,62%,30%,0.2)", border: "1px solid hsl(0,62%,30%,0.3)" }}>
@@ -478,19 +478,35 @@ const VideoConfig = () => {
           >
             Save as Draft
           </Button>
-          <Button
-            variant="hero"
-            size="lg"
-            className="flex-1"
-            onClick={handleStartAnalysis}
-            disabled={submitting || selectedLangs.length === 0}
-          >
-            {submitting ? (
-              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Starting...</>
-            ) : (
-              <><Sparkles className="w-4 h-4 mr-2" /> Start AI Analysis →</>
-            )}
-          </Button>
+          {credits && credits.remaining <= 0 ? (
+            <Button
+              variant="outline"
+              size="lg"
+              className="flex-1 opacity-60"
+              disabled
+            >
+              No Credits
+            </Button>
+          ) : (
+            <Button
+              variant="hero"
+              size="lg"
+              className="flex-1"
+              onClick={handleStartAnalysis}
+              disabled={submitting || selectedLangs.length === 0 || creditsLoading}
+            >
+              {submitting ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Starting...</>
+              ) : (
+                <><Sparkles className="w-4 h-4 mr-2" /> Start AI Analysis →</>
+              )}
+            </Button>
+          )}
+          {credits && credits.remaining <= 0 && (
+            <Button variant="hero" size="lg" className="flex-1" asChild>
+              <Link to="/dashboard/upgrade">Upgrade Plan</Link>
+            </Button>
+          )}
         </div>
       </div>
     </div>
