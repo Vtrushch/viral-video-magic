@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { X, Play, Pause, Flame, Clock, Star, Volume2, VolumeX } from "lucide-react";
+import { X, Play, Pause, Flame, Clock, Star, Volume2, VolumeX, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
@@ -49,10 +49,11 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     };
   }, [open, video.file_path]);
 
-  // Seek to start when video loads
+  // Seek to start when video loads — pause first, seek, wait for seeked
   const handleLoadedMetadata = useCallback(() => {
     const el = videoRef.current;
     if (!el) return;
+    el.pause();
     el.currentTime = startTime;
     setLoading(false);
   }, [startTime]);
@@ -69,6 +70,14 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     }
   }, [endTime, startTime]);
 
+  const handleReload = () => {
+    const el = videoRef.current;
+    if (!el) return;
+    setPlaying(false);
+    el.pause();
+    el.load();
+  };
+
   const togglePlay = () => {
     const el = videoRef.current;
     if (!el) return;
@@ -77,10 +86,18 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
       setPlaying(false);
     } else {
       if (el.currentTime < startTime || el.currentTime >= endTime) {
+        el.pause();
         el.currentTime = startTime;
+        const onSeeked = () => {
+          el.removeEventListener("seeked", onSeeked);
+          el.play().catch(() => {});
+          setPlaying(true);
+        };
+        el.addEventListener("seeked", onSeeked);
+      } else {
+        el.play().catch(() => {});
+        setPlaying(true);
       }
-      el.play();
-      setPlaying(true);
     }
   };
 
@@ -88,7 +105,13 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     const el = videoRef.current;
     if (!el) return;
     const val = parseFloat(e.target.value);
+    el.pause();
     el.currentTime = val;
+    const onSeeked = () => {
+      el.removeEventListener("seeked", onSeeked);
+      setCurrentTime(val);
+    };
+    el.addEventListener("seeked", onSeeked);
     setCurrentTime(val);
   };
 
@@ -176,8 +199,17 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                   onEnded={() => setPlaying(false)}
                   muted={muted}
                   playsInline
+                  preload="auto"
                 />
               )}
+              {/* Reload button to fix frozen video */}
+              <button
+                onClick={handleReload}
+                className="absolute top-2 right-2 z-20 w-7 h-7 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
+                title="Reload video"
+              >
+                <RefreshCw className="w-3 h-3 text-white/70" />
+              </button>
 
               {/* Play overlay when paused */}
               {!playing && !loading && !error && (

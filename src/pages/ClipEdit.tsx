@@ -14,6 +14,7 @@ import {
   Save,
   Zap,
   GripVertical,
+  RefreshCw,
 } from "lucide-react";
 
 type CaptionStyle = "hormozi" | "mrbeast" | "minimal";
@@ -157,6 +158,8 @@ const ClipEdit = () => {
   const handleLoadedMetadata = useCallback(() => {
     const el = videoRef.current;
     if (!el) return;
+    // Pause → seek → wait for seeked event → then allow play
+    el.pause();
     el.currentTime = clipStart;
     setLoading(false);
   }, [clipStart]);
@@ -172,6 +175,15 @@ const ClipEdit = () => {
     }
   }, [clipEnd, clipStart]);
 
+  const handleReload = () => {
+    const el = videoRef.current;
+    if (!el) return;
+    setPlaying(false);
+    el.pause();
+    el.load();
+    // After reload, loadedmetadata will fire and seek to clipStart
+  };
+
   const togglePlay = () => {
     const el = videoRef.current;
     if (!el) return;
@@ -180,10 +192,19 @@ const ClipEdit = () => {
       setPlaying(false);
     } else {
       if (el.currentTime < clipStart || el.currentTime >= clipEnd) {
+        // Pause first, seek, then play after seeked event
+        el.pause();
         el.currentTime = clipStart;
+        const onSeeked = () => {
+          el.removeEventListener("seeked", onSeeked);
+          el.play().catch(() => {});
+          setPlaying(true);
+        };
+        el.addEventListener("seeked", onSeeked);
+      } else {
+        el.play().catch(() => {});
+        setPlaying(true);
       }
-      el.play();
-      setPlaying(true);
     }
   };
 
@@ -257,11 +278,16 @@ const ClipEdit = () => {
       ? currentGroup.map((w) => w.word).join("-") + groupStart
       : "";
 
-  // Save changes
+  // Save changes — persist start_time, end_time, caption_style, and transcription to DB
   const handleSave = async () => {
     if (!clip) return;
     setSaving(true);
     try {
+      const editedTranscription = transcript
+        .filter((w) => !w.deleted)
+        .map((w) => w.word)
+        .join(" ");
+
       const { error } = await supabase
         .from("clips")
         .update({
@@ -269,10 +295,12 @@ const ClipEdit = () => {
           end_time: clipEnd.toFixed(3),
           duration_seconds: Math.round(clipDuration),
           duration: `${Math.floor(clipDuration / 60)}:${Math.floor(clipDuration % 60).toString().padStart(2, "0")}`,
+          caption_style: captionStyle,
+          transcription: editedTranscription,
         } as any)
         .eq("id", clip.id);
       if (error) throw error;
-      toast.success("Clip changes saved!");
+      toast.success("Changes saved!");
     } catch {
       toast.error("Failed to save changes");
     } finally {
@@ -280,14 +308,26 @@ const ClipEdit = () => {
     }
   };
 
-  // Render clip
+  // Render clip — always uses current STATE values (clipStart, clipEnd, captionStyle, transcript)
   const handleRender = async () => {
     if (!clip || !video) return;
     setRendering(true);
     try {
+      // First save current edits
+      const editedTranscription = transcript
+        .filter((w) => !w.deleted)
+        .map((w) => w.word)
+        .join(" ");
+
       await supabase
         .from("clips")
-        .update({ status: "queued" } as any)
+        .update({
+          status: "queued",
+          start_time: clipStart.toFixed(3),
+          end_time: clipEnd.toFixed(3),
+          caption_style: captionStyle,
+          transcription: editedTranscription,
+        } as any)
         .eq("id", clip.id);
 
       const res = await fetch(
@@ -298,9 +338,10 @@ const ClipEdit = () => {
           body: JSON.stringify({
             clip_id: clip.id,
             video_storage_path: video.file_path,
-            start_time: parseFloat(clip.start_time || "0"),
-            end_time: parseFloat(clip.end_time || "0"),
+            start_time: clipStart,
+            end_time: clipEnd,
             caption_style: captionStyle || "hormozi",
+            custom_transcription: editedTranscription || undefined,
           }),
         }
       );
@@ -384,11 +425,20 @@ const ClipEdit = () => {
                   className="w-full h-full object-cover"
                   onLoadedMetadata={handleLoadedMetadata}
                   onTimeUpdate={handleTimeUpdate}
-                  onEnded={() => setPlaying(false)}
+                  onEnded={() => { setPlaying(false); }}
                   muted={muted}
                   playsInline
+                  preload="auto"
                 />
               )}
+              {/* Reload button — fixes freeze where audio continues but frame stalls */}
+              <button
+                onClick={handleReload}
+                className="absolute top-2 right-2 z-20 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
+                title="Reload video"
+              >
+                <RefreshCw className="w-3.5 h-3.5 text-white/80" />
+              </button>
               {currentGroup.length > 0 && (
                 <div className="absolute left-2 right-2 text-center pointer-events-none z-20" style={{ bottom: "20%" }}>
                   <div key={currentGroupKey} className="inline-flex flex-wrap justify-center gap-x-1.5 px-2 py-1.5 rounded-lg" style={{ background: captionStyle === "minimal" ? "rgba(0,0,0,0.45)" : "rgba(0,0,0,0.3)", backdropFilter: "blur(4px)", animation: "captionPop 0.2s ease-out" }}>
@@ -457,11 +507,20 @@ const ClipEdit = () => {
                     className="w-full h-full object-cover"
                     onLoadedMetadata={handleLoadedMetadata}
                     onTimeUpdate={handleTimeUpdate}
-                    onEnded={() => setPlaying(false)}
+                    onEnded={() => { setPlaying(false); }}
                     muted={muted}
                     playsInline
+                    preload="auto"
                   />
                 )}
+                {/* Reload button — fixes freeze */}
+                <button
+                  onClick={handleReload}
+                  className="absolute top-2 right-2 z-20 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
+                  title="Reload video"
+                >
+                  <RefreshCw className="w-3.5 h-3.5 text-white/80" />
+                </button>
 
                 {/* Caption overlay */}
                 {currentGroup.length > 0 && (
