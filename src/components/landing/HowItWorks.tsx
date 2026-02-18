@@ -1,27 +1,30 @@
 import { Upload, Cpu, Download } from "lucide-react";
-
-const steps = [
-  {
-    icon: Upload,
-    number: "01",
-    title: "Upload Your Video",
-    description: "Drag & drop your podcast, webinar, or long-form video. We support all major formats.",
-  },
-  {
-    icon: Cpu,
-    number: "02",
-    title: "AI Magic",
-    description: "Our AI analyzes engagement patterns and finds the 10 best viral-worthy moments automatically.",
-  },
-  {
-    icon: Download,
-    number: "03",
-    title: "Export Everywhere",
-    description: "Download clips with captions or post directly to TikTok, Reels, Shorts, and more.",
-  },
-];
+import { useTranslation } from "react-i18next";
 
 const HowItWorks = () => {
+  const { t } = useTranslation();
+
+  const steps = [
+    {
+      icon: Upload,
+      number: "01",
+      title: t('landing.howItWorks.step1Title'),
+      description: t('landing.howItWorks.step1Desc'),
+    },
+    {
+      icon: Cpu,
+      number: "02",
+      title: t('landing.howItWorks.step2Title'),
+      description: t('landing.howItWorks.step2Desc'),
+    },
+    {
+      icon: Download,
+      number: "03",
+      title: t('landing.howItWorks.step3Title'),
+      description: t('landing.howItWorks.step3Desc'),
+    },
+  ];
+
   return (
     <section id="how-it-works" className="py-28 relative overflow-hidden gradient-hero-bg">
       <div className="absolute inset-0 mesh-gradient opacity-50" />
@@ -29,17 +32,17 @@ const HowItWorks = () => {
       <div className="relative z-10 container mx-auto px-6">
         <div className="text-center mb-20">
           <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3 opacity-0 animate-fade-in">
-            How it works
+            {t('landing.howItWorks.label')}
           </p>
           <h2 className="text-3xl md:text-5xl font-bold text-foreground opacity-0 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-            Three steps to <span className="gradient-text">viral content</span>
+            {t('landing.howItWorks.heading')} <span className="gradient-text">{t('landing.howItWorks.headingAccent')}</span>
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {steps.map((step, i) => (
             <div
-              key={step.title}
+              key={step.number}
               className="relative group glass-card-hover rounded-2xl p-8 text-center opacity-0 animate-fade-in"
               style={{ animationDelay: `${0.2 + i * 0.15}s` }}
             >
