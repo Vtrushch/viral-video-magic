@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
+import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
 
 const scoreColor = (score: number) => {
   if (score >= 8) return "bg-accent/15 text-accent";
@@ -520,25 +521,14 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
                     style={{ background: "linear-gradient(180deg, hsl(240,15%,14%) 0%, hsl(240,15%,10%) 100%)" }}
                     onClick={() => setPreviewClip(clip)}
                   >
-                    {clip.status === "ready" && clip.file_path ? (
-                      <video
-                        src={clip.file_path}
-                        muted
-                        playsInline
-                        preload="metadata"
-                        onLoadedMetadata={(e) => {
-                          const v = e.currentTarget;
-                          v.currentTime = 1;
-                        }}
+                    <ClipVideoThumbnail
+                        renderedUrl={clip.status === "ready" && clip.file_path ? clip.file_path : null}
+                        filePath={clip.status !== "ready" ? video.file_path : null}
+                        startTime={clip.start_time}
+                        fallbackImageUrl={clip.thumbnail_url || video.thumbnail_url || null}
+                        alt={clip.title}
                         className="w-full h-full object-cover"
                       />
-                    ) : clip.thumbnail_url ? (
-                      <img src={clip.thumbnail_url} alt={clip.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Play className="w-5 h-5 text-muted-foreground/60" />
-                      </div>
-                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
                   </div>
 
@@ -576,17 +566,12 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
                       <Pencil className="w-3 h-3 mr-1" /> Edit
                     </Button>
                     {isReady && clip.file_path ? (
-                      <div className="flex flex-col gap-0.5">
-                        <a
-                          href={clip.file_path}
-                          download={`${clip.title}.mp4`}
-                          className="inline-flex items-center gap-1 h-7 px-2 text-xs text-accent hover:text-accent rounded-md hover:bg-accent/10 transition-colors"
-                          onClick={() => toast.info("Downloading clip...")}
-                        >
-                          <Download className="w-3 h-3" /> Download
-                        </a>
-                        <span className="text-[9px] text-muted-foreground/60 px-2 hidden sm:block">Long-press → "Save to Photos" on mobile</span>
-                      </div>
+                      <button
+                        className="inline-flex items-center gap-1 h-7 px-2 text-xs text-accent hover:text-accent rounded-md hover:bg-accent/10 transition-colors"
+                        onClick={() => handleDownload(clip)}
+                      >
+                        <Download className="w-3 h-3" /> Download
+                      </button>
                     ) : isFailed ? (
                       <Button
                         variant="ghost"
