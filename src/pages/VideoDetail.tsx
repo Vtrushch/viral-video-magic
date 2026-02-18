@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Play, Download, Star, Clock, Calendar, Settings2,
   Loader2, AlertCircle, HardDrive, RotateCcw, CheckCircle2, Sparkles,
-  Search, Zap, Film, ChevronRight, XCircle, Eye, Pencil, RefreshCw
+  Search, Zap, Film, ChevronRight, XCircle, Eye, Pencil, RefreshCw, Clapperboard
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
 import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
+import HighlightReelEditor from "@/components/dashboard/HighlightReelEditor";
+import HighlightReelCard from "@/components/dashboard/HighlightReelCard";
 
 const scoreColor = (score: number) => {
   if (score >= 8) return "bg-accent/15 text-accent";
@@ -322,6 +324,8 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
   const [renderingIds, setRenderingIds] = useState<Set<string>>(new Set());
   const [videoSignedUrl, setVideoSignedUrl] = useState<string | null>(null);
   const [playerPlaying, setPlayerPlaying] = useState(false);
+  const [showReelEditor, setShowReelEditor] = useState(false);
+  const [reels, setReels] = useState<any[]>([]);
   const mainVideoRef = useRef<HTMLVideoElement>(null);
   const settings = video.settings as any;
 
@@ -335,6 +339,16 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
         if (!error && data?.signedUrl) setVideoSignedUrl(data.signedUrl);
       });
   }, [video.file_path]);
+
+  // Load highlight reels for this video
+  useEffect(() => {
+    supabase
+      .from("highlight_reels" as any)
+      .select("*")
+      .eq("video_id", video.id)
+      .order("created_at", { ascending: false })
+      .then(({ data }) => { if (data) setReels(data); });
+  }, [video.id]);
 
   const toggleMainPlayer = () => {
     const el = mainVideoRef.current;
@@ -527,7 +541,17 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
             <span className="text-xs text-accent bg-accent/10 px-2 py-0.5 rounded-full">{readyCount} ready</span>
           )}
         </div>
-        <div className="flex gap-2 w-full sm:w-auto">
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+          {clips.length >= 2 && (
+            <Button
+              variant="hero-outline"
+              size="sm"
+              className="flex-1 sm:flex-none"
+              onClick={() => setShowReelEditor(true)}
+            >
+              <Clapperboard className="w-4 h-4 mr-1.5" /> Create Highlight Reel
+            </Button>
+          )}
           <Button
             variant="hero-outline"
             size="sm"
@@ -661,6 +685,46 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
         open={!!previewClip}
         onClose={() => setPreviewClip(null)}
       />
+
+      {/* Highlight Reel Editor */}
+      {showReelEditor && (
+        <HighlightReelEditor
+          video={video}
+          clips={clips}
+          onClose={() => setShowReelEditor(false)}
+        />
+      )}
+
+      {/* Highlight Reels Section */}
+      {(reels.length > 0 || clips.length >= 2) && (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Clapperboard className="w-4 h-4 text-primary" />
+            <h3 className="text-base font-semibold text-foreground">Highlight Reels</h3>
+            {reels.length > 0 && (
+              <span className="text-xs text-muted-foreground bg-muted/40 px-2 py-0.5 rounded-full">{reels.length}</span>
+            )}
+          </div>
+          {reels.length === 0 ? (
+            <div className="glass-card rounded-xl p-6 text-center">
+              <p className="text-sm text-muted-foreground mb-3">No highlight reels yet. Combine your best clips!</p>
+              <Button variant="hero-outline" size="sm" onClick={() => setShowReelEditor(true)}>
+                <Clapperboard className="w-4 h-4 mr-2" /> Create Your First Reel
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {reels.map((reel) => (
+                <HighlightReelCard
+                  key={reel.id}
+                  reel={reel}
+                  onDelete={(id) => setReels((prev) => prev.filter((r) => r.id !== id))}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

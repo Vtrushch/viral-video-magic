@@ -91,6 +91,62 @@ export type Database = {
           },
         ]
       }
+      highlight_reels: {
+        Row: {
+          add_transitions: boolean
+          caption_style: string
+          clip_ids: string[]
+          clip_order: number[]
+          created_at: string
+          duration_seconds: number | null
+          file_path: string | null
+          id: string
+          rendered_at: string | null
+          status: string
+          title: string
+          user_id: string
+          video_id: string
+        }
+        Insert: {
+          add_transitions?: boolean
+          caption_style?: string
+          clip_ids?: string[]
+          clip_order?: number[]
+          created_at?: string
+          duration_seconds?: number | null
+          file_path?: string | null
+          id?: string
+          rendered_at?: string | null
+          status?: string
+          title?: string
+          user_id: string
+          video_id: string
+        }
+        Update: {
+          add_transitions?: boolean
+          caption_style?: string
+          clip_ids?: string[]
+          clip_order?: number[]
+          created_at?: string
+          duration_seconds?: number | null
+          file_path?: string | null
+          id?: string
+          rendered_at?: string | null
+          status?: string
+          title?: string
+          user_id?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "highlight_reels_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
