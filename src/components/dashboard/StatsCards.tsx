@@ -1,5 +1,6 @@
 import { Video, Film, Calendar, HardDrive } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import { useTranslation } from "react-i18next";
 
 interface StatsCardsProps {
   videos: Tables<"videos">[];
@@ -12,8 +13,9 @@ const formatStorage = (bytes: number) => {
 };
 
 const StatsCards = ({ videos }: StatsCardsProps) => {
+  const { t } = useTranslation();
   const totalVideos = videos.length;
-  const totalClips = 0; // TODO: fetch from clips table
+  const totalClips = 0;
   const now = new Date();
   const thisMonth = videos.filter((v) => {
     const d = new Date(v.created_at);
@@ -22,10 +24,10 @@ const StatsCards = ({ videos }: StatsCardsProps) => {
   const totalStorage = videos.reduce((acc, v) => acc + (v.file_size || 0), 0);
 
   const stats = [
-    { icon: Video, label: "Total Videos", value: String(totalVideos) },
-    { icon: Film, label: "Total Clips", value: String(totalClips) },
-    { icon: Calendar, label: "This Month", value: String(thisMonth) },
-    { icon: HardDrive, label: "Storage Used", value: totalStorage > 0 ? formatStorage(totalStorage) : "0 MB" },
+    { icon: Video, label: t("stats.totalVideos"), value: String(totalVideos) },
+    { icon: Film, label: t("stats.totalClips"), value: String(totalClips) },
+    { icon: Calendar, label: t("stats.thisMonth"), value: String(thisMonth) },
+    { icon: HardDrive, label: t("stats.storageUsed"), value: totalStorage > 0 ? formatStorage(totalStorage) : "0 MB" },
   ];
 
   return (

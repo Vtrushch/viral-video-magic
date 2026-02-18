@@ -7,12 +7,14 @@ import UploadModal from "@/components/dashboard/UploadModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import type { Tables } from "@/integrations/supabase/types";
+import { useTranslation } from "react-i18next";
 
 const Dashboard = () => {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [videos, setVideos] = useState<Tables<"videos">[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const fetchVideos = async () => {
     if (!user) return;
@@ -67,12 +69,12 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold" style={{ color: "#fff" }}>Your Videos</h1>
-          <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>Manage and repurpose your content</p>
+          <h1 className="text-3xl font-bold" style={{ color: "#fff" }}>{t("dashboard.yourVideos")}</h1>
+          <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>{t("dashboard.manageContent")}</p>
         </div>
         <Button variant="hero" onClick={() => setUploadOpen(true)}>
           <Upload className="w-4 h-4 mr-2" />
-          Upload Video
+          {t("dashboard.uploadVideo")}
         </Button>
       </div>
 
@@ -94,11 +96,11 @@ const Dashboard = () => {
           <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: "linear-gradient(135deg, rgba(255,45,85,0.15), rgba(94,92,230,0.15))" }}>
             <Upload className="w-7 h-7" style={{ color: "#FF2D55" }} />
           </div>
-          <h3 className="text-lg font-semibold mb-1" style={{ color: "#fff" }}>No videos yet</h3>
-          <p className="text-sm mb-6" style={{ color: "rgba(255,255,255,0.5)" }}>Upload your first video to get started!</p>
+          <h3 className="text-lg font-semibold mb-1" style={{ color: "#fff" }}>{t("dashboard.noVideosYet")}</h3>
+          <p className="text-sm mb-6" style={{ color: "rgba(255,255,255,0.5)" }}>{t("dashboard.uploadFirst")}</p>
           <Button variant="hero" onClick={() => setUploadOpen(true)}>
             <Upload className="w-4 h-4 mr-2" />
-            Upload Video
+            {t("dashboard.uploadVideo")}
           </Button>
         </div>
       ) : (
@@ -128,7 +130,7 @@ const Dashboard = () => {
             <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 transition-colors" style={{ background: "linear-gradient(135deg, rgba(255,45,85,0.15), rgba(94,92,230,0.15))" }}>
               <Plus className="w-5 h-5 transition-colors" style={{ color: "#FF2D55" }} />
             </div>
-            <p className="text-sm transition-colors" style={{ color: "rgba(255,255,255,0.6)" }}>Upload a video</p>
+            <p className="text-sm transition-colors" style={{ color: "rgba(255,255,255,0.6)" }}>{t("dashboard.uploadAVideo")}</p>
           </button>
         </div>
       )}

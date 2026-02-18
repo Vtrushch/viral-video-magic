@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface VideoCardProps {
   id: string;
@@ -29,6 +30,8 @@ const formatFileSize = (bytes?: number) => {
 };
 
 const VideoCard = ({ id, title, duration, uploadDate, status, thumbnail, filePath, fileSize }: VideoCardProps) => {
+  const { t } = useTranslation();
+
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -38,6 +41,18 @@ const VideoCard = ({ id, title, duration, uploadDate, status, thumbnail, filePat
     } else {
       toast.success("Video deleted");
     }
+  };
+
+  const statusLabel = (s: string) => {
+    const map: Record<string, string> = {
+      uploading: t("videoCard.uploading"),
+      analyzing: t("videoCard.analyzing"),
+      ready: t("videoCard.ready"),
+      rendering: t("videoCard.rendering"),
+      failed: t("videoCard.failed"),
+      pending: t("videoCard.pending"),
+    };
+    return map[s] || s.charAt(0).toUpperCase() + s.slice(1);
   };
 
   return (
@@ -60,7 +75,7 @@ const VideoCard = ({ id, title, duration, uploadDate, status, thumbnail, filePat
         )}
         <div className="absolute top-3 right-3">
           <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[status]}`}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+            {statusLabel(status)}
           </span>
         </div>
         {duration && duration !== "—" && (
@@ -81,7 +96,7 @@ const VideoCard = ({ id, title, duration, uploadDate, status, thumbnail, filePat
         </div>
         <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
           <Button variant="ghost" size="sm" className="flex-1 text-xs" style={{ color: "rgba(255,255,255,0.7)" }} asChild>
-            <Link to={`/dashboard/videos/${id}`}>View Clips</Link>
+            <Link to={`/dashboard/videos/${id}`}>{t("videoCard.viewClips")}</Link>
           </Button>
           <Button variant="ghost" size="icon" className="hover:text-destructive h-8 w-8" style={{ color: "rgba(255,255,255,0.4)" }} onClick={handleDelete}>
             <Trash2 className="w-3.5 h-3.5" />

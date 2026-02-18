@@ -3,19 +3,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useCredits } from "@/hooks/useCredits";
 import {
-  Scissors, Video, Film, BarChart3, Settings, CreditCard, LogOut, ChevronLeft, ChevronRight, Shield, Sparkles,
+  Scissors, Video, Film, BarChart3, Settings, CreditCard, LogOut, ChevronLeft, ChevronRight, Shield, Sparkles, Globe,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-
-const menuItems = [
-  { icon: Video, label: "Videos", path: "/dashboard" },
-  { icon: Film, label: "Clips", path: "/dashboard/clips" },
-  { icon: BarChart3, label: "Analytics", path: "/dashboard/analytics" },
-  { icon: Settings, label: "Settings", path: "/dashboard/settings" },
-  { icon: CreditCard, label: "Upgrade", path: "/dashboard/upgrade" },
-];
+import { useTranslation } from "react-i18next";
+import { changeLanguage, LANGUAGES } from "@/i18n/i18n";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const DashboardSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -23,9 +18,19 @@ const DashboardSidebar = () => {
   const { isAdmin } = useAdminCheck();
   const { credits } = useCredits();
   const location = useLocation();
+  const { t, i18n } = useTranslation();
+
+  const menuItems = [
+    { icon: Video, label: t("nav.videos"), path: "/dashboard" },
+    { icon: Film, label: t("nav.clips"), path: "/dashboard/clips" },
+    { icon: BarChart3, label: t("nav.analytics"), path: "/dashboard/analytics" },
+    { icon: Settings, label: t("nav.settings"), path: "/dashboard/settings" },
+    { icon: CreditCard, label: t("nav.upgrade"), path: "/dashboard/upgrade" },
+  ];
 
   const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
   const avatar = user?.user_metadata?.avatar_url;
+  const currentLang = LANGUAGES.find((l) => l.code === i18n.language) || LANGUAGES[0];
 
   return (
     <>
@@ -58,14 +63,12 @@ const DashboardSidebar = () => {
               to="/dashboard/admin"
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all mb-2",
-                location.pathname === "/dashboard/admin"
-                  ? "font-medium"
-                  : "hover:bg-white/5"
+                location.pathname === "/dashboard/admin" ? "font-medium" : "hover:bg-white/5"
               )}
               style={location.pathname === "/dashboard/admin" ? { background: "linear-gradient(135deg, rgba(255,45,85,0.2), rgba(94,92,230,0.2))", color: "#fff" } : { color: "#FF2D55" }}
             >
               <Shield className="w-5 h-5 flex-shrink-0" />
-              {!collapsed && <span>Admin</span>}
+              {!collapsed && <span>{t("nav.admin")}</span>}
             </Link>
           )}
           {menuItems.map((item) => {
@@ -76,9 +79,7 @@ const DashboardSidebar = () => {
                 to={item.path}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
-                  isActive
-                    ? "font-medium"
-                    : "hover:bg-white/5"
+                  isActive ? "font-medium" : "hover:bg-white/5"
                 )}
                 style={isActive ? { background: "linear-gradient(135deg, rgba(255,45,85,0.2), rgba(94,92,230,0.2))", color: "#fff" } : { color: "#E5E5E5" }}
               >
@@ -94,7 +95,7 @@ const DashboardSidebar = () => {
           <div className="mx-2 mb-2 p-3 rounded-xl" style={{ background: "linear-gradient(135deg, rgba(255,45,85,0.1), rgba(94,92,230,0.1))", border: "1px solid rgba(255,45,85,0.15)" }}>
             <div className="flex items-center gap-2 mb-1">
               <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span className="text-xs font-semibold text-foreground">Credits</span>
+              <span className="text-xs font-semibold text-foreground">{t("nav.credits")}</span>
             </div>
             <p className="text-lg font-bold text-foreground">{credits.remaining}</p>
             <p className="text-[10px] text-muted-foreground">{credits.used_credits} used of {credits.total_credits}</p>
@@ -104,6 +105,70 @@ const DashboardSidebar = () => {
           <div className="mx-2 mb-2 flex flex-col items-center">
             <Sparkles className="w-4 h-4 text-primary mb-1" />
             <span className="text-xs font-bold text-foreground">{credits.remaining}</span>
+          </div>
+        )}
+
+        {/* Language Switcher */}
+        {!collapsed && (
+          <div className="mx-2 mb-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-sm"
+                  style={{ color: "rgba(255,255,255,0.6)" }}
+                >
+                  <Globe className="w-4 h-4 flex-shrink-0" />
+                  <span className="flex-1 text-left">{currentLang.flag} {currentLang.label}</span>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-44 p-1" align="start" side="top">
+                {LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => changeLanguage(lang.code)}
+                    className={cn(
+                      "w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors hover:bg-muted/30",
+                      i18n.language === lang.code ? "bg-primary/15 text-primary font-medium" : "text-foreground"
+                    )}
+                  >
+                    <span className="text-base">{lang.flag}</span>
+                    <span>{lang.name}</span>
+                    {i18n.language === lang.code && <span className="ml-auto text-[10px] text-primary">✓</span>}
+                  </button>
+                ))}
+              </PopoverContent>
+            </Popover>
+          </div>
+        )}
+        {collapsed && (
+          <div className="mx-2 mb-2 flex justify-center">
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white/5 transition-colors"
+                  style={{ color: "rgba(255,255,255,0.6)" }}
+                  title={t("language.selectLanguage")}
+                >
+                  <span className="text-base">{currentLang.flag}</span>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-44 p-1" align="start" side="right">
+                {LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => changeLanguage(lang.code)}
+                    className={cn(
+                      "w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors hover:bg-muted/30",
+                      i18n.language === lang.code ? "bg-primary/15 text-primary font-medium" : "text-foreground"
+                    )}
+                  >
+                    <span className="text-base">{lang.flag}</span>
+                    <span>{lang.name}</span>
+                    {i18n.language === lang.code && <span className="ml-auto text-[10px] text-primary">✓</span>}
+                  </button>
+                ))}
+              </PopoverContent>
+            </Popover>
           </div>
         )}
 
@@ -143,7 +208,7 @@ const DashboardSidebar = () => {
             style={{ color: "rgba(255,255,255,0.5)" }}
           >
             <LogOut className="w-4 h-4" />
-            {!collapsed && <span className="ml-2">Sign Out</span>}
+            {!collapsed && <span className="ml-2">{t("nav.signOut")}</span>}
           </Button>
         </div>
       </aside>
@@ -158,11 +223,11 @@ const DashboardSidebar = () => {
         }}
       >
         {[
-          { icon: Video, label: "Videos", path: "/dashboard" },
-          { icon: Film, label: "Clips", path: "/dashboard/clips" },
-          { icon: BarChart3, label: "Analytics", path: "/dashboard/analytics" },
-          { icon: Settings, label: "Settings", path: "/dashboard/settings" },
-          { icon: CreditCard, label: "Upgrade", path: "/dashboard/upgrade" },
+          { icon: Video, label: t("nav.videos"), path: "/dashboard" },
+          { icon: Film, label: t("nav.clips"), path: "/dashboard/clips" },
+          { icon: BarChart3, label: t("nav.analytics"), path: "/dashboard/analytics" },
+          { icon: Settings, label: t("nav.settings"), path: "/dashboard/settings" },
+          { icon: CreditCard, label: t("nav.upgrade"), path: "/dashboard/upgrade" },
         ].map((item) => {
           const isActive = location.pathname === item.path;
           return (
