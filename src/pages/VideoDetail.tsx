@@ -558,14 +558,17 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
                       <Pencil className="w-3 h-3 mr-1" /> Edit
                     </Button>
                     {isReady && clip.file_path ? (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 px-2 text-xs text-accent hover:text-accent"
-                        onClick={() => handleDownload(clip)}
-                      >
-                        <Download className="w-3 h-3 mr-1" /> Download
-                      </Button>
+                      <div className="flex flex-col gap-0.5">
+                        <a
+                          href={clip.file_path}
+                          download={`${clip.title}.mp4`}
+                          className="inline-flex items-center gap-1 h-7 px-2 text-xs text-accent hover:text-accent rounded-md hover:bg-accent/10 transition-colors"
+                          onClick={() => toast.info("Downloading clip...")}
+                        >
+                          <Download className="w-3 h-3" /> Download
+                        </a>
+                        <span className="text-[9px] text-muted-foreground/60 px-2 hidden sm:block">Long-press → "Save to Photos" on mobile</span>
+                      </div>
                     ) : isFailed ? (
                       <Button
                         variant="ghost"
@@ -656,6 +659,21 @@ const FailedState = ({ video }: { video: Tables<"videos"> }) => {
   );
 };
 
+/* ─── Helpers ─── */
+function getDisplayTitle(video: Tables<"videos">): string {
+  if (video.title && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(video.title)) {
+    return video.title;
+  }
+  if (video.file_path) {
+    const parts = video.file_path.split("/");
+    const filename = parts[parts.length - 1];
+    const nameWithoutExt = filename.replace(/\.[^/.]+$/, "");
+    const cleaned = nameWithoutExt.replace(/^\d+_/, "");
+    if (cleaned) return cleaned;
+  }
+  return "Untitled Video";
+}
+
 /* ─── Main Page ─── */
 const VideoDetail = () => {
   const { id } = useParams();
@@ -741,7 +759,7 @@ const VideoDetail = () => {
         >
           <ArrowLeft className="w-4 h-4" /> Back to videos
         </Link>
-        <h1 className="text-2xl font-bold text-foreground">{video.title}</h1>
+        <h1 className="text-2xl font-bold text-foreground">{getDisplayTitle(video)}</h1>
         <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-muted-foreground">
           {video.duration && (
             <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" />{video.duration}</span>
