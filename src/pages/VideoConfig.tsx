@@ -337,6 +337,12 @@ const VideoConfig = () => {
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             🎨 Caption Style
           </h2>
+          {/* Language auto-detection info badge */}
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs"
+            style={{ background: "hsl(var(--accent)/0.08)", border: "1px solid hsl(var(--accent)/0.2)" }}>
+            <Globe className="w-3.5 h-3.5 text-accent flex-shrink-0" />
+            <span className="text-accent/90">🌍 Language auto-detected — subtitles will match your video's language</span>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             {captionStyles.map((opt) => (
               <button

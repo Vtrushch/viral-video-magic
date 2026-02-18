@@ -33,7 +33,7 @@
       "pills": {
         "aiFinds": "IA encuentra momentos virales",
         "proCaptions": "Subtítulos pro en segundos",
-        "languages": "30+ idiomas",
+        "languages": "99 idiomas detectados",
         "export": "Exportar a todas partes"
       }
     },
@@ -57,10 +57,13 @@
       "feature1Desc": "La IA analiza patrones de engagement para encontrar los momentos más compartibles en tu contenido.",
       "feature2Title": "Subtítulos Automáticos",
       "feature2Desc": "Subtítulos animados profesionales generados automáticamente. Elige entre múltiples estilos.",
-      "feature3Title": "Multi-Idioma",
-      "feature3Desc": "Traduce y dobla tu contenido a más de 30 idiomas. Llega a una audiencia global sin esfuerzo.",
+      "feature3Title": "99 Idiomas",
+      "feature3Desc": "Traduce y dobla tu contenido a 99 idiomas. Llega a una audiencia global sin esfuerzo.",
+      "languagesBadge": "idiomas",
       "feature4Title": "Puntuación Viral",
-      "feature4Desc": "Cada clip obtiene una puntuación de potencial viral impulsada por IA para ayudarte a elegir los ganadores."
+      "feature4Desc": "Cada clip obtiene una puntuación de potencial viral impulsada por IA para ayudarte a elegir los ganadores.",
+      "feature5Title": "Detección Automática de Idioma",
+      "feature5Desc": "Sube videos en cualquier idioma — nuestra IA detecta y transcribe automáticamente en 99 idiomas incluyendo inglés, español, ucraniano, francés, alemán, portugués, japonés, coreano, árabe, hindi y más."
     },
     "pricing": {
       "label": "Precios",

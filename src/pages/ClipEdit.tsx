@@ -671,6 +671,28 @@ const ClipEdit = () => {
         {/* BOTTOM/RIGHT: Editor controls */}
         <div className="w-full lg:w-[40%] border-t lg:border-t-0 lg:border-l border-border/50 overflow-y-auto">
           <div className="p-4 sm:p-5 space-y-5">
+
+            {/* Detected language badge */}
+            {(() => {
+              const analysis = clip.viral_analysis as Record<string, unknown> | null;
+              const lang = analysis?.detected_language as string | undefined;
+              if (!lang) return null;
+              const langNames: Record<string, string> = {
+                en: "English", es: "Spanish", uk: "Ukrainian", fr: "French",
+                de: "German", pt: "Portuguese", ja: "Japanese", ko: "Korean",
+                ar: "Arabic", hi: "Hindi", zh: "Chinese", ru: "Russian",
+                it: "Italian", nl: "Dutch", pl: "Polish", tr: "Turkish",
+              };
+              const displayName = langNames[lang] || lang.toUpperCase();
+              return (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs"
+                  style={{ background: "hsl(var(--accent)/0.08)", border: "1px solid hsl(var(--accent)/0.2)" }}>
+                  <span>🌍</span>
+                  <span className="text-accent/90">Detected: <strong className="text-accent">{displayName}</strong></span>
+                </div>
+              );
+            })()}
+
             {/* 1. TIMELINE */}
             <div className="glass-card rounded-xl p-4 space-y-3">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
