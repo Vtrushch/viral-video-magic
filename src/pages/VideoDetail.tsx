@@ -515,14 +515,32 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
             <div key={clip.id} className="glass-card-hover rounded-xl p-4 space-y-3">
               <div className="flex gap-3">
                 {/* 9:16 thumbnail placeholder */}
-                <div
-                  className="w-16 h-28 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden relative cursor-pointer"
-                  style={{ background: "linear-gradient(180deg, hsl(240,15%,14%) 0%, hsl(240,15%,10%) 100%)" }}
-                  onClick={() => setPreviewClip(clip)}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
-                  <Play className="w-5 h-5 text-muted-foreground/60 relative z-10" />
-                </div>
+                  <div
+                    className="w-16 h-28 rounded-lg flex-shrink-0 overflow-hidden relative cursor-pointer"
+                    style={{ background: "linear-gradient(180deg, hsl(240,15%,14%) 0%, hsl(240,15%,10%) 100%)" }}
+                    onClick={() => setPreviewClip(clip)}
+                  >
+                    {clip.status === "ready" && clip.file_path ? (
+                      <video
+                        src={clip.file_path}
+                        muted
+                        playsInline
+                        preload="metadata"
+                        onLoadedMetadata={(e) => {
+                          const v = e.currentTarget;
+                          v.currentTime = 1;
+                        }}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : clip.thumbnail_url ? (
+                      <img src={clip.thumbnail_url} alt={clip.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Play className="w-5 h-5 text-muted-foreground/60" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
+                  </div>
 
                 {/* Info */}
                 <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
