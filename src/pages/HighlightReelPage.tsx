@@ -69,18 +69,22 @@ function SortableClipItem({
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{
+        ...style,
+        borderLeftColor: isActive ? "hsl(var(--primary))" : undefined,
+        borderLeftWidth: isActive ? "4px" : undefined,
+      }}
       className={`rounded-xl border transition-all overflow-hidden ${
         isActive
-          ? "border-primary/70 shadow-[0_0_16px_-4px_hsl(var(--primary)/0.4)] bg-primary/5"
+          ? "border-primary/70 shadow-[0_0_20px_-4px_hsl(var(--primary)/0.5)] bg-primary/5"
           : isDragging
           ? "border-primary/50 bg-primary/10"
-          : "border-border/40 bg-card/40 hover:border-border/60"
+          : "border-border/40 bg-card/40 hover:border-border/60 hover:bg-card/60"
       }`}
     >
       {/* Clickable preview area (thumbnail + info) */}
       <div
-        className="flex items-start gap-2 p-3 cursor-pointer select-none"
+        className="flex items-start gap-2 p-3 cursor-pointer select-none group/card"
         onClick={() => onClickPreview(clip)}
         title="Click to preview this clip"
       >
@@ -88,7 +92,7 @@ function SortableClipItem({
         <div
           {...attributes}
           {...listeners}
-          className="text-muted-foreground/50 hover:text-muted-foreground cursor-grab active:cursor-grabbing touch-none mt-1"
+          className="text-muted-foreground/50 hover:text-muted-foreground cursor-grab active:cursor-grabbing touch-none mt-1 shrink-0"
           onClick={(e) => e.stopPropagation()}
         >
           <GripVertical className="w-4 h-4" />
@@ -109,23 +113,57 @@ function SortableClipItem({
             alt={clip.title}
             className="w-full h-full object-cover"
           />
-          {/* Now playing indicator overlay */}
+          {/* Animated equalizer overlay when playing */}
           {isPlaying && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-              <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center">
-                <Play className="w-2 h-2 text-primary-foreground ml-0.5" />
+            <div className="absolute inset-0 flex items-end justify-center pb-1 bg-black/50">
+              <div className="flex items-end gap-[2px]">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="w-1 rounded-sm"
+                    style={{
+                      background: "hsl(var(--primary))",
+                      height: `${6 + i * 3}px`,
+                      animation: `equalizerBar${i} 0.6s ease-in-out infinite alternate`,
+                      animationDelay: `${(i - 1) * 0.15}s`,
+                    }}
+                  />
+                ))}
               </div>
+            </div>
+          )}
+          {/* Hover play hint when not active */}
+          {!isActive && !isPlaying && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover/card:bg-black/40 transition-colors">
+              <Play className="w-3 h-3 text-white opacity-0 group-hover/card:opacity-100 transition-opacity ml-0.5" />
             </div>
           )}
         </div>
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-            <p className="text-xs font-medium text-foreground truncate">{clip.title}</p>
-          </div>
-          <div className="flex items-center gap-1.5">
-            {isAiRecommended && (
+          <p className={`text-xs font-medium truncate mb-0.5 ${isActive ? "text-primary" : "text-foreground"}`}>
+            {clip.title}
+          </p>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {isActive && isPlaying ? (
+              /* Now Playing pill */
+              <span
+                className="inline-flex items-center gap-1 text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
+                style={{ background: "hsl(var(--primary)/0.2)", color: "hsl(var(--primary))", border: "1px solid hsl(var(--primary)/0.4)" }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                Now Playing
+              </span>
+            ) : isActive ? (
+              <span
+                className="inline-flex items-center gap-1 text-[9px] font-medium px-1.5 py-0.5 rounded-full"
+                style={{ background: "hsl(var(--primary)/0.12)", color: "hsl(var(--primary)/0.8)", border: "1px solid hsl(var(--primary)/0.25)" }}
+              >
+                Previewing
+              </span>
+            ) : null}
+            {isAiRecommended && !isActive && (
               <span className="inline-flex items-center gap-0.5 text-[9px] font-semibold px-1.5 py-0.5 rounded-md"
                 style={{ background: "hsl(var(--primary)/0.15)", color: "hsl(var(--primary))", border: "1px solid hsl(var(--primary)/0.3)" }}>
                 <Zap className="w-2 h-2" /> AI
@@ -134,26 +172,20 @@ function SortableClipItem({
             {clip.viral_score != null && (
               <span className="text-[9px] text-accent">⚡{clip.viral_score}</span>
             )}
-            {isRendered ? (
+            {!isActive && (isRendered ? (
               <span className="text-[9px] px-1 rounded" style={{ background: "hsl(var(--accent)/0.15)", color: "hsl(var(--accent))" }}>
                 ✓ rendered
               </span>
             ) : (
-              <span className="text-[9px] text-muted-foreground/50">source preview</span>
-            )}
+              <span className="text-[9px] text-muted-foreground/50">source</span>
+            ))}
           </div>
-          {isActive && isPlaying && (
-            <div className="flex items-center gap-1 mt-1">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              <span className="text-[9px] text-primary font-medium">Now Playing</span>
-            </div>
-          )}
         </div>
 
         {/* Remove — stops propagation */}
         <button
           onClick={(e) => { e.stopPropagation(); onRemove(clip.id); }}
-          className="text-muted-foreground/40 hover:text-destructive transition-colors shrink-0 mt-1"
+          className="text-muted-foreground/40 hover:text-destructive transition-colors shrink-0 mt-1 p-0.5 rounded"
         >
           <X className="w-3.5 h-3.5" />
         </button>
@@ -300,7 +332,10 @@ export default function HighlightReelPage() {
 
   /* ─── Derived ─── */
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      // Require pointer to move 8px before activating drag — lets clicks fire normally
+      activationConstraint: { distance: 8 },
+    }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
