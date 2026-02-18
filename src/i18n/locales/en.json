@@ -33,7 +33,7 @@
       "pills": {
         "aiFinds": "AI finds viral moments",
         "proCaptions": "Pro captions in seconds",
-        "languages": "30+ languages",
+        "languages": "99 languages auto-detected",
         "export": "Export everywhere"
       }
     },
@@ -57,10 +57,13 @@
       "feature1Desc": "AI analyzes engagement patterns to find the most shareable moments in your long-form content.",
       "feature2Title": "Auto Captions",
       "feature2Desc": "Professional animated captions generated automatically. Choose from multiple styles and animations.",
-      "feature3Title": "Multi-Language",
-      "feature3Desc": "Translate and dub your content into 30+ languages. Reach a global audience effortlessly.",
+      "feature3Title": "99 Languages",
+      "feature3Desc": "Translate and dub your content into 99 languages. Reach a global audience effortlessly.",
+      "languagesBadge": "languages",
       "feature4Title": "Viral Score",
-      "feature4Desc": "Each clip gets a viral potential score powered by AI to help you pick the winners."
+      "feature4Desc": "Each clip gets a viral potential score powered by AI to help you pick the winners.",
+      "feature5Title": "Auto Language Detection",
+      "feature5Desc": "Upload videos in any language — our AI automatically detects and transcribes in 99 languages including English, Spanish, Ukrainian, French, German, Portuguese, Japanese, Korean, Arabic, Hindi, and more."
     },
     "pricing": {
       "label": "Pricing",
