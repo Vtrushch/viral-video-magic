@@ -366,30 +366,16 @@ const ClipsLibrary = () => {
                 }}
                 onClick={() => navigate(`/dashboard/videos/edit/${clip.id}`)}
               >
-                {/* 9:16 Thumbnail — use rendered clip URL for "ready" clips */}
+              {/* 9:16 Thumbnail — use rendered clip for "ready", source video seek for pending */}
                 <div className="relative aspect-[9/16] overflow-hidden">
-                  {isReady && clip.file_path ? (
-                    <ClipVideoThumbnail
-                      renderedUrl={clip.file_path}
-                      fallbackImageUrl={clip.thumbnail_url || undefined}
-                      alt={clip.title}
-                      className="group-hover:scale-105 transition-transform duration-700 ease-out"
-                    />
-                  ) : clip.thumbnail_url ? (
-                    <img
-                      src={clip.thumbnail_url}
-                      alt={clip.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                    />
-                  ) : (
-                    <ClipVideoThumbnail
-                      filePath={videoMap[clip.video_id]?.file_path || null}
-                      startTime={clip.start_time}
-                      fallbackImageUrl={undefined}
-                      alt={clip.title}
-                      className="group-hover:scale-105 transition-transform duration-700 ease-out"
-                    />
-                  )}
+                  <ClipVideoThumbnail
+                    renderedUrl={isReady && clip.file_path ? clip.file_path : null}
+                    filePath={!isReady ? (videoMap[clip.video_id]?.file_path || null) : null}
+                    startTime={clip.start_time}
+                    fallbackImageUrl={clip.thumbnail_url || undefined}
+                    alt={clip.title}
+                    className="group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
 
                   {/* Gradient overlays */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/5 to-black/30 pointer-events-none" />
