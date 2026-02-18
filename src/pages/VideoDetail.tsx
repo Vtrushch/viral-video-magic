@@ -326,6 +326,7 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
   const [playerPlaying, setPlayerPlaying] = useState(false);
   const [showReelEditor, setShowReelEditor] = useState(false);
   const [reelEditorPreselect, setReelEditorPreselect] = useState<string[]>([]);
+  const [editingReel, setEditingReel] = useState<any | null>(null);
   const [reels, setReels] = useState<any[]>([]);
   const mainVideoRef = useRef<HTMLVideoElement>(null);
   const settings = video.settings as any;
@@ -341,39 +342,45 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
       });
   }, [video.file_path]);
 
-  // Load highlight reels for this video + realtime subscription
-  useEffect(() => {
-    supabase
+  // Load highlight reels for this video
+  const fetchReels = useCallback(async () => {
+    const { data } = await supabase
       .from("highlight_reels" as any)
       .select("*")
       .eq("video_id", video.id)
-      .order("created_at", { ascending: false })
-      .then(({ data }) => { if (data) setReels(data); });
-
-    // Realtime subscription for reel status changes
-    const channel = supabase
-      .channel(`reels-realtime-${video.id}`)
-      .on("postgres_changes", {
-        event: "*",
-        schema: "public",
-        table: "highlight_reels",
-        filter: `video_id=eq.${video.id}`,
-      }, (payload: any) => {
-        if (payload.eventType === "INSERT") {
-          setReels((prev) => [payload.new, ...prev]);
-        } else if (payload.eventType === "UPDATE") {
-          setReels((prev) => prev.map((r) => r.id === payload.new.id ? payload.new : r));
-          if (payload.new.status === "ready") {
-            toast.success(`Highlight reel ready: ${payload.new.title}`);
-          }
-        } else if (payload.eventType === "DELETE") {
-          setReels((prev) => prev.filter((r) => r.id !== payload.old.id));
-        }
-      })
-      .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
+      .order("created_at", { ascending: false });
+    if (data) setReels(data);
   }, [video.id]);
+
+  useEffect(() => {
+    fetchReels();
+  }, [fetchReels]);
+
+  // Poll every 5s for any reel that is still rendering/pending
+  useEffect(() => {
+    const hasActiveReel = reels.some((r) => r.status === "rendering" || r.status === "pending");
+    if (!hasActiveReel) return;
+    const interval = setInterval(async () => {
+      const { data } = await supabase
+        .from("highlight_reels" as any)
+        .select("*")
+        .eq("video_id", video.id)
+        .order("created_at", { ascending: false });
+      const freshReels = data as any[] | null;
+      if (!freshReels) return;
+      setReels((prev) => {
+        // detect newly ready reels for toast
+        prev.forEach((oldReel) => {
+          const updated = freshReels.find((r) => r.id === oldReel.id);
+          if (updated && updated.status === "ready" && oldReel.status !== "ready") {
+            toast.success(`🎬 Highlight reel ready: ${updated.title}`, { duration: 5000 });
+          }
+        });
+        return freshReels;
+      });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [video.id, reels]);
 
   const toggleMainPlayer = () => {
     const el = mainVideoRef.current;
@@ -385,28 +392,34 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
   // Sync clips from parent
   useEffect(() => { setClips(initialClips); }, [initialClips]);
 
-  // Realtime subscription for clip status changes
+  // Poll every 5s for any clip that is still rendering
   useEffect(() => {
-    const channel = supabase
-      .channel(`clips-realtime-${video.id}`)
-      .on("postgres_changes", {
-        event: "UPDATE",
-        schema: "public",
-        table: "clips",
-        filter: `video_id=eq.${video.id}`,
-      }, (payload: any) => {
-        const updated = payload.new as Tables<"clips">;
-        setClips(prev => prev.map(c => c.id === updated.id ? updated : c));
-        setRenderingIds(prev => { const n = new Set(prev); n.delete(updated.id); return n; });
-        if (updated.status === "ready") {
-          toast.success(`Clip ready: ${updated.title}`);
-        } else if (updated.status === "failed") {
-          toast.error(`Clip failed: ${updated.title}`);
-        }
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [video.id]);
+    const hasRenderingClip = clips.some((c) => c.status === "rendering") || renderingIds.size > 0;
+    if (!hasRenderingClip) return;
+    const interval = setInterval(async () => {
+      const { data } = await supabase
+        .from("clips")
+        .select("*")
+        .eq("video_id", video.id)
+        .order("viral_score", { ascending: false });
+      if (!data) return;
+      setClips((prev) => {
+        const updated = data as Tables<"clips">[];
+        updated.forEach((newClip) => {
+          const old = prev.find((c) => c.id === newClip.id);
+          if (old && old.status === "rendering" && newClip.status === "ready") {
+            toast.success(`✅ Clip ready: ${newClip.title}`);
+            setRenderingIds((ids) => { const n = new Set(ids); n.delete(newClip.id); return n; });
+          } else if (old && old.status === "rendering" && newClip.status === "failed") {
+            toast.error(`Clip failed: ${newClip.title}`);
+            setRenderingIds((ids) => { const n = new Set(ids); n.delete(newClip.id); return n; });
+          }
+        });
+        return updated;
+      });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [video.id, clips, renderingIds]);
 
   const renderClip = useCallback(async (clip: Tables<"clips">) => {
     if (!video.file_path) { toast.error("Video file not found"); return; }
@@ -736,7 +749,13 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
           video={video}
           clips={clips}
           initialSelectedIds={reelEditorPreselect}
-          onClose={() => { setShowReelEditor(false); setReelEditorPreselect([]); }}
+          editingReel={editingReel}
+          onClose={() => {
+            setShowReelEditor(false);
+            setReelEditorPreselect([]);
+            setEditingReel(null);
+            fetchReels();
+          }}
         />
       )}
 
@@ -764,6 +783,11 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
                   key={reel.id}
                   reel={reel}
                   onDelete={(id) => setReels((prev) => prev.filter((r) => r.id !== id))}
+                  onEdit={(r) => {
+                    setEditingReel(r);
+                    setReelEditorPreselect(r.clip_ids);
+                    setShowReelEditor(true);
+                  }}
                 />
               ))}
             </div>
