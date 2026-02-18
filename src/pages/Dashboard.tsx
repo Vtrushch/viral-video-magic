@@ -62,7 +62,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="p-6 lg:p-8 w-full overflow-x-hidden" style={{ background: "#0F0F1A", minHeight: "100vh" }}>
+    <div className="p-6 lg:p-8 w-full overflow-x-hidden animate-fade-in" style={{ background: "#0F0F1A", minHeight: "100vh" }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -82,7 +82,11 @@ const Dashboard = () => {
 
       {/* Video Grid */}
       {loading ? (
-        <div className="text-center py-16" style={{ color: "rgba(255,255,255,0.5)" }}>Loading...</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="rounded-2xl animate-pulse" style={{ background: "hsl(240,15%,10%)", height: "280px" }} />
+          ))}
+        </div>
       ) : videos.length === 0 ? (
         /* Empty state */
         <div className="flex flex-col items-center justify-center py-20 rounded-2xl border-2 border-dashed" style={{ borderColor: "rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.02)" }}>
@@ -97,7 +101,7 @@ const Dashboard = () => {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
           {videos.map((video) => (
             <VideoCard
               key={video.id}

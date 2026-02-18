@@ -195,9 +195,9 @@ const Admin = () => {
     d ? new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—";
 
   return (
-    <div className="p-6 lg:p-8 w-full overflow-x-hidden" style={{ background: "#0F0F1A", minHeight: "100vh" }}>
+    <div className="p-4 lg:p-8 w-full overflow-x-hidden animate-fade-in" style={{ background: "#0F0F1A", minHeight: "100vh" }}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Admin Panel</h1>
           <p className="text-sm mt-1 text-muted-foreground">Platform overview & management</p>

@@ -262,7 +262,7 @@ const VideoConfig = () => {
       : "hsl(240,15%,10%,0.4)";
 
   return (
-    <div className="p-6 lg:p-8 max-w-3xl mx-auto w-full">
+    <div className="p-6 lg:p-8 max-w-3xl mx-auto w-full animate-fade-in">
       {/* Back */}
       <Link
         to="/dashboard"
