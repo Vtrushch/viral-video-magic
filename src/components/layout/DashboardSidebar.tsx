@@ -157,32 +157,29 @@ const DashboardSidebar = () => {
           paddingBottom: "env(safe-area-inset-bottom, 0px)",
         }}
       >
-        {menuItems.slice(0, 4).map((item) => {
+        {[
+          { icon: Video, label: "Videos", path: "/dashboard" },
+          { icon: Film, label: "Clips", path: "/dashboard/clips" },
+          { icon: BarChart3, label: "Analytics", path: "/dashboard/analytics" },
+          { icon: Settings, label: "Settings", path: "/dashboard/settings" },
+          { icon: CreditCard, label: "Upgrade", path: "/dashboard/upgrade" },
+        ].map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <Link
               key={item.path}
               to={item.path}
-              className="flex-1 flex flex-col items-center justify-center py-3 gap-1 transition-all min-h-[56px]"
+              className="flex-1 flex flex-col items-center justify-center py-3 gap-1 transition-all min-h-[56px] relative"
               style={{ color: isActive ? "hsl(349,100%,59%)" : "rgba(255,255,255,0.5)" }}
             >
               <item.icon className="w-5 h-5" />
               <span className="text-[10px] font-medium">{item.label}</span>
               {isActive && (
-                <div className="absolute bottom-0 w-1 h-1 rounded-full bg-primary" />
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full bg-primary" />
               )}
             </Link>
           );
         })}
-        {/* Settings icon opens settings */}
-        <Link
-          to="/dashboard/settings"
-          className="flex-1 flex flex-col items-center justify-center py-3 gap-1 transition-all min-h-[56px]"
-          style={{ color: location.pathname === "/dashboard/settings" ? "hsl(349,100%,59%)" : "rgba(255,255,255,0.5)" }}
-        >
-          <Settings className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Settings</span>
-        </Link>
       </nav>
     </>
   );

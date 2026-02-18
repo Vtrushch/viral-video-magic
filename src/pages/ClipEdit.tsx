@@ -369,7 +369,63 @@ const ClipEdit = () => {
       <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-auto lg:overflow-hidden">
         {/* TOP/LEFT: Video preview */}
         <div className="w-full lg:w-[60%] flex items-center justify-center p-4 sm:p-6 bg-background/50 flex-shrink-0 lg:flex-shrink">
-          <div className="relative flex-shrink-0">
+          {/* Mobile: plain video player, no phone frame */}
+          <div className="relative w-full max-w-[340px] block sm:hidden">
+            <div className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-black">
+              {loading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
+                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
+              {signedUrl && (
+                <video
+                  ref={videoRef}
+                  src={signedUrl}
+                  className="w-full h-full object-cover"
+                  onLoadedMetadata={handleLoadedMetadata}
+                  onTimeUpdate={handleTimeUpdate}
+                  onEnded={() => setPlaying(false)}
+                  muted={muted}
+                  playsInline
+                />
+              )}
+              {currentGroup.length > 0 && (
+                <div className="absolute left-2 right-2 text-center pointer-events-none z-20" style={{ bottom: "20%" }}>
+                  <div key={currentGroupKey} className="inline-flex flex-wrap justify-center gap-x-1.5 px-2 py-1.5 rounded-lg" style={{ background: captionStyle === "minimal" ? "rgba(0,0,0,0.45)" : "rgba(0,0,0,0.3)", backdropFilter: "blur(4px)", animation: "captionPop 0.2s ease-out" }}>
+                    {currentGroup.map((w, wi) => {
+                      const isActive = currentTime >= w.start && currentTime < w.end + 0.05;
+                      if (captionStyle === "hormozi") return <span key={wi} style={{ fontFamily: "Impact, 'Arial Black', sans-serif", fontWeight: 900, fontSize: "1.2rem", color: isActive ? "#FFD600" : "#FFFFFF", textShadow: "2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000", textTransform: "uppercase", letterSpacing: "0.04em", transform: isActive ? "scale(1.15)" : "scale(1)", transition: "transform 0.15s ease, color 0.1s ease", display: "inline-block" }}>{w.word}</span>;
+                      if (captionStyle === "mrbeast") { const isRed = wi % 2 === 0; return <span key={wi} style={{ fontWeight: 900, fontSize: "1.25rem", color: isActive ? (isRed ? "#FF3333" : "#FFFFFF") : (isRed ? "#FF6666" : "rgba(255,255,255,0.7)"), textShadow: "0 2px 10px rgba(0,0,0,0.8)", textTransform: "uppercase", transform: isActive ? "scale(1.18)" : "scale(1)", transition: "transform 0.15s ease, color 0.1s ease", display: "inline-block" }}>{w.word}</span>; }
+                      return <span key={wi} style={{ fontWeight: isActive ? 600 : 400, fontSize: "0.95rem", color: isActive ? "#FFFFFF" : "rgba(255,255,255,0.65)", textShadow: "0 1px 6px rgba(0,0,0,0.4)", transform: isActive ? "scale(1.08)" : "scale(1)", display: "inline-block" }}>{w.word}</span>;
+                    })}
+                  </div>
+                </div>
+              )}
+              {!playing && !loading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer" onClick={togglePlay}>
+                  <div className="w-14 h-14 rounded-full gradient-bg flex items-center justify-center shadow-lg glow-primary hover:scale-110 transition-transform">
+                    <Play className="w-6 h-6 text-primary-foreground ml-0.5" />
+                  </div>
+                </div>
+              )}
+              <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent z-10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <button onClick={togglePlay} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+                      {playing ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-white ml-0.5" />}
+                    </button>
+                    <button onClick={() => setMuted(!muted)} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+                      {muted ? <VolumeX className="w-4 h-4 text-white" /> : <Volume2 className="w-4 h-4 text-white" />}
+                    </button>
+                  </div>
+                  <span className="text-xs text-white/80 font-mono">{formatTime(Math.max(0, currentTime - clipStart))} / {formatTime(clipDuration)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop: phone mockup */}
+          <div className="relative flex-shrink-0 hidden sm:block">
             {/* Phone mockup */}
             <div
               className="relative rounded-[2.5rem] p-3 w-[280px]"
@@ -407,7 +463,7 @@ const ClipEdit = () => {
                   />
                 )}
 
-                {/* Caption overlay — 3-word group with per-word highlight */}
+                {/* Caption overlay */}
                 {currentGroup.length > 0 && (
                   <div
                     className="absolute left-2 right-2 text-center pointer-events-none z-20"
@@ -429,7 +485,6 @@ const ClipEdit = () => {
                         const isActive =
                           currentTime >= w.start && currentTime < w.end + 0.05;
 
-                        // Hormozi: white base, current word YELLOW
                         if (captionStyle === "hormozi") {
                           return (
                             <span
@@ -453,7 +508,6 @@ const ClipEdit = () => {
                           );
                         }
 
-                        // MrBeast: ALL CAPS, alternating RED/WHITE
                         if (captionStyle === "mrbeast") {
                           const isRed = wi % 2 === 0;
                           return (
@@ -483,7 +537,6 @@ const ClipEdit = () => {
                           );
                         }
 
-                        // Minimal: clean white, subtle
                         return (
                           <span
                             key={wi}
@@ -553,7 +606,7 @@ const ClipEdit = () => {
                 </div>
               </div>
             </div>
-        </div>
+          </div>
         </div>
 
         {/* BOTTOM/RIGHT: Editor controls */}
@@ -636,13 +689,39 @@ const ClipEdit = () => {
                 </div>
               </div>
 
-              {/* Time display */}
-              <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
-                <span className="text-primary">{formatTime(clipStart)}</span>
-                <span className="text-foreground/50">
-                  Duration: {formatTime(clipDuration)}
-                </span>
-                <span className="text-primary">{formatTime(clipEnd)}</span>
+              {/* Time display with ±1s buttons */}
+              <div className="flex items-center justify-between gap-2 text-xs font-mono">
+                {/* Start time controls */}
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setClipStart(s => Math.max(0, s - 1))}
+                    className="w-7 h-7 rounded-md border border-border/50 hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all flex items-center justify-center text-[10px] font-bold"
+                    title="Start -1s"
+                  >−1s</button>
+                  <span className="text-primary min-w-[56px] text-center">{formatTime(clipStart)}</span>
+                  <button
+                    onClick={() => setClipStart(s => Math.min(clipEnd - 0.5, s + 1))}
+                    className="w-7 h-7 rounded-md border border-border/50 hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all flex items-center justify-center text-[10px] font-bold"
+                    title="Start +1s"
+                  >+1s</button>
+                </div>
+
+                <span className="text-foreground/50 text-[10px]">{formatTime(clipDuration)}</span>
+
+                {/* End time controls */}
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setClipEnd(e => Math.max(clipStart + 0.5, e - 1))}
+                    className="w-7 h-7 rounded-md border border-border/50 hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all flex items-center justify-center text-[10px] font-bold"
+                    title="End -1s"
+                  >−1s</button>
+                  <span className="text-primary min-w-[56px] text-center">{formatTime(clipEnd)}</span>
+                  <button
+                    onClick={() => setClipEnd(e => Math.min(totalDuration, e + 1))}
+                    className="w-7 h-7 rounded-md border border-border/50 hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all flex items-center justify-center text-[10px] font-bold"
+                    title="End +1s"
+                  >+1s</button>
+                </div>
               </div>
             </div>
 

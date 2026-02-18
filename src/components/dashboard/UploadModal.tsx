@@ -57,6 +57,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
     setProgress(10);
 
     try {
+      const cleanTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]+/g, " ").trim();
       const fileName = `${user.id}/${Date.now()}_${file.name}`;
       const { error: uploadError } = await supabase.storage
         .from("raw-videos")
@@ -67,7 +68,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
 
       const { data: videoData, error: dbError } = await supabase.from("videos").insert({
         user_id: user.id,
-        title: file.name.replace(/\.[^/.]+$/, ""),
+        title: cleanTitle || file.name,
         file_path: fileName,
         file_size: file.size,
         status: "uploaded",
