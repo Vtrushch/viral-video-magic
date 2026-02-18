@@ -16,6 +16,7 @@ import Admin from "./pages/Admin";
 import Upgrade from "./pages/Upgrade";
 import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
+import HighlightReelPage from "./pages/HighlightReelPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import DashboardLayout from "./components/layout/DashboardLayout";
 
@@ -48,6 +49,8 @@ const App = () => (
             <Route path="analytics" element={<Analytics />} />
             <Route path="upgrade" element={<Upgrade />} />
             <Route path="admin" element={<Admin />} />
+            <Route path="highlight-reel/new/:videoId" element={<HighlightReelPage />} />
+            <Route path="highlight-reel/edit/:reelId" element={<HighlightReelPage />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

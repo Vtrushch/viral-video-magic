@@ -14,7 +14,6 @@ import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
 import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
-import HighlightReelEditor from "@/components/dashboard/HighlightReelEditor";
 import HighlightReelCard from "@/components/dashboard/HighlightReelCard";
 
 const scoreColor = (score: number) => {
@@ -324,9 +323,6 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
   const [renderingIds, setRenderingIds] = useState<Set<string>>(new Set());
   const [videoSignedUrl, setVideoSignedUrl] = useState<string | null>(null);
   const [playerPlaying, setPlayerPlaying] = useState(false);
-  const [showReelEditor, setShowReelEditor] = useState(false);
-  const [reelEditorPreselect, setReelEditorPreselect] = useState<string[]>([]);
-  const [editingReel, setEditingReel] = useState<any | null>(null);
   const [reels, setReels] = useState<any[]>([]);
   const mainVideoRef = useRef<HTMLVideoElement>(null);
   const settings = video.settings as any;
@@ -586,15 +582,7 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
                 variant="hero-outline"
                 size="sm"
                 className="flex-1 sm:flex-none"
-                onClick={() => {
-                  const top3 = [...clips]
-                    .filter((c) => c.viral_score != null)
-                    .sort((a, b) => (b.viral_score ?? 0) - (a.viral_score ?? 0))
-                    .slice(0, 3)
-                    .map((c) => c.id);
-                  setReelEditorPreselect(top3);
-                  setShowReelEditor(true);
-                }}
+                onClick={() => navigate(`/dashboard/highlight-reel/new/${video.id}`)}
                 title="Quick Reel — AI picks best clips"
               >
                 <Zap className="w-4 h-4 mr-1.5" /> Quick Reel
@@ -603,7 +591,7 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
                 variant="hero-outline"
                 size="sm"
                 className="flex-1 sm:flex-none"
-                onClick={() => { setReelEditorPreselect([]); setShowReelEditor(true); }}
+                onClick={() => navigate(`/dashboard/highlight-reel/new/${video.id}`)}
               >
                 <Clapperboard className="w-4 h-4 mr-1.5" /> Create Highlight Reel
               </Button>
@@ -743,22 +731,6 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
         onClose={() => setPreviewClip(null)}
       />
 
-      {/* Highlight Reel Editor */}
-      {showReelEditor && (
-        <HighlightReelEditor
-          video={video}
-          clips={clips}
-          initialSelectedIds={reelEditorPreselect}
-          editingReel={editingReel}
-          onClose={() => {
-            setShowReelEditor(false);
-            setReelEditorPreselect([]);
-            setEditingReel(null);
-            fetchReels();
-          }}
-        />
-      )}
-
       {/* Highlight Reels Section */}
       {(reels.length > 0 || clips.length >= 2) && (
         <div className="space-y-3">
@@ -772,7 +744,7 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
           {reels.length === 0 ? (
             <div className="glass-card rounded-xl p-6 text-center">
               <p className="text-sm text-muted-foreground mb-3">No highlight reels yet. Combine your best clips!</p>
-              <Button variant="hero-outline" size="sm" onClick={() => { setReelEditorPreselect([]); setShowReelEditor(true); }}>
+              <Button variant="hero-outline" size="sm" onClick={() => navigate(`/dashboard/highlight-reel/new/${video.id}`)}>
                 <Clapperboard className="w-4 h-4 mr-2" /> Create Your First Reel
               </Button>
             </div>
@@ -783,11 +755,7 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
                   key={reel.id}
                   reel={reel}
                   onDelete={(id) => setReels((prev) => prev.filter((r) => r.id !== id))}
-                  onEdit={(r) => {
-                    setEditingReel(r);
-                    setReelEditorPreselect(r.clip_ids);
-                    setShowReelEditor(true);
-                  }}
+                  onEdit={(r) => navigate(`/dashboard/highlight-reel/edit/${r.id}`)}
                 />
               ))}
             </div>
