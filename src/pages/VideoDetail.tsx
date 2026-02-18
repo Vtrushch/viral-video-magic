@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import {
   ArrowLeft, Play, Download, Star, Clock, Calendar, Settings2,
   Loader2, AlertCircle, HardDrive, RotateCcw, CheckCircle2, Sparkles,
@@ -317,7 +317,28 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
   const [clips, setClips] = useState(initialClips);
   const [previewClip, setPreviewClip] = useState<Tables<"clips"> | null>(null);
   const [renderingIds, setRenderingIds] = useState<Set<string>>(new Set());
+  const [videoSignedUrl, setVideoSignedUrl] = useState<string | null>(null);
+  const [playerPlaying, setPlayerPlaying] = useState(false);
+  const mainVideoRef = useRef<HTMLVideoElement>(null);
   const settings = video.settings as any;
+
+  // Load signed URL for main video player
+  useEffect(() => {
+    if (!video.file_path) return;
+    supabase.storage
+      .from("raw-videos")
+      .createSignedUrl(video.file_path, 3600)
+      .then(({ data, error }) => {
+        if (!error && data?.signedUrl) setVideoSignedUrl(data.signedUrl);
+      });
+  }, [video.file_path]);
+
+  const toggleMainPlayer = () => {
+    const el = mainVideoRef.current;
+    if (!el) return;
+    if (playerPlaying) { el.pause(); setPlayerPlaying(false); }
+    else { el.play().catch(() => {}); setPlayerPlaying(true); }
+  };
 
   // Sync clips from parent
   useEffect(() => { setClips(initialClips); }, [initialClips]);
@@ -440,38 +461,57 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
 
   return (
     <div className="space-y-6">
-      {/* Video thumbnail with play overlay */}
+      {/* Video player */}
       <div className="glass-card rounded-2xl overflow-hidden">
-        <div className="aspect-video relative">
-          {video.thumbnail_url ? (
+        <div className="aspect-video relative bg-black">
+          {videoSignedUrl ? (
+            <video
+              ref={mainVideoRef}
+              src={videoSignedUrl}
+              className="w-full h-full object-contain"
+              onEnded={() => setPlayerPlaying(false)}
+              onPause={() => setPlayerPlaying(false)}
+              onPlay={() => setPlayerPlaying(true)}
+              playsInline
+              preload="auto"
+              controls={playerPlaying}
+            />
+          ) : video.thumbnail_url ? (
             <img src={video.thumbnail_url} alt={video.title} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full bg-muted/30 flex items-center justify-center">
               <Film className="w-12 h-12 text-muted-foreground/30" />
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-16 h-16 rounded-full gradient-bg flex items-center justify-center cursor-pointer hover:scale-110 transition-transform glow-primary">
-              <Play className="w-6 h-6 text-primary-foreground ml-1" />
-            </div>
-          </div>
-          {/* Bottom overlay info */}
-          <div className="absolute bottom-0 left-0 right-0 p-5">
-            <div className="flex items-end justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-foreground">{video.title}</h2>
-                <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-                  {video.duration_seconds && (
-                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatDuration(video.duration_seconds)}</span>
-                  )}
-                  <span className="flex items-center gap-1"><HardDrive className="w-3 h-3" />{formatBytes(video.file_size)}</span>
-                  <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{formatDate(video.created_at)}</span>
+          {!playerPlaying && (
+            <>
+              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div
+                  className="w-16 h-16 rounded-full gradient-bg flex items-center justify-center cursor-pointer hover:scale-110 transition-transform glow-primary"
+                  onClick={toggleMainPlayer}
+                >
+                  <Play className="w-6 h-6 text-primary-foreground ml-1" />
                 </div>
               </div>
-              <Badge className="bg-accent/15 text-accent border-accent/20 border text-xs">Ready</Badge>
-            </div>
-          </div>
+              {/* Bottom overlay info */}
+              <div className="absolute bottom-0 left-0 right-0 p-5 pointer-events-none">
+                <div className="flex items-end justify-between">
+                  <div>
+                    <h2 className="text-lg font-bold text-foreground">{video.title}</h2>
+                    <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+                      {video.duration_seconds && (
+                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatDuration(video.duration_seconds)}</span>
+                      )}
+                      <span className="flex items-center gap-1"><HardDrive className="w-3 h-3" />{formatBytes(video.file_size)}</span>
+                      <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{formatDate(video.created_at)}</span>
+                    </div>
+                  </div>
+                  <Badge className="bg-accent/15 text-accent border-accent/20 border text-xs">Ready</Badge>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
