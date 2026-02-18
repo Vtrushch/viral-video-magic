@@ -281,5 +281,23 @@
     "en": "Inglés",
     "es": "Español",
     "uk": "Ucraniano"
+  },
+  "highlightReel": {
+    "create": "Crear Compilación",
+    "editor": "Editor de Compilación",
+    "reels": "Compilaciones",
+    "quickReel": "Compilación Rápida",
+    "aiRecommended": "Recomendado por IA",
+    "combineClips": "Combina tus mejores clips",
+    "createFirst": "Crea Tu Primera Compilación",
+    "noReelsYet": "Sin compilaciones aún",
+    "rendering": "Renderizando...",
+    "availableClips": "Clips Disponibles",
+    "selected": "Seleccionados",
+    "addClipsFromLeft": "Agrega clips desde la izquierda",
+    "reelTitle": "Título de la Compilación",
+    "transitions": "Transiciones",
+    "crossfade": "Fundido cruzado",
+    "createReel": "Crear Compilación"
   }
 }
