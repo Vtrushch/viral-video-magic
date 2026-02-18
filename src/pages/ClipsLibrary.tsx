@@ -246,7 +246,7 @@ const ClipsLibrary = () => {
   }
 
   return (
-    <div className="p-6 lg:p-8 w-full overflow-x-hidden" style={{ background: "#0F0F1A", minHeight: "100vh" }}>
+    <div className="p-4 sm:p-6 lg:p-8 w-full overflow-x-hidden animate-fade-in" style={{ background: "#0F0F1A", minHeight: "100vh" }}>
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
@@ -346,7 +346,7 @@ const ClipsLibrary = () => {
         </div>
       ) : (
         /* Clip Grid */
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
           {filteredClips.map((clip) => {
             const status = STATUS_CONFIG[clip.status] || STATUS_CONFIG.pending;
             const scoreStyle = getScoreStyle(clip.viral_score);

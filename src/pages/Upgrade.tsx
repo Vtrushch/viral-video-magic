@@ -45,7 +45,7 @@ const Upgrade = () => {
   const { credits, loading } = useCredits();
 
   return (
-    <div className="p-6 lg:p-8 w-full" style={{ minHeight: "100vh" }}>
+    <div className="p-6 lg:p-8 w-full animate-fade-in" style={{ minHeight: "100vh", background: "#0F0F1A" }}>
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10">

@@ -157,7 +157,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={handleCancel}>
-      <DialogContent className="sm:max-w-lg dark">
+      <DialogContent className="w-full max-w-lg mx-auto dark sm:rounded-2xl rounded-none sm:top-1/2 top-auto bottom-0 translate-y-0 sm:-translate-y-1/2 sm:left-1/2 sm:-translate-x-1/2 fixed">
         <DialogHeader>
           <DialogTitle>Add Video</DialogTitle>
         </DialogHeader>
@@ -176,7 +176,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
           <TabsContent value="upload">
             {!file ? (
               <div
-                className={`border-2 border-dashed rounded-xl p-12 text-center transition-colors cursor-pointer ${
+                className={`border-2 border-dashed rounded-xl p-10 sm:p-12 text-center transition-colors cursor-pointer ${
                   dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
                 }`}
                 onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
@@ -185,7 +185,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
                 onClick={() => inputRef.current?.click()}
               >
                 <Upload className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                <p className="text-sm font-medium mb-1">Drag & drop your video here</p>
+                <p className="text-sm font-medium mb-1">Tap to select or drag & drop</p>
                 <p className="text-xs text-muted-foreground">MP4, MOV, AVI, WebM up to 2GB</p>
                 <input
                   ref={inputRef}
@@ -220,10 +220,10 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
                 )}
 
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={handleCancel} className="flex-1" disabled={uploading}>
+                  <Button variant="outline" onClick={handleCancel} className="flex-1 min-h-[44px]" disabled={uploading}>
                     Cancel
                   </Button>
-                  <Button variant="hero" onClick={handleUpload} className="flex-1" disabled={uploading}>
+                  <Button variant="hero" onClick={handleUpload} className="flex-1 min-h-[44px]" disabled={uploading}>
                     {uploading ? "Uploading..." : "Upload"}
                   </Button>
                 </div>
@@ -248,13 +248,13 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
               </div>
 
               <div className="flex gap-2">
-                <Button variant="outline" onClick={handleCancel} className="flex-1" disabled={importing}>
+                <Button variant="outline" onClick={handleCancel} className="flex-1 min-h-[44px]" disabled={importing}>
                   Cancel
                 </Button>
                 <Button
                   variant="hero"
                   onClick={handleYouTubeImport}
-                  className="flex-1"
+                  className="flex-1 min-h-[44px]"
                   disabled={importing || !youtubeUrl.trim()}
                 >
                   {importing ? (

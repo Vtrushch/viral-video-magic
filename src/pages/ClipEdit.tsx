@@ -336,47 +336,39 @@ const ClipEdit = () => {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex flex-col min-h-full" style={{ background: "#0F0F1A" }}>
       {/* Header */}
-      <div className="flex items-center gap-3 p-4 border-b border-border/50">
+      <div className="flex items-center gap-2 p-3 sm:p-4 border-b border-border/50 flex-shrink-0">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => navigate(`/dashboard/videos/review/${video.id}`)}
+          className="shrink-0"
         >
-          <ArrowLeft className="w-4 h-4 mr-1" /> Back to Review
+          <ArrowLeft className="w-4 h-4 sm:mr-1" />
+          <span className="hidden sm:inline">Back</span>
         </Button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-lg font-bold truncate">
-            <span className="gradient-text">Remix Mode</span> — {clip.title}
+          <h1 className="text-sm sm:text-lg font-bold truncate">
+            <span className="gradient-text">Remix</span> — {clip.title}
           </h1>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleSave}
-            disabled={saving}
-          >
-            <Save className="w-4 h-4 mr-1" />
-            {saving ? "Saving..." : "Save Changes"}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <Button variant="outline" size="sm" onClick={handleSave} disabled={saving} className="min-h-[36px]">
+            <Save className="w-4 h-4 sm:mr-1" />
+            <span className="hidden sm:inline">{saving ? "Saving..." : "Save"}</span>
           </Button>
-          <Button
-            variant="hero"
-            size="sm"
-            onClick={handleRender}
-            disabled={rendering}
-          >
-            <Zap className="w-4 h-4 mr-1" />
-            {rendering ? "Rendering..." : "Render This Clip"}
+          <Button variant="hero" size="sm" onClick={handleRender} disabled={rendering} className="min-h-[36px]">
+            <Zap className="w-4 h-4 sm:mr-1" />
+            <span className="hidden sm:inline">{rendering ? "Rendering..." : "Render"}</span>
           </Button>
         </div>
       </div>
 
-      {/* Main editor area */}
-      <div className="flex-1 flex min-h-0 overflow-hidden">
-        {/* LEFT: Video preview 60% */}
-        <div className="w-[60%] flex items-center justify-center p-6 bg-background/50">
+      {/* Main editor area — vertical on mobile, horizontal on desktop */}
+      <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-auto lg:overflow-hidden">
+        {/* TOP/LEFT: Video preview */}
+        <div className="w-full lg:w-[60%] flex items-center justify-center p-4 sm:p-6 bg-background/50 flex-shrink-0 lg:flex-shrink">
           <div className="relative flex-shrink-0">
             {/* Phone mockup */}
             <div
@@ -561,85 +553,87 @@ const ClipEdit = () => {
                 </div>
               </div>
             </div>
-          </div>
+        </div>
         </div>
 
-        {/* RIGHT: Editor controls 40% */}
-        <div className="w-[40%] border-l border-border/50 overflow-y-auto">
-          <div className="p-5 space-y-5">
+        {/* BOTTOM/RIGHT: Editor controls */}
+        <div className="w-full lg:w-[40%] border-t lg:border-t-0 lg:border-l border-border/50 overflow-y-auto">
+          <div className="p-4 sm:p-5 space-y-5">
             {/* 1. TIMELINE */}
             <div className="glass-card rounded-xl p-4 space-y-3">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                 Timeline
               </h3>
 
-              {/* Waveform-style timeline */}
-              <div
-                ref={timelineRef}
-                className="relative h-16 rounded-lg overflow-hidden cursor-crosshair"
-                style={{ background: "hsl(240,15%,8%)" }}
-              >
-                {/* Fake waveform bars */}
-                <div className="absolute inset-0 flex items-center gap-px px-1">
-                  {Array.from({ length: 80 }).map((_, i) => {
-                    const pct = (i / 80) * 100;
-                    const inRange = pct >= startPct && pct <= endPct;
-                    const h = 15 + Math.sin(i * 0.7) * 25 + Math.cos(i * 1.3) * 15;
-                    return (
-                      <div
-                        key={i}
-                        className="flex-1 rounded-sm transition-colors duration-150"
-                        style={{
-                          height: `${Math.max(8, h)}%`,
-                          background: inRange
-                            ? "hsl(349, 100%, 59%)"
-                            : "hsl(240,15%,20%)",
-                          opacity: inRange ? 0.8 : 0.4,
-                        }}
-                      />
-                    );
-                  })}
-                </div>
-
-                {/* Selected region overlay */}
+              {/* Waveform-style timeline — horizontal scroll on mobile */}
+              <div className="overflow-x-auto">
                 <div
-                  className="absolute top-0 bottom-0 border-y-2 border-primary/60"
-                  style={{
-                    left: `${startPct}%`,
-                    width: `${endPct - startPct}%`,
-                    background: "hsl(349,100%,59%,0.08)",
-                  }}
-                />
-
-                {/* Start handle */}
-                <div
-                  className="absolute top-0 bottom-0 w-3 cursor-col-resize z-10 group flex items-center justify-center"
-                  style={{ left: `calc(${startPct}% - 6px)` }}
-                  onMouseDown={(e) => handleTimelineMouseDown(e, "start")}
+                  ref={timelineRef}
+                  className="relative h-16 rounded-lg overflow-hidden cursor-crosshair"
+                  style={{ background: "hsl(240,15%,8%)", minWidth: "280px" }}
                 >
-                  <div className="w-1 h-full bg-primary rounded-full group-hover:w-1.5 transition-all shadow-[0_0_8px_hsl(349,100%,59%,0.5)]" />
-                  <GripVertical className="absolute w-3 h-3 text-primary" />
-                </div>
-
-                {/* End handle */}
-                <div
-                  className="absolute top-0 bottom-0 w-3 cursor-col-resize z-10 group flex items-center justify-center"
-                  style={{ left: `calc(${endPct}% - 6px)` }}
-                  onMouseDown={(e) => handleTimelineMouseDown(e, "end")}
-                >
-                  <div className="w-1 h-full bg-primary rounded-full group-hover:w-1.5 transition-all shadow-[0_0_8px_hsl(349,100%,59%,0.5)]" />
-                  <GripVertical className="absolute w-3 h-3 text-primary" />
-                </div>
-
-                {/* Playhead */}
-                {currentTime >= clipStart && currentTime <= clipEnd && (
-                  <div
-                    className="absolute top-0 bottom-0 w-0.5 bg-white z-20 pointer-events-none"
-                    style={{ left: `${currentPct}%` }}
-                  >
-                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white rounded-full" />
+                  {/* Fake waveform bars */}
+                  <div className="absolute inset-0 flex items-center gap-px px-1">
+                    {Array.from({ length: 80 }).map((_, i) => {
+                      const pct = (i / 80) * 100;
+                      const inRange = pct >= startPct && pct <= endPct;
+                      const h = 15 + Math.sin(i * 0.7) * 25 + Math.cos(i * 1.3) * 15;
+                      return (
+                        <div
+                          key={i}
+                          className="flex-1 rounded-sm transition-colors duration-150"
+                          style={{
+                            height: `${Math.max(8, h)}%`,
+                            background: inRange
+                              ? "hsl(349, 100%, 59%)"
+                              : "hsl(240,15%,20%)",
+                            opacity: inRange ? 0.8 : 0.4,
+                          }}
+                        />
+                      );
+                    })}
                   </div>
-                )}
+
+                  {/* Selected region overlay */}
+                  <div
+                    className="absolute top-0 bottom-0 border-y-2 border-primary/60"
+                    style={{
+                      left: `${startPct}%`,
+                      width: `${endPct - startPct}%`,
+                      background: "hsl(349,100%,59%,0.08)",
+                    }}
+                  />
+
+                  {/* Start handle */}
+                  <div
+                    className="absolute top-0 bottom-0 w-3 cursor-col-resize z-10 group flex items-center justify-center"
+                    style={{ left: `calc(${startPct}% - 6px)` }}
+                    onMouseDown={(e) => handleTimelineMouseDown(e, "start")}
+                  >
+                    <div className="w-1 h-full bg-primary rounded-full group-hover:w-1.5 transition-all shadow-[0_0_8px_hsl(349,100%,59%,0.5)]" />
+                    <GripVertical className="absolute w-3 h-3 text-primary" />
+                  </div>
+
+                  {/* End handle */}
+                  <div
+                    className="absolute top-0 bottom-0 w-3 cursor-col-resize z-10 group flex items-center justify-center"
+                    style={{ left: `calc(${endPct}% - 6px)` }}
+                    onMouseDown={(e) => handleTimelineMouseDown(e, "end")}
+                  >
+                    <div className="w-1 h-full bg-primary rounded-full group-hover:w-1.5 transition-all shadow-[0_0_8px_hsl(349,100%,59%,0.5)]" />
+                    <GripVertical className="absolute w-3 h-3 text-primary" />
+                  </div>
+
+                  {/* Playhead */}
+                  {currentTime >= clipStart && currentTime <= clipEnd && (
+                    <div
+                      className="absolute top-0 bottom-0 w-0.5 bg-white z-20 pointer-events-none"
+                      style={{ left: `${currentPct}%` }}
+                    >
+                      <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white rounded-full" />
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Time display */}
