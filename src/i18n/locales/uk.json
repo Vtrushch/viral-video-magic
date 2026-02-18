@@ -1,0 +1,180 @@
+{
+  "nav": {
+    "videos": "Відео",
+    "clips": "Кліпи",
+    "analytics": "Аналітика",
+    "settings": "Налаштування",
+    "upgrade": "Покращити",
+    "admin": "Адмін",
+    "signOut": "Вийти",
+    "credits": "Кредити"
+  },
+  "dashboard": {
+    "yourVideos": "Ваші Відео",
+    "manageContent": "Управляйте та перевикористовуйте контент",
+    "uploadVideo": "Завантажити Відео",
+    "noVideosYet": "Поки немає відео",
+    "uploadFirst": "Завантажте перше відео для початку!",
+    "uploadAVideo": "Завантажити відео"
+  },
+  "stats": {
+    "totalVideos": "Всього Відео",
+    "totalClips": "Всього Кліпів",
+    "thisMonth": "Цей Місяць",
+    "storageUsed": "Сховище"
+  },
+  "videoCard": {
+    "viewClips": "Переглянути Кліпи",
+    "ready": "Готово",
+    "analyzing": "Аналізується",
+    "rendering": "Рендериться",
+    "failed": "Помилка",
+    "pending": "Очікує",
+    "uploading": "Завантажується"
+  },
+  "videoConfig": {
+    "configureAnalysis": "Налаштувати Аналіз",
+    "backToVideos": "Назад до відео",
+    "numberOfClips": "Кількість кліпів для генерації",
+    "clipLength": "Бажана довжина",
+    "short": "Короткий",
+    "medium": "Середній",
+    "long": "Довгий",
+    "captionStyle": "Стиль субтитрів",
+    "startAnalysis": "Почати Аналіз",
+    "useOneCredit": "Це використає 1 кредит",
+    "creditsRemaining": "кредитів залишилось",
+    "saveDraft": "Зберегти Чернетку"
+  },
+  "videoDetail": {
+    "backToVideos": "Назад до відео",
+    "generatedClips": "Згенеровані Кліпи",
+    "reviewSelect": "Переглянути",
+    "renderAll": "Рендерити Всі",
+    "allRendered": "Всі Відрендерено",
+    "preview": "Перегляд",
+    "edit": "Редагувати",
+    "render": "Рендерити",
+    "download": "Завантажити",
+    "ready": "Готово"
+  },
+  "clipEdit": {
+    "remixMode": "Режим Ремікс",
+    "saveChanges": "Зберегти Зміни",
+    "saving": "Зберігаємо...",
+    "renderClip": "Рендерити Кліп",
+    "rendering": "Рендеримо...",
+    "timeline": "Таймлайн",
+    "captionStyle": "Стиль Субтитрів",
+    "transcriptEditor": "Редактор Транскрипції",
+    "clickToEdit": "Натисніть слово для редагування або хрестик для видалення"
+  },
+  "clips": {
+    "all": "Всі",
+    "ready": "Готові",
+    "rendering": "Рендеряться",
+    "pending": "Очікують",
+    "failed": "Помилки",
+    "viralScore": "Вірусний Рейтинг",
+    "yourClips": "Ваші Кліпи",
+    "noClipsYet": "Поки немає кліпів",
+    "noFilterClips": "Немає {{filter}} кліпів",
+    "loadingClips": "Завантаження кліпів...",
+    "download": "Завантажити"
+  },
+  "analytics": {
+    "title": "Аналітика",
+    "subtitle": "Ефективність вашого контенту",
+    "videosUploaded": "Відео Завантажено",
+    "clipsGenerated": "Кліпів Згенеровано",
+    "clipsRendered": "Кліпів Відрендерено",
+    "avgViralScore": "Середній Рейтинг",
+    "creditUsage": "Використання Кредитів",
+    "recentActivity": "Остання Активність",
+    "noActivity": "Поки немає активності.",
+    "uploadToStart": "Завантажте відео для початку!"
+  },
+  "settings": {
+    "title": "Налаштування",
+    "subtitle": "Керуйте акаунтом, планом та вподобаннями",
+    "profile": "Профіль",
+    "defaults": "За замовчуванням",
+    "plan": "План",
+    "profileInformation": "Інформація профілю",
+    "fullName": "Повне ім'я",
+    "email": "Email",
+    "emailCannotChange": "Email неможливо змінити в налаштуваннях",
+    "saveChanges": "Зберегти Зміни",
+    "saving": "Зберігаємо...",
+    "dangerZone": "Небезпечна Зона",
+    "dangerDesc": "Видалення акаунту є постійним і незворотнім.",
+    "deleteAccount": "Видалити Акаунт",
+    "defaultCaptionStyle": "Стиль субтитрів за замовчуванням",
+    "defaultClipLength": "Довжина за замовчуванням",
+    "defaultClipCount": "Кількість за замовчуванням",
+    "savePreferences": "Зберегти Налаштування",
+    "currentPlan": "Поточний План",
+    "totalCredits": "Всього Кредитів",
+    "used": "Використано",
+    "remaining": "Залишилось",
+    "upgradePlan": "Покращити План"
+  },
+  "upgrade": {
+    "title": "Покращіть Ваш План",
+    "free": "Безкоштовно",
+    "starter": "Стартовий",
+    "pro": "Про",
+    "enterprise": "Підприємство",
+    "creditsPerMonth": "кредитів/міс",
+    "unlimitedCredits": "Необмежені кредити",
+    "comingSoon": "Незабаром",
+    "currentPlan": "Поточний План",
+    "mostPopular": "Найпопулярніший",
+    "perMonth": "/міс"
+  },
+  "upload": {
+    "addVideo": "Додати Відео",
+    "uploadFile": "Завантажити Файл",
+    "youtubeUrl": "YouTube URL",
+    "dragAndDrop": "Натисніть або перетягніть відео",
+    "supportedFormats": "MP4, MOV, AVI, WebM до 2ГБ",
+    "import": "Імпортувати",
+    "importing": "Імпортуємо...",
+    "pasteYoutubeUrl": "Вставте URL YouTube тут...",
+    "uploading": "Завантажуємо...",
+    "upload": "Завантажити",
+    "cancel": "Скасувати"
+  },
+  "toasts": {
+    "analysisStarted": "ШІ аналіз розпочато! Зазвичай 2-3 хвилини.",
+    "changesSaved": "Зміни збережено!",
+    "renderingStarted": "Кліп надіслано на рендеринг!",
+    "noCredits": "Кредити вичерпано. Покращіть план.",
+    "uploadSuccess": "Відео завантажено! Налаштуйте параметри кліпів.",
+    "youtubeImportStarted": "Імпорт YouTube розпочато!"
+  },
+  "analyzing": {
+    "title": "ШІ Аналізує Ваше Відео...",
+    "subtitle": "Зазвичай 2–3 хвилини",
+    "videoUploaded": "Відео завантажено",
+    "analyzingContent": "Аналіз контенту...",
+    "findingMoments": "Пошук вірусних моментів",
+    "generatingClips": "Генерація кліпів",
+    "canClose": "Можете закрити сторінку. Ми повідомимо коли буде готово!"
+  },
+  "admin": {
+    "title": "Адмін Панель",
+    "subtitle": "Огляд платформи та управління",
+    "totalUsers": "Всього Користувачів",
+    "totalVideos": "Всього Відео",
+    "totalClips": "Всього Кліпів",
+    "addCredits": "Додати Кредити",
+    "addManualClip": "Додати Кліп Вручну"
+  },
+  "language": {
+    "selectLanguage": "Мова",
+    "en": "Англійська",
+    "es": "Іспанська",
+    "uk": "Українська"
+  }
+}

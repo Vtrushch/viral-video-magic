@@ -1,0 +1,180 @@
+{
+  "nav": {
+    "videos": "Videos",
+    "clips": "Clips",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "upgrade": "Upgrade",
+    "admin": "Admin",
+    "signOut": "Sign Out",
+    "credits": "Credits"
+  },
+  "dashboard": {
+    "yourVideos": "Your Videos",
+    "manageContent": "Manage and repurpose your content",
+    "uploadVideo": "Upload Video",
+    "noVideosYet": "No videos yet",
+    "uploadFirst": "Upload your first video to get started!",
+    "uploadAVideo": "Upload a video"
+  },
+  "stats": {
+    "totalVideos": "Total Videos",
+    "totalClips": "Total Clips",
+    "thisMonth": "This Month",
+    "storageUsed": "Storage Used"
+  },
+  "videoCard": {
+    "viewClips": "View Clips",
+    "ready": "Ready",
+    "analyzing": "Analyzing",
+    "rendering": "Rendering",
+    "failed": "Failed",
+    "pending": "Pending",
+    "uploading": "Uploading"
+  },
+  "videoConfig": {
+    "configureAnalysis": "Configure Analysis",
+    "backToVideos": "Back to videos",
+    "numberOfClips": "Number of clips to generate",
+    "clipLength": "Preferred clip length",
+    "short": "Short",
+    "medium": "Medium",
+    "long": "Long",
+    "captionStyle": "Caption Style",
+    "startAnalysis": "Start Analysis",
+    "useOneCredit": "This will use 1 credit",
+    "creditsRemaining": "credits remaining",
+    "saveDraft": "Save Draft"
+  },
+  "videoDetail": {
+    "backToVideos": "Back to videos",
+    "generatedClips": "Generated Clips",
+    "reviewSelect": "Review & Select",
+    "renderAll": "Render All",
+    "allRendered": "All Rendered",
+    "preview": "Preview",
+    "edit": "Edit",
+    "render": "Render",
+    "download": "Download",
+    "ready": "Ready"
+  },
+  "clipEdit": {
+    "remixMode": "Remix Mode",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "renderClip": "Render This Clip",
+    "rendering": "Rendering...",
+    "timeline": "Timeline",
+    "captionStyle": "Caption Style",
+    "transcriptEditor": "Transcript Editor",
+    "clickToEdit": "Click a word to edit or cross to delete"
+  },
+  "clips": {
+    "all": "All",
+    "ready": "Ready",
+    "rendering": "Rendering",
+    "pending": "Pending",
+    "failed": "Failed",
+    "viralScore": "Viral Score",
+    "yourClips": "Your Clips",
+    "noClipsYet": "No clips yet",
+    "noFilterClips": "No {{filter}} clips",
+    "loadingClips": "Loading clips...",
+    "download": "Download"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "Your content performance at a glance",
+    "videosUploaded": "Videos Uploaded",
+    "clipsGenerated": "Clips Generated",
+    "clipsRendered": "Clips Rendered",
+    "avgViralScore": "Avg Viral Score",
+    "creditUsage": "Credit Usage",
+    "recentActivity": "Recent Activity",
+    "noActivity": "No activity yet.",
+    "uploadToStart": "Upload a video to get started!"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account, plan, and brand preferences",
+    "profile": "Profile",
+    "defaults": "Defaults",
+    "plan": "Plan",
+    "profileInformation": "Profile Information",
+    "fullName": "Full Name",
+    "email": "Email",
+    "emailCannotChange": "Email cannot be changed from settings",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "dangerZone": "Danger Zone",
+    "dangerDesc": "Deleting your account is permanent and cannot be undone.",
+    "deleteAccount": "Delete Account",
+    "defaultCaptionStyle": "Default Caption Style",
+    "defaultClipLength": "Default Clip Length",
+    "defaultClipCount": "Default Clip Count",
+    "savePreferences": "Save Preferences",
+    "currentPlan": "Current Plan",
+    "totalCredits": "Total Credits",
+    "used": "Used",
+    "remaining": "Remaining",
+    "upgradePlan": "Upgrade Plan"
+  },
+  "upgrade": {
+    "title": "Upgrade Your Plan",
+    "free": "Free",
+    "starter": "Starter",
+    "pro": "Pro",
+    "enterprise": "Enterprise",
+    "creditsPerMonth": "credits/month",
+    "unlimitedCredits": "Unlimited credits",
+    "comingSoon": "Coming Soon",
+    "currentPlan": "Current Plan",
+    "mostPopular": "Most Popular",
+    "perMonth": "/mo"
+  },
+  "upload": {
+    "addVideo": "Add Video",
+    "uploadFile": "Upload File",
+    "youtubeUrl": "YouTube URL",
+    "dragAndDrop": "Tap to select or drag & drop",
+    "supportedFormats": "MP4, MOV, AVI, WebM up to 2GB",
+    "import": "Import",
+    "importing": "Importing...",
+    "pasteYoutubeUrl": "Paste YouTube URL here...",
+    "uploading": "Uploading...",
+    "upload": "Upload",
+    "cancel": "Cancel"
+  },
+  "toasts": {
+    "analysisStarted": "AI analysis started! This takes 2-3 minutes.",
+    "changesSaved": "Changes saved!",
+    "renderingStarted": "Clip sent for rendering!",
+    "noCredits": "No credits remaining. Upgrade your plan.",
+    "uploadSuccess": "Video uploaded! Configure your clip settings.",
+    "youtubeImportStarted": "YouTube import started!"
+  },
+  "analyzing": {
+    "title": "AI is Analyzing Your Video...",
+    "subtitle": "This usually takes 2–3 minutes",
+    "videoUploaded": "Video uploaded",
+    "analyzingContent": "Analyzing content...",
+    "findingMoments": "Finding viral moments",
+    "generatingClips": "Generating clips",
+    "canClose": "You can close this page. We'll notify you when it's ready!"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "subtitle": "Platform overview & management",
+    "totalUsers": "Total Users",
+    "totalVideos": "Total Videos",
+    "totalClips": "Total Clips",
+    "addCredits": "Add Credits",
+    "addManualClip": "Add Manual Clip"
+  },
+  "language": {
+    "selectLanguage": "Language",
+    "en": "English",
+    "es": "Spanish",
+    "uk": "Ukrainian"
+  }
+}

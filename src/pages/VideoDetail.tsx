@@ -1,5 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Play, Download, Star, Clock, Calendar, Settings2,
   Loader2, AlertCircle, HardDrive, RotateCcw, CheckCircle2, Sparkles,
@@ -40,6 +41,7 @@ function formatDate(d: string) {
 
 /* ─── Downloading State (YouTube import) ─── */
 const DownloadingState = ({ video }: { video: Tables<"videos"> }) => {
+  const { t } = useTranslation();
   useEffect(() => {
     const channel = supabase
       .channel(`video-download-${video.id}`)
@@ -137,6 +139,7 @@ const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
 /* ─── Analyzing State ─── */
 const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [progress, setProgress] = useState(15);
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -172,10 +175,10 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
   }, [video.id, currentStep]);
 
   const steps = [
-    { icon: CheckCircle2, label: "Video uploaded", done: true },
-    { icon: Search, label: "Analyzing content...", done: currentStep > 1 },
-    { icon: Zap, label: "Finding viral moments", done: currentStep > 2 },
-    { icon: Film, label: "Generating clips", done: currentStep > 3 },
+    { icon: CheckCircle2, label: t("analyzing.videoUploaded"), done: true },
+    { icon: Search, label: t("analyzing.analyzingContent"), done: currentStep > 1 },
+    { icon: Zap, label: t("analyzing.findingMoments"), done: currentStep > 2 },
+    { icon: Film, label: t("analyzing.generatingClips"), done: currentStep > 3 },
   ];
 
   return (
@@ -188,8 +191,8 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
       </div>
 
       <div>
-        <h2 className="text-xl font-bold text-foreground mb-2">AI is Analyzing Your Video...</h2>
-        <p className="text-sm text-muted-foreground">This usually takes 2–3 minutes</p>
+        <h2 className="text-xl font-bold text-foreground mb-2">{t("analyzing.title")}</h2>
+        <p className="text-sm text-muted-foreground">{t("analyzing.subtitle")}</p>
       </div>
 
       {/* Progress bar */}

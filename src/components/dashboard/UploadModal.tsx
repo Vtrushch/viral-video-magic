@@ -14,6 +14,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface UploadModalProps {
   open: boolean;
@@ -33,6 +34,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const handleFileChange = (selectedFile: File) => {
     const validTypes = ["video/mp4", "video/quicktime", "video/x-msvideo", "video/webm"];
@@ -83,7 +85,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
       if (dbError) throw dbError;
       setProgress(100);
 
-      toast.success("Video uploaded! Configure your clip settings.");
+      toast.success(t("toasts.uploadSuccess"));
       setTimeout(() => {
         handleCancel();
         if (videoData) {
@@ -134,7 +136,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
 
       if (!res.ok) throw new Error("YouTube import request failed");
 
-      toast.success("YouTube import started!");
+      toast.success(t("toasts.youtubeImportStarted"));
       setTimeout(() => {
         handleCancel();
         navigate(`/dashboard/videos/${videoData.id}`);
@@ -160,16 +162,16 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
     <Dialog open={open} onOpenChange={handleCancel}>
       <DialogContent className="w-full max-w-lg mx-auto dark sm:rounded-2xl rounded-none sm:top-1/2 top-auto bottom-0 translate-y-0 sm:-translate-y-1/2 sm:left-1/2 sm:-translate-x-1/2 fixed">
         <DialogHeader>
-          <DialogTitle>Add Video</DialogTitle>
+          <DialogTitle>{t("upload.addVideo")}</DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="upload" className="w-full">
           <TabsList className="w-full">
             <TabsTrigger value="upload" className="flex-1 gap-2">
-              <Upload className="w-4 h-4" /> Upload File
+              <Upload className="w-4 h-4" /> {t("upload.uploadFile")}
             </TabsTrigger>
             <TabsTrigger value="youtube" className="flex-1 gap-2">
-              <LinkIcon className="w-4 h-4" /> YouTube URL
+              <LinkIcon className="w-4 h-4" /> {t("upload.youtubeUrl")}
             </TabsTrigger>
           </TabsList>
 
@@ -186,8 +188,8 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
                 onClick={() => inputRef.current?.click()}
               >
                 <Upload className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                <p className="text-sm font-medium mb-1">Tap to select or drag & drop</p>
-                <p className="text-xs text-muted-foreground">MP4, MOV, AVI, WebM up to 2GB</p>
+                <p className="text-sm font-medium mb-1">{t("upload.dragAndDrop")}</p>
+                <p className="text-xs text-muted-foreground">{t("upload.supportedFormats")}</p>
                 <input
                   ref={inputRef}
                   type="file"
@@ -222,10 +224,10 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
 
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={handleCancel} className="flex-1 min-h-[44px]" disabled={uploading}>
-                    Cancel
+                    {t("upload.cancel")}
                   </Button>
                   <Button variant="hero" onClick={handleUpload} className="flex-1 min-h-[44px]" disabled={uploading}>
-                    {uploading ? "Uploading..." : "Upload"}
+                    {uploading ? t("upload.uploading") : t("upload.upload")}
                   </Button>
                 </div>
               </div>
@@ -237,7 +239,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Input
-                  placeholder="Paste YouTube URL here..."
+                  placeholder={t("upload.pasteYoutubeUrl")}
                   value={youtubeUrl}
                   onChange={(e) => setYoutubeUrl(e.target.value)}
                   disabled={importing}
@@ -250,7 +252,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
 
               <div className="flex gap-2">
                 <Button variant="outline" onClick={handleCancel} className="flex-1 min-h-[44px]" disabled={importing}>
-                  Cancel
+                  {t("upload.cancel")}
                 </Button>
                 <Button
                   variant="hero"
@@ -261,10 +263,10 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
                   {importing ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Importing...
+                      {t("upload.importing")}
                     </>
                   ) : (
-                    "Import"
+                    t("upload.import")
                   )}
                 </Button>
               </div>

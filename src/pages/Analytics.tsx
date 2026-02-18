@@ -6,9 +6,10 @@ import { useCredits } from "@/hooks/useCredits";
 import {
   Video, Film, CheckCircle2, Star, Zap, Upload, Sparkles, Clock, TrendingUp,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 function formatDate(d: string) {
-  return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  return new Date(d).toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
 const StatCard = ({
@@ -49,9 +50,9 @@ const StatCard = ({
 );
 
 const CreditsBar = ({ used, total }: { used: number; total: number }) => {
+  const { t } = useTranslation();
   const remaining = total - used;
   const usedPct = total > 0 ? Math.min(100, (used / total) * 100) : 0;
-  const remainingPct = 100 - usedPct;
 
   return (
     <div
@@ -60,12 +61,11 @@ const CreditsBar = ({ used, total }: { used: number; total: number }) => {
     >
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <Zap className="w-4 h-4 text-primary" /> Credit Usage
+          <Zap className="w-4 h-4 text-primary" /> {t("analytics.creditUsage")}
         </h3>
         <span className="text-xs text-muted-foreground">{used} of {total} used</span>
       </div>
 
-      {/* Bar */}
       <div className="h-4 rounded-full overflow-hidden" style={{ background: "hsl(0,0%,100%,0.06)" }}>
         <div
           className="h-full rounded-full transition-all duration-700"
@@ -76,15 +76,14 @@ const CreditsBar = ({ used, total }: { used: number; total: number }) => {
         />
       </div>
 
-      {/* Legend */}
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-xl p-3" style={{ background: "hsl(349,100%,59%,0.08)", border: "1px solid hsl(349,100%,59%,0.15)" }}>
           <p className="text-xl font-bold" style={{ color: "hsl(349,100%,59%)" }}>{used}</p>
-          <p className="text-xs text-muted-foreground">Used</p>
+          <p className="text-xs text-muted-foreground">{t("settings.used")}</p>
         </div>
         <div className="rounded-xl p-3" style={{ background: "hsl(177,100%,39%,0.08)", border: "1px solid hsl(177,100%,39%,0.15)" }}>
           <p className="text-xl font-bold" style={{ color: "hsl(177,100%,39%)" }}>{remaining}</p>
-          <p className="text-xs text-muted-foreground">Remaining</p>
+          <p className="text-xs text-muted-foreground">{t("settings.remaining")}</p>
         </div>
       </div>
     </div>
@@ -94,6 +93,7 @@ const CreditsBar = ({ used, total }: { used: number; total: number }) => {
 const Analytics = () => {
   const { user } = useAuth();
   const { credits } = useCredits();
+  const { t } = useTranslation();
 
   const { data: videos = [], isLoading: videosLoading } = useQuery({
     queryKey: ["analytics-videos", user?.id],
@@ -122,7 +122,6 @@ const Analytics = () => {
     return { totalVideos: videos.length, totalClips: clips.length, rendered, avgScore };
   }, [videos, clips]);
 
-  // Build recent activity list from videos + clips (last 10)
   const recentActivity = useMemo(() => {
     type ActivityItem = { type: string; title: string; time: string; icon: React.ElementType; color: string };
     const items: ActivityItem[] = [];
@@ -152,15 +151,11 @@ const Analytics = () => {
 
   return (
     <div className="p-6 lg:p-8 w-full animate-fade-in" style={{ background: "#0F0F1A", minHeight: "100vh" }}>
-      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground tracking-tight">
-          Analytics
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">Your content performance at a glance</p>
+        <h1 className="text-3xl font-bold text-foreground tracking-tight">{t("analytics.title")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("analytics.subtitle")}</p>
       </div>
 
-      {/* Stats Grid */}
       {loading ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[1, 2, 3, 4].map((i) => (
@@ -169,27 +164,19 @@ const Analytics = () => {
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <StatCard icon={Video} label="Videos Uploaded" value={stats.totalVideos} color="hsl(349,100%,59%)" />
-          <StatCard icon={Film} label="Clips Generated" value={stats.totalClips} color="hsl(270,95%,65%)" />
-          <StatCard icon={CheckCircle2} label="Clips Rendered" value={stats.rendered} sub={`${stats.totalClips > 0 ? Math.round((stats.rendered / stats.totalClips) * 100) : 0}% of all clips`} color="hsl(177,100%,39%)" />
-          <StatCard icon={Star} label="Avg Viral Score" value={stats.avgScore} sub="Out of 10" color="hsl(50,100%,60%)" />
+          <StatCard icon={Video} label={t("analytics.videosUploaded")} value={stats.totalVideos} color="hsl(349,100%,59%)" />
+          <StatCard icon={Film} label={t("analytics.clipsGenerated")} value={stats.totalClips} color="hsl(270,95%,65%)" />
+          <StatCard icon={CheckCircle2} label={t("analytics.clipsRendered")} value={stats.rendered} sub={`${stats.totalClips > 0 ? Math.round((stats.rendered / stats.totalClips) * 100) : 0}%`} color="hsl(177,100%,39%)" />
+          <StatCard icon={Star} label={t("analytics.avgViralScore")} value={stats.avgScore} sub="Out of 10" color="hsl(50,100%,60%)" />
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Credits chart */}
-        <CreditsBar
-          used={credits?.used_credits ?? 0}
-          total={credits?.total_credits ?? 0}
-        />
+        <CreditsBar used={credits?.used_credits ?? 0} total={credits?.total_credits ?? 0} />
 
-        {/* Recent Activity */}
-        <div
-          className="rounded-2xl p-5 space-y-4"
-          style={{ background: "hsl(240,15%,10%)", border: "1px solid hsl(0,0%,100%,0.07)" }}
-        >
+        <div className="rounded-2xl p-5 space-y-4" style={{ background: "hsl(240,15%,10%)", border: "1px solid hsl(0,0%,100%,0.07)" }}>
           <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-            <Clock className="w-4 h-4 text-accent" /> Recent Activity
+            <Clock className="w-4 h-4 text-accent" /> {t("analytics.recentActivity")}
           </h3>
 
           {loading ? (
@@ -201,22 +188,16 @@ const Analytics = () => {
           ) : recentActivity.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <TrendingUp className="w-8 h-8 text-muted-foreground/40 mb-3" />
-              <p className="text-sm text-muted-foreground">No activity yet.</p>
-              <p className="text-xs text-muted-foreground/60 mt-1">Upload a video to get started!</p>
+              <p className="text-sm text-muted-foreground">{t("analytics.noActivity")}</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">{t("analytics.uploadToStart")}</p>
             </div>
           ) : (
             <div className="space-y-2">
               {recentActivity.map((item, i) => {
                 const Icon = item.icon;
                 return (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 p-2.5 rounded-xl transition-colors hover:bg-white/5"
-                  >
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ background: `${item.color}18` }}
-                    >
+                  <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl transition-colors hover:bg-white/5">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${item.color}18` }}>
                       <Icon className="w-4 h-4" style={{ color: item.color }} />
                     </div>
                     <div className="flex-1 min-w-0">
