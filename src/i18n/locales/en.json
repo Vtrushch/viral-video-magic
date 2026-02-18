@@ -291,13 +291,17 @@
     "combineClips": "Combine your best clips",
     "createFirst": "Create Your First Reel",
     "noReelsYet": "No highlight reels yet",
-    "rendering": "Rendering...",
+    "rendering": "Highlight reel is rendering...",
     "availableClips": "Available Clips",
     "selected": "Selected",
     "addClipsFromLeft": "Add clips from the left",
     "reelTitle": "Reel Title",
     "transitions": "Transitions",
     "crossfade": "Crossfade",
-    "createReel": "Create Highlight Reel"
+    "createReel": "Save & Render",
+    "saveAndRender": "Save & Render",
+    "playAll": "▶ Play All",
+    "playingClip": "Playing clip {{current}} of {{total}} — {{title}}",
+    "addClips": "Add Clips"
   }
 }

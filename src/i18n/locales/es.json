@@ -291,13 +291,17 @@
     "combineClips": "Combina tus mejores clips",
     "createFirst": "Crea Tu Primera Compilación",
     "noReelsYet": "Sin compilaciones aún",
-    "rendering": "Renderizando...",
+    "rendering": "Compilación en renderizado...",
     "availableClips": "Clips Disponibles",
     "selected": "Seleccionados",
     "addClipsFromLeft": "Agrega clips desde la izquierda",
     "reelTitle": "Título de la Compilación",
     "transitions": "Transiciones",
     "crossfade": "Fundido cruzado",
-    "createReel": "Crear Compilación"
+    "createReel": "Guardar y Renderizar",
+    "saveAndRender": "Guardar y Renderizar",
+    "playAll": "▶ Reproducir Todo",
+    "playingClip": "Reproduciendo clip {{current}} de {{total}} — {{title}}",
+    "addClips": "Agregar Clips"
   }
 }

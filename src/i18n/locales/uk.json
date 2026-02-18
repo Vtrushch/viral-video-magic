@@ -291,13 +291,17 @@
     "combineClips": "Об'єднайте найкращі кліпи",
     "createFirst": "Створіть Першу Підбірку",
     "noReelsYet": "Підбірок ще немає",
-    "rendering": "Рендеринг...",
+    "rendering": "Підбірка рендериться...",
     "availableClips": "Доступні Кліпи",
     "selected": "Обрані",
     "addClipsFromLeft": "Додайте кліпи зліва",
     "reelTitle": "Назва Підбірки",
     "transitions": "Переходи",
     "crossfade": "Перехресне затухання",
-    "createReel": "Створити Підбірку"
+    "createReel": "Зберегти та Рендерити",
+    "saveAndRender": "Зберегти та Рендерити",
+    "playAll": "▶ Відтворити Все",
+    "playingClip": "Відтворення кліпу {{current}} з {{total}} — {{title}}",
+    "addClips": "Додати Кліпи"
   }
 }
