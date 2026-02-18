@@ -1,10 +1,16 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Scissors, Menu, X } from "lucide-react";
+import { Scissors, Menu, X, Globe } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { changeLanguage, LANGUAGES } from "@/i18n/i18n";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { t, i18n } = useTranslation();
+
+  const currentLang = LANGUAGES.find((l) => l.code === i18n.language) || LANGUAGES[0];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/60 backdrop-blur-2xl">
@@ -19,17 +25,41 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">How it works</a>
-          <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">Features</a>
-          <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">Pricing</a>
+          <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.howItWorks')}</a>
+          <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.features')}</a>
+          <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.pricing')}</a>
         </div>
 
         <div className="hidden md:flex items-center gap-3">
+          {/* Language Switcher */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
+                <span className="text-base">{currentLang.flag}</span>
+                <span className="text-xs font-medium">{currentLang.label}</span>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-40 p-1" align="end">
+              {LANGUAGES.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => changeLanguage(lang.code)}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors hover:bg-muted ${
+                    i18n.language === lang.code ? "text-primary font-medium" : "text-foreground"
+                  }`}
+                >
+                  <span>{lang.flag}</span>
+                  <span>{lang.name}</span>
+                </button>
+              ))}
+            </PopoverContent>
+          </Popover>
+
           <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" asChild>
-            <Link to="/auth">Sign In</Link>
+            <Link to="/auth">{t('landing.nav.signIn')}</Link>
           </Button>
           <Button variant="hero" size="sm" asChild>
-            <Link to="/auth">Get Started</Link>
+            <Link to="/auth">{t('landing.nav.getStarted')}</Link>
           </Button>
         </div>
 
@@ -43,12 +73,27 @@ const Navbar = () => {
 
       {mobileOpen && (
         <div className="md:hidden border-t border-border/40 bg-background/95 backdrop-blur-2xl px-6 py-4 space-y-3 animate-fade-in">
-          <a href="#how-it-works" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>How it works</a>
-          <a href="#features" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>Features</a>
-          <a href="#pricing" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>Pricing</a>
+          <a href="#how-it-works" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.howItWorks')}</a>
+          <a href="#features" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.features')}</a>
+          <a href="#pricing" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.pricing')}</a>
+          {/* Mobile language switcher */}
+          <div className="flex gap-2 pt-1">
+            {LANGUAGES.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => { changeLanguage(lang.code); setMobileOpen(false); }}
+                className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${
+                  i18n.language === lang.code ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <span>{lang.flag}</span>
+                <span>{lang.label}</span>
+              </button>
+            ))}
+          </div>
           <div className="flex gap-3 pt-2">
-            <Button variant="ghost" size="sm" asChild><Link to="/auth">Sign In</Link></Button>
-            <Button variant="hero" size="sm" asChild><Link to="/auth">Get Started</Link></Button>
+            <Button variant="ghost" size="sm" asChild><Link to="/auth">{t('landing.nav.signIn')}</Link></Button>
+            <Button variant="hero" size="sm" asChild><Link to="/auth">{t('landing.nav.getStarted')}</Link></Button>
           </div>
         </div>
       )}

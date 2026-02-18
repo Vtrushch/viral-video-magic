@@ -1,32 +1,38 @@
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-
-const plans = [
-  {
-    name: "Starter",
-    price: 9,
-    description: "Perfect for individual creators",
-    features: ["5 videos/month", "40 clips/month", "720p export", "Basic captions", "Email support"],
-    popular: false,
-  },
-  {
-    name: "Pro",
-    price: 19,
-    description: "For serious content creators",
-    features: ["25 videos/month", "100 clips/month", "1080p export", "Animated captions", "Multi-language", "Priority support"],
-    popular: true,
-  },
-  {
-    name: "Agency",
-    price: 39,
-    description: "For teams and agencies",
-    features: ["Unlimited videos", "300 clips/month", "4K export", "Custom branding", "API access", "Team seats", "Dedicated support"],
-    popular: false,
-  },
-];
+import { useTranslation } from "react-i18next";
 
 const Pricing = () => {
+  const { t } = useTranslation();
+
+  const plans = [
+    {
+      key: "plan1",
+      name: t('landing.pricing.plan1Name'),
+      price: 9,
+      description: t('landing.pricing.plan1Desc'),
+      features: ["5 videos/month", "40 clips/month", "720p export", "Basic captions", "Email support"],
+      popular: false,
+    },
+    {
+      key: "plan2",
+      name: t('landing.pricing.plan2Name'),
+      price: 19,
+      description: t('landing.pricing.plan2Desc'),
+      features: ["25 videos/month", "100 clips/month", "1080p export", "Animated captions", "Multi-language", "Priority support"],
+      popular: true,
+    },
+    {
+      key: "plan3",
+      name: t('landing.pricing.plan3Name'),
+      price: 39,
+      description: t('landing.pricing.plan3Desc'),
+      features: ["Unlimited videos", "300 clips/month", "4K export", "Custom branding", "API access", "Team seats", "Dedicated support"],
+      popular: false,
+    },
+  ];
+
   return (
     <section id="pricing" className="py-28 relative overflow-hidden gradient-hero-bg">
       <div className="absolute inset-0 mesh-gradient opacity-30" />
@@ -34,20 +40,20 @@ const Pricing = () => {
       <div className="relative z-10 container mx-auto px-6">
         <div className="text-center mb-16">
           <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3 opacity-0 animate-fade-in">
-            Pricing
+            {t('landing.pricing.label')}
           </p>
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground opacity-0 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-            Simple, transparent <span className="gradient-text">pricing</span>
+            {t('landing.pricing.heading')} <span className="gradient-text">{t('landing.pricing.headingAccent')}</span>
           </h2>
           <p className="text-lg text-muted-foreground opacity-0 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-            Start free. Upgrade when you're ready.
+            {t('landing.pricing.subheading')}
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
           {plans.map((plan, i) => (
             <div
-              key={plan.name}
+              key={plan.key}
               className={`relative rounded-2xl p-8 transition-all duration-500 opacity-0 animate-fade-in ${
                 plan.popular
                   ? "glass-card glow-border scale-[1.03] border-primary/30"
@@ -57,21 +63,23 @@ const Pricing = () => {
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full gradient-bg text-xs font-semibold text-primary-foreground">
-                  Most Popular
+                  {t('landing.pricing.mostPopular')}
                 </div>
               )}
               <h3 className="text-xl font-bold text-foreground mb-1">{plan.name}</h3>
               <p className="text-sm text-muted-foreground mb-5">{plan.description}</p>
               <div className="flex items-baseline gap-1 mb-8">
                 <span className="text-5xl font-black text-foreground">${plan.price}</span>
-                <span className="text-muted-foreground">/month</span>
+                <span className="text-muted-foreground">{t('landing.pricing.perMonth')}</span>
               </div>
               <Button
                 variant={plan.popular ? "hero" : "hero-outline"}
                 className="w-full mb-8"
                 asChild
               >
-                <Link to="/auth">{plan.name === "Agency" ? "Contact Sales" : "Get Started"}</Link>
+                <Link to="/auth">
+                  {plan.key === "plan3" ? t('landing.pricing.contactSales') : t('landing.pricing.getStarted')}
+                </Link>
               </Button>
               <ul className="space-y-3">
                 {plan.features.map((feature) => (

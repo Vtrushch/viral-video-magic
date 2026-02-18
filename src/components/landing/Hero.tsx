@@ -1,15 +1,18 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Zap, Globe, Smartphone } from "lucide-react";
-
-const pills = [
-  { icon: Sparkles, text: "AI finds viral moments" },
-  { icon: Zap, text: "Pro captions in seconds" },
-  { icon: Globe, text: "30+ languages" },
-  { icon: Smartphone, text: "Export everywhere" },
-];
+import { useTranslation } from "react-i18next";
 
 const Hero = () => {
+  const { t } = useTranslation();
+
+  const pills = [
+    { icon: Sparkles, text: t('landing.hero.pills.aiFinds') },
+    { icon: Zap, text: t('landing.hero.pills.proCaptions') },
+    { icon: Globe, text: t('landing.hero.pills.languages') },
+    { icon: Smartphone, text: t('landing.hero.pills.export') },
+  ];
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden gradient-hero-bg">
       {/* Mesh gradient overlay */}
@@ -26,7 +29,7 @@ const Hero = () => {
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card text-sm text-primary mb-10 opacity-0 animate-fade-in">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>AI-Powered Video Repurposing</span>
+          <span>{t('landing.hero.badge')}</span>
         </div>
 
         {/* Heading */}
@@ -34,9 +37,9 @@ const Hero = () => {
           className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black max-w-5xl mx-auto mb-8 leading-[1.05] opacity-0 animate-fade-in text-glow"
           style={{ animationDelay: "0.1s" }}
         >
-          <span className="text-foreground">Turn 1 hour into</span>{" "}
-          <span className="gradient-text">10 viral shorts</span>{" "}
-          <span className="text-foreground">in 5 minutes</span>
+          <span className="text-foreground">{t('landing.hero.heading1')}</span>{" "}
+          <span className="gradient-text">{t('landing.hero.heading2')}</span>{" "}
+          <span className="text-foreground">{t('landing.hero.heading3')}</span>
         </h1>
 
         {/* Subheading */}
@@ -44,9 +47,9 @@ const Hero = () => {
           className="text-lg md:text-xl max-w-2xl mx-auto mb-12 text-muted-foreground leading-relaxed opacity-0 animate-fade-in"
           style={{ animationDelay: "0.2s" }}
         >
-          AI-powered video repurposing for creators, agencies, and brands.
+          {t('landing.hero.subheading')}
           <br className="hidden sm:block" />
-          Stop editing. Start scaling.
+          {t('landing.hero.stopEditing')}
         </p>
 
         {/* CTA */}
@@ -56,12 +59,12 @@ const Hero = () => {
         >
           <Button variant="hero" size="lg" className="text-base px-8 py-6 animate-pulse-glow" asChild>
             <Link to="/auth">
-              Get Started Free
+              {t('landing.hero.getStartedFree')}
               <ArrowRight className="w-4 h-4 ml-1" />
             </Link>
           </Button>
           <Button variant="hero-outline" size="lg" className="text-base px-8 py-6" asChild>
-            <a href="#how-it-works">See How It Works</a>
+            <a href="#how-it-works">{t('landing.hero.seeHowItWorks')}</a>
           </Button>
         </div>
 
@@ -86,7 +89,7 @@ const Hero = () => {
           className="mt-20 opacity-0 animate-fade-in"
           style={{ animationDelay: "0.7s" }}
         >
-          <p className="text-sm text-muted-foreground mb-5">Trusted by 10,000+ creators worldwide</p>
+          <p className="text-sm text-muted-foreground mb-5">{t('landing.hero.trustedBy')}</p>
           <div className="flex justify-center items-center gap-1">
             {Array.from({ length: 8 }).map((_, i) => (
               <div

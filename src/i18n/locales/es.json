@@ -9,6 +9,108 @@
     "signOut": "Cerrar sesión",
     "credits": "Créditos"
   },
+  "landing": {
+    "nav": {
+      "howItWorks": "Cómo funciona",
+      "features": "Características",
+      "pricing": "Precios",
+      "signIn": "Iniciar Sesión",
+      "getStarted": "Comenzar"
+    },
+    "hero": {
+      "badge": "Reutilización de Video con IA",
+      "heading1": "Convierte 1 hora en",
+      "heading2": "10 shorts virales",
+      "heading3": "en 5 minutos",
+      "subheading": "Reutilización de video con IA para creadores, agencias y marcas.",
+      "stopEditing": "Deja de editar. Empieza a escalar.",
+      "getStartedFree": "Comenzar Gratis",
+      "seeHowItWorks": "Ver Cómo Funciona",
+      "trustedBy": "Confiado por 10,000+ creadores en todo el mundo",
+      "pills": {
+        "aiFinds": "IA encuentra momentos virales",
+        "proCaptions": "Subtítulos pro en segundos",
+        "languages": "30+ idiomas",
+        "export": "Exportar a todas partes"
+      }
+    },
+    "howItWorks": {
+      "label": "Cómo funciona",
+      "heading": "Tres pasos hacia",
+      "headingAccent": "contenido viral",
+      "step1Title": "Sube Tu Video",
+      "step1Desc": "Arrastra y suelta tu podcast, webinar o video largo. Soportamos todos los formatos principales.",
+      "step2Title": "Magia de IA",
+      "step2Desc": "Nuestra IA analiza patrones de engagement y encuentra los 10 mejores momentos virales automáticamente.",
+      "step3Title": "Exportar a Todos Lados",
+      "step3Desc": "Descarga clips con subtítulos o publica directamente en TikTok, Reels, Shorts y más."
+    },
+    "features": {
+      "label": "Características",
+      "heading": "Todo lo que necesitas para",
+      "headingAccent": "volverse viral",
+      "subheading": "Potentes herramientas de IA que hacen el trabajo pesado para que puedas enfocarte en crear.",
+      "feature1Title": "Detección Inteligente de Clips",
+      "feature1Desc": "La IA analiza patrones de engagement para encontrar los momentos más compartibles en tu contenido.",
+      "feature2Title": "Subtítulos Automáticos",
+      "feature2Desc": "Subtítulos animados profesionales generados automáticamente. Elige entre múltiples estilos.",
+      "feature3Title": "Multi-Idioma",
+      "feature3Desc": "Traduce y dobla tu contenido a más de 30 idiomas. Llega a una audiencia global sin esfuerzo.",
+      "feature4Title": "Puntuación Viral",
+      "feature4Desc": "Cada clip obtiene una puntuación de potencial viral impulsada por IA para ayudarte a elegir los ganadores."
+    },
+    "pricing": {
+      "label": "Precios",
+      "heading": "Precios simples y",
+      "headingAccent": "transparentes",
+      "subheading": "Empieza gratis. Mejora cuando estés listo.",
+      "perMonth": "/mes",
+      "mostPopular": "Más Popular",
+      "getStarted": "Comenzar",
+      "contactSales": "Contactar Ventas",
+      "plan1Name": "Inicial",
+      "plan1Desc": "Perfecto para creadores individuales",
+      "plan2Name": "Pro",
+      "plan2Desc": "Para creadores de contenido serios",
+      "plan3Name": "Agencia",
+      "plan3Desc": "Para equipos y agencias"
+    },
+    "footer": {
+      "tagline": "Reutilización de video con IA. Convierte videos largos en clips virales cortos automáticamente.",
+      "product": "Producto",
+      "legal": "Legal",
+      "features": "Características",
+      "pricing": "Precios",
+      "api": "API",
+      "blog": "Blog",
+      "terms": "Términos",
+      "privacy": "Privacidad",
+      "about": "Acerca de",
+      "rights": "Todos los derechos reservados."
+    }
+  },
+  "auth": {
+    "backToHome": "Volver al inicio",
+    "createAccount": "Crear una cuenta",
+    "signIn": "Inicia sesión en CutViral",
+    "signUpSubtitle": "Comienza a crear clips virales hoy",
+    "signInSubtitle": "¡Bienvenido de nuevo! Hagamos algunos clips.",
+    "continueWithGoogle": "Continuar con Google",
+    "orContinueWithEmail": "o continuar con correo",
+    "fullName": "Nombre Completo",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "loading": "Cargando...",
+    "createAccountBtn": "Crear Cuenta",
+    "signInBtn": "Iniciar Sesión",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "dontHaveAccount": "¿No tienes una cuenta?",
+    "signInLink": "Iniciar sesión",
+    "signUpLink": "Registrarse",
+    "checkEmail": "Revisa tu correo",
+    "confirmationSent": "Te enviamos un enlace de confirmación para verificar tu cuenta.",
+    "error": "Error"
+  },
   "dashboard": {
     "yourVideos": "Tus Videos",
     "manageContent": "Gestiona y reutiliza tu contenido",

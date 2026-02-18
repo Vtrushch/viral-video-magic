@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { Scissors, Twitter, Github, Linkedin } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const Footer = () => {
+  const { t } = useTranslation();
+
   return (
     <footer className="py-16 border-t border-border bg-background">
       <div className="container mx-auto px-6">
@@ -14,26 +17,26 @@ const Footer = () => {
               CutViral<span className="text-primary">.ai</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs">
-              AI-powered video repurposing. Turn long videos into viral short clips automatically.
+              {t('landing.footer.tagline')}
             </p>
           </div>
 
           <div className="flex gap-16">
             <div>
-              <h4 className="font-semibold text-sm mb-3">Product</h4>
+              <h4 className="font-semibold text-sm mb-3">{t('landing.footer.product')}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#features" className="hover:text-foreground transition-colors">Features</a></li>
-                <li><a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a></li>
-                <li><span className="opacity-50">API</span></li>
-                <li><span className="opacity-50">Blog</span></li>
+                <li><a href="#features" className="hover:text-foreground transition-colors">{t('landing.footer.features')}</a></li>
+                <li><a href="#pricing" className="hover:text-foreground transition-colors">{t('landing.footer.pricing')}</a></li>
+                <li><span className="opacity-50">{t('landing.footer.api')}</span></li>
+                <li><span className="opacity-50">{t('landing.footer.blog')}</span></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold text-sm mb-3">Legal</h4>
+              <h4 className="font-semibold text-sm mb-3">{t('landing.footer.legal')}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><span className="opacity-50">Terms</span></li>
-                <li><span className="opacity-50">Privacy</span></li>
-                <li><span className="opacity-50">About</span></li>
+                <li><span className="opacity-50">{t('landing.footer.terms')}</span></li>
+                <li><span className="opacity-50">{t('landing.footer.privacy')}</span></li>
+                <li><span className="opacity-50">{t('landing.footer.about')}</span></li>
               </ul>
             </div>
           </div>
@@ -52,7 +55,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-12 pt-6 border-t border-border text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} CutViral.ai. All rights reserved.
+          © {new Date().getFullYear()} CutViral.ai. {t('landing.footer.rights')}
         </div>
       </div>
     </footer>

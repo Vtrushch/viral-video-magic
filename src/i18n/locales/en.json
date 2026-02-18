@@ -9,6 +9,108 @@
     "signOut": "Sign Out",
     "credits": "Credits"
   },
+  "landing": {
+    "nav": {
+      "howItWorks": "How it works",
+      "features": "Features",
+      "pricing": "Pricing",
+      "signIn": "Sign In",
+      "getStarted": "Get Started"
+    },
+    "hero": {
+      "badge": "AI-Powered Video Repurposing",
+      "heading1": "Turn 1 hour into",
+      "heading2": "10 viral shorts",
+      "heading3": "in 5 minutes",
+      "subheading": "AI-powered video repurposing for creators, agencies, and brands.",
+      "stopEditing": "Stop editing. Start scaling.",
+      "getStartedFree": "Get Started Free",
+      "seeHowItWorks": "See How It Works",
+      "trustedBy": "Trusted by 10,000+ creators worldwide",
+      "pills": {
+        "aiFinds": "AI finds viral moments",
+        "proCaptions": "Pro captions in seconds",
+        "languages": "30+ languages",
+        "export": "Export everywhere"
+      }
+    },
+    "howItWorks": {
+      "label": "How it works",
+      "heading": "Three steps to",
+      "headingAccent": "viral content",
+      "step1Title": "Upload Your Video",
+      "step1Desc": "Drag & drop your podcast, webinar, or long-form video. We support all major formats.",
+      "step2Title": "AI Magic",
+      "step2Desc": "Our AI analyzes engagement patterns and finds the 10 best viral-worthy moments automatically.",
+      "step3Title": "Export Everywhere",
+      "step3Desc": "Download clips with captions or post directly to TikTok, Reels, Shorts, and more."
+    },
+    "features": {
+      "label": "Features",
+      "heading": "Everything you need to",
+      "headingAccent": "go viral",
+      "subheading": "Powerful AI tools that handle the heavy lifting so you can focus on creating.",
+      "feature1Title": "Smart Clip Detection",
+      "feature1Desc": "AI analyzes engagement patterns to find the most shareable moments in your long-form content.",
+      "feature2Title": "Auto Captions",
+      "feature2Desc": "Professional animated captions generated automatically. Choose from multiple styles and animations.",
+      "feature3Title": "Multi-Language",
+      "feature3Desc": "Translate and dub your content into 30+ languages. Reach a global audience effortlessly.",
+      "feature4Title": "Viral Score",
+      "feature4Desc": "Each clip gets a viral potential score powered by AI to help you pick the winners."
+    },
+    "pricing": {
+      "label": "Pricing",
+      "heading": "Simple, transparent",
+      "headingAccent": "pricing",
+      "subheading": "Start free. Upgrade when you're ready.",
+      "perMonth": "/month",
+      "mostPopular": "Most Popular",
+      "getStarted": "Get Started",
+      "contactSales": "Contact Sales",
+      "plan1Name": "Starter",
+      "plan1Desc": "Perfect for individual creators",
+      "plan2Name": "Pro",
+      "plan2Desc": "For serious content creators",
+      "plan3Name": "Agency",
+      "plan3Desc": "For teams and agencies"
+    },
+    "footer": {
+      "tagline": "AI-powered video repurposing. Turn long videos into viral short clips automatically.",
+      "product": "Product",
+      "legal": "Legal",
+      "features": "Features",
+      "pricing": "Pricing",
+      "api": "API",
+      "blog": "Blog",
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "about": "About",
+      "rights": "All rights reserved."
+    }
+  },
+  "auth": {
+    "backToHome": "Back to home",
+    "createAccount": "Create your account",
+    "signIn": "Sign in to CutViral",
+    "signUpSubtitle": "Start creating viral clips today",
+    "signInSubtitle": "Welcome back! Let's make some clips.",
+    "continueWithGoogle": "Continue with Google",
+    "orContinueWithEmail": "or continue with email",
+    "fullName": "Full Name",
+    "email": "Email",
+    "password": "Password",
+    "loading": "Loading...",
+    "createAccountBtn": "Create Account",
+    "signInBtn": "Sign In",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "signInLink": "Sign in",
+    "signUpLink": "Sign up",
+    "checkEmail": "Check your email",
+    "confirmationSent": "We sent you a confirmation link to verify your account.",
+    "error": "Error"
+  },
   "dashboard": {
     "yourVideos": "Your Videos",
     "manageContent": "Manage and repurpose your content",
