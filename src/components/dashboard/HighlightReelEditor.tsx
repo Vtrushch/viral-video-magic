@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
-import { X, GripVertical, Sparkles, Clock, Loader2, Plus, Minus, Film } from "lucide-react";
+import { X, GripVertical, Sparkles, Clock, Loader2, Plus, Minus, Film, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import type { Tables } from "@/integrations/supabase/types";
 import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
 import {
@@ -27,6 +28,7 @@ interface HighlightReelEditorProps {
   video: Tables<"videos">;
   clips: Tables<"clips">[];
   onClose: () => void;
+  initialSelectedIds?: string[];
 }
 
 const CAPTION_STYLES = ["hormozi", "mrbeast", "minimal"] as const;
@@ -35,10 +37,12 @@ function SortableClipItem({
   clip,
   index,
   onRemove,
+  isAiRecommended,
 }: {
   clip: Tables<"clips">;
   index: number;
   onRemove: (id: string) => void;
+  isAiRecommended?: boolean;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: clip.id });
@@ -78,7 +82,15 @@ function SortableClipItem({
         />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-foreground truncate">{clip.title}</p>
+        <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+          <p className="text-sm font-medium text-foreground truncate">{clip.title}</p>
+          {isAiRecommended && (
+            <span className="inline-flex items-center gap-0.5 text-[9px] font-semibold px-1.5 py-0.5 rounded-md"
+              style={{ background: "hsl(var(--primary)/0.15)", color: "hsl(var(--primary))", border: "1px solid hsl(var(--primary)/0.3)" }}>
+              <Zap className="w-2 h-2" /> AI
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-2 mt-0.5">
           {clip.duration_seconds && (
             <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
@@ -100,9 +112,23 @@ function SortableClipItem({
   );
 }
 
-export default function HighlightReelEditor({ video, clips, onClose }: HighlightReelEditorProps) {
+export default function HighlightReelEditor({ video, clips, onClose, initialSelectedIds }: HighlightReelEditorProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState(`Best of ${video.title}`);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  // Auto-select top 3 by viral score if no initialSelectedIds provided
+  const defaultSelected = useMemo(() => {
+    if (initialSelectedIds && initialSelectedIds.length > 0) return initialSelectedIds;
+    return [...clips]
+      .filter((c) => c.viral_score != null)
+      .sort((a, b) => (b.viral_score ?? 0) - (a.viral_score ?? 0))
+      .slice(0, 3)
+      .map((c) => c.id);
+  }, [clips, initialSelectedIds]);
+
+  const [selectedIds, setSelectedIds] = useState<string[]>(defaultSelected);
+  const aiRecommendedIds = useMemo(() => defaultSelected, [defaultSelected]);
+
   const [captionStyle, setCaptionStyle] = useState<string>("hormozi");
   const [addTransitions, setAddTransitions] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -223,8 +249,8 @@ export default function HighlightReelEditor({ video, clips, onClose }: Highlight
               <Film className="w-4 h-4 text-primary-foreground" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-foreground">Highlight Reel Editor</h2>
-              <p className="text-xs text-muted-foreground">Combine your best clips into one video</p>
+              <h2 className="text-base font-bold text-foreground">{t("highlightReel.editor")}</h2>
+              <p className="text-xs text-muted-foreground">{t("highlightReel.combineClips")}</p>
             </div>
           </div>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
@@ -235,7 +261,7 @@ export default function HighlightReelEditor({ video, clips, onClose }: Highlight
         <div className="flex-1 overflow-y-auto">
           {/* Title */}
           <div className="px-6 pt-5 pb-3">
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Reel Title</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">{t("highlightReel.reelTitle")}</label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -244,12 +270,23 @@ export default function HighlightReelEditor({ video, clips, onClose }: Highlight
             />
           </div>
 
+          {/* AI Recommended banner */}
+          {aiRecommendedIds.length > 0 && (
+            <div className="mx-6 mb-3 flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
+              style={{ background: "hsl(var(--primary)/0.08)", border: "1px solid hsl(var(--primary)/0.2)" }}>
+              <Sparkles className="w-3.5 h-3.5 text-primary shrink-0" />
+              <span className="text-primary/80">
+                ✨ {t("highlightReel.aiRecommended")} — top {aiRecommendedIds.length} clips pre-selected by viral score
+              </span>
+            </div>
+          )}
+
           <div className="px-6 grid grid-cols-1 md:grid-cols-2 gap-5 pb-5">
             {/* Available clips */}
             <div>
               <div className="flex items-center justify-between mb-3">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Available Clips ({availableClips.length})
+                  {t("highlightReel.availableClips")} ({availableClips.length})
                 </label>
                 <span className="text-[10px] text-muted-foreground/60">Click to add</span>
               </div>
@@ -274,8 +311,10 @@ export default function HighlightReelEditor({ video, clips, onClose }: Highlight
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-foreground truncate">{clip.title}</p>
-                        <div className="flex items-center gap-1.5 mt-0.5">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <p className="text-xs font-medium text-foreground truncate">{clip.title}</p>
+                        </div>
+                        <div className="flex items-center gap-1.5">
                           {clip.duration_seconds && (
                             <span className="text-[10px] text-muted-foreground">{clip.duration_seconds}s</span>
                           )}
@@ -295,7 +334,7 @@ export default function HighlightReelEditor({ video, clips, onClose }: Highlight
             <div>
               <div className="flex items-center justify-between mb-3">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Selected ({selectedIds.length}/10)
+                  {t("highlightReel.selected")} ({selectedIds.length}/10)
                 </label>
                 {totalDuration > 0 && (
                   <span className="text-[10px] text-muted-foreground flex items-center gap-1">
@@ -307,7 +346,7 @@ export default function HighlightReelEditor({ video, clips, onClose }: Highlight
               {selectedIds.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-48 rounded-xl border border-dashed border-border/30 text-muted-foreground/40">
                   <Film className="w-8 h-8 mb-2" />
-                  <p className="text-xs">Add clips from the left</p>
+                  <p className="text-xs">{t("highlightReel.addClipsFromLeft")}</p>
                   <p className="text-[10px] mt-0.5">Minimum 2, maximum 10</p>
                 </div>
               ) : (
@@ -320,6 +359,7 @@ export default function HighlightReelEditor({ video, clips, onClose }: Highlight
                           clip={clip}
                           index={i}
                           onRemove={removeFromSelected}
+                          isAiRecommended={aiRecommendedIds.includes(clip.id)}
                         />
                       ))}
                     </div>
@@ -334,7 +374,7 @@ export default function HighlightReelEditor({ video, clips, onClose }: Highlight
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Caption style */}
               <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Caption Style</label>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">{t("videoConfig.captionStyle")}</label>
                 <div className="flex gap-2">
                   {CAPTION_STYLES.map((style) => (
                     <button
@@ -354,7 +394,7 @@ export default function HighlightReelEditor({ video, clips, onClose }: Highlight
 
               {/* Transitions toggle */}
               <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Transitions</label>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">{t("highlightReel.transitions")}</label>
                 <button
                   onClick={() => setAddTransitions(!addTransitions)}
                   className={`w-full py-2 px-4 rounded-lg text-xs font-medium border transition-all flex items-center justify-between ${
@@ -363,7 +403,7 @@ export default function HighlightReelEditor({ video, clips, onClose }: Highlight
                       : "border-border/30 bg-card/20 text-muted-foreground"
                   }`}
                 >
-                  <span>{addTransitions ? "✓ Crossfade (0.5s)" : "No transitions"}</span>
+                  <span>{addTransitions ? `✓ ${t("highlightReel.crossfade")} (0.5s)` : "No transitions"}</span>
                   <div className={`w-8 h-4 rounded-full transition-colors relative ${addTransitions ? "bg-accent" : "bg-muted"}`}>
                     <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${addTransitions ? "left-4" : "left-0.5"}`} />
                   </div>
@@ -381,7 +421,7 @@ export default function HighlightReelEditor({ video, clips, onClose }: Highlight
               : `${selectedIds.length} clips · ${formatDur(totalDuration)}`}
           </div>
           <div className="flex gap-3">
-            <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
+            <Button variant="ghost" size="sm" onClick={onClose}>{t("upload.cancel")}</Button>
             <Button
               variant="hero"
               size="sm"
@@ -392,7 +432,7 @@ export default function HighlightReelEditor({ video, clips, onClose }: Highlight
               {creating ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Creating...</>
               ) : (
-                <><Sparkles className="w-4 h-4 mr-2" /> Create Highlight Reel</>
+                <><Sparkles className="w-4 h-4 mr-2" /> {t("highlightReel.createReel")}</>
               )}
             </Button>
           </div>

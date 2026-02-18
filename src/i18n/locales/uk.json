@@ -281,5 +281,23 @@
     "checkEmail": "Перевірте пошту",
     "confirmationSent": "Ми надіслали вам посилання для підтвердження акаунту.",
     "error": "Помилка"
+  },
+  "highlightReel": {
+    "create": "Створити Підбірку",
+    "editor": "Редактор Підбірки",
+    "reels": "Підбірки",
+    "quickReel": "Швидка Підбірка",
+    "aiRecommended": "Рекомендовано ШІ",
+    "combineClips": "Об'єднайте найкращі кліпи",
+    "createFirst": "Створіть Першу Підбірку",
+    "noReelsYet": "Підбірок ще немає",
+    "rendering": "Рендеринг...",
+    "availableClips": "Доступні Кліпи",
+    "selected": "Обрані",
+    "addClipsFromLeft": "Додайте кліпи зліва",
+    "reelTitle": "Назва Підбірки",
+    "transitions": "Переходи",
+    "crossfade": "Перехресне затухання",
+    "createReel": "Створити Підбірку"
   }
 }

@@ -325,6 +325,7 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
   const [videoSignedUrl, setVideoSignedUrl] = useState<string | null>(null);
   const [playerPlaying, setPlayerPlaying] = useState(false);
   const [showReelEditor, setShowReelEditor] = useState(false);
+  const [reelEditorPreselect, setReelEditorPreselect] = useState<string[]>([]);
   const [reels, setReels] = useState<any[]>([]);
   const mainVideoRef = useRef<HTMLVideoElement>(null);
   const settings = video.settings as any;
@@ -340,7 +341,7 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
       });
   }, [video.file_path]);
 
-  // Load highlight reels for this video
+  // Load highlight reels for this video + realtime subscription
   useEffect(() => {
     supabase
       .from("highlight_reels" as any)
@@ -348,6 +349,30 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
       .eq("video_id", video.id)
       .order("created_at", { ascending: false })
       .then(({ data }) => { if (data) setReels(data); });
+
+    // Realtime subscription for reel status changes
+    const channel = supabase
+      .channel(`reels-realtime-${video.id}`)
+      .on("postgres_changes", {
+        event: "*",
+        schema: "public",
+        table: "highlight_reels",
+        filter: `video_id=eq.${video.id}`,
+      }, (payload: any) => {
+        if (payload.eventType === "INSERT") {
+          setReels((prev) => [payload.new, ...prev]);
+        } else if (payload.eventType === "UPDATE") {
+          setReels((prev) => prev.map((r) => r.id === payload.new.id ? payload.new : r));
+          if (payload.new.status === "ready") {
+            toast.success(`Highlight reel ready: ${payload.new.title}`);
+          }
+        } else if (payload.eventType === "DELETE") {
+          setReels((prev) => prev.filter((r) => r.id !== payload.old.id));
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [video.id]);
 
   const toggleMainPlayer = () => {
@@ -543,14 +568,33 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
         </div>
         <div className="flex flex-wrap gap-2 w-full sm:w-auto">
           {clips.length >= 2 && (
-            <Button
-              variant="hero-outline"
-              size="sm"
-              className="flex-1 sm:flex-none"
-              onClick={() => setShowReelEditor(true)}
-            >
-              <Clapperboard className="w-4 h-4 mr-1.5" /> Create Highlight Reel
-            </Button>
+            <>
+              <Button
+                variant="hero-outline"
+                size="sm"
+                className="flex-1 sm:flex-none"
+                onClick={() => {
+                  const top3 = [...clips]
+                    .filter((c) => c.viral_score != null)
+                    .sort((a, b) => (b.viral_score ?? 0) - (a.viral_score ?? 0))
+                    .slice(0, 3)
+                    .map((c) => c.id);
+                  setReelEditorPreselect(top3);
+                  setShowReelEditor(true);
+                }}
+                title="Quick Reel — AI picks best clips"
+              >
+                <Zap className="w-4 h-4 mr-1.5" /> Quick Reel
+              </Button>
+              <Button
+                variant="hero-outline"
+                size="sm"
+                className="flex-1 sm:flex-none"
+                onClick={() => { setReelEditorPreselect([]); setShowReelEditor(true); }}
+              >
+                <Clapperboard className="w-4 h-4 mr-1.5" /> Create Highlight Reel
+              </Button>
+            </>
           )}
           <Button
             variant="hero-outline"
@@ -691,7 +735,8 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
         <HighlightReelEditor
           video={video}
           clips={clips}
-          onClose={() => setShowReelEditor(false)}
+          initialSelectedIds={reelEditorPreselect}
+          onClose={() => { setShowReelEditor(false); setReelEditorPreselect([]); }}
         />
       )}
 
@@ -708,7 +753,7 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
           {reels.length === 0 ? (
             <div className="glass-card rounded-xl p-6 text-center">
               <p className="text-sm text-muted-foreground mb-3">No highlight reels yet. Combine your best clips!</p>
-              <Button variant="hero-outline" size="sm" onClick={() => setShowReelEditor(true)}>
+              <Button variant="hero-outline" size="sm" onClick={() => { setReelEditorPreselect([]); setShowReelEditor(true); }}>
                 <Clapperboard className="w-4 h-4 mr-2" /> Create Your First Reel
               </Button>
             </div>

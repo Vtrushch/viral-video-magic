@@ -281,5 +281,23 @@
     "en": "English",
     "es": "Spanish",
     "uk": "Ukrainian"
+  },
+  "highlightReel": {
+    "create": "Create Highlight Reel",
+    "editor": "Highlight Reel Editor",
+    "reels": "Highlight Reels",
+    "quickReel": "Quick Reel",
+    "aiRecommended": "AI Recommended",
+    "combineClips": "Combine your best clips",
+    "createFirst": "Create Your First Reel",
+    "noReelsYet": "No highlight reels yet",
+    "rendering": "Rendering...",
+    "availableClips": "Available Clips",
+    "selected": "Selected",
+    "addClipsFromLeft": "Add clips from the left",
+    "reelTitle": "Reel Title",
+    "transitions": "Transitions",
+    "crossfade": "Crossfade",
+    "createReel": "Create Highlight Reel"
   }
 }
