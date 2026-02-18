@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, GripVertical, Sparkles, Clock, Loader2, Film, Zap,
   ChevronLeft, ChevronRight, Play, Pause, RefreshCw, Plus, X,
-  ChevronRight as BreadcrumbChevron, PlayCircle,
+  ChevronRight as BreadcrumbChevron, PlayCircle, Volume2, VolumeX,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -165,10 +165,14 @@ export default function HighlightReelPage() {
 
   /* Video player */
   const videoRef = useRef<HTMLVideoElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [playAllIndex, setPlayAllIndex] = useState<number | null>(null); // null = not in Play All mode
+  const [videoDuration, setVideoDuration] = useState(0);
+  const [flashIcon, setFlashIcon] = useState<"play" | "pause" | null>(null);
+  const [playAllIndex, setPlayAllIndex] = useState<number | null>(null);
 
   /* Editor state */
   const [title, setTitle] = useState("My Highlight Reel");
@@ -332,15 +336,44 @@ export default function HighlightReelPage() {
           setActiveClipId(null);
         }
       }
+    } else if (activeClipId) {
+      // Single clip preview: auto-pause at endTime
+      const clip = clips.find((c) => c.id === activeClipId);
+      if (clip) {
+        const timing = timingOverrides[activeClipId] || { startTime: parseTime(clip.start_time), endTime: parseTime(clip.end_time) };
+        if (el.currentTime >= timing.endTime - 0.05) {
+          el.pause();
+          setPlaying(false);
+          setActiveClipId(null);
+        }
+      }
     }
-  }, [playAllIndex, selectedClips, timingOverrides]);
+  }, [playAllIndex, activeClipId, selectedClips, clips, timingOverrides]);
 
   const togglePlay = useCallback(() => {
     const el = videoRef.current;
     if (!el) return;
-    if (playing) { el.pause(); setPlaying(false); }
-    else { el.play().catch(() => {}); setPlaying(true); }
+    if (playing) {
+      el.pause();
+      setPlaying(false);
+      setFlashIcon("pause");
+      setTimeout(() => setFlashIcon(null), 600);
+    } else {
+      el.play().catch(() => {});
+      setPlaying(true);
+      setFlashIcon("play");
+      setTimeout(() => setFlashIcon(null), 600);
+    }
   }, [playing]);
+
+  const handleProgressClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const el = videoRef.current;
+    if (!el || videoDuration === 0) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    el.currentTime = ratio * videoDuration;
+    setCurrentTime(ratio * videoDuration);
+  }, [videoDuration]);
 
   /* ─── Editor actions ─── */
   const adjustStart = useCallback((id: string, delta: number) => {
@@ -528,82 +561,74 @@ export default function HighlightReelPage() {
       {/* ─── Main layout ─── */}
       <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-auto lg:overflow-hidden">
 
-        {/* LEFT: Video player (60%) */}
-        <div className="w-full lg:w-[60%] flex flex-col border-b lg:border-b-0 lg:border-r border-border/30 flex-shrink-0 lg:flex-shrink bg-black/30">
+        {/* LEFT: Video player (60%) — no phone frame, fills panel */}
+        <div className="w-full lg:w-[60%] flex flex-col border-b lg:border-b-0 lg:border-r border-border/30 bg-black">
           {/* Player area */}
-          <div className="flex-1 flex items-center justify-center p-4 lg:p-6 min-h-[300px] lg:min-h-0">
-            <div className="relative w-full max-w-[340px]">
-              {/* 9:16 phone mockup on desktop, plain on mobile */}
-              <div className="hidden lg:block">
-                <div className="relative" style={{ width: "100%", maxWidth: "280px", margin: "0 auto" }}>
-                  {/* Phone frame */}
-                  <div className="absolute inset-0 rounded-[2.5rem] border-4 border-border/40 pointer-events-none z-10"
-                    style={{ background: "linear-gradient(145deg, rgba(255,255,255,0.04) 0%, transparent 60%)" }} />
-                  <div className="relative aspect-[9/16] rounded-[2.2rem] overflow-hidden bg-black">
-                    {signedUrl ? (
-                      <video
-                        ref={videoRef}
-                        src={signedUrl}
-                        className="w-full h-full object-cover"
-                        onTimeUpdate={handleTimeUpdate}
-                        onEnded={() => { setPlaying(false); if (playAllIndex === null) setActiveClipId(null); }}
-                        onPause={() => setPlaying(false)}
-                        onPlay={() => setPlaying(true)}
-                        playsInline
-                        preload="auto"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Loader2 className="w-8 h-8 text-muted-foreground/40 animate-spin" />
-                      </div>
-                    )}
-                    {/* Play/pause overlay */}
-                    {!playing && signedUrl && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 cursor-pointer" onClick={togglePlay}>
-                        <div className="w-14 h-14 rounded-full gradient-bg flex items-center justify-center shadow-lg glow-primary hover:scale-110 transition-transform">
-                          <Play className="w-6 h-6 text-primary-foreground ml-0.5" />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+          <div className="flex-1 flex items-center justify-center p-4 lg:p-6 min-h-[260px] lg:min-h-0">
+            <div className="relative w-full">
+              <div className="relative rounded-lg overflow-hidden bg-black border border-white/10">
 
-              {/* Mobile: 16:9 player */}
-              <div className="block lg:hidden w-full">
-                <div className="relative aspect-video rounded-xl overflow-hidden bg-black">
-                  {signedUrl ? (
-                    <video
-                      ref={videoRef}
-                      src={signedUrl}
-                      className="w-full h-full object-contain"
-                      onTimeUpdate={handleTimeUpdate}
-                      onEnded={() => { setPlaying(false); if (playAllIndex === null) setActiveClipId(null); }}
-                      onPause={() => setPlaying(false)}
-                      onPlay={() => setPlaying(true)}
-                      playsInline
-                      preload="auto"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Loader2 className="w-8 h-8 text-muted-foreground/40 animate-spin" />
+                {/* Loading */}
+                {!signedUrl && (
+                  <div className="w-full flex items-center justify-center bg-black" style={{ aspectRatio: "16/9" }}>
+                    <Loader2 className="w-8 h-8 text-muted-foreground/40 animate-spin" />
+                  </div>
+                )}
+
+                {/* Video — single element, visible on all screen sizes */}
+                {signedUrl && (
+                  <video
+                    ref={videoRef}
+                    src={signedUrl}
+                    className="w-full block cursor-pointer"
+                    style={{ maxHeight: "70vh", objectFit: "contain", background: "#000" }}
+                    onTimeUpdate={handleTimeUpdate}
+                    onLoadedMetadata={() => {
+                      const el = videoRef.current;
+                      if (el) setVideoDuration(el.duration || 0);
+                    }}
+                    onEnded={() => { setPlaying(false); if (playAllIndex === null) setActiveClipId(null); }}
+                    onPause={() => setPlaying(false)}
+                    onPlay={() => setPlaying(true)}
+                    onClick={togglePlay}
+                    muted={muted}
+                    playsInline
+                    preload="auto"
+                  />
+                )}
+
+                {/* Flash icon overlay (YouTube-style) */}
+                {flashIcon && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div
+                      className="w-16 h-16 rounded-full bg-black/50 flex items-center justify-center"
+                      style={{ animation: "flash-fade 0.6s ease-out forwards" }}
+                    >
+                      {flashIcon === "play"
+                        ? <Play className="w-8 h-8 text-white ml-1" />
+                        : <Pause className="w-8 h-8 text-white" />}
                     </div>
-                  )}
-                  {!playing && signedUrl && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 cursor-pointer" onClick={togglePlay}>
-                      <div className="w-12 h-12 rounded-full gradient-bg flex items-center justify-center shadow-lg">
-                        <Play className="w-5 h-5 text-primary-foreground ml-0.5" />
-                      </div>
+                  </div>
+                )}
+
+                {/* Paused overlay — big play button */}
+                {!playing && signedUrl && !flashIcon && (
+                  <div
+                    className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer"
+                    onClick={togglePlay}
+                  >
+                    <div className="w-14 h-14 rounded-full gradient-bg flex items-center justify-center shadow-lg glow-primary hover:scale-110 transition-transform">
+                      <Play className="w-6 h-6 text-primary-foreground ml-0.5" />
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Player controls */}
-          <div className="shrink-0 px-4 pb-4 lg:px-6 lg:pb-6 space-y-3">
-            {/* Play All indicator */}
+          {/* Controls bar */}
+          <div className="shrink-0 px-4 pb-4 lg:px-6 lg:pb-5 space-y-2.5">
+            {/* Now-playing indicator */}
             {playAllIndex !== null && playAllClipTitle && (
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
                 style={{ background: "hsl(var(--primary)/0.08)", border: "1px solid hsl(var(--primary)/0.2)" }}>
@@ -614,40 +639,93 @@ export default function HighlightReelPage() {
               </div>
             )}
 
-            {/* Transport buttons */}
+            {/* Segment-aware progress bar */}
+            <div
+              ref={progressRef}
+              className="relative h-7 flex items-center cursor-pointer group select-none"
+              onClick={handleProgressClick}
+            >
+              {/* Track */}
+              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-white/10" />
+
+              {/* Clip segment highlights */}
+              {videoDuration > 0 && selectedClips.map((clip) => {
+                const seg = timingOverrides[clip.id] || { startTime: parseTime(clip.start_time), endTime: parseTime(clip.end_time) };
+                const left = (seg.startTime / videoDuration) * 100;
+                const width = Math.max(0.5, ((seg.endTime - seg.startTime) / videoDuration) * 100);
+                const isNowPlaying = activeClipId === clip.id;
+                return (
+                  <div
+                    key={clip.id}
+                    className="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-sm transition-colors"
+                    style={{
+                      left: `${left}%`,
+                      width: `${width}%`,
+                      background: isNowPlaying ? "hsl(349,100%,65%)" : "hsl(349,100%,59%,0.55)",
+                      boxShadow: isNowPlaying ? "0 0 8px hsl(349,100%,59%)" : undefined,
+                    }}
+                  />
+                );
+              })}
+
+              {/* Elapsed overlay */}
+              {videoDuration > 0 && (
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-white/20 pointer-events-none"
+                  style={{ width: `${(currentTime / videoDuration) * 100}%` }}
+                />
+              )}
+
+              {/* Playhead */}
+              {videoDuration > 0 && (
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white shadow pointer-events-none -ml-1.5 group-hover:scale-125 transition-transform"
+                  style={{ left: `${(currentTime / videoDuration) * 100}%` }}
+                />
+              )}
+            </div>
+
+            {/* Transport row */}
             <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={togglePlay}
-                className="flex-none h-9 w-9 p-0"
                 disabled={!signedUrl}
+                className="flex-none w-9 h-9 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors disabled:opacity-40"
               >
-                {playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              </Button>
+                {playing ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-white ml-0.5" />}
+              </button>
+
+              <button
+                onClick={() => setMuted((m) => !m)}
+                disabled={!signedUrl}
+                className="flex-none w-8 h-8 rounded-full flex items-center justify-center text-white/50 hover:text-white/90 hover:bg-white/10 transition-colors disabled:opacity-40"
+              >
+                {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+              </button>
+
+              <span className="text-xs text-muted-foreground font-mono">
+                {formatTimestamp(currentTime)} / {formatTimestamp(videoDuration)}
+              </span>
+
               <Button
                 variant="hero-outline"
                 size="sm"
                 onClick={handlePlayAll}
                 disabled={selectedClips.length === 0 || !signedUrl}
-                className="h-9 text-xs"
+                className="ml-auto h-8 text-xs px-3"
               >
-                <PlayCircle className="w-3.5 h-3.5 mr-1.5" />
+                <PlayCircle className="w-3.5 h-3.5 mr-1" />
                 {t("highlightReel.playAll")}
               </Button>
-              {/* Refresh */}
-              <Button
-                variant="ghost"
-                size="sm"
+
+              <button
                 onClick={() => { const el = videoRef.current; if (el) { setPlaying(false); el.pause(); el.load(); } }}
-                className="flex-none h-9 w-9 p-0 text-muted-foreground"
                 disabled={!signedUrl}
+                className="flex-none w-8 h-8 rounded-full flex items-center justify-center text-white/40 hover:text-white/80 hover:bg-white/10 transition-colors disabled:opacity-30"
+                title="Reload video"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
-              </Button>
-              <span className="text-xs text-muted-foreground font-mono ml-auto">
-                {formatTimestamp(currentTime)}
-              </span>
+              </button>
             </div>
           </div>
         </div>
