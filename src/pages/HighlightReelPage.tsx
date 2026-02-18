@@ -5,6 +5,7 @@ import {
   ArrowLeft, GripVertical, Sparkles, Clock, Loader2, Film, Zap,
   ChevronLeft, ChevronRight, Play, Pause, RefreshCw, Plus, X,
   ChevronRight as BreadcrumbChevron, PlayCircle, Volume2, VolumeX,
+  MousePointerClick,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +22,11 @@ import { CSS } from "@dnd-kit/utilities";
 
 /* ─── Types ─── */
 interface ClipTiming { startTime: number; endTime: number; }
+
+type PlayerMode =
+  | { type: "idle" }
+  | { type: "source"; clipId: string | null }     // source video, optionally bound to a clip
+  | { type: "rendered"; clipId: string; url: string }; // rendered clip video
 
 const CAPTION_STYLES = ["hormozi", "mrbeast", "minimal"] as const;
 
@@ -41,7 +47,8 @@ function formatDur(s: number): string {
 
 /* ─── Sortable Clip Item ─── */
 function SortableClipItem({
-  clip, index, onRemove, isAiRecommended, timing, onAdjustStart, onAdjustEnd, onPreview, isActive,
+  clip, index, onRemove, isAiRecommended, timing, onAdjustStart, onAdjustEnd,
+  onClickPreview, isActive, isPlaying,
 }: {
   clip: Tables<"clips">;
   index: number;
@@ -50,102 +57,130 @@ function SortableClipItem({
   timing: ClipTiming;
   onAdjustStart: (id: string, delta: number) => void;
   onAdjustEnd: (id: string, delta: number) => void;
-  onPreview: (clip: Tables<"clips">) => void;
+  onClickPreview: (clip: Tables<"clips">) => void;
   isActive?: boolean;
+  isPlaying?: boolean;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: clip.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
   const duration = Math.max(0, timing.endTime - timing.startTime);
+  const isRendered = clip.status === "ready" && !!clip.file_path;
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-start gap-2 p-3 rounded-xl border transition-all ${
-        isActive ? "border-primary/60 bg-primary/8" : isDragging ? "border-primary/50 bg-primary/10" : "border-border/40 bg-card/40"
+      className={`rounded-xl border transition-all overflow-hidden ${
+        isActive
+          ? "border-primary/70 shadow-[0_0_16px_-4px_hsl(var(--primary)/0.4)] bg-primary/5"
+          : isDragging
+          ? "border-primary/50 bg-primary/10"
+          : "border-border/40 bg-card/40 hover:border-border/60"
       }`}
     >
-      {/* Drag handle */}
+      {/* Clickable preview area (thumbnail + info) */}
       <div
-        {...attributes}
-        {...listeners}
-        className="text-muted-foreground/50 hover:text-muted-foreground cursor-grab active:cursor-grabbing touch-none mt-1"
+        className="flex items-start gap-2 p-3 cursor-pointer select-none"
+        onClick={() => onClickPreview(clip)}
+        title="Click to preview this clip"
       >
-        <GripVertical className="w-4 h-4" />
-      </div>
+        {/* Drag handle — stops propagation so it doesn't trigger preview */}
+        <div
+          {...attributes}
+          {...listeners}
+          className="text-muted-foreground/50 hover:text-muted-foreground cursor-grab active:cursor-grabbing touch-none mt-1"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <GripVertical className="w-4 h-4" />
+        </div>
 
-      {/* Index */}
-      <span className={`text-xs font-mono w-4 shrink-0 mt-1 ${isActive ? "text-primary font-bold" : "text-muted-foreground/50"}`}>{index + 1}</span>
+        {/* Index */}
+        <span className={`text-xs font-mono w-4 shrink-0 mt-1 ${isActive ? "text-primary font-bold" : "text-muted-foreground/50"}`}>
+          {index + 1}
+        </span>
 
-      {/* Thumbnail */}
-      <div className="w-8 h-14 rounded-md overflow-hidden shrink-0">
-        <ClipVideoThumbnail
-          renderedUrl={clip.status === "ready" && clip.file_path ? clip.file_path : null}
-          filePath={null}
-          startTime={clip.start_time}
-          fallbackImageUrl={clip.thumbnail_url || undefined}
-          alt={clip.title}
-          className="w-full h-full object-cover"
-        />
-      </div>
-
-      {/* Info + timing */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-          <p className="text-xs font-medium text-foreground truncate">{clip.title}</p>
-          {isAiRecommended && (
-            <span className="inline-flex items-center gap-0.5 text-[9px] font-semibold px-1.5 py-0.5 rounded-md"
-              style={{ background: "hsl(var(--primary)/0.15)", color: "hsl(var(--primary))", border: "1px solid hsl(var(--primary)/0.3)" }}>
-              <Zap className="w-2 h-2" /> AI
-            </span>
-          )}
-          {clip.viral_score != null && (
-            <span className="text-[9px] text-accent">⚡{clip.viral_score}</span>
+        {/* Thumbnail — 9:16 for rendered, 16:9 feel for source */}
+        <div className={`relative rounded-md overflow-hidden shrink-0 ${isRendered ? "w-8 h-14" : "w-12 h-8 mt-1"}`}>
+          <ClipVideoThumbnail
+            renderedUrl={isRendered ? clip.file_path! : null}
+            filePath={null}
+            startTime={clip.start_time}
+            fallbackImageUrl={clip.thumbnail_url || undefined}
+            alt={clip.title}
+            className="w-full h-full object-cover"
+          />
+          {/* Now playing indicator overlay */}
+          {isPlaying && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+              <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center">
+                <Play className="w-2 h-2 text-primary-foreground ml-0.5" />
+              </div>
+            </div>
           )}
         </div>
 
-        {/* Timing controls */}
-        <div className="space-y-1">
-          <div className="flex items-center gap-1">
-            <span className="text-[9px] text-muted-foreground/60 w-7 shrink-0">Start</span>
-            <button onClick={() => onAdjustStart(clip.id, -1)} className="w-5 h-5 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0">
-              <ChevronLeft className="w-3 h-3" />
-            </button>
-            <span className="text-[10px] font-mono text-foreground min-w-[36px] text-center">{formatTimestamp(timing.startTime)}</span>
-            <button onClick={() => onAdjustStart(clip.id, 1)} className="w-5 h-5 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0">
-              <ChevronRight className="w-3 h-3" />
-            </button>
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+            <p className="text-xs font-medium text-foreground truncate">{clip.title}</p>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="text-[9px] text-muted-foreground/60 w-7 shrink-0">End</span>
-            <button onClick={() => onAdjustEnd(clip.id, -1)} className="w-5 h-5 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0">
-              <ChevronLeft className="w-3 h-3" />
-            </button>
-            <span className="text-[10px] font-mono text-foreground min-w-[36px] text-center">{formatTimestamp(timing.endTime)}</span>
-            <button onClick={() => onAdjustEnd(clip.id, 1)} className="w-5 h-5 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0">
-              <ChevronRight className="w-3 h-3" />
-            </button>
+          <div className="flex items-center gap-1.5">
+            {isAiRecommended && (
+              <span className="inline-flex items-center gap-0.5 text-[9px] font-semibold px-1.5 py-0.5 rounded-md"
+                style={{ background: "hsl(var(--primary)/0.15)", color: "hsl(var(--primary))", border: "1px solid hsl(var(--primary)/0.3)" }}>
+                <Zap className="w-2 h-2" /> AI
+              </span>
+            )}
+            {clip.viral_score != null && (
+              <span className="text-[9px] text-accent">⚡{clip.viral_score}</span>
+            )}
+            {isRendered ? (
+              <span className="text-[9px] px-1 rounded" style={{ background: "hsl(var(--accent)/0.15)", color: "hsl(var(--accent))" }}>
+                ✓ rendered
+              </span>
+            ) : (
+              <span className="text-[9px] text-muted-foreground/50">source preview</span>
+            )}
           </div>
-          <p className="text-[9px] text-muted-foreground/50">{duration.toFixed(0)}s</p>
+          {isActive && isPlaying && (
+            <div className="flex items-center gap-1 mt-1">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              <span className="text-[9px] text-primary font-medium">Now Playing</span>
+            </div>
+          )}
         </div>
+
+        {/* Remove — stops propagation */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onRemove(clip.id); }}
+          className="text-muted-foreground/40 hover:text-destructive transition-colors shrink-0 mt-1"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
       </div>
 
-      {/* Preview button */}
-      <button
-        onClick={() => onPreview(clip)}
-        className="text-muted-foreground/50 hover:text-primary transition-colors shrink-0 mt-1"
-        title="Preview this clip"
-      >
-        <Play className="w-3.5 h-3.5" />
-      </button>
-
-      {/* Remove */}
-      <button
-        onClick={() => onRemove(clip.id)}
-        className="text-muted-foreground/40 hover:text-destructive transition-colors shrink-0 mt-1"
-      >
-        <X className="w-3.5 h-3.5" />
-      </button>
+      {/* Timing controls (below the clickable row) */}
+      <div className="px-3 pb-3 space-y-1" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-1">
+          <span className="text-[9px] text-muted-foreground/60 w-7 shrink-0">Start</span>
+          <button onClick={() => onAdjustStart(clip.id, -1)} className="w-5 h-5 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0">
+            <ChevronLeft className="w-3 h-3" />
+          </button>
+          <span className="text-[10px] font-mono text-foreground min-w-[36px] text-center">{formatTimestamp(timing.startTime)}</span>
+          <button onClick={() => onAdjustStart(clip.id, 1)} className="w-5 h-5 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0">
+            <ChevronRight className="w-3 h-3" />
+          </button>
+          <span className="mx-1 text-muted-foreground/30 text-[9px]">→</span>
+          <button onClick={() => onAdjustEnd(clip.id, -1)} className="w-5 h-5 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0">
+            <ChevronLeft className="w-3 h-3" />
+          </button>
+          <span className="text-[10px] font-mono text-foreground min-w-[36px] text-center">{formatTimestamp(timing.endTime)}</span>
+          <button onClick={() => onAdjustEnd(clip.id, 1)} className="w-5 h-5 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0">
+            <ChevronRight className="w-3 h-3" />
+          </button>
+          <span className="text-[9px] text-muted-foreground/40 ml-1">{duration.toFixed(0)}s</span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -160,19 +195,31 @@ export default function HighlightReelPage() {
   /* Data */
   const [video, setVideo] = useState<Tables<"videos"> | null>(null);
   const [clips, setClips] = useState<Tables<"clips">[]>([]);
-  const [reel, setReel] = useState<any | null>(null);
   const [loadingData, setLoadingData] = useState(true);
 
-  /* Video player */
-  const videoRef = useRef<HTMLVideoElement>(null);
+  /* Video player state */
+  const sourceVideoRef = useRef<HTMLVideoElement>(null);
+  const renderedVideoRef = useRef<HTMLVideoElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
-  const [signedUrl, setSignedUrl] = useState<string | null>(null);
+
+  const [signedSourceUrl, setSignedSourceUrl] = useState<string | null>(null);
+  const [renderedClipUrl, setRenderedClipUrl] = useState<string | null>(null); // signed URL for rendered clip
+
+  // playerMode drives which video element is shown and in what container
+  const [playerMode, setPlayerMode] = useState<PlayerMode>({ type: "idle" });
+
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [videoDuration, setVideoDuration] = useState(0);
+  const [sourceDuration, setSourceDuration] = useState(0);
+  const [renderedDuration, setRenderedDuration] = useState(0);
   const [flashIcon, setFlashIcon] = useState<"play" | "pause" | null>(null);
+
+  // Play-all state (always uses source video with seeking)
   const [playAllIndex, setPlayAllIndex] = useState<number | null>(null);
+
+  // Banner for "not rendered yet" clips
+  const [showSourceBanner, setShowSourceBanner] = useState(false);
 
   /* Editor state */
   const [title, setTitle] = useState("My Highlight Reel");
@@ -183,27 +230,28 @@ export default function HighlightReelPage() {
   const [timingOverrides, setTimingOverrides] = useState<Record<string, ClipTiming>>({});
   const [saving, setSaving] = useState(false);
   const [showAddPanel, setShowAddPanel] = useState(false);
-  const [activeClipId, setActiveClipId] = useState<string | null>(null); // which clip is being previewed
 
-  /* Load data */
+  /* Derived: which clip is currently active in the player */
+  const activeClipId = playerMode.type !== "idle" ? (
+    playerMode.type === "rendered" ? playerMode.clipId : playerMode.clipId
+  ) : null;
+
+  /* ─── Load data ─── */
   useEffect(() => {
     async function load() {
       setLoadingData(true);
       try {
         let vid: Tables<"videos"> | null = null;
-        let reelData: any = null;
 
         if (isEditing && reelId) {
           const { data: r } = await supabase.from("highlight_reels" as any).select("*").eq("id", reelId).single();
-          reelData = r;
-          if (reelData) {
-            const { data: v } = await supabase.from("videos").select("*").eq("id", reelData.video_id).single();
+          if (r) {
+            const { data: v } = await supabase.from("videos").select("*").eq("id", (r as any).video_id).single();
             vid = v;
-            setReel(reelData);
-            setTitle(reelData.title);
-            setCaptionStyle(reelData.caption_style || "hormozi");
-            setAddTransitions(reelData.add_transitions ?? true);
-            setSelectedIds(reelData.clip_ids || []);
+            setTitle((r as any).title);
+            setCaptionStyle((r as any).caption_style || "hormozi");
+            setAddTransitions((r as any).add_transitions ?? true);
+            setSelectedIds((r as any).clip_ids || []);
           }
         } else if (videoId) {
           const { data: v } = await supabase.from("videos").select("*").eq("id", videoId).single();
@@ -212,7 +260,6 @@ export default function HighlightReelPage() {
 
         if (vid) {
           setVideo(vid);
-          // Load clips
           const { data: clipsData } = await supabase
             .from("clips")
             .select("*")
@@ -222,19 +269,14 @@ export default function HighlightReelPage() {
           const loadedClips = (clipsData || []) as Tables<"clips">[];
           setClips(loadedClips);
 
-          // Init timing overrides
           const init: Record<string, ClipTiming> = {};
           loadedClips.forEach((c) => {
             init[c.id] = { startTime: parseTime(c.start_time), endTime: parseTime(c.end_time) };
           });
           setTimingOverrides(init);
 
-          // If new reel (not editing), auto-select top 3
           if (!isEditing) {
-            const top3 = loadedClips
-              .filter((c) => c.viral_score != null)
-              .slice(0, 3)
-              .map((c) => c.id);
+            const top3 = loadedClips.filter((c) => c.viral_score != null).slice(0, 3).map((c) => c.id);
             setSelectedIds(top3);
             setAiRecommendedIds(top3);
             setTitle(`Best of ${vid.title}`);
@@ -247,13 +289,13 @@ export default function HighlightReelPage() {
     load();
   }, [isEditing, reelId, videoId]);
 
-  /* Signed URL */
+  /* ─── Signed URL for source video ─── */
   useEffect(() => {
     if (!video?.file_path) return;
     supabase.storage
       .from("raw-videos")
       .createSignedUrl(video.file_path, 3600)
-      .then(({ data }) => { if (data?.signedUrl) setSignedUrl(data.signedUrl); });
+      .then(({ data }) => { if (data?.signedUrl) setSignedSourceUrl(data.signedUrl); });
   }, [video?.file_path]);
 
   /* ─── Derived ─── */
@@ -280,100 +322,156 @@ export default function HighlightReelPage() {
     [selectedClips, timingOverrides]
   );
 
-  /* ─── Video player helpers ─── */
-  const seekAndPlay = useCallback((startSec: number, endSec: number, clipId?: string) => {
-    const el = videoRef.current;
+  /* ─── Player helpers ─── */
+
+  /** Flash the play/pause icon overlay */
+  const flash = useCallback((icon: "play" | "pause") => {
+    setFlashIcon(icon);
+    setTimeout(() => setFlashIcon(null), 600);
+  }, []);
+
+  /** Get the currently active <video> element */
+  const activeVideoEl = useCallback((): HTMLVideoElement | null => {
+    if (playerMode.type === "rendered") return renderedVideoRef.current;
+    return sourceVideoRef.current;
+  }, [playerMode]);
+
+  const togglePlay = useCallback(() => {
+    const el = activeVideoEl();
     if (!el) return;
+    if (playing) {
+      el.pause();
+      setPlaying(false);
+      flash("pause");
+    } else {
+      el.play().catch(() => {});
+      setPlaying(true);
+      flash("play");
+    }
+  }, [playing, activeVideoEl, flash]);
+
+  /** Load a rendered clip into the rendered player */
+  const loadRenderedClip = useCallback(async (clip: Tables<"clips">) => {
+    if (!clip.file_path) return;
+    // Get a signed URL for the rendered clip from rendered-clips bucket
+    const { data } = await supabase.storage
+      .from("rendered-clips")
+      .createSignedUrl(clip.file_path, 3600);
+    if (data?.signedUrl) {
+      setRenderedClipUrl(data.signedUrl);
+    }
+  }, []);
+
+  /** Preview a clip: rendered if available, else source with seeking */
+  const handleClickClip = useCallback(async (clip: Tables<"clips">) => {
+    const isRendered = clip.status === "ready" && !!clip.file_path;
+
+    // Stop any current playback
+    sourceVideoRef.current?.pause();
+    renderedVideoRef.current?.pause();
+    setPlaying(false);
     setPlayAllIndex(null);
-    setActiveClipId(clipId || null);
-    el.pause();
-    el.currentTime = startSec;
+
+    if (isRendered) {
+      setShowSourceBanner(false);
+      setPlayerMode({ type: "rendered", clipId: clip.id, url: "" }); // url filled async
+      await loadRenderedClip(clip);
+      // Auto-play after a tick (src needs to load)
+      setTimeout(() => {
+        const el = renderedVideoRef.current;
+        if (el) { el.currentTime = 0; el.play().catch(() => {}); setPlaying(true); }
+      }, 100);
+    } else {
+      // Use source video with seeking
+      setShowSourceBanner(true);
+      setPlayerMode({ type: "source", clipId: clip.id });
+      const timing = timingOverrides[clip.id] || { startTime: parseTime(clip.start_time), endTime: parseTime(clip.end_time) };
+      const el = sourceVideoRef.current;
+      if (!el) return;
+      el.currentTime = timing.startTime;
+      const onSeeked = () => {
+        el.removeEventListener("seeked", onSeeked);
+        el.play().catch(() => {});
+        setPlaying(true);
+      };
+      el.addEventListener("seeked", onSeeked);
+    }
+  }, [timingOverrides, loadRenderedClip]);
+
+  /** Play All: uses source video with sequential seeking */
+  const handlePlayAll = useCallback(() => {
+    if (selectedClips.length === 0) return;
+    setPlayAllIndex(0);
+    const first = selectedClips[0];
+    const timing = timingOverrides[first.id] || { startTime: parseTime(first.start_time), endTime: parseTime(first.end_time) };
+    setShowSourceBanner(false);
+    setPlayerMode({ type: "source", clipId: first.id });
+    renderedVideoRef.current?.pause();
+    const el = sourceVideoRef.current;
+    if (!el) return;
+    el.currentTime = timing.startTime;
     const onSeeked = () => {
       el.removeEventListener("seeked", onSeeked);
       el.play().catch(() => {});
       setPlaying(true);
     };
     el.addEventListener("seeked", onSeeked);
-  }, []);
+  }, [selectedClips, timingOverrides]);
 
-  const handlePreviewClip = useCallback((clip: Tables<"clips">) => {
-    const timing = timingOverrides[clip.id] || { startTime: parseTime(clip.start_time), endTime: parseTime(clip.end_time) };
-    seekAndPlay(timing.startTime, timing.endTime, clip.id);
-  }, [timingOverrides, seekAndPlay]);
-
-  // Play All logic
-  const handlePlayAll = useCallback(() => {
-    if (selectedClips.length === 0) return;
-    setPlayAllIndex(0);
-    const first = selectedClips[0];
-    const timing = timingOverrides[first.id] || { startTime: parseTime(first.start_time), endTime: parseTime(first.end_time) };
-    setActiveClipId(first.id);
-    seekAndPlay(timing.startTime, timing.endTime, first.id);
-  }, [selectedClips, timingOverrides, seekAndPlay]);
-
-  const handleTimeUpdate = useCallback(() => {
-    const el = videoRef.current;
+  /** timeupdate for source video */
+  const handleSourceTimeUpdate = useCallback(() => {
+    const el = sourceVideoRef.current;
     if (!el) return;
     setCurrentTime(el.currentTime);
 
-    // Play All mode: auto-advance to next clip when current clip ends
     if (playAllIndex !== null) {
-      const currentClip = selectedClips[playAllIndex];
-      if (!currentClip) return;
-      const timing = timingOverrides[currentClip.id] || { startTime: parseTime(currentClip.start_time), endTime: parseTime(currentClip.end_time) };
+      const cur = selectedClips[playAllIndex];
+      if (!cur) return;
+      const timing = timingOverrides[cur.id] || { startTime: parseTime(cur.start_time), endTime: parseTime(cur.end_time) };
       if (el.currentTime >= timing.endTime - 0.1) {
-        const nextIndex = playAllIndex + 1;
-        if (nextIndex < selectedClips.length) {
-          setPlayAllIndex(nextIndex);
-          const nextClip = selectedClips[nextIndex];
-          const nextTiming = timingOverrides[nextClip.id] || { startTime: parseTime(nextClip.start_time), endTime: parseTime(nextClip.end_time) };
-          setActiveClipId(nextClip.id);
-          el.currentTime = nextTiming.startTime;
+        const next = playAllIndex + 1;
+        if (next < selectedClips.length) {
+          setPlayAllIndex(next);
+          const nc = selectedClips[next];
+          const nt = timingOverrides[nc.id] || { startTime: parseTime(nc.start_time), endTime: parseTime(nc.end_time) };
+          setPlayerMode({ type: "source", clipId: nc.id });
+          el.currentTime = nt.startTime;
         } else {
           el.pause();
           setPlaying(false);
           setPlayAllIndex(null);
-          setActiveClipId(null);
+          setPlayerMode({ type: "idle" });
         }
       }
-    } else if (activeClipId) {
-      // Single clip preview: auto-pause at endTime
-      const clip = clips.find((c) => c.id === activeClipId);
+    } else if (playerMode.type === "source" && playerMode.clipId) {
+      const clip = clips.find((c) => c.id === playerMode.clipId);
       if (clip) {
-        const timing = timingOverrides[activeClipId] || { startTime: parseTime(clip.start_time), endTime: parseTime(clip.end_time) };
+        const timing = timingOverrides[playerMode.clipId] || { startTime: parseTime(clip.start_time), endTime: parseTime(clip.end_time) };
         if (el.currentTime >= timing.endTime - 0.05) {
           el.pause();
           setPlaying(false);
-          setActiveClipId(null);
         }
       }
     }
-  }, [playAllIndex, activeClipId, selectedClips, clips, timingOverrides]);
+  }, [playAllIndex, playerMode, selectedClips, clips, timingOverrides]);
 
-  const togglePlay = useCallback(() => {
-    const el = videoRef.current;
+  /** timeupdate for rendered clip video */
+  const handleRenderedTimeUpdate = useCallback(() => {
+    const el = renderedVideoRef.current;
     if (!el) return;
-    if (playing) {
-      el.pause();
-      setPlaying(false);
-      setFlashIcon("pause");
-      setTimeout(() => setFlashIcon(null), 600);
-    } else {
-      el.play().catch(() => {});
-      setPlaying(true);
-      setFlashIcon("play");
-      setTimeout(() => setFlashIcon(null), 600);
-    }
-  }, [playing]);
+    setCurrentTime(el.currentTime);
+  }, []);
 
   const handleProgressClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const el = videoRef.current;
-    if (!el || videoDuration === 0) return;
+    const isSource = playerMode.type !== "rendered";
+    const el = isSource ? sourceVideoRef.current : renderedVideoRef.current;
+    const duration = isSource ? sourceDuration : renderedDuration;
+    if (!el || duration === 0) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    el.currentTime = ratio * videoDuration;
-    setCurrentTime(ratio * videoDuration);
-  }, [videoDuration]);
+    el.currentTime = ratio * duration;
+    setCurrentTime(ratio * duration);
+  }, [playerMode, sourceDuration, renderedDuration]);
 
   /* ─── Editor actions ─── */
   const adjustStart = useCallback((id: string, delta: number) => {
@@ -399,7 +497,7 @@ export default function HighlightReelPage() {
 
   const removeFromSelected = (id: string) => {
     setSelectedIds((prev) => prev.filter((x) => x !== id));
-    if (activeClipId === id) setActiveClipId(null);
+    if (activeClipId === id) setPlayerMode({ type: "idle" });
   };
 
   const addClip = (id: string) => {
@@ -474,7 +572,6 @@ export default function HighlightReelPage() {
         reelRowId = (newReel as any).id;
       }
 
-      // Fire-and-forget to Modal worker
       fetch("https://vtrushch--cutviral-worker-webhook.modal.run/create-highlight-reel", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -496,9 +593,21 @@ export default function HighlightReelPage() {
     }
   };
 
-  /* ─── Play All indicator ─── */
-  const playAllClipNumber = playAllIndex !== null ? playAllIndex + 1 : null;
-  const playAllClipTitle = playAllIndex !== null ? selectedClips[playAllIndex]?.title : null;
+  /* ─── Derived display values ─── */
+  const showRenderedPlayer = playerMode.type === "rendered";
+  const showSourcePlayer = playerMode.type !== "rendered";
+  const currentDuration = showRenderedPlayer ? renderedDuration : sourceDuration;
+
+  // Active clip object
+  const activeClip = activeClipId ? clips.find((c) => c.id === activeClipId) : null;
+  const activeClipIndex = activeClipId ? selectedIds.indexOf(activeClipId) : -1;
+
+  // Now-playing label
+  const nowPlayingLabel = activeClip
+    ? `Clip ${activeClipIndex + 1} of ${selectedClips.length} — ${activeClip.title}`
+    : playAllIndex !== null
+    ? `Playing ${selectedClips.length} clips`
+    : null;
 
   /* ─── Loading state ─── */
   if (loadingData) {
@@ -521,7 +630,6 @@ export default function HighlightReelPage() {
     <div className="flex flex-col min-h-full" style={{ background: "hsl(240,15%,7%)" }}>
       {/* ─── Header bar ─── */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50 flex-shrink-0" style={{ background: "hsl(240,15%,9%)" }}>
-        {/* Breadcrumb */}
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground flex-1 min-w-0">
           <Link to="/dashboard" className="hover:text-foreground transition-colors shrink-0">Videos</Link>
           <BreadcrumbChevron className="w-3 h-3 shrink-0 opacity-50" />
@@ -533,22 +641,11 @@ export default function HighlightReelPage() {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(`/dashboard/videos/${video.id}`)}
-            className="text-muted-foreground hover:text-foreground"
-          >
+          <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/videos/${video.id}`)} className="text-muted-foreground hover:text-foreground">
             <ArrowLeft className="w-4 h-4 sm:mr-1" />
             <span className="hidden sm:inline">{t("upload.cancel")}</span>
           </Button>
-          <Button
-            variant="hero"
-            size="sm"
-            onClick={handleSubmit}
-            disabled={selectedIds.length < 2 || saving}
-            className="min-w-[140px]"
-          >
+          <Button variant="hero" size="sm" onClick={handleSubmit} disabled={selectedIds.length < 2 || saving} className="min-w-[140px]">
             {saving ? (
               <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{isEditing ? "Saving..." : "Creating..."}</>
             ) : (
@@ -561,33 +658,49 @@ export default function HighlightReelPage() {
       {/* ─── Main layout ─── */}
       <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-auto lg:overflow-hidden">
 
-        {/* LEFT: Video player (60%) — no phone frame, fills panel */}
+        {/* LEFT: Smart video player (60%) */}
         <div className="w-full lg:w-[60%] flex flex-col border-b lg:border-b-0 lg:border-r border-border/30 bg-black">
+
+          {/* Now-playing banner */}
+          {nowPlayingLabel && (
+            <div className="shrink-0 flex items-center gap-2 px-4 py-2 border-b border-border/20"
+              style={{ background: "hsl(var(--primary)/0.08)" }}>
+              <PlayCircle className="w-3.5 h-3.5 text-primary animate-pulse shrink-0" />
+              <span className="text-xs text-primary/80 truncate">{nowPlayingLabel}</span>
+              {showSourceBanner && (
+                <span className="ml-auto shrink-0 text-[10px] text-muted-foreground bg-muted/40 px-2 py-0.5 rounded-full">
+                  Preview — render for final quality
+                </span>
+              )}
+            </div>
+          )}
+
           {/* Player area */}
-          <div className="flex-1 flex items-center justify-center p-4 lg:p-6 min-h-[260px] lg:min-h-0">
-            <div className="relative w-full">
-              <div className="relative rounded-lg overflow-hidden bg-black border border-white/10">
+          <div className="flex-1 flex items-center justify-center p-4 lg:p-6 min-h-[260px] lg:min-h-0 relative">
 
-                {/* Loading */}
-                {!signedUrl && (
-                  <div className="w-full flex items-center justify-center bg-black" style={{ aspectRatio: "16/9" }}>
-                    <Loader2 className="w-8 h-8 text-muted-foreground/40 animate-spin" />
-                  </div>
-                )}
-
-                {/* Video — single element, visible on all screen sizes */}
-                {signedUrl && (
+            {/* ── RENDERED CLIP PLAYER (9:16 vertical) ── */}
+            {showRenderedPlayer && renderedClipUrl ? (
+              <div className="relative flex items-center justify-center h-full w-full">
+                <div
+                  className="relative rounded-xl overflow-hidden shadow-2xl"
+                  style={{
+                    maxHeight: "65vh",
+                    aspectRatio: "9/16",
+                    background: "#000",
+                    boxShadow: "0 0 60px -15px hsl(var(--primary)/0.3)",
+                  }}
+                >
                   <video
-                    ref={videoRef}
-                    src={signedUrl}
-                    className="w-full block cursor-pointer"
-                    style={{ maxHeight: "70vh", objectFit: "contain", background: "#000" }}
-                    onTimeUpdate={handleTimeUpdate}
+                    ref={renderedVideoRef}
+                    src={renderedClipUrl}
+                    className="w-full h-full object-contain cursor-pointer"
+                    style={{ background: "#000" }}
+                    onTimeUpdate={handleRenderedTimeUpdate}
                     onLoadedMetadata={() => {
-                      const el = videoRef.current;
-                      if (el) setVideoDuration(el.duration || 0);
+                      const el = renderedVideoRef.current;
+                      if (el) setRenderedDuration(el.duration || 0);
                     }}
-                    onEnded={() => { setPlaying(false); if (playAllIndex === null) setActiveClipId(null); }}
+                    onEnded={() => { setPlaying(false); }}
                     onPause={() => setPlaying(false)}
                     onPlay={() => setPlaying(true)}
                     onClick={togglePlay}
@@ -595,28 +708,101 @@ export default function HighlightReelPage() {
                     playsInline
                     preload="auto"
                   />
-                )}
 
-                {/* Flash icon overlay (YouTube-style) */}
-                {flashIcon && (
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div
-                      className="w-16 h-16 rounded-full bg-black/50 flex items-center justify-center"
-                      style={{ animation: "flash-fade 0.6s ease-out forwards" }}
-                    >
-                      {flashIcon === "play"
-                        ? <Play className="w-8 h-8 text-white ml-1" />
-                        : <Pause className="w-8 h-8 text-white" />}
+                  {/* Flash icon */}
+                  {flashIcon && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="w-14 h-14 rounded-full bg-black/50 flex items-center justify-center"
+                        style={{ animation: "flash-fade 0.6s ease-out forwards" }}>
+                        {flashIcon === "play" ? <Play className="w-7 h-7 text-white ml-0.5" /> : <Pause className="w-7 h-7 text-white" />}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Paused overlay */}
+                  {!playing && !flashIcon && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/25 cursor-pointer" onClick={togglePlay}>
+                      <div className="w-14 h-14 rounded-full gradient-bg flex items-center justify-center shadow-lg glow-primary hover:scale-110 transition-transform">
+                        <Play className="w-6 h-6 text-primary-foreground ml-0.5" />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* "Rendered with subtitles" badge */}
+                  <div className="absolute top-2 left-2 text-[9px] font-semibold px-2 py-0.5 rounded-full"
+                    style={{ background: "hsl(var(--accent)/0.85)", color: "hsl(var(--accent-foreground))" }}>
+                    ✓ Final Quality
+                  </div>
+                </div>
+              </div>
+            ) : showRenderedPlayer && !renderedClipUrl ? (
+              /* Loading rendered clip */
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="w-8 h-8 text-muted-foreground/40 animate-spin" />
+                <p className="text-xs text-muted-foreground/50">Loading rendered clip...</p>
+              </div>
+            ) : null}
+
+            {/* ── SOURCE VIDEO PLAYER (16:9 horizontal or idle) ── */}
+            <div className={`w-full transition-all duration-300 ${showRenderedPlayer ? "hidden" : "block"}`}>
+              <div className="relative w-full rounded-lg overflow-hidden bg-black border border-white/10">
+
+                {/* Empty state overlay */}
+                {playerMode.type === "idle" && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-10 pointer-events-none">
+                    <div className="flex flex-col items-center gap-3 text-center px-6">
+                      <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                        <MousePointerClick className="w-6 h-6 text-primary/60" />
+                      </div>
+                      <p className="text-sm font-medium text-muted-foreground/70">Click a clip to preview</p>
+                      <div className="flex items-center gap-2 text-muted-foreground/40">
+                        <span className="text-xs">Rendered clips show final quality</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </div>
                     </div>
                   </div>
                 )}
 
-                {/* Paused overlay — big play button */}
-                {!playing && signedUrl && !flashIcon && (
-                  <div
-                    className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer"
-                    onClick={togglePlay}
-                  >
+                {!signedSourceUrl && (
+                  <div className="w-full flex items-center justify-center bg-black" style={{ aspectRatio: "16/9" }}>
+                    <Loader2 className="w-8 h-8 text-muted-foreground/40 animate-spin" />
+                  </div>
+                )}
+
+                {signedSourceUrl && (
+                  <video
+                    ref={sourceVideoRef}
+                    src={signedSourceUrl}
+                    className="w-full block cursor-pointer"
+                    style={{ maxHeight: "65vh", objectFit: "contain", background: "#000" }}
+                    onTimeUpdate={handleSourceTimeUpdate}
+                    onLoadedMetadata={() => {
+                      const el = sourceVideoRef.current;
+                      if (el) setSourceDuration(el.duration || 0);
+                    }}
+                    onEnded={() => { setPlaying(false); if (playAllIndex === null) setPlayerMode({ type: "idle" }); }}
+                    onPause={() => setPlaying(false)}
+                    onPlay={() => setPlaying(true)}
+                    onClick={playerMode.type === "idle" ? undefined : togglePlay}
+                    muted={muted}
+                    playsInline
+                    preload="auto"
+                  />
+                )}
+
+                {/* Flash icon overlay */}
+                {flashIcon && !showRenderedPlayer && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-16 h-16 rounded-full bg-black/50 flex items-center justify-center"
+                      style={{ animation: "flash-fade 0.6s ease-out forwards" }}>
+                      {flashIcon === "play" ? <Play className="w-8 h-8 text-white ml-1" /> : <Pause className="w-8 h-8 text-white" />}
+                    </div>
+                  </div>
+                )}
+
+                {/* Paused overlay (only when a clip is selected in source mode) */}
+                {!playing && signedSourceUrl && !flashIcon && playerMode.type === "source" && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer" onClick={togglePlay}>
                     <div className="w-14 h-14 rounded-full gradient-bg flex items-center justify-center shadow-lg glow-primary hover:scale-110 transition-transform">
                       <Play className="w-6 h-6 text-primary-foreground ml-0.5" />
                     </div>
@@ -628,18 +814,8 @@ export default function HighlightReelPage() {
 
           {/* Controls bar */}
           <div className="shrink-0 px-4 pb-4 lg:px-6 lg:pb-5 space-y-2.5">
-            {/* Now-playing indicator */}
-            {playAllIndex !== null && playAllClipTitle && (
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
-                style={{ background: "hsl(var(--primary)/0.08)", border: "1px solid hsl(var(--primary)/0.2)" }}>
-                <PlayCircle className="w-3.5 h-3.5 text-primary animate-pulse shrink-0" />
-                <span className="text-primary/80">
-                  {t("highlightReel.playingClip", { current: playAllClipNumber, total: selectedClips.length, title: playAllClipTitle })}
-                </span>
-              </div>
-            )}
 
-            {/* Segment-aware progress bar */}
+            {/* Progress bar */}
             <div
               ref={progressRef}
               className="relative h-7 flex items-center cursor-pointer group select-none"
@@ -648,11 +824,11 @@ export default function HighlightReelPage() {
               {/* Track */}
               <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-white/10" />
 
-              {/* Clip segment highlights */}
-              {videoDuration > 0 && selectedClips.map((clip) => {
+              {/* Clip segment highlights — only for source video */}
+              {!showRenderedPlayer && sourceDuration > 0 && selectedClips.map((clip) => {
                 const seg = timingOverrides[clip.id] || { startTime: parseTime(clip.start_time), endTime: parseTime(clip.end_time) };
-                const left = (seg.startTime / videoDuration) * 100;
-                const width = Math.max(0.5, ((seg.endTime - seg.startTime) / videoDuration) * 100);
+                const left = (seg.startTime / sourceDuration) * 100;
+                const width = Math.max(0.5, ((seg.endTime - seg.startTime) / sourceDuration) * 100);
                 const isNowPlaying = activeClipId === clip.id;
                 return (
                   <div
@@ -668,19 +844,27 @@ export default function HighlightReelPage() {
                 );
               })}
 
-              {/* Elapsed overlay */}
-              {videoDuration > 0 && (
+              {/* Simple progress for rendered clip */}
+              {showRenderedPlayer && renderedDuration > 0 && (
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full"
+                  style={{ width: `${(currentTime / renderedDuration) * 100}%`, background: "hsl(349,100%,59%)" }}
+                />
+              )}
+
+              {/* Elapsed (source) */}
+              {!showRenderedPlayer && sourceDuration > 0 && (
                 <div
                   className="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-white/20 pointer-events-none"
-                  style={{ width: `${(currentTime / videoDuration) * 100}%` }}
+                  style={{ width: `${(currentTime / sourceDuration) * 100}%` }}
                 />
               )}
 
               {/* Playhead */}
-              {videoDuration > 0 && (
+              {currentDuration > 0 && (
                 <div
                   className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white shadow pointer-events-none -ml-1.5 group-hover:scale-125 transition-transform"
-                  style={{ left: `${(currentTime / videoDuration) * 100}%` }}
+                  style={{ left: `${(currentTime / currentDuration) * 100}%` }}
                 />
               )}
             </div>
@@ -689,43 +873,47 @@ export default function HighlightReelPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={togglePlay}
-                disabled={!signedUrl}
-                className="flex-none w-9 h-9 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors disabled:opacity-40"
+                disabled={playerMode.type === "idle"}
+                className="flex-none w-9 h-9 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors disabled:opacity-30"
               >
                 {playing ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-white ml-0.5" />}
               </button>
 
               <button
                 onClick={() => setMuted((m) => !m)}
-                disabled={!signedUrl}
-                className="flex-none w-8 h-8 rounded-full flex items-center justify-center text-white/50 hover:text-white/90 hover:bg-white/10 transition-colors disabled:opacity-40"
+                className="flex-none w-8 h-8 rounded-full flex items-center justify-center text-white/50 hover:text-white/90 hover:bg-white/10 transition-colors"
               >
                 {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
               </button>
 
               <span className="text-xs text-muted-foreground font-mono">
-                {formatTimestamp(currentTime)} / {formatTimestamp(videoDuration)}
+                {formatTimestamp(currentTime)} / {formatTimestamp(currentDuration)}
               </span>
 
               <Button
                 variant="hero-outline"
                 size="sm"
                 onClick={handlePlayAll}
-                disabled={selectedClips.length === 0 || !signedUrl}
+                disabled={selectedClips.length === 0 || !signedSourceUrl}
                 className="ml-auto h-8 text-xs px-3"
               >
                 <PlayCircle className="w-3.5 h-3.5 mr-1" />
                 {t("highlightReel.playAll")}
               </Button>
 
-              <button
-                onClick={() => { const el = videoRef.current; if (el) { setPlaying(false); el.pause(); el.load(); } }}
-                disabled={!signedUrl}
-                className="flex-none w-8 h-8 rounded-full flex items-center justify-center text-white/40 hover:text-white/80 hover:bg-white/10 transition-colors disabled:opacity-30"
-                title="Reload video"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-              </button>
+              {showRenderedPlayer && (
+                <button
+                  onClick={() => {
+                    setPlayerMode({ type: "idle" });
+                    setPlaying(false);
+                    renderedVideoRef.current?.pause();
+                  }}
+                  className="flex-none w-8 h-8 rounded-full flex items-center justify-center text-white/40 hover:text-white/80 hover:bg-white/10 transition-colors"
+                  title="Back to source view"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -735,7 +923,7 @@ export default function HighlightReelPage() {
           <div className="flex-1 overflow-y-auto">
             <div className="p-4 space-y-4">
 
-              {/* Title + AI badge */}
+              {/* Title */}
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
                   {t("highlightReel.reelTitle")}
@@ -790,8 +978,9 @@ export default function HighlightReelPage() {
                             timing={timingOverrides[clip.id] || { startTime: parseTime(clip.start_time), endTime: parseTime(clip.end_time) }}
                             onAdjustStart={adjustStart}
                             onAdjustEnd={adjustEnd}
-                            onPreview={handlePreviewClip}
+                            onClickPreview={handleClickClip}
                             isActive={activeClipId === clip.id}
+                            isPlaying={activeClipId === clip.id && playing}
                           />
                         ))}
                       </div>
@@ -836,9 +1025,12 @@ export default function HighlightReelPage() {
                           <div className="flex items-center gap-1.5 mt-0.5">
                             {clip.duration_seconds && <span className="text-[10px] text-muted-foreground">{clip.duration_seconds}s</span>}
                             {clip.viral_score != null && <span className="text-[10px] text-accent">⚡{clip.viral_score}</span>}
+                            {clip.status === "ready" && (
+                              <span className="text-[9px]" style={{ color: "hsl(var(--accent))" }}>✓ rendered</span>
+                            )}
                           </div>
                         </div>
-                        <Plus className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
+                        <Plus className="w-3.5 h-3.5 text-muted-foreground/40 shrink-0" />
                       </button>
                     ))}
                   </div>
