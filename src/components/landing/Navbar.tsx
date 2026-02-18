@@ -34,8 +34,8 @@ const Navbar = () => {
           {/* Language Switcher */}
           <Popover>
             <PopoverTrigger asChild>
-              <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
-                <span className="text-base">{currentLang.flag}</span>
+              <button className="flex items-center gap-1 px-2 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
+                <span className="text-base leading-none">{currentLang.flag}</span>
                 <span className="text-xs font-medium">{currentLang.label}</span>
               </button>
             </PopoverTrigger>

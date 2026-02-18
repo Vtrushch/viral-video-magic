@@ -89,20 +89,21 @@ const Hero = () => {
           className="mt-20 opacity-0 animate-fade-in"
           style={{ animationDelay: "0.7s" }}
         >
-          <p className="text-sm text-muted-foreground mb-5">{t('landing.hero.trustedBy')}</p>
-          <div className="flex justify-center items-center gap-1">
-            {Array.from({ length: 8 }).map((_, i) => (
+          <p className="text-sm text-muted-foreground mb-6">{t('landing.hero.builtBy')}</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {[
+              { icon: "✨", text: t('landing.hero.badge1') },
+              { icon: "🔒", text: t('landing.hero.badge2') },
+              { icon: "⚡", text: t('landing.hero.badge3') },
+            ].map((badge) => (
               <div
-                key={i}
-                className="w-9 h-9 rounded-full border-2 border-background -ml-2 first:ml-0 overflow-hidden"
-                style={{ background: `hsl(${349 + i * 30}, 60%, ${45 + i * 5}%)` }}
+                key={badge.text}
+                className="flex items-center gap-2 px-4 py-2 rounded-full glass-card text-sm text-muted-foreground"
               >
-                <div className="w-full h-full flex items-center justify-center text-xs font-bold text-primary-foreground">
-                  {String.fromCharCode(65 + i)}
-                </div>
+                <span>{badge.icon}</span>
+                <span>{badge.text}</span>
               </div>
             ))}
-            <span className="ml-3 text-sm text-muted-foreground">+10k</span>
           </div>
         </div>
       </div>
