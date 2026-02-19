@@ -22,24 +22,15 @@ import {
   RefreshCw,
 } from "lucide-react";
 
-type CaptionStyle = "hormozi" | "mrbeast" | "minimal";
+type CaptionStyle = "hormozi" | "mrbeast" | "minimal" | "neon" | "fire" | "elegant" | "custom";
 
-const CAPTION_STYLES: { id: CaptionStyle; label: string; preview: string }[] = [
-  {
-    id: "hormozi",
-    label: "Hormozi",
-    preview: "BOLD YELLOW with black outline, word-by-word highlight",
-  },
-  {
-    id: "mrbeast",
-    label: "MrBeast",
-    preview: "White with colored keyword pop, large & centered",
-  },
-  {
-    id: "minimal",
-    label: "Minimal",
-    preview: "Clean white subtitle, lower-third placement",
-  },
+const CAPTION_STYLES: { id: CaptionStyle; label: string; preview: string; color: string }[] = [
+  { id: "hormozi", label: "Hormozi", preview: "Bold yellow, word highlight", color: "#FFD600" },
+  { id: "mrbeast", label: "MrBeast", preview: "White + red pop, large", color: "#FF3333" },
+  { id: "minimal", label: "Minimal", preview: "Clean white, lower-third", color: "#FFFFFF" },
+  { id: "neon", label: "Neon", preview: "Electric green glow", color: "#00FF00" },
+  { id: "fire", label: "Fire", preview: "Orange-red gradient feel", color: "#FF4500" },
+  { id: "elegant", label: "Elegant", preview: "Soft white, thin outline", color: "#F0F0F0" },
 ];
 
 
@@ -67,6 +58,7 @@ const ClipEdit = () => {
   const activeWordRef = useRef<HTMLSpanElement>(null);
   const transcriptScrollRef = useRef<HTMLDivElement>(null);
   const [editingWordIdx, setEditingWordIdx] = useState<number | null>(null);
+  const [customColor, setCustomColor] = useState("");
   const [saving, setSaving] = useState(false);
   const [rendering, setRendering] = useState(false);
   const [transcriptLoading, setTranscriptLoading] = useState(false);
@@ -434,6 +426,7 @@ const ClipEdit = () => {
         end_time: clipEnd,
         caption_style: captionStyle || "hormozi",
         custom_transcription: editedTranscription || undefined,
+        custom_color: customColor || undefined,
       });
       if (!res.ok) throw new Error("Render request failed");
 
@@ -547,6 +540,7 @@ const ClipEdit = () => {
                   words={activeWords}
                   relativeTime={relativeTime}
                   captionStyle={captionStyle}
+                  customColor={customColor}
                 />
               )}
               {!playing && !loading && (
@@ -626,6 +620,7 @@ const ClipEdit = () => {
                     words={activeWords}
                     relativeTime={relativeTime}
                     captionStyle={captionStyle}
+                    customColor={customColor}
                   />
                 )}
 
@@ -848,34 +843,60 @@ const ClipEdit = () => {
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                 Caption Style
               </h3>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="flex gap-2 overflow-x-auto pb-2 lg:grid lg:grid-cols-3 lg:overflow-visible scrollbar-hide">
                 {CAPTION_STYLES.map((style) => (
                   <button
                     key={style.id}
-                    onClick={() => setCaptionStyle(style.id)}
-                    className={`rounded-lg p-3 text-center transition-all duration-200 border ${
-                      captionStyle === style.id
-                        ? "border-primary/60 bg-primary/10 shadow-[0_0_16px_hsl(349,100%,59%,0.15)]"
+                    onClick={() => {
+                      setCaptionStyle(style.id);
+                      setCustomColor("");
+                    }}
+                    className={`flex-shrink-0 w-[100px] lg:w-auto rounded-lg p-2.5 text-center transition-all duration-200 border ${
+                      captionStyle === style.id && !customColor
+                        ? "border-primary/60 bg-primary/10 shadow-[0_0_12px_hsl(349,100%,59%,0.15)]"
                         : "border-border/30 bg-muted/20 hover:border-border/60"
                     }`}
                   >
                     <div
-                      className="text-sm font-bold mb-1"
-                      style={
-                        style.id === "hormozi"
-                          ? { color: "#FFD600", textShadow: "1px 1px 0 #000" }
-                          : style.id === "mrbeast"
-                            ? { color: "#FFF", textShadow: "0 1px 4px rgba(0,0,0,0.5)" }
-                            : { color: "#FFF" }
-                      }
+                      className="text-xs font-bold mb-0.5"
+                      style={{ color: style.color, textShadow: "1px 1px 0 #000" }}
                     >
                       {style.label}
                     </div>
-                    <p className="text-[10px] text-muted-foreground leading-tight">
+                    <p className="text-[9px] text-muted-foreground leading-tight line-clamp-2">
                       {style.preview}
                     </p>
                   </button>
                 ))}
+              </div>
+              {/* Custom color picker */}
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-muted-foreground whitespace-nowrap">Custom color:</span>
+                <div className="flex gap-1.5">
+                  {["#FF5500", "#00BFFF", "#FF69B4", "#8B5CF6", "#10B981", "#FACC15"].map((hex) => (
+                    <button
+                      key={hex}
+                      onClick={() => {
+                        setCustomColor(hex.replace("#", ""));
+                        setCaptionStyle("custom" as CaptionStyle);
+                      }}
+                      className={`w-6 h-6 rounded-full border-2 transition-all ${
+                        customColor === hex.replace("#", "")
+                          ? "border-white scale-110"
+                          : "border-transparent hover:border-white/50"
+                      }`}
+                      style={{ backgroundColor: hex }}
+                    />
+                  ))}
+                </div>
+                {customColor && (
+                  <button
+                    onClick={() => { setCustomColor(""); setCaptionStyle("hormozi"); }}
+                    className="text-[10px] text-muted-foreground hover:text-primary ml-auto"
+                  >
+                    Reset
+                  </button>
+                )}
               </div>
             </div>
 

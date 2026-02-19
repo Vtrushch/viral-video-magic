@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-export type CaptionStyle = "hormozi" | "mrbeast" | "minimal";
+export type CaptionStyle = "hormozi" | "mrbeast" | "minimal" | "neon" | "fire" | "elegant" | "custom";
 
 interface WordToken {
   word: string;
@@ -9,33 +9,30 @@ interface WordToken {
 }
 
 interface LiveSubtitlesProps {
-  /** Array of word tokens with timing (relative to clip start = 0) */
   words: WordToken[];
-  /** Current playback time, already offset to be relative to clip start */
   relativeTime: number;
   captionStyle?: CaptionStyle;
-  /** Number of words per group (default 3) */
   groupSize?: number;
+  customColor?: string;
 }
 
-const TOLERANCE = 0.08; // seconds of lookahead so subtitles feel snappy
+const TOLERANCE = 0.08;
 
 export default function LiveSubtitles({
   words,
   relativeTime,
   captionStyle = "hormozi",
   groupSize = 3,
+  customColor,
 }: LiveSubtitlesProps) {
   const { group, groupKey } = useMemo(() => {
     if (words.length === 0) return { group: [], groupKey: "" };
 
-    // Find the active word index
     let activeIdx = words.findIndex(
       (w) => relativeTime >= w.start && relativeTime < w.end + TOLERANCE
     );
 
     if (activeIdx === -1) {
-      // No active word — find the next upcoming word
       const upcomingIdx = words.findIndex((w) => w.start > relativeTime);
       if (upcomingIdx === -1) return { group: [], groupKey: "" };
       activeIdx = upcomingIdx;
@@ -77,6 +74,7 @@ export default function LiveSubtitles({
               isActive={isActive}
               captionStyle={captionStyle}
               wordIndex={wi}
+              customColor={customColor}
             />
           );
         })}
@@ -90,11 +88,13 @@ function WordSpan({
   isActive,
   captionStyle,
   wordIndex,
+  customColor,
 }: {
   word: string;
   isActive: boolean;
   captionStyle: CaptionStyle;
   wordIndex: number;
+  customColor?: string;
 }) {
   if (captionStyle === "hormozi") {
     return (
@@ -136,6 +136,92 @@ function WordSpan({
           textTransform: "uppercase",
           letterSpacing: "0.03em",
           transform: isActive ? "scale(1.18)" : "scale(1)",
+          transition: "transform 0.12s ease, color 0.1s ease",
+          display: "inline-block",
+        }}
+      >
+        {word}
+      </span>
+    );
+  }
+
+  if (captionStyle === "neon") {
+    return (
+      <span
+        style={{
+          fontFamily: "Impact, 'Arial Black', sans-serif",
+          fontWeight: 900,
+          fontSize: "1.2rem",
+          color: isActive ? "#00FF00" : "#88FF88",
+          textShadow: isActive
+            ? "0 0 10px #00FF00, 0 0 20px #00FF00, 0 0 40px #00FF00, 2px 2px 0 #000"
+            : "2px 2px 0 #000, 0 0 8px rgba(0,255,0,0.3)",
+          textTransform: "uppercase",
+          transform: isActive ? "scale(1.15)" : "scale(1)",
+          transition: "transform 0.12s ease, color 0.1s ease, text-shadow 0.15s ease",
+          display: "inline-block",
+        }}
+      >
+        {word}
+      </span>
+    );
+  }
+
+  if (captionStyle === "fire") {
+    return (
+      <span
+        style={{
+          fontFamily: "Impact, 'Arial Black', sans-serif",
+          fontWeight: 900,
+          fontSize: "1.2rem",
+          color: isActive ? "#FF4500" : "#FF8C00",
+          textShadow: isActive
+            ? "0 0 8px #FF4500, 0 0 16px rgba(255,69,0,0.5), 2px 2px 0 #000"
+            : "2px 2px 0 #000, 0 0 6px rgba(255,140,0,0.3)",
+          textTransform: "uppercase",
+          transform: isActive ? "scale(1.18)" : "scale(1)",
+          transition: "transform 0.12s ease, color 0.1s ease",
+          display: "inline-block",
+        }}
+      >
+        {word}
+      </span>
+    );
+  }
+
+  if (captionStyle === "elegant") {
+    return (
+      <span
+        style={{
+          fontFamily: "'Georgia', 'Times New Roman', serif",
+          fontWeight: isActive ? 600 : 400,
+          fontSize: "1.05rem",
+          color: isActive ? "#FFFFFF" : "rgba(240,240,240,0.7)",
+          textShadow: "0 1px 4px rgba(0,0,0,0.6)",
+          fontStyle: "italic",
+          transform: isActive ? "scale(1.06)" : "scale(1)",
+          transition: "transform 0.15s ease, color 0.12s ease",
+          display: "inline-block",
+        }}
+      >
+        {word}
+      </span>
+    );
+  }
+
+  if (captionStyle === "custom" && customColor) {
+    const hex = `#${customColor}`;
+    return (
+      <span
+        style={{
+          fontFamily: "Impact, 'Arial Black', sans-serif",
+          fontWeight: 900,
+          fontSize: "1.2rem",
+          color: isActive ? hex : "#FFFFFF",
+          textShadow:
+            "2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000",
+          textTransform: "uppercase",
+          transform: isActive ? "scale(1.15)" : "scale(1)",
           transition: "transform 0.12s ease, color 0.1s ease",
           display: "inline-block",
         }}
