@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import type { Tables } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
@@ -64,11 +65,14 @@ const ClipEdit = () => {
   const [editingWordIdx, setEditingWordIdx] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [rendering, setRendering] = useState(false);
+  const [transcriptLoading, setTranscriptLoading] = useState(false);
+
+  const { t } = useTranslation();
 
   const draggingRef = useRef<"start" | "end" | null>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
 
-  // Fetch clip
+  // Fetch clip — poll every 3s if no transcription_words yet
   const { data: clip } = useQuery({
     queryKey: ["clip", clipId],
     queryFn: async () => {
@@ -81,6 +85,14 @@ const ClipEdit = () => {
       return data;
     },
     enabled: !!clipId,
+    refetchInterval: (query) => {
+      // Stop polling once we have transcription_words or plain transcription
+      const d = query.state.data;
+      const hasWords = d?.transcription_words && Array.isArray(d.transcription_words) && (d.transcription_words as unknown[]).length > 0;
+      const hasText = !!(d?.transcription && d.transcription.trim().length > 0);
+      if (hasWords || hasText) return false;
+      return 3000;
+    },
   });
 
   // Fetch video
@@ -106,42 +118,35 @@ const ClipEdit = () => {
     setClipStart(s);
     setClipEnd(e);
 
-    // Priority order for real transcription words:
-    // 1. clip.transcription_words (DB column — Whisper words with timing)
-    // 2. clip.viral_analysis.transcription_words (legacy path)
-    // 3. Split clip.transcription string into equally-spaced words
-    // 4. Fall back to mock English words (least preferred)
+    // Priority order for real transcription data:
+    // 1. clip.transcription_words (DB column — Whisper words with timing, in original language)
+    // 2. clip.transcription (plain text string, split evenly)
+    // 3. Empty → show "generating" state with polling
     const dbWords = clip.transcription_words as
       | { word: string; start: number; end: number }[]
       | null;
 
     if (dbWords && Array.isArray(dbWords) && dbWords.length > 0) {
       setTranscript(dbWords.map((w) => ({ ...w, deleted: false })));
+      setTranscriptLoading(false);
+    } else if (clip.transcription && clip.transcription.trim().length > 0) {
+      // Split plain transcription text into evenly-spaced word tokens
+      const words = clip.transcription.trim().split(/\s+/);
+      const duration = e - s;
+      const wordDuration = words.length > 0 ? duration / words.length : 0;
+      setTranscript(
+        words.map((word, i) => ({
+          word,
+          start: s + i * wordDuration,
+          end: s + (i + 1) * wordDuration,
+          deleted: false,
+        }))
+      );
+      setTranscriptLoading(false);
     } else {
-      const analysis = clip.viral_analysis as Record<string, unknown> | null;
-      const analysisWords = analysis?.transcription_words as
-        | { word: string; start: number; end: number }[]
-        | undefined;
-
-      if (analysisWords && Array.isArray(analysisWords) && analysisWords.length > 0) {
-        setTranscript(analysisWords.map((w) => ({ ...w, deleted: false })));
-      } else if (clip.transcription && clip.transcription.trim().length > 0) {
-        // Split plain transcription text into evenly-spaced word tokens
-        const words = clip.transcription.trim().split(/\s+/);
-        const duration = e - s;
-        const wordDuration = duration / words.length;
-        setTranscript(
-          words.map((word, i) => ({
-            word,
-            start: s + i * wordDuration,
-            end: s + (i + 1) * wordDuration,
-            deleted: false,
-          }))
-        );
-      } else {
-        // No real transcript — empty, we'll show a placeholder message
-        setTranscript([]);
-      }
+      // No transcript yet — show loading spinner; the query will poll every 3s
+      setTranscript([]);
+      setTranscriptLoading(true);
     }
 
     const settings = video?.settings as Record<string, unknown> | null;
@@ -861,19 +866,34 @@ const ClipEdit = () => {
 
             {/* 3. TEXT EDITOR */}
             <div className="glass-card rounded-xl p-4 space-y-3">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                Transcript Editor
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  {t("clipEdit.transcriptEditor")}
+                </h3>
+                {transcript.length > 0 && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-accent/15 text-accent border border-accent/25">
+                    📝 {t("clipEdit.transcriptReady")}
+                  </span>
+                )}
+              </div>
               {transcript.length === 0 ? (
-                <div className="flex flex-col items-center gap-2 py-4 text-center">
-                  <span className="text-2xl">🎙️</span>
-                  <p className="text-xs text-muted-foreground">
-                    Transcript will be available after rendering.
-                  </p>
-                  <p className="text-[10px] text-muted-foreground/50">
-                    Render this clip to generate a word-level transcript in your video's language.
-                  </p>
-                </div>
+                transcriptLoading ? (
+                  <div className="flex flex-col items-center gap-2 py-4 text-center">
+                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <p className="text-xs text-muted-foreground">{t("clipEdit.transcriptGenerating")}</p>
+                    <p className="text-[10px] text-muted-foreground/50">{t("clipEdit.transcriptGeneratingHint")}</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-2 py-4 text-center">
+                    <span className="text-2xl">🎙️</span>
+                    <p className="text-xs text-muted-foreground">
+                      {t("clipEdit.transcriptAfterRender")}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground/50">
+                      {t("clipEdit.transcriptAfterRenderHint")}
+                    </p>
+                  </div>
+                )
               ) : (
                 <>
                   <p className="text-xs text-muted-foreground">

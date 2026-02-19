@@ -724,11 +724,24 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
                       <div className={`w-2 h-2 rounded-full flex-shrink-0 ${statusDot(clip.status)}`} />
                       <h4 className="text-sm font-semibold text-foreground truncate">{clip.title}</h4>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
                       <span className="font-mono">{formatTime(clip.start_time)} → {formatTime(clip.end_time)}</span>
                       {clip.duration_seconds != null && (
                         <span className="px-1.5 py-0.5 rounded bg-muted/50 text-muted-foreground text-[10px] font-medium">{clip.duration_seconds}s</span>
                       )}
+                      {/* Transcript badge */}
+                      {(() => {
+                        const hasTranscript = clip.transcription_words && Array.isArray(clip.transcription_words) && (clip.transcription_words as unknown[]).length > 0;
+                        return hasTranscript ? (
+                          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-accent/10 text-accent border border-accent/20">
+                            📝 Transcript ready
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-muted/40 text-muted-foreground border border-border/40">
+                            📝 Pending
+                          </span>
+                        );
+                      })()}
                     </div>
                   </div>
 
