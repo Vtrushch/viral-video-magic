@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import type { Tables } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
+import { apiFetch } from "@/lib/api";
 import { useCredits } from "@/hooks/useCredits";
 import RenderCreditDialog from "@/components/dashboard/RenderCreditDialog";
 import LiveSubtitles from "@/components/LiveSubtitles";
@@ -361,29 +362,22 @@ const ClipEdit = () => {
         } as any)
         .eq("id", clip.id);
 
-      // Deduct 1 credit
+      const res = await apiFetch("/render", {
+        clip_id: clip.id,
+        video_storage_path: video.file_path,
+        start_time: clipStart,
+        end_time: clipEnd,
+        caption_style: captionStyle || "hormozi",
+        custom_transcription: editedTranscription || undefined,
+      });
+      if (!res.ok) throw new Error("Render request failed");
+
+      // Deduct 1 credit — only after successful render request
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         await supabase.rpc("increment_used_credits" as any, { _user_id: user.id });
         refetchCredits();
       }
-
-      const res = await fetch(
-        "https://vtrushch--cutviral-worker-webhook.modal.run/render",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            clip_id: clip.id,
-            video_storage_path: video.file_path,
-            start_time: clipStart,
-            end_time: clipEnd,
-            caption_style: captionStyle || "hormozi",
-            custom_transcription: editedTranscription || undefined,
-          }),
-        }
-      );
-      if (!res.ok) throw new Error("Render request failed");
       toast.success("Clip sent for rendering!");
       navigate(`/dashboard/videos/${video.id}`);
     } catch {

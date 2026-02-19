@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { apiFetch } from "@/lib/api";
 import type { Tables } from "@/integrations/supabase/types";
 
 const clipCountOptions = [
@@ -160,11 +161,7 @@ const VideoConfig = () => {
 
     // Trigger Modal analysis via HTTP webhook
     try {
-      const modalResponse = await fetch('https://vtrushch--cutviral-worker-webhook.modal.run/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ video_id: id })
-      });
+      const modalResponse = await apiFetch('/analyze', { video_id: id });
       if (!modalResponse.ok) {
         const errorText = await modalResponse.text();
         console.error('Modal API error:', errorText);

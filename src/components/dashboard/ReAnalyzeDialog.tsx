@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Sparkles, RotateCcw, Settings2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -56,11 +57,7 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
 
       // 4. Trigger Modal analysis
       try {
-        await fetch("https://vtrushch--cutviral-worker-webhook.modal.run/analyze", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ video_id: video.id }),
-        });
+        await apiFetch("/analyze", { video_id: video.id });
       } catch (e) {
         console.error("Modal webhook error:", e);
       }
