@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { X, Play, Pause, Flame, Clock, Star, Volume2, VolumeX, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+
+const WORD_GROUP_SIZE = 3;
 
 interface ClipPreviewModalProps {
   clip: Tables<"clips"> | null;
@@ -23,6 +25,31 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   const startTime = parseFloat(clip?.start_time || "0");
   const endTime = parseFloat(clip?.end_time || "0");
   const clipDuration = endTime - startTime;
+
+  // Build word list from transcription_words
+  const words = useMemo(() => {
+    if (!clip?.transcription_words) return [];
+    const raw = clip.transcription_words as unknown[];
+    if (!Array.isArray(raw) || raw.length === 0) return [];
+    return raw as { word: string; start: number; end: number }[];
+  }, [clip?.transcription_words]);
+
+  // Find current word group for subtitles
+  const { currentGroup, currentGroupKey } = useMemo(() => {
+    if (words.length === 0) return { currentGroup: [], currentGroupKey: "" };
+    const activeIdx = words.findIndex((w) => currentTime >= w.start && currentTime < w.end + 0.1);
+    if (activeIdx === -1) {
+      // find closest upcoming
+      const upcoming = words.findIndex((w) => w.start > currentTime);
+      if (upcoming === -1) return { currentGroup: [], currentGroupKey: "" };
+      const groupStart = Math.floor(upcoming / WORD_GROUP_SIZE) * WORD_GROUP_SIZE;
+      const group = words.slice(groupStart, groupStart + WORD_GROUP_SIZE);
+      return { currentGroup: group, currentGroupKey: `g-${groupStart}` };
+    }
+    const groupStart = Math.floor(activeIdx / WORD_GROUP_SIZE) * WORD_GROUP_SIZE;
+    const group = words.slice(groupStart, groupStart + WORD_GROUP_SIZE);
+    return { currentGroup: group, currentGroupKey: `g-${groupStart}` };
+  }, [words, currentTime]);
 
   // Get signed URL on open
   useEffect(() => {
@@ -211,6 +238,40 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                 <RefreshCw className="w-3 h-3 text-white/70" />
               </button>
 
+              {/* Live subtitles — only if transcription_words available */}
+              {words.length > 0 && currentGroup.length > 0 && (
+                <div
+                  className="absolute left-2 right-2 text-center pointer-events-none z-20"
+                  style={{ bottom: "22%" }}
+                >
+                  <div
+                    key={currentGroupKey}
+                    className="inline-flex flex-wrap justify-center gap-x-1.5 px-2 py-1.5 rounded-lg"
+                    style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", animation: "captionPop 0.18s ease-out" }}
+                  >
+                    {currentGroup.map((w, wi) => {
+                      const isActive = currentTime >= w.start && currentTime < w.end + 0.05;
+                      return (
+                        <span
+                          key={wi}
+                          style={{
+                            fontWeight: isActive ? 700 : 400,
+                            fontSize: "0.95rem",
+                            color: isActive ? "#FFFFFF" : "rgba(255,255,255,0.6)",
+                            textShadow: "0 1px 6px rgba(0,0,0,0.6)",
+                            transform: isActive ? "scale(1.1)" : "scale(1)",
+                            display: "inline-block",
+                            transition: "transform 0.12s ease, color 0.1s ease",
+                          }}
+                        >
+                          {w.word}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Play overlay when paused */}
               {!playing && !loading && !error && (
                 <div
@@ -273,7 +334,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
         {/* Clip info panel */}
         <div className="flex-1 min-w-0 space-y-4">
           <div className="glass-card rounded-xl p-5 space-y-4">
-            <h2 className="text-xl font-bold tracking-tight">{clip.title}</h2>
+            <h2 className="text-xl font-bold tracking-tight text-white">{clip.title}</h2>
 
             <div className="flex flex-wrap gap-3">
               {clip.viral_score != null && (
@@ -333,9 +394,12 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
           )}
 
           {/* Keyboard hints */}
-          <div className="flex gap-3 text-xs text-muted-foreground/60">
-            <span className="px-2 py-1 rounded border border-border/30 font-mono">Space</span> Play/Pause
-            <span className="px-2 py-1 rounded border border-border/30 font-mono">Esc</span> Close
+          <div className="flex items-center gap-3 text-xs text-muted-foreground/50">
+            <span className="px-2 py-1 rounded-md bg-muted/40 font-mono text-muted-foreground">Space</span>
+            <span>Play/Pause</span>
+            <span className="text-border/40">·</span>
+            <span className="px-2 py-1 rounded-md bg-muted/40 font-mono text-muted-foreground">Esc</span>
+            <span>Close</span>
           </div>
         </div>
       </div>
