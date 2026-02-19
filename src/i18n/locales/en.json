@@ -178,7 +178,11 @@
     "clickToEdit": "Click a word to edit or cross to delete",
     "subtitlesAutoDetected": "Subtitles auto-detected in video's language",
     "transcriptAfterRender": "Transcript will be available after rendering.",
-    "transcriptAfterRenderHint": "Render this clip to generate a word-level transcript in your video's language."
+    "transcriptAfterRenderHint": "Render this clip to generate a word-level transcript in your video's language.",
+    "transcriptReady": "Transcript ready",
+    "transcriptPending": "Pending",
+    "transcriptGenerating": "Transcript is being generated...",
+    "transcriptGeneratingHint": "This may take a moment. The page will update automatically."
   },
   "clips": {
     "all": "All",

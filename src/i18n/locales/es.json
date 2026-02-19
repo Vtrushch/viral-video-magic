@@ -178,7 +178,11 @@
     "clickToEdit": "Clic para editar o cruzar para eliminar",
     "subtitlesAutoDetected": "Subtítulos detectados en el idioma del video",
     "transcriptAfterRender": "La transcripción estará disponible después de renderizar.",
-    "transcriptAfterRenderHint": "Renderiza este clip para generar una transcripción palabra por palabra en el idioma de tu video."
+    "transcriptAfterRenderHint": "Renderiza este clip para generar una transcripción palabra por palabra en el idioma de tu video.",
+    "transcriptReady": "Transcripción lista",
+    "transcriptPending": "Pendiente",
+    "transcriptGenerating": "Se está generando la transcripción...",
+    "transcriptGeneratingHint": "Esto puede tardar un momento. La página se actualizará automáticamente."
   },
   "clips": {
     "all": "Todos",
