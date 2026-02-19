@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { X, GripVertical, Sparkles, Clock, Loader2, Plus, Minus, Film, Zap, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import type { Tables } from "@/integrations/supabase/types";
@@ -349,16 +350,12 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
       }
 
       // Fire-and-forget to Modal worker
-      fetch("https://vtrushch--cutviral-worker-webhook.modal.run/create-highlight-reel", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          reel_id: reelId,
-          video_storage_path: video.file_path,
-          clips: clipsPayload,
-          caption_style: captionStyle,
-          add_transitions: addTransitions,
-        }),
+      apiFetch("/create-highlight-reel", {
+        reel_id: reelId,
+        video_storage_path: video.file_path,
+        clips: clipsPayload,
+        caption_style: captionStyle,
+        add_transitions: addTransitions,
       }).catch(() => {});
 
       onClose();

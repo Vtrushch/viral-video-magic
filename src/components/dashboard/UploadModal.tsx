@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -124,14 +125,10 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
 
       if (dbError) throw dbError;
 
-      const res = await fetch("https://vtrushch--cutviral-worker-webhook.modal.run/youtube-import", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          youtube_url: youtubeUrl.trim(),
-          video_id: videoData.id,
-          user_id: user.id,
-        }),
+      const res = await apiFetch("/youtube-import", {
+        youtube_url: youtubeUrl.trim(),
+        video_id: videoData.id,
+        user_id: user.id,
       });
 
       if (!res.ok) throw new Error("YouTube import request failed");

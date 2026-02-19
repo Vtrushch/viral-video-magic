@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
@@ -569,9 +570,6 @@ export default function HighlightReelPage() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      // Deduct 1 credit for the reel render
-      await supabase.rpc("increment_used_credits" as any, { _user_id: user.id });
-      refetchCredits();
 
       const clipsPayload = selectedClips.map((c) => {
         const t = timingOverrides[c.id];
@@ -620,17 +618,17 @@ export default function HighlightReelPage() {
         reelRowId = (newReel as any).id;
       }
 
-      fetch("https://vtrushch--cutviral-worker-webhook.modal.run/create-highlight-reel", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          reel_id: reelRowId,
-          video_storage_path: video!.file_path,
-          clips: clipsPayload,
-          caption_style: captionStyle,
-          add_transitions: addTransitions,
-        }),
-      }).catch(() => {});
+      await apiFetch("/create-highlight-reel", {
+        reel_id: reelRowId,
+        video_storage_path: video!.file_path,
+        clips: clipsPayload,
+        caption_style: captionStyle,
+        add_transitions: addTransitions,
+      });
+
+      // Deduct 1 credit — only after successful API request
+      await supabase.rpc("increment_used_credits" as any, { _user_id: user.id });
+      refetchCredits();
 
       const reelMins = Math.round(totalDuration / 60 * 10) / 10;
       const reelEstimate = totalDuration < 60 ? "~2 minutes" : totalDuration < 120 ? "~2–3 minutes" : "~3–5 minutes";

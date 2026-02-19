@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/sonner";
 import { ArrowLeft, Play, Pencil, Eye, Flame } from "lucide-react";
+import { apiFetch } from "@/lib/api";
 import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
 
 const VideoReview = () => {
@@ -80,16 +81,12 @@ const VideoReview = () => {
 
         const selectedClipData = clips.filter((c) => selectedClips.has(c.id));
         const renderPromises = selectedClipData.map((clip) =>
-          fetch("https://vtrushch--cutviral-worker-webhook.modal.run/render", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              clip_id: clip.id,
-              video_storage_path: video.file_path,
-              start_time: parseFloat(clip.start_time || "0"),
-              end_time: parseFloat(clip.end_time || "0"),
-              caption_style: captionStyle,
-            }),
+          apiFetch("/render", {
+            clip_id: clip.id,
+            video_storage_path: video.file_path,
+            start_time: parseFloat(clip.start_time || "0"),
+            end_time: parseFloat(clip.end_time || "0"),
+            caption_style: captionStyle,
           }).then((res) => {
             if (!res.ok) console.error(`Render request failed for clip ${clip.id}: ${res.status}`);
             return res;

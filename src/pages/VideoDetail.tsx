@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { apiFetch } from "@/lib/api";
 import type { Tables } from "@/integrations/supabase/types";
 import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
 import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
@@ -485,16 +486,12 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     if (!video.file_path) { toast.error("Video file not found"); return; }
     setRenderingIds(prev => new Set(prev).add(clip.id));
     try {
-      const res = await fetch("https://vtrushch--cutviral-worker-webhook.modal.run/render", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          clip_id: clip.id,
-          video_storage_path: video.file_path,
-          start_time: parseFloat(clip.start_time || "0"),
-          end_time: parseFloat(clip.end_time || "0"),
-          caption_style: settings?.captionStyle || "hormozi",
-        }),
+      const res = await apiFetch("/render", {
+        clip_id: clip.id,
+        video_storage_path: video.file_path,
+        start_time: parseFloat(clip.start_time || "0"),
+        end_time: parseFloat(clip.end_time || "0"),
+        caption_style: settings?.captionStyle || "hormozi",
       });
       if (!res.ok) throw new Error("Render request failed");
       await supabase.from("clips").update({ status: "rendering" } as any).eq("id", clip.id);
@@ -505,16 +502,17 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     }
   }, [video, settings]);
 
-  // Deduct N credits and trigger render
+  // Deduct N credits and trigger render — credits deducted AFTER successful render
   const deductAndRender = useCallback(async (clipsToRender: Tables<"clips">[]) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    // Deduct credits one by one (each clip = 1 credit)
+    // Render first, then deduct credits only for successful renders
+    await Promise.all(clipsToRender.map((clip) => renderClipActual(clip)));
+    // Deduct credits after successful render requests
     await Promise.all(clipsToRender.map(() =>
       supabase.rpc("increment_used_credits" as any, { _user_id: user.id })
     ));
     refetchCredits();
-    await Promise.all(clipsToRender.map((clip) => renderClipActual(clip)));
   }, [renderClipActual, refetchCredits]);
 
   // Credit-gated render single clip
