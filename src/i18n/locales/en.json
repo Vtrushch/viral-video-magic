@@ -266,12 +266,19 @@
   },
   "analyzing": {
     "title": "AI is Analyzing Your Video...",
-    "subtitle": "This usually takes 2–3 minutes",
+    "subtitle": "Calculating estimate based on your file size...",
     "videoUploaded": "Video uploaded",
     "analyzingContent": "Analyzing content...",
     "findingMoments": "Finding viral moments",
     "generatingClips": "Generating clips",
-    "canClose": "You can close this page. We'll notify you when it's ready!"
+    "canClose": "You can close this page. We'll notify you when it's ready!",
+    "timeEstimate1_2": "Usually takes 1–2 minutes",
+    "timeEstimate2_3": "Usually takes 2–3 minutes",
+    "timeEstimate3_5": "Usually takes 3–5 minutes",
+    "timeEstimate5_8": "Usually takes 5–8 minutes",
+    "timeEstimate8_15": "Usually takes 8–15 minutes",
+    "notifyMe": "📧 Get notified when done",
+    "notified": "We'll notify you when your clips are ready!"
   },
   "admin": {
     "title": "Admin Panel",
