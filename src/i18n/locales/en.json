@@ -175,7 +175,10 @@
     "timeline": "Timeline",
     "captionStyle": "Caption Style",
     "transcriptEditor": "Transcript Editor",
-    "clickToEdit": "Click a word to edit or cross to delete"
+    "clickToEdit": "Click a word to edit or cross to delete",
+    "subtitlesAutoDetected": "Subtitles auto-detected in video's language",
+    "transcriptAfterRender": "Transcript will be available after rendering.",
+    "transcriptAfterRenderHint": "Render this clip to generate a word-level transcript in your video's language."
   },
   "clips": {
     "all": "All",

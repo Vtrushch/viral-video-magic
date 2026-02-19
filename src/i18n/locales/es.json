@@ -175,7 +175,10 @@
     "timeline": "Línea de tiempo",
     "captionStyle": "Estilo de Subtítulos",
     "transcriptEditor": "Editor de Transcripción",
-    "clickToEdit": "Clic para editar o cruzar para eliminar"
+    "clickToEdit": "Clic para editar o cruzar para eliminar",
+    "subtitlesAutoDetected": "Subtítulos detectados en el idioma del video",
+    "transcriptAfterRender": "La transcripción estará disponible después de renderizar.",
+    "transcriptAfterRenderHint": "Renderiza este clip para generar una transcripción palabra por palabra en el idioma de tu video."
   },
   "clips": {
     "all": "Todos",

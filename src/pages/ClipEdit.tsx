@@ -40,28 +40,14 @@ const CAPTION_STYLES: { id: CaptionStyle; label: string; preview: string }[] = [
 // Word group size for caption display
 const WORD_GROUP_SIZE = 3;
 
-// Mock transcript words (in production these come from analysis)
-const generateMockTranscript = (startTime: number, endTime: number) => {
-  const words = [
-    "This", "is", "the", "moment", "that", "changed", "everything",
-    "because", "nobody", "expected", "what", "happened", "next",
-    "and", "it", "was", "absolutely", "incredible", "to", "watch",
-    "the", "whole", "thing", "unfold", "right", "before", "our", "eyes",
-  ];
-  const duration = endTime - startTime;
-  const wordDuration = duration / words.length;
-  return words.map((word, i) => ({
-    word,
-    start: startTime + i * wordDuration,
-    end: startTime + (i + 1) * wordDuration,
-    deleted: false,
-  }));
-};
+
+
 
 const ClipEdit = () => {
   const { clipId } = useParams<{ clipId: string }>();
   const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
 
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -112,7 +98,7 @@ const ClipEdit = () => {
     enabled: !!clip?.video_id,
   });
 
-  // Init clip boundaries and load transcription words
+// Init clip boundaries and load transcription words
   useEffect(() => {
     if (!clip) return;
     const s = parseFloat(clip.start_time || "0");
@@ -120,16 +106,42 @@ const ClipEdit = () => {
     setClipStart(s);
     setClipEnd(e);
 
-    // Try to load real transcription_words from viral_analysis
-    const analysis = clip.viral_analysis as Record<string, unknown> | null;
-    const realWords = analysis?.transcription_words as
+    // Priority order for real transcription words:
+    // 1. clip.transcription_words (DB column — Whisper words with timing)
+    // 2. clip.viral_analysis.transcription_words (legacy path)
+    // 3. Split clip.transcription string into equally-spaced words
+    // 4. Fall back to mock English words (least preferred)
+    const dbWords = clip.transcription_words as
       | { word: string; start: number; end: number }[]
-      | undefined;
+      | null;
 
-    if (realWords && Array.isArray(realWords) && realWords.length > 0) {
-      setTranscript(realWords.map((w) => ({ ...w, deleted: false })));
+    if (dbWords && Array.isArray(dbWords) && dbWords.length > 0) {
+      setTranscript(dbWords.map((w) => ({ ...w, deleted: false })));
     } else {
-      setTranscript(generateMockTranscript(s, e));
+      const analysis = clip.viral_analysis as Record<string, unknown> | null;
+      const analysisWords = analysis?.transcription_words as
+        | { word: string; start: number; end: number }[]
+        | undefined;
+
+      if (analysisWords && Array.isArray(analysisWords) && analysisWords.length > 0) {
+        setTranscript(analysisWords.map((w) => ({ ...w, deleted: false })));
+      } else if (clip.transcription && clip.transcription.trim().length > 0) {
+        // Split plain transcription text into evenly-spaced word tokens
+        const words = clip.transcription.trim().split(/\s+/);
+        const duration = e - s;
+        const wordDuration = duration / words.length;
+        setTranscript(
+          words.map((word, i) => ({
+            word,
+            start: s + i * wordDuration,
+            end: s + (i + 1) * wordDuration,
+            deleted: false,
+          }))
+        );
+      } else {
+        // No real transcript — empty, we'll show a placeholder message
+        setTranscript([]);
+      }
     }
 
     const settings = video?.settings as Record<string, unknown> | null;
@@ -155,17 +167,19 @@ const ClipEdit = () => {
       });
   }, [video?.file_path]);
 
+  // Helper: get the active video element (desktop or mobile)
+  const getActiveVideoEl = () => videoRef.current || mobileVideoRef.current;
+
   const handleLoadedMetadata = useCallback(() => {
-    const el = videoRef.current;
+    const el = getActiveVideoEl();
     if (!el) return;
-    // Pause → seek → wait for seeked event → then allow play
     el.pause();
     el.currentTime = clipStart;
     setLoading(false);
   }, [clipStart]);
 
   const handleTimeUpdate = useCallback(() => {
-    const el = videoRef.current;
+    const el = getActiveVideoEl();
     if (!el) return;
     setCurrentTime(el.currentTime);
     if (el.currentTime >= clipEnd) {
@@ -176,23 +190,21 @@ const ClipEdit = () => {
   }, [clipEnd, clipStart]);
 
   const handleReload = () => {
-    const el = videoRef.current;
+    const el = getActiveVideoEl();
     if (!el) return;
     setPlaying(false);
     el.pause();
     el.load();
-    // After reload, loadedmetadata will fire and seek to clipStart
   };
 
   const togglePlay = () => {
-    const el = videoRef.current;
+    const el = getActiveVideoEl();
     if (!el) return;
     if (playing) {
       el.pause();
       setPlaying(false);
     } else {
       if (el.currentTime < clipStart || el.currentTime >= clipEnd) {
-        // Pause first, seek, then play after seeked event
         el.pause();
         el.currentTime = clipStart;
         const onSeeked = () => {
@@ -420,7 +432,7 @@ const ClipEdit = () => {
               )}
               {signedUrl && (
                 <video
-                  ref={videoRef}
+                  ref={mobileVideoRef}
                   src={signedUrl}
                   className="w-full h-full object-cover"
                   onLoadedMetadata={handleLoadedMetadata}
@@ -439,7 +451,8 @@ const ClipEdit = () => {
               >
                 <RefreshCw className="w-3.5 h-3.5 text-white/80" />
               </button>
-              {currentGroup.length > 0 && (
+              {/* Only show captions if we have real timed words */}
+              {transcript.length > 0 && currentGroup.length > 0 && (
                 <div className="absolute left-2 right-2 text-center pointer-events-none z-20" style={{ bottom: "20%" }}>
                   <div key={currentGroupKey} className="inline-flex flex-wrap justify-center gap-x-1.5 px-2 py-1.5 rounded-lg" style={{ background: captionStyle === "minimal" ? "rgba(0,0,0,0.45)" : "rgba(0,0,0,0.3)", backdropFilter: "blur(4px)", animation: "captionPop 0.2s ease-out" }}>
                     {currentGroup.map((w, wi) => {
@@ -522,8 +535,8 @@ const ClipEdit = () => {
                   <RefreshCw className="w-3.5 h-3.5 text-white/80" />
                 </button>
 
-                {/* Caption overlay */}
-                {currentGroup.length > 0 && (
+                {/* Caption overlay — only show when we have real timed words */}
+                {transcript.length > 0 && currentGroup.length > 0 && (
                   <div
                     className="absolute left-2 right-2 text-center pointer-events-none z-20"
                     style={{ bottom: "20%" }}
@@ -665,6 +678,10 @@ const ClipEdit = () => {
                 </div>
               </div>
             </div>
+            {/* Subtitle info text below phone */}
+            <p className="text-center text-xs mt-3 px-2" style={{ color: "hsl(var(--muted-foreground)/0.6)" }}>
+              🌍 Subtitles auto-detected in video's language
+            </p>
           </div>
         </div>
 
@@ -847,55 +864,69 @@ const ClipEdit = () => {
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                 Transcript Editor
               </h3>
-              <p className="text-xs text-muted-foreground">
-                Click a word to edit. Right-click to delete/restore.
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {transcript.map((w, idx) => {
-                  const inRange = w.start >= clipStart && w.end <= clipEnd;
-                  const isCurrent =
-                    currentTime >= w.start && currentTime <= w.end + 0.1;
+              {transcript.length === 0 ? (
+                <div className="flex flex-col items-center gap-2 py-4 text-center">
+                  <span className="text-2xl">🎙️</span>
+                  <p className="text-xs text-muted-foreground">
+                    Transcript will be available after rendering.
+                  </p>
+                  <p className="text-[10px] text-muted-foreground/50">
+                    Render this clip to generate a word-level transcript in your video's language.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <p className="text-xs text-muted-foreground">
+                    Click a word to edit. Right-click to delete/restore.
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {transcript.map((w, idx) => {
+                      const inRange = w.start >= clipStart && w.end <= clipEnd;
+                      const isCurrent =
+                        currentTime >= w.start && currentTime <= w.end + 0.1;
 
-                  if (editingWordIdx === idx) {
-                    return (
-                      <input
-                        key={idx}
-                        autoFocus
-                        defaultValue={w.word}
-                        className="bg-primary/20 border border-primary/40 rounded px-1.5 py-0.5 text-sm text-foreground outline-none w-20"
-                        onBlur={(e) => handleWordEdit(idx, e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter")
-                            handleWordEdit(idx, (e.target as HTMLInputElement).value);
-                          if (e.key === "Escape") setEditingWordIdx(null);
-                        }}
-                      />
-                    );
-                  }
+                      if (editingWordIdx === idx) {
+                        return (
+                          <input
+                            key={idx}
+                            autoFocus
+                            defaultValue={w.word}
+                            className="bg-primary/20 border border-primary/40 rounded px-1.5 py-0.5 text-sm text-foreground outline-none w-20"
+                            onBlur={(e) => handleWordEdit(idx, e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter")
+                                handleWordEdit(idx, (e.target as HTMLInputElement).value);
+                              if (e.key === "Escape") setEditingWordIdx(null);
+                            }}
+                          />
+                        );
+                      }
 
-                  return (
-                    <span
-                      key={idx}
-                      onClick={() => inRange && setEditingWordIdx(idx)}
-                      onContextMenu={(e) => {
-                        e.preventDefault();
-                        if (inRange) toggleWordDelete(idx);
-                      }}
-                      className={`px-1.5 py-0.5 rounded text-sm cursor-pointer transition-all select-none ${
-                        w.deleted
-                          ? "line-through text-muted-foreground/40 bg-destructive/10"
-                          : !inRange
-                            ? "text-muted-foreground/30"
-                            : isCurrent
-                              ? "bg-primary/25 text-foreground ring-1 ring-primary/50"
-                              : "text-foreground/80 hover:bg-muted/40"
-                      }`}
-                    >
-                      {w.word}
-                    </span>
-                  );
-                })}
-              </div>
+                      return (
+                        <span
+                          key={idx}
+                          onClick={() => inRange && setEditingWordIdx(idx)}
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                            if (inRange) toggleWordDelete(idx);
+                          }}
+                          className={`px-1.5 py-0.5 rounded text-sm cursor-pointer transition-all select-none ${
+                            w.deleted
+                              ? "line-through text-muted-foreground/40 bg-destructive/10"
+                              : !inRange
+                                ? "text-muted-foreground/30"
+                                : isCurrent
+                                  ? "bg-primary/25 text-foreground ring-1 ring-primary/50"
+                                  : "text-foreground/80 hover:bg-muted/40"
+                          }`}
+                        >
+                          {w.word}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </div>
 
             {/* 4. ACTIONS (mobile-friendly repeated at bottom) */}
