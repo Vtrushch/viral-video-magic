@@ -6,6 +6,8 @@ import { useTranslation } from "react-i18next";
 import type { Tables } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
+import { useCredits } from "@/hooks/useCredits";
+import RenderCreditDialog from "@/components/dashboard/RenderCreditDialog";
 import {
   ArrowLeft,
   Play,
@@ -66,6 +68,8 @@ const ClipEdit = () => {
   const [saving, setSaving] = useState(false);
   const [rendering, setRendering] = useState(false);
   const [transcriptLoading, setTranscriptLoading] = useState(false);
+  const [creditDialogOpen, setCreditDialogOpen] = useState(false);
+  const { credits, refetch: refetchCredits } = useCredits();
 
   const { t } = useTranslation();
 
@@ -325,12 +329,11 @@ const ClipEdit = () => {
     }
   };
 
-  // Render clip — always uses current STATE values (clipStart, clipEnd, captionStyle, transcript)
-  const handleRender = async () => {
+  // Render clip — credit gated
+  const handleRenderConfirm = async () => {
     if (!clip || !video) return;
     setRendering(true);
     try {
-      // First save current edits
       const editedTranscription = transcript
         .filter((w) => !w.deleted)
         .map((w) => w.word)
@@ -346,6 +349,13 @@ const ClipEdit = () => {
           transcription: editedTranscription,
         } as any)
         .eq("id", clip.id);
+
+      // Deduct 1 credit
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.rpc("increment_used_credits" as any, { _user_id: user.id });
+        refetchCredits();
+      }
 
       const res = await fetch(
         "https://vtrushch--cutviral-worker-webhook.modal.run/render",
@@ -369,7 +379,12 @@ const ClipEdit = () => {
       toast.error("Failed to start rendering");
     } finally {
       setRendering(false);
+      setCreditDialogOpen(false);
     }
+  };
+
+  const handleRender = () => {
+    setCreditDialogOpen(true);
   };
 
   const handleWordEdit = (idx: number, newWord: string) => {
@@ -394,6 +409,7 @@ const ClipEdit = () => {
   }
 
   return (
+    <>
     <div className="flex flex-col min-h-full" style={{ background: "#0F0F1A" }}>
       {/* Header */}
       <div className="flex items-center gap-2 p-3 sm:p-4 border-b border-border/50 flex-shrink-0">
@@ -988,6 +1004,14 @@ const ClipEdit = () => {
         </div>
       </div>
     </div>
+      <RenderCreditDialog
+        open={creditDialogOpen}
+        onClose={() => setCreditDialogOpen(false)}
+        onConfirm={handleRenderConfirm}
+        creditsRequired={1}
+        creditsRemaining={credits?.remaining ?? 0}
+        loading={rendering}
+      />
   );
 };
 
