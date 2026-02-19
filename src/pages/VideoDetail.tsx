@@ -15,6 +15,9 @@ import type { Tables } from "@/integrations/supabase/types";
 import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
 import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
 import HighlightReelCard from "@/components/dashboard/HighlightReelCard";
+import RenderCreditDialog from "@/components/dashboard/RenderCreditDialog";
+import ReAnalyzeDialog from "@/components/dashboard/ReAnalyzeDialog";
+import { useCredits } from "@/hooks/useCredits";
 
 const scoreColor = (score: number) => {
   if (score >= 8) return "bg-accent/15 text-accent";
@@ -373,7 +376,7 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
 };
 
 /* ─── Ready State ─── */
-const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; clips: Tables<"clips">[] }) => {
+const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables<"videos">; clips: Tables<"clips">[]; onReAnalyze?: () => void }) => {
   const navigate = useNavigate();
   const [clips, setClips] = useState(initialClips);
   const [previewClip, setPreviewClip] = useState<Tables<"clips"> | null>(null);
@@ -381,6 +384,10 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
   const [videoSignedUrl, setVideoSignedUrl] = useState<string | null>(null);
   const [playerPlaying, setPlayerPlaying] = useState(false);
   const [reels, setReels] = useState<any[]>([]);
+  const [creditDialog, setCreditDialog] = useState<{ type: "single"; clip: Tables<"clips"> } | { type: "all"; clips: Tables<"clips">[] } | null>(null);
+  const [creditConfirmLoading, setCreditConfirmLoading] = useState(false);
+  const [reAnalyzeOpen, setReAnalyzeOpen] = useState(false);
+  const { credits, refetch: refetchCredits } = useCredits();
   const mainVideoRef = useRef<HTMLVideoElement>(null);
   const settings = video.settings as any;
 
@@ -474,7 +481,7 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
     return () => clearInterval(interval);
   }, [video.id, clips, renderingIds]);
 
-  const renderClip = useCallback(async (clip: Tables<"clips">) => {
+  const renderClipActual = useCallback(async (clip: Tables<"clips">) => {
     if (!video.file_path) { toast.error("Video file not found"); return; }
     setRenderingIds(prev => new Set(prev).add(clip.id));
     try {
@@ -498,11 +505,40 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
     }
   }, [video, settings]);
 
-  const renderAll = async () => {
+  // Deduct N credits and trigger render
+  const deductAndRender = useCallback(async (clipsToRender: Tables<"clips">[]) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    // Deduct credits one by one (each clip = 1 credit)
+    await Promise.all(clipsToRender.map(() =>
+      supabase.rpc("increment_used_credits" as any, { _user_id: user.id })
+    ));
+    refetchCredits();
+    await Promise.all(clipsToRender.map((clip) => renderClipActual(clip)));
+  }, [renderClipActual, refetchCredits]);
+
+  // Credit-gated render single clip
+  const renderClip = useCallback((clip: Tables<"clips">) => {
+    setCreditDialog({ type: "single", clip });
+  }, []);
+
+  // Credit-gated render all
+  const renderAll = () => {
     const pending = clips.filter(c => c.status === "pending");
     if (pending.length === 0) { toast.info("No pending clips to render"); return; }
-    toast.info(`Rendering ${pending.length} clips in parallel...`);
-    await Promise.all(pending.map((clip) => renderClip(clip)));
+    setCreditDialog({ type: "all", clips: pending });
+  };
+
+  const handleCreditConfirm = async () => {
+    if (!creditDialog) return;
+    setCreditConfirmLoading(true);
+    if (creditDialog.type === "single") {
+      await deductAndRender([creditDialog.clip]);
+    } else {
+      await deductAndRender(creditDialog.clips);
+    }
+    setCreditConfirmLoading(false);
+    setCreditDialog(null);
   };
 
   // Render time estimate for a clip based on duration_seconds
@@ -804,6 +840,25 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
         onClose={() => setPreviewClip(null)}
       />
 
+      {/* Credit confirmation dialog */}
+      <RenderCreditDialog
+        open={!!creditDialog}
+        onClose={() => setCreditDialog(null)}
+        onConfirm={handleCreditConfirm}
+        creditsRequired={creditDialog?.type === "all" ? creditDialog.clips.length : 1}
+        creditsRemaining={credits?.remaining ?? 0}
+        loading={creditConfirmLoading}
+      />
+
+      {/* Re-analyze dialog */}
+      <ReAnalyzeDialog
+        open={reAnalyzeOpen}
+        onClose={() => setReAnalyzeOpen(false)}
+        video={video}
+        existingClipCount={clips.length}
+        onSuccess={() => window.location.reload()}
+      />
+
       {/* Highlight Reels Section */}
       {(reels.length > 0 || clips.length >= 2) && (
         <div className="space-y-3">
@@ -900,6 +955,7 @@ const VideoDetail = () => {
   const [video, setVideo] = useState<Tables<"videos"> | null>(null);
   const [clips, setClips] = useState<Tables<"clips">[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reAnalyzeOpen, setReAnalyzeOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -979,7 +1035,19 @@ const VideoDetail = () => {
         >
           <ArrowLeft className="w-4 h-4" /> Back to videos
         </Link>
-        <h1 className="text-2xl font-bold text-foreground">{getDisplayTitle(video)}</h1>
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-2xl font-bold text-foreground">{getDisplayTitle(video)}</h1>
+          {video.status === "ready" && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-shrink-0 text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => setReAnalyzeOpen(true)}
+            >
+              <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> Re-analyze
+            </Button>
+          )}
+        </div>
         <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-muted-foreground">
           {video.duration && (
             <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" />{video.duration}</span>
@@ -995,8 +1063,17 @@ const VideoDetail = () => {
       {video.status === "uploading" && <UploadedState video={video} />}
       {video.status === "uploaded" && <UploadedState video={video} />}
       {video.status === "analyzing" && <AnalyzingState video={video} />}
-      {video.status === "ready" && <ReadyState video={video} clips={clips} />}
+      {video.status === "ready" && <ReadyState video={video} clips={clips} onReAnalyze={() => setReAnalyzeOpen(true)} />}
       {video.status === "failed" && <FailedState video={video} />}
+
+      {/* Re-analyze dialog (page level for ready status) */}
+      <ReAnalyzeDialog
+        open={reAnalyzeOpen}
+        onClose={() => setReAnalyzeOpen(false)}
+        video={video}
+        existingClipCount={clips.length}
+        onSuccess={() => window.location.reload()}
+      />
     </div>
   );
 };

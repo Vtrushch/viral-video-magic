@@ -1,6 +1,6 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState, useMemo } from "react";
-import { ArrowLeft, Sparkles, Loader2, Clock, HardDrive, Calendar, ChevronDown, Zap, Globe, Info, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Sparkles, Loader2, Clock, HardDrive, Calendar, ChevronDown, Globe, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -8,7 +8,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
-import { useCredits } from "@/hooks/useCredits";
 
 const clipCountOptions = [
   { value: 5, label: "5 clips", desc: "Quick · Best for testing" },
@@ -91,7 +90,6 @@ const VideoConfig = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
-  const { credits, loading: creditsLoading, refetch: refetchCredits } = useCredits();
 
   const [clipCount, setClipCount] = useState(10);
   const [clipLength, setClipLength] = useState("medium");
@@ -116,19 +114,8 @@ const VideoConfig = () => {
     );
   };
 
-  const extraLangs = selectedLangs.filter((l) => l !== "en").length;
-  const estimatedCredits = useMemo(() => {
-    return clipCount * (1 + extraLangs * 0.1);
-  }, [clipCount, extraLangs]);
-
   const handleStartAnalysis = async () => {
     if (!id) return;
-
-    // Credit check
-    if (!credits || credits.remaining <= 0) {
-      toast.error("No credits remaining. Upgrade your plan or contact support.");
-      return;
-    }
 
     setSubmitting(true);
     const settings = {
@@ -141,10 +128,7 @@ const VideoConfig = () => {
       includeBroll,
     };
 
-    // Log Supabase URL for cross-checking with Modal secrets
-    console.log('🔗 Supabase URL used by Lovable:', import.meta.env.VITE_SUPABASE_URL);
-
-    // Pre-check: verify the video row exists in Supabase before calling Modal
+    // Pre-check: verify the video row exists before calling Modal
     const { data: verifyData, error: verifyError } = await supabase
       .from("videos")
       .select("id, file_path, status")
@@ -152,24 +136,16 @@ const VideoConfig = () => {
       .maybeSingle();
 
     if (verifyError) {
-      console.error('❌ Pre-check query error:', verifyError);
       toast.error("Failed to verify video record");
       setSubmitting(false);
       return;
     }
 
     if (!verifyData) {
-      console.error('❌ VIDEO NOT FOUND in Supabase! id:', id);
       toast.error("Video record not found in database. Please re-upload.");
       setSubmitting(false);
       return;
     }
-
-    console.log('✅ Pre-check: video exists in Supabase:', {
-      id: verifyData.id,
-      file_path: verifyData.file_path,
-      status: verifyData.status,
-    });
 
     const { error } = await supabase
       .from("videos")
@@ -183,36 +159,19 @@ const VideoConfig = () => {
     }
 
     // Trigger Modal analysis via HTTP webhook
-    const requestBody = { video_id: id };
-    console.log('📤 Calling Modal webhook with body:', JSON.stringify(requestBody));
-    console.log('📤 video_id type:', typeof id, '| value:', id);
-
     try {
       const modalResponse = await fetch('https://vtrushch--cutviral-worker-webhook.modal.run/analyze', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody)
-      })
-
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ video_id: id })
+      });
       if (!modalResponse.ok) {
-        const errorText = await modalResponse.text()
-        console.error('Modal API error:', errorText)
-      } else {
-        const result = await modalResponse.json()
-        console.log('✅ Modal analysis triggered:', result)
+        const errorText = await modalResponse.text();
+        console.error('Modal API error:', errorText);
       }
     } catch (modalError) {
-      console.error('❌ Modal connection error:', modalError)
+      console.error('Modal connection error:', modalError);
       // Don't block UI - analysis will still work
-    }
-
-    // Deduct 1 credit atomically via RPC-style raw update
-    const { data: userData } = await supabase.auth.getUser();
-    if (userData.user) {
-      await supabase.rpc('increment_used_credits' as any, { _user_id: userData.user.id });
-      refetchCredits();
     }
 
     toast.success("AI analysis started! This takes 2-3 minutes.");
@@ -337,7 +296,6 @@ const VideoConfig = () => {
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             🎨 Caption Style
           </h2>
-          {/* Language auto-detection info badge */}
           <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs"
             style={{ background: "hsl(var(--accent)/0.08)", border: "1px solid hsl(var(--accent)/0.2)" }}>
             <Globe className="w-3.5 h-3.5 text-accent flex-shrink-0" />
@@ -357,7 +315,6 @@ const VideoConfig = () => {
                   setCaptionStyle(opt.value);
                 }}
               >
-                {/* Preview box */}
                 <div className="w-full rounded-lg p-3 flex items-center justify-center min-h-[48px]"
                   style={{ background: "hsl(0,0%,0%,0.4)" }}
                 >
@@ -447,31 +404,16 @@ const VideoConfig = () => {
           </div>
         </Collapsible>
 
-        {/* 5. Cost Estimate */}
+        {/* 5. Free Analysis info */}
         <div className="glass-card rounded-2xl p-5 space-y-3">
-          <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-            <Zap className="w-4 h-4 text-primary" /> Estimated Cost
-          </h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between text-muted-foreground">
-              <span>{clipCount} clips × {selectedLangs.length === 1 ? "English" : `${selectedLangs.length} languages`}</span>
-              <span>{estimatedCredits.toFixed(estimatedCredits % 1 === 0 ? 0 : 1)} credits</span>
-            </div>
-            <div className="border-t border-border/40 pt-2 flex justify-between font-semibold text-foreground">
-              <span>Total</span>
-              <span>{estimatedCredits.toFixed(estimatedCredits % 1 === 0 ? 0 : 1)} credits</span>
-            </div>
+          <div className="flex items-center gap-2 text-sm">
+            <Info className="w-4 h-4 text-accent flex-shrink-0" />
+            <span className="text-accent font-semibold">Analysis is free — unlimited!</span>
           </div>
-          <p className="text-xs text-muted-foreground flex items-center gap-1">
-            <Info className="w-3 h-3" /> 
-            This will use 1 credit. {creditsLoading ? "Loading credits..." : credits ? `You have ${credits.remaining} credits remaining.` : "Credits unavailable."}
+          <p className="text-xs text-muted-foreground">
+            Video analysis costs nothing. Credits are only used when you <strong className="text-foreground">render</strong> a clip.
+            1 credit = 1 rendered clip.
           </p>
-          {credits && credits.remaining <= 0 && (
-            <div className="flex items-center gap-2 mt-2 p-2 rounded-lg" style={{ background: "hsl(0,62%,30%,0.2)", border: "1px solid hsl(0,62%,30%,0.3)" }}>
-              <AlertTriangle className="w-4 h-4 text-destructive flex-shrink-0" />
-              <span className="text-xs text-destructive">No credits remaining. Upgrade your plan to continue.</span>
-            </div>
-          )}
         </div>
 
         {/* 6. Action Buttons */}
@@ -484,35 +426,19 @@ const VideoConfig = () => {
           >
             Save as Draft
           </Button>
-          {credits && credits.remaining <= 0 ? (
-            <Button
-              variant="outline"
-              size="lg"
-              className="flex-1 opacity-60"
-              disabled
-            >
-              No Credits
-            </Button>
-          ) : (
-            <Button
-              variant="hero"
-              size="lg"
-              className="flex-1"
-              onClick={handleStartAnalysis}
-              disabled={submitting || selectedLangs.length === 0 || creditsLoading}
-            >
-              {submitting ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Starting...</>
-              ) : (
-                <><Sparkles className="w-4 h-4 mr-2" /> Start AI Analysis →</>
-              )}
-            </Button>
-          )}
-          {credits && credits.remaining <= 0 && (
-            <Button variant="hero" size="lg" className="flex-1" asChild>
-              <Link to="/dashboard/upgrade">Upgrade Plan</Link>
-            </Button>
-          )}
+          <Button
+            variant="hero"
+            size="lg"
+            className="flex-1"
+            onClick={handleStartAnalysis}
+            disabled={submitting || selectedLangs.length === 0}
+          >
+            {submitting ? (
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Starting...</>
+            ) : (
+              <><Sparkles className="w-4 h-4 mr-2" /> Start AI Analysis →</>
+            )}
+          </Button>
         </div>
       </div>
     </div>
