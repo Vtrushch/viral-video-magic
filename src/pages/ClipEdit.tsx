@@ -20,6 +20,8 @@ import {
   Zap,
   GripVertical,
   RefreshCw,
+  Sparkles,
+  ChevronDown,
 } from "lucide-react";
 
 type CaptionStyle = "hormozi" | "mrbeast" | "minimal" | "neon" | "fire" | "elegant" | "custom";
@@ -68,6 +70,13 @@ const ClipEdit = () => {
   const { credits, refetch: refetchCredits } = useCredits();
 
   const { t } = useTranslation();
+
+  const [aiTitles, setAiTitles] = useState<{text: string; style: string}[]>([]);
+  const [aiHashtags, setAiHashtags] = useState<string[]>([]);
+  const [aiDescription, setAiDescription] = useState("");
+  const [aiPlatform, setAiPlatform] = useState<"tiktok" | "youtube" | "instagram">("tiktok");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiExpanded, setAiExpanded] = useState(false);
 
   const draggingRef = useRef<"start" | "end" | null>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -898,6 +907,149 @@ const ClipEdit = () => {
                   </button>
                 )}
               </div>
+            </div>
+
+            {/* 2.5 AI TITLES & HASHTAGS */}
+            <div className="glass-card rounded-xl p-4 space-y-3">
+              <button
+                onClick={() => setAiExpanded(!aiExpanded)}
+                className="w-full flex items-center justify-between"
+              >
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-primary" />
+                  AI Title & Hashtags
+                </h3>
+                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${aiExpanded ? "rotate-180" : ""}`} />
+              </button>
+
+              {aiExpanded && (
+                <div className="space-y-3 pt-1">
+                  {/* Platform selector */}
+                  <div className="flex gap-1.5">
+                    {(["tiktok", "youtube", "instagram"] as const).map((p) => (
+                      <button
+                        key={p}
+                        onClick={() => setAiPlatform(p)}
+                        className={`flex-1 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                          aiPlatform === p
+                            ? "bg-primary/15 text-primary border border-primary/30"
+                            : "bg-muted/20 text-muted-foreground border border-transparent hover:border-border/40"
+                        }`}
+                      >
+                        {p === "tiktok" ? "TikTok" : p === "youtube" ? "YouTube" : "Instagram"}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Generate button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={async () => {
+                      if (!clip?.transcription && transcript.length === 0) {
+                        toast.error("No transcript available yet");
+                        return;
+                      }
+                      setAiLoading(true);
+                      setAiExpanded(true);
+                      try {
+                        const text = transcript
+                          .filter(w => !w.deleted)
+                          .map(w => w.word)
+                          .join(" ") || clip?.transcription || "";
+                        const res = await apiFetch("/generate-titles", {
+                          clip_id: clip!.id,
+                          transcription: text,
+                          platform: aiPlatform,
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                          setAiTitles(data.titles || []);
+                          setAiHashtags(data.hashtags || []);
+                          setAiDescription(data.description || "");
+                          toast.success(`Generated titles for ${aiPlatform}!`);
+                        } else {
+                          toast.error("Failed to generate titles");
+                        }
+                      } catch {
+                        toast.error("AI generation failed");
+                      } finally {
+                        setAiLoading(false);
+                      }
+                    }}
+                    disabled={aiLoading}
+                  >
+                    {aiLoading ? (
+                      <>
+                        <div className="w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full animate-spin mr-2" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3.5 h-3.5 mr-2" />
+                        Generate Titles
+                      </>
+                    )}
+                  </Button>
+
+                  {/* Results */}
+                  {aiTitles.length > 0 && (
+                    <div className="space-y-2">
+                      {aiTitles.map((title, i) => (
+                        <div
+                          key={i}
+                          className="group relative rounded-lg bg-muted/30 p-2.5 hover:bg-muted/50 transition-colors cursor-pointer"
+                          onClick={() => {
+                            navigator.clipboard.writeText(title.text);
+                            toast.success("Copied to clipboard!");
+                          }}
+                        >
+                          <div className="flex items-start gap-2">
+                            <span className="text-[9px] uppercase tracking-wider text-muted-foreground/60 bg-muted/50 rounded px-1.5 py-0.5 shrink-0 mt-0.5">
+                              {title.style}
+                            </span>
+                            <p className="text-xs text-foreground leading-relaxed">{title.text}</p>
+                          </div>
+                          <span className="absolute top-2 right-2 text-[9px] text-muted-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                            Click to copy
+                          </span>
+                        </div>
+                      ))}
+
+                      {/* Hashtags */}
+                      {aiHashtags.length > 0 && (
+                        <div
+                          className="flex flex-wrap gap-1 cursor-pointer rounded-lg bg-muted/20 p-2"
+                          onClick={() => {
+                            navigator.clipboard.writeText(aiHashtags.join(" "));
+                            toast.success("Hashtags copied!");
+                          }}
+                        >
+                          {aiHashtags.map((tag, i) => (
+                            <span key={i} className="text-[11px] text-primary/80 bg-primary/10 rounded px-1.5 py-0.5">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Description */}
+                      {aiDescription && (
+                        <div
+                          className="text-[11px] text-muted-foreground bg-muted/20 rounded-lg p-2 cursor-pointer hover:bg-muted/30 transition-colors"
+                          onClick={() => {
+                            navigator.clipboard.writeText(aiDescription);
+                            toast.success("Description copied!");
+                          }}
+                        >
+                          {aiDescription}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* 3. TEXT EDITOR */}
