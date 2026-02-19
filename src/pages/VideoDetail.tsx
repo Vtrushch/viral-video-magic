@@ -137,12 +137,41 @@ const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
   );
 };
 
+/* ─── Smart time estimate based on file size ─── */
+function getAnalysisTimeEstimate(fileSizeBytes: number | null): string {
+  if (!fileSizeBytes) return "Usually takes 2–3 minutes";
+  const mb = fileSizeBytes / (1024 * 1024);
+  if (mb < 20) return "Usually takes 1–2 minutes";
+  if (mb < 50) return "Usually takes 2–3 minutes";
+  if (mb < 100) return "Usually takes 3–5 minutes";
+  if (mb < 200) return "Usually takes 5–8 minutes";
+  return "Usually takes 8–15 minutes";
+}
+
 /* ─── Analyzing State ─── */
 const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [progress, setProgress] = useState(15);
   const [currentStep, setCurrentStep] = useState(1);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [notified, setNotified] = useState(() =>
+    localStorage.getItem(`notify_on_complete_${video.id}`) === "true"
+  );
+
+  // Elapsed timer
+  useEffect(() => {
+    const timer = setInterval(() => setElapsedSeconds((s) => s + 1), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Time-based phase label
+  const phaseLabel = (() => {
+    if (elapsedSeconds < 30) return "Uploading to AI...";
+    if (elapsedSeconds < 120) return "AI is watching your video...";
+    if (elapsedSeconds < 240) return "Finding the best moments...";
+    return "Almost done!";
+  })();
 
   useEffect(() => {
     const channel = supabase
@@ -175,12 +204,20 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
     };
   }, [video.id, currentStep]);
 
+  const handleNotify = () => {
+    localStorage.setItem(`notify_on_complete_${video.id}`, "true");
+    setNotified(true);
+    toast.success("We'll notify you when your clips are ready!");
+  };
+
   const steps = [
     { icon: CheckCircle2, label: t("analyzing.videoUploaded"), done: true },
     { icon: Search, label: t("analyzing.analyzingContent"), done: currentStep > 1 },
     { icon: Zap, label: t("analyzing.findingMoments"), done: currentStep > 2 },
     { icon: Film, label: t("analyzing.generatingClips"), done: currentStep > 3 },
   ];
+
+  const timeEstimate = getAnalysisTimeEstimate(video.file_size);
 
   return (
     <div className="glass-card rounded-2xl p-10 text-center space-y-8">
@@ -193,7 +230,8 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
 
       <div>
         <h2 className="text-xl font-bold text-foreground mb-2">{t("analyzing.title")}</h2>
-        <p className="text-sm text-muted-foreground">{t("analyzing.subtitle")}</p>
+        <p className="text-sm text-muted-foreground">{timeEstimate}</p>
+        <p className="text-xs mt-1.5 font-medium" style={{ color: "hsl(349,100%,72%)" }}>{phaseLabel}</p>
       </div>
 
       {/* Progress bar */}
@@ -230,7 +268,26 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
         style={{ background: "hsl(177,100%,39%,0.06)", border: "1px solid hsl(177,100%,39%,0.15)" }}
       >
         <span className="text-accent">💡</span>
-        <span className="text-accent/80">You can close this page. We'll notify you when it's ready!</span>
+        <span className="text-accent/80">{t("analyzing.canClose")}</span>
+      </div>
+
+      {/* Notification button */}
+      <div>
+        {notified ? (
+          <div className="inline-flex items-center gap-2 text-xs text-accent/80 px-4 py-2.5 rounded-xl"
+            style={{ background: "hsl(349,100%,59%,0.06)", border: "1px solid hsl(349,100%,59%,0.15)" }}>
+            <CheckCircle2 className="w-4 h-4 text-accent" />
+            We'll notify you when your clips are ready!
+          </div>
+        ) : (
+          <button
+            onClick={handleNotify}
+            className="inline-flex items-center gap-2 text-xs px-4 py-2.5 rounded-xl transition-all hover:opacity-90"
+            style={{ background: "hsl(349,100%,59%,0.08)", border: "1px solid hsl(349,100%,59%,0.2)", color: "hsl(349,100%,72%)" }}
+          >
+            📧 Get notified when done
+          </button>
+        )}
       </div>
 
       {/* Debug button - only in development */}
@@ -444,10 +501,16 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
   const renderAll = async () => {
     const pending = clips.filter(c => c.status === "pending");
     if (pending.length === 0) { toast.info("No pending clips to render"); return; }
-    toast.info(`Rendering ${pending.length} clips... This takes 1-2 minutes per clip`);
-    for (const clip of pending) {
-      await renderClip(clip);
-    }
+    toast.info(`Rendering ${pending.length} clips in parallel...`);
+    await Promise.all(pending.map((clip) => renderClip(clip)));
+  };
+
+  // Render time estimate for a clip based on duration_seconds
+  const getRenderTimeEstimate = (clip: Tables<"clips">) => {
+    const dur = clip.duration_seconds ?? 0;
+    if (dur < 30) return "~30 sec";
+    if (dur < 60) return "~1 min";
+    return "~2 min";
   };
 
   const handleDownload = async (clip: Tables<"clips">) => {
@@ -568,11 +631,21 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
 
       {/* Action bar */}
       <div className="glass-card rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Sparkles className="w-4 h-4 text-primary" />
           <h3 className="text-base font-semibold text-foreground">Generated Clips ({clips.length})</h3>
           {readyCount > 0 && (
             <span className="text-xs text-accent bg-accent/10 px-2 py-0.5 rounded-full">{readyCount} ready</span>
+          )}
+          {/* Render-All progress tracker */}
+          {clips.some(c => c.status === "rendering" || renderingIds.has(c.id)) && (
+            <span className="text-xs text-muted-foreground bg-muted/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+              <Loader2 className="w-3 h-3 animate-spin text-primary" />
+              ✅ {readyCount}/{clips.length} ready &nbsp;⏳ {clips.filter(c => c.status === "rendering" || renderingIds.has(c.id)).length} rendering...
+            </span>
+          )}
+          {readyCount === clips.length && clips.length > 0 && !clips.some(c => c.status === "rendering" || renderingIds.has(c.id)) && (
+            <span className="text-xs text-accent bg-accent/10 px-2.5 py-1 rounded-full">✅ {clips.length}/{clips.length} all done! 🎉</span>
           )}
         </div>
         <div className="flex flex-wrap gap-2 w-full sm:w-auto">
@@ -702,7 +775,7 @@ const ReadyState = ({ video, clips: initialClips }: { video: Tables<"videos">; c
                         disabled={isRendering}
                       >
                         {isRendering ? (
-                          <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Rendering</>
+                          <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Rendering ({getRenderTimeEstimate(clip)})</>
                         ) : (
                           <><Sparkles className="w-3 h-3 mr-1" /> Render</>
                         )}

@@ -266,12 +266,19 @@
   },
   "analyzing": {
     "title": "IA Analizando Tu Video...",
-    "subtitle": "Esto toma 2-3 minutos",
+    "subtitle": "Calculando estimación según el tamaño del archivo...",
     "videoUploaded": "Video subido",
     "analyzingContent": "Analizando contenido...",
     "findingMoments": "Buscando momentos virales",
     "generatingClips": "Generando clips",
-    "canClose": "¡Puedes cerrar esta página. Te notificaremos cuando esté listo!"
+    "canClose": "¡Puedes cerrar esta página. Te notificaremos cuando esté listo!",
+    "timeEstimate1_2": "Suele tardar 1–2 minutos",
+    "timeEstimate2_3": "Suele tardar 2–3 minutos",
+    "timeEstimate3_5": "Suele tardar 3–5 minutos",
+    "timeEstimate5_8": "Suele tardar 5–8 minutos",
+    "timeEstimate8_15": "Suele tardar 8–15 minutos",
+    "notifyMe": "📧 Notificarme cuando esté listo",
+    "notified": "¡Te notificaremos cuando tus clips estén listos!"
   },
   "admin": {
     "title": "Panel de Admin",
