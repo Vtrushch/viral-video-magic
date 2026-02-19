@@ -14,6 +14,7 @@ interface VideoCardProps {
   thumbnail?: string;
   filePath?: string;
   fileSize?: number;
+  onDelete?: (id: string) => void;
 }
 
 const statusColors: Record<string, string> = {
@@ -29,17 +30,17 @@ const formatFileSize = (bytes?: number) => {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 };
 
-const VideoCard = ({ id, title, duration, uploadDate, status, thumbnail, filePath, fileSize }: VideoCardProps) => {
+const VideoCard = ({ id, title, duration, uploadDate, status, thumbnail, filePath, fileSize, onDelete }: VideoCardProps) => {
   const { t } = useTranslation();
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    // Optimistic remove — UI updates immediately
+    onDelete?.(id);
     const { error } = await supabase.from("videos").delete().eq("id", id);
     if (error) {
       toast.error("Failed to delete video");
-    } else {
-      toast.success("Video deleted");
     }
   };
 

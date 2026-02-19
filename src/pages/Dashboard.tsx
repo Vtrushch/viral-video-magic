@@ -116,6 +116,7 @@ const Dashboard = () => {
               thumbnail={video.thumbnail_url || undefined}
               filePath={video.file_path || undefined}
               fileSize={video.file_size || undefined}
+              onDelete={(id) => setVideos((prev) => prev.filter((v) => v.id !== id))}
             />
           ))}
 
