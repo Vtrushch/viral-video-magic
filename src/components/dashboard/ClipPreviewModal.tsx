@@ -3,8 +3,8 @@ import { X, Play, Pause, Flame, Clock, Star, Volume2, VolumeX, RefreshCw } from 
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
-
-const WORD_GROUP_SIZE = 3;
+import LiveSubtitles from "@/components/LiveSubtitles";
+import type { CaptionStyle } from "@/components/LiveSubtitles";
 
 interface ClipPreviewModalProps {
   clip: Tables<"clips"> | null;
@@ -34,22 +34,8 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     return raw as { word: string; start: number; end: number }[];
   }, [clip?.transcription_words]);
 
-  // Find current word group for subtitles
-  const { currentGroup, currentGroupKey } = useMemo(() => {
-    if (words.length === 0) return { currentGroup: [], currentGroupKey: "" };
-    const activeIdx = words.findIndex((w) => currentTime >= w.start && currentTime < w.end + 0.1);
-    if (activeIdx === -1) {
-      // find closest upcoming
-      const upcoming = words.findIndex((w) => w.start > currentTime);
-      if (upcoming === -1) return { currentGroup: [], currentGroupKey: "" };
-      const groupStart = Math.floor(upcoming / WORD_GROUP_SIZE) * WORD_GROUP_SIZE;
-      const group = words.slice(groupStart, groupStart + WORD_GROUP_SIZE);
-      return { currentGroup: group, currentGroupKey: `g-${groupStart}` };
-    }
-    const groupStart = Math.floor(activeIdx / WORD_GROUP_SIZE) * WORD_GROUP_SIZE;
-    const group = words.slice(groupStart, groupStart + WORD_GROUP_SIZE);
-    return { currentGroup: group, currentGroupKey: `g-${groupStart}` };
-  }, [words, currentTime]);
+  // relativeTime: subtract clip start so subtitle timestamps (0-based) align correctly
+  const relativeTime = currentTime - startTime;
 
   // Get signed URL on open
   useEffect(() => {
@@ -238,38 +224,13 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                 <RefreshCw className="w-3 h-3 text-white/70" />
               </button>
 
-              {/* Live subtitles — only if transcription_words available */}
-              {words.length > 0 && currentGroup.length > 0 && (
-                <div
-                  className="absolute left-2 right-2 text-center pointer-events-none z-20"
-                  style={{ bottom: "22%" }}
-                >
-                  <div
-                    key={currentGroupKey}
-                    className="inline-flex flex-wrap justify-center gap-x-1.5 px-2 py-1.5 rounded-lg"
-                    style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", animation: "captionPop 0.18s ease-out" }}
-                  >
-                    {currentGroup.map((w, wi) => {
-                      const isActive = currentTime >= w.start && currentTime < w.end + 0.05;
-                      return (
-                        <span
-                          key={wi}
-                          style={{
-                            fontWeight: isActive ? 700 : 400,
-                            fontSize: "0.95rem",
-                            color: isActive ? "#FFFFFF" : "rgba(255,255,255,0.6)",
-                            textShadow: "0 1px 6px rgba(0,0,0,0.6)",
-                            transform: isActive ? "scale(1.1)" : "scale(1)",
-                            display: "inline-block",
-                            transition: "transform 0.12s ease, color 0.1s ease",
-                          }}
-                        >
-                          {w.word}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
+              {/* Live subtitles */}
+              {words.length > 0 && (
+                <LiveSubtitles
+                  words={words}
+                  relativeTime={relativeTime}
+                  captionStyle={(clip.caption_style as CaptionStyle) ?? "hormozi"}
+                />
               )}
 
               {/* Play overlay when paused */}
