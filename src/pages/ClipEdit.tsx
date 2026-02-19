@@ -70,6 +70,8 @@ const ClipEdit = () => {
   const [saving, setSaving] = useState(false);
   const [rendering, setRendering] = useState(false);
   const [transcriptLoading, setTranscriptLoading] = useState(false);
+  const [retranscribing, setRetranscribing] = useState(false);
+  const retranscribeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [creditDialogOpen, setCreditDialogOpen] = useState(false);
   const { credits, refetch: refetchCredits } = useCredits();
 
@@ -310,6 +312,66 @@ const ClipEdit = () => {
     }
   }, [currentTime]);
 
+  // Debounced re-transcription when timeline changes
+  useEffect(() => {
+    if (!video?.file_path || !clip) return;
+    const hasChanged = clipStart !== originalClipStart || clipEnd !== originalClipEnd;
+    if (!hasChanged) return;
+
+    if (retranscribeTimerRef.current) {
+      clearTimeout(retranscribeTimerRef.current);
+    }
+
+    retranscribeTimerRef.current = setTimeout(async () => {
+      setRetranscribing(true);
+      try {
+        const res = await apiFetch("/transcribe-segment", {
+          video_storage_path: video.file_path,
+          start_time: clipStart,
+          end_time: clipEnd,
+          clip_id: clip.id,
+        });
+        if (!res.ok) {
+          console.error("Re-transcription failed:", res.status);
+          return;
+        }
+        const data = await res.json();
+        if (data.success && data.words && data.words.length > 0) {
+          setTranscript(
+            data.words.map((w: any) => ({
+              word: w.word,
+              start: w.start,
+              end: w.end,
+              deleted: false,
+              edited: false,
+            }))
+          );
+          setOriginalClipStart(clipStart);
+          setOriginalClipEnd(clipEnd);
+          console.log(`✅ Re-transcribed: ${data.word_count} words`);
+        }
+      } catch (err) {
+        console.error("Re-transcription error:", err);
+      } finally {
+        setRetranscribing(false);
+      }
+    }, 1200);
+
+    return () => {
+      if (retranscribeTimerRef.current) {
+        clearTimeout(retranscribeTimerRef.current);
+      }
+    };
+  }, [clipStart, clipEnd]);
+
+  // Smooth video seek when clip boundaries change (while paused)
+  useEffect(() => {
+    const el = getActiveVideoEl();
+    if (!el || playing) return;
+    if (el.currentTime < clipStart || el.currentTime > clipEnd) {
+      el.currentTime = clipStart;
+    }
+  }, [clipStart, clipEnd]);
 
   // Save changes — persist start_time, end_time, caption_style, and transcription to DB
   const handleSave = async () => {
@@ -330,6 +392,9 @@ const ClipEdit = () => {
           duration: `${Math.floor(clipDuration / 60)}:${Math.floor(clipDuration % 60).toString().padStart(2, "0")}`,
           caption_style: captionStyle,
           transcription: editedTranscription,
+          transcription_words: transcript
+            .filter(w => !w.deleted)
+            .map(w => ({ word: w.word, start: w.start, end: w.end })),
         } as any)
         .eq("id", clip.id);
       if (error) throw error;
@@ -643,9 +708,23 @@ const ClipEdit = () => {
 
             {/* 1. TIMELINE */}
             <div className="glass-card rounded-xl p-4 space-y-3">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                Timeline
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  Timeline
+                </h3>
+                {(clipStart !== originalClipStart || clipEnd !== originalClipEnd) && (
+                  <button
+                    onClick={() => {
+                      setClipStart(originalClipStart);
+                      setClipEnd(originalClipEnd);
+                    }}
+                    className="text-[10px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    Reset
+                  </button>
+                )}
+              </div>
 
               {/* Waveform-style timeline — horizontal scroll on mobile */}
               <div className="overflow-x-auto">
@@ -733,6 +812,11 @@ const ClipEdit = () => {
                     className="w-7 h-7 rounded-md border border-border/50 hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all flex items-center justify-center text-[10px] font-bold"
                     title="Start +1s"
                   >+1s</button>
+                  {clipStart !== originalClipStart && (
+                    <span className="text-[10px] text-primary/80 font-mono ml-0.5">
+                      {clipStart < originalClipStart ? `−${(originalClipStart - clipStart).toFixed(0)}s` : `+${(clipStart - originalClipStart).toFixed(0)}s`}
+                    </span>
+                  )}
                 </div>
 
                 <span className="text-foreground/50 text-[10px]">{formatTime(clipDuration)}</span>
@@ -750,6 +834,11 @@ const ClipEdit = () => {
                     className="w-7 h-7 rounded-md border border-border/50 hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all flex items-center justify-center text-[10px] font-bold"
                     title="End +1s"
                   >+1s</button>
+                  {clipEnd !== originalClipEnd && (
+                    <span className="text-[10px] text-primary/80 font-mono ml-0.5">
+                      {clipEnd > originalClipEnd ? `+${(clipEnd - originalClipEnd).toFixed(0)}s` : `−${(originalClipEnd - clipEnd).toFixed(0)}s`}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -825,10 +914,19 @@ const ClipEdit = () => {
                   <p className="text-xs text-muted-foreground">
                     Click a word to edit. Right-click to delete/restore.
                   </p>
-                  <div
-                    ref={transcriptScrollRef}
-                    className="flex flex-wrap gap-1 max-h-[400px] overflow-y-auto pr-1"
-                  >
+                  <div className="relative">
+                    {retranscribing && (
+                      <div className="absolute inset-0 bg-background/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                          <span className="text-xs text-muted-foreground">Updating subtitles...</span>
+                        </div>
+                      </div>
+                    )}
+                    <div
+                      ref={transcriptScrollRef}
+                      className="flex flex-wrap gap-1 max-h-[400px] overflow-y-auto pr-1"
+                    >
                     {visibleWords.map((w) => {
                       const isCurrent =
                         !w.deleted && w.inRange && relativeTime >= w.start && relativeTime <= w.end + 0.1;
@@ -875,8 +973,9 @@ const ClipEdit = () => {
                         </span>
                       );
                     })}
+                    </div>
                   </div>
-                  {extendedBeyond && (
+                  {extendedBeyond && !retranscribing && (
                     <p className="text-[10px] text-muted-foreground/50 italic">
                       Extended section — subtitles will be re-generated on render
                     </p>
