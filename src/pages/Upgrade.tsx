@@ -14,7 +14,14 @@ const Upgrade = () => {
       credits: 3,
       description: "Try it out",
       icon: Zap,
-      features: ["3 credits included", "720p export", "Basic captions", "Community support"],
+      features: [
+        "3 free renders included",
+        "Unlimited video analysis",
+        "Unlimited editing",
+        "720p export",
+        "Basic captions",
+        "Community support",
+      ],
       current: true,
     },
     {
@@ -23,7 +30,15 @@ const Upgrade = () => {
       credits: 30,
       description: "For individual creators",
       icon: Sparkles,
-      features: ["30 credits/month", "1080p export", "All caption styles", "Email support", "Multi-language captions"],
+      features: [
+        "30 renders/month",
+        "Unlimited video analysis",
+        "Unlimited editing",
+        "1080p export",
+        "All caption styles",
+        "Email support",
+        "Multi-language captions",
+      ],
       popular: false,
     },
     {
@@ -32,7 +47,16 @@ const Upgrade = () => {
       credits: 100,
       description: "For serious creators",
       icon: Crown,
-      features: ["100 credits/month", "4K export", "Animated captions", "Priority support", "Custom branding", "API access"],
+      features: [
+        "100 renders/month",
+        "Unlimited video analysis",
+        "Unlimited editing",
+        "4K export",
+        "Animated captions",
+        "Priority support",
+        "Custom branding",
+        "API access",
+      ],
       popular: true,
     },
     {
@@ -41,7 +65,16 @@ const Upgrade = () => {
       credits: -1,
       description: "For teams & agencies",
       icon: Building2,
-      features: ["Unlimited credits", "4K export", "Custom branding", "Dedicated support", "Team seats", "SLA guarantee"],
+      features: [
+        "Unlimited renders",
+        "Unlimited video analysis",
+        "Unlimited editing",
+        "4K export",
+        "Custom branding",
+        "Dedicated support",
+        "Team seats",
+        "SLA guarantee",
+      ],
       popular: false,
     },
   ];
@@ -55,9 +88,25 @@ const Upgrade = () => {
             {loading
               ? "Loading your credits..."
               : credits
-              ? `You're on the ${credits.plan} plan with ${credits.remaining} credits remaining.`
+              ? `You're on the ${credits.plan} plan with ${credits.remaining} renders remaining.`
               : "Choose a plan to get started."}
           </p>
+        </div>
+
+        {/* Credit model explainer */}
+        <div className="mb-8 flex flex-wrap justify-center gap-6 text-sm">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <span className="text-lg">🎬</span>
+            <span><span className="text-foreground font-medium">1 credit</span> per rendered clip</span>
+          </div>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <span className="text-lg">🔍</span>
+            <span><span className="text-foreground font-medium">Unlimited</span> video analysis</span>
+          </div>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <span className="text-lg">✂️</span>
+            <span><span className="text-foreground font-medium">Unlimited</span> editing & remixing</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -96,8 +145,8 @@ const Upgrade = () => {
 
               <p className="text-xs text-primary font-semibold mb-5">
                 {plan.credits === -1
-                  ? t("upgrade.unlimitedCredits")
-                  : `${plan.credits} ${t("upgrade.creditsPerMonth")}`}
+                  ? "Unlimited renders"
+                  : `${plan.credits} renders/month`}
               </p>
 
               <Button
@@ -123,7 +172,7 @@ const Upgrade = () => {
 
         <div className="mt-10 rounded-2xl p-6 text-center" style={{ background: "hsl(240,15%,10%,0.4)", border: "1px solid hsl(0,0%,100%,0.06)" }}>
           <p className="text-sm text-muted-foreground">
-            Payment integration coming soon. Need more credits now?{" "}
+            Payment integration coming soon. Need more renders now?{" "}
             <span className="text-primary font-medium">Contact us</span> and we'll set you up.
           </p>
         </div>
@@ -133,3 +182,4 @@ const Upgrade = () => {
 };
 
 export default Upgrade;
+
