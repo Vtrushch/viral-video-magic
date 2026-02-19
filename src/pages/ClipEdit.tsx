@@ -57,10 +57,14 @@ const ClipEdit = () => {
 
   const [clipStart, setClipStart] = useState(0);
   const [clipEnd, setClipEnd] = useState(0);
+  const [originalClipStart, setOriginalClipStart] = useState(0);
+  const [originalClipEnd, setOriginalClipEnd] = useState(0);
   const [captionStyle, setCaptionStyle] = useState<CaptionStyle>("hormozi");
   const [transcript, setTranscript] = useState<
-    { word: string; start: number; end: number; deleted: boolean }[]
+    { word: string; start: number; end: number; deleted: boolean; edited: boolean }[]
   >([]);
+  const activeWordRef = useRef<HTMLSpanElement>(null);
+  const transcriptScrollRef = useRef<HTMLDivElement>(null);
   const [editingWordIdx, setEditingWordIdx] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [rendering, setRendering] = useState(false);
@@ -118,6 +122,8 @@ const ClipEdit = () => {
     const e = parseFloat(clip.end_time || "0");
     setClipStart(s);
     setClipEnd(e);
+    setOriginalClipStart(s);
+    setOriginalClipEnd(e);
 
     // Priority order for real transcription data:
     // 1. clip.transcription_words (DB column — Whisper words with timing, in original language)
@@ -128,19 +134,19 @@ const ClipEdit = () => {
       | null;
 
     if (dbWords && Array.isArray(dbWords) && dbWords.length > 0) {
-      setTranscript(dbWords.map((w) => ({ ...w, deleted: false })));
+      setTranscript(dbWords.map((w) => ({ ...w, deleted: false, edited: false })));
       setTranscriptLoading(false);
     } else if (clip.transcription && clip.transcription.trim().length > 0) {
-      // Split plain transcription text into evenly-spaced word tokens
       const words = clip.transcription.trim().split(/\s+/);
       const duration = e - s;
       const wordDuration = words.length > 0 ? duration / words.length : 0;
       setTranscript(
         words.map((word, i) => ({
           word,
-          start: s + i * wordDuration,
-          end: s + (i + 1) * wordDuration,
+          start: i * wordDuration,
+          end: (i + 1) * wordDuration,
           deleted: false,
+          edited: false,
         }))
       );
       setTranscriptLoading(false);
@@ -275,9 +281,33 @@ const ClipEdit = () => {
   };
 
   // Active (non-deleted) words for subtitle display
+  // Word timestamps are 0-based (relative to original clip start).
+  // When user adjusts ±1s, calculate offset to filter visible words.
+  const originalDuration = originalClipEnd - originalClipStart;
+  const startOffset = clipStart - originalClipStart; // negative = extended earlier
+  const endOffset = clipEnd - originalClipEnd; // positive = extended later
+
+  const visibleWords = transcript.map((w, idx) => ({
+    ...w,
+    idx,
+    inRange: w.start >= startOffset && w.end <= originalDuration + endOffset,
+  }));
+  const inRangeCount = visibleWords.filter((w) => w.inRange).length;
+  const extendedBeyond = clipStart < originalClipStart || clipEnd > originalClipEnd;
+
   const activeWords = transcript.filter((w) => !w.deleted);
   // relativeTime: subtitle timestamps are relative to clip start (0-based)
   const relativeTime = currentTime - clipStart;
+
+  // Auto-scroll to active word in transcript
+  useEffect(() => {
+    if (activeWordRef.current && transcriptScrollRef.current) {
+      const container = transcriptScrollRef.current;
+      const el = activeWordRef.current;
+      const top = el.offsetTop - container.offsetTop - container.clientHeight / 2 + el.clientHeight / 2;
+      container.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    }
+  }, [currentTime]);
 
 
   // Save changes — persist start_time, end_time, caption_style, and transcription to DB
@@ -370,7 +400,7 @@ const ClipEdit = () => {
 
   const handleWordEdit = (idx: number, newWord: string) => {
     setTranscript((prev) =>
-      prev.map((w, i) => (i === idx ? { ...w, word: newWord } : w))
+      prev.map((w, i) => (i === idx ? { ...w, word: newWord, edited: true } : w))
     );
     setEditingWordIdx(null);
   };
@@ -773,8 +803,8 @@ const ClipEdit = () => {
                   {t("clipEdit.transcriptEditor")}
                 </h3>
                 {transcript.length > 0 && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-accent/15 text-accent border border-accent/25">
-                    📝 {t("clipEdit.transcriptReady")}
+                  <span className="text-[10px] text-muted-foreground/60">
+                    {inRangeCount} of {transcript.length} words
                   </span>
                 )}
               </div>
@@ -801,23 +831,25 @@ const ClipEdit = () => {
                   <p className="text-xs text-muted-foreground">
                     Click a word to edit. Right-click to delete/restore.
                   </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {transcript.map((w, idx) => {
-                      const inRange = w.start >= clipStart && w.end <= clipEnd;
+                  <div
+                    ref={transcriptScrollRef}
+                    className="flex flex-wrap gap-1 max-h-[400px] overflow-y-auto pr-1"
+                  >
+                    {visibleWords.map((w) => {
                       const isCurrent =
-                        currentTime >= w.start && currentTime <= w.end + 0.1;
+                        !w.deleted && w.inRange && relativeTime >= w.start && relativeTime <= w.end + 0.1;
 
-                      if (editingWordIdx === idx) {
+                      if (editingWordIdx === w.idx) {
                         return (
                           <input
-                            key={idx}
+                            key={w.idx}
                             autoFocus
                             defaultValue={w.word}
                             className="bg-primary/20 border border-primary/40 rounded px-1.5 py-0.5 text-sm text-foreground outline-none w-20"
-                            onBlur={(e) => handleWordEdit(idx, e.target.value)}
+                            onBlur={(e) => handleWordEdit(w.idx, e.target.value)}
                             onKeyDown={(e) => {
                               if (e.key === "Enter")
-                                handleWordEdit(idx, (e.target as HTMLInputElement).value);
+                                handleWordEdit(w.idx, (e.target as HTMLInputElement).value);
                               if (e.key === "Escape") setEditingWordIdx(null);
                             }}
                           />
@@ -826,20 +858,23 @@ const ClipEdit = () => {
 
                       return (
                         <span
-                          key={idx}
-                          onClick={() => inRange && setEditingWordIdx(idx)}
+                          key={w.idx}
+                          ref={isCurrent ? activeWordRef : undefined}
+                          onClick={() => w.inRange && !w.deleted && setEditingWordIdx(w.idx)}
                           onContextMenu={(e) => {
                             e.preventDefault();
-                            if (inRange) toggleWordDelete(idx);
+                            if (w.inRange) toggleWordDelete(w.idx);
                           }}
-                          className={`px-1.5 py-0.5 rounded text-sm cursor-pointer transition-all select-none ${
+                          className={`px-1 py-0.5 rounded text-sm cursor-pointer transition-all duration-150 select-none ${
                             w.deleted
-                              ? "line-through text-muted-foreground/40 bg-destructive/10"
-                              : !inRange
-                                ? "text-muted-foreground/30"
+                              ? "line-through opacity-50 text-destructive bg-destructive/10"
+                              : !w.inRange
+                                ? "text-muted-foreground/30 cursor-default"
                                 : isCurrent
-                                  ? "bg-primary/25 text-foreground ring-1 ring-primary/50"
-                                  : "text-foreground/80 hover:bg-muted/40"
+                                  ? "bg-primary/30 text-foreground ring-2 ring-primary/60"
+                                  : w.edited
+                                    ? "bg-yellow-500/20 ring-1 ring-yellow-500/50 text-foreground hover:bg-yellow-500/30"
+                                    : "text-foreground/80 hover:bg-muted/40"
                           }`}
                         >
                           {w.word}
@@ -847,6 +882,11 @@ const ClipEdit = () => {
                       );
                     })}
                   </div>
+                  {extendedBeyond && (
+                    <p className="text-[10px] text-muted-foreground/50 italic">
+                      Extended section — subtitles will be re-generated on render
+                    </p>
+                  )}
                 </>
               )}
             </div>
