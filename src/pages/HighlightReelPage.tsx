@@ -12,6 +12,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
+import RenderCreditDialog from "@/components/dashboard/RenderCreditDialog";
+import { useCredits } from "@/hooks/useCredits";
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent,
 } from "@dnd-kit/core";
@@ -262,6 +264,8 @@ export default function HighlightReelPage() {
   const [timingOverrides, setTimingOverrides] = useState<Record<string, ClipTiming>>({});
   const [saving, setSaving] = useState(false);
   const [showAddPanel, setShowAddPanel] = useState(false);
+  const [creditDialogOpen, setCreditDialogOpen] = useState(false);
+  const { credits, refetch: refetchCredits } = useCredits();
 
   /* Derived: which clip is currently active in the player */
   const activeClipId = playerMode.type !== "idle" ? (
@@ -552,13 +556,22 @@ export default function HighlightReelPage() {
     }
   };
 
-  /* ─── Submit ─── */
+  /* ─── Submit (credit-gated) ─── */
+  const handleSaveAndRender = () => {
+    if (selectedIds.length < 2) { toast.error("Select at least 2 clips"); return; }
+    setCreditDialogOpen(true);
+  };
+
   const handleSubmit = async () => {
     if (selectedIds.length < 2) { toast.error("Select at least 2 clips"); return; }
     setSaving(true);
+    setCreditDialogOpen(false);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
+      // Deduct 1 credit for the reel render
+      await supabase.rpc("increment_used_credits" as any, { _user_id: user.id });
+      refetchCredits();
 
       const clipsPayload = selectedClips.map((c) => {
         const t = timingOverrides[c.id];
@@ -682,7 +695,7 @@ export default function HighlightReelPage() {
             <ArrowLeft className="w-4 h-4 sm:mr-1" />
             <span className="hidden sm:inline">{t("upload.cancel")}</span>
           </Button>
-          <Button variant="hero" size="sm" onClick={handleSubmit} disabled={selectedIds.length < 2 || saving} className="min-w-[140px]">
+          <Button variant="hero" size="sm" onClick={handleSaveAndRender} disabled={selectedIds.length < 2 || saving} className="min-w-[140px]">
             {saving ? (
               <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{isEditing ? "Saving..." : "Creating..."}</>
             ) : (
@@ -1134,7 +1147,7 @@ export default function HighlightReelPage() {
             <Button
               variant="hero"
               className="w-full"
-              onClick={handleSubmit}
+              onClick={handleSaveAndRender}
               disabled={selectedIds.length < 2 || saving}
             >
               {saving ? (
@@ -1148,6 +1161,14 @@ export default function HighlightReelPage() {
           </div>
         </div>
       </div>
+      <RenderCreditDialog
+        open={creditDialogOpen}
+        onClose={() => setCreditDialogOpen(false)}
+        onConfirm={handleSubmit}
+        creditsRequired={1}
+        creditsRemaining={credits?.remaining ?? 0}
+        loading={saving}
+      />
     </div>
   );
 }

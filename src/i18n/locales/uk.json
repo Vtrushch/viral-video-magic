@@ -132,12 +132,28 @@
     "starter": "Стартовий",
     "pro": "Про",
     "enterprise": "Підприємство",
-    "creditsPerMonth": "кредитів/міс",
-    "unlimitedCredits": "Необмежені кредити",
+    "creditsPerMonth": "рендерів/міс",
+    "unlimitedCredits": "Необмежені рендери",
     "comingSoon": "Незабаром",
     "currentPlan": "Поточний План",
     "mostPopular": "Найпопулярніший",
-    "perMonth": "/міс"
+    "perMonth": "/міс",
+    "rendersRemaining": "рендерів залишилось",
+    "forRendering": "для рендерингу кліпів",
+    "creditPerRender": "1 кредит за рендер",
+    "unlimitedAnalysis": "Безлімітний аналіз",
+    "unlimitedVideoAnalysis": "Безлімітний аналіз відео",
+    "unlimitedEditing": "Безлімітне редагування",
+    "useOneCredit": "Це використає 1 кредит",
+    "useNCredits": "Це використає {{count}} кредитів",
+    "notEnoughCredits": "Недостатньо кредитів",
+    "needNCredits": "Потрібно {{count}} кредитів"
+  },
+  "reanalyze": {
+    "reanalyze": "Повторний аналіз",
+    "regenerateClips": "Перегенерувати Кліпи",
+    "replaceClips": "Це замінить ваші поточні кліпи",
+    "areYouSure": "Ви впевнені?"
   },
   "upload": {
     "addVideo": "Додати Відео",

@@ -409,7 +409,6 @@ const ClipEdit = () => {
   }
 
   return (
-    <>
     <div className="flex flex-col min-h-full" style={{ background: "#0F0F1A" }}>
       {/* Header */}
       <div className="flex items-center gap-2 p-3 sm:p-4 border-b border-border/50 flex-shrink-0">
@@ -1003,7 +1002,6 @@ const ClipEdit = () => {
           </div>
         </div>
       </div>
-    </div>
       <RenderCreditDialog
         open={creditDialogOpen}
         onClose={() => setCreditDialogOpen(false)}
@@ -1012,6 +1010,7 @@ const ClipEdit = () => {
         creditsRemaining={credits?.remaining ?? 0}
         loading={rendering}
       />
+    </div>
   );
 };
 

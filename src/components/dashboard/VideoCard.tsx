@@ -1,9 +1,11 @@
-import { Trash2, Eye, Clock, Calendar, HardDrive } from "lucide-react";
+import { Trash2, Eye, Clock, Calendar, HardDrive, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import ReAnalyzeDialog from "@/components/dashboard/ReAnalyzeDialog";
+import { useState } from "react";
 
 interface VideoCardProps {
   id: string;
@@ -32,6 +34,7 @@ const formatFileSize = (bytes?: number) => {
 
 const VideoCard = ({ id, title, duration, uploadDate, status, thumbnail, filePath, fileSize, onDelete }: VideoCardProps) => {
   const { t } = useTranslation();
+  const [reAnalyzeOpen, setReAnalyzeOpen] = useState(false);
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -99,11 +102,32 @@ const VideoCard = ({ id, title, duration, uploadDate, status, thumbnail, filePat
           <Button variant="ghost" size="sm" className="flex-1 text-xs" style={{ color: "rgba(255,255,255,0.7)" }} asChild>
             <Link to={`/dashboard/videos/${id}`}>{t("videoCard.viewClips")}</Link>
           </Button>
+          {status === "ready" && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              style={{ color: "rgba(255,255,255,0.4)" }}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setReAnalyzeOpen(true); }}
+              title="Re-analyze video"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </Button>
+          )}
           <Button variant="ghost" size="icon" className="hover:text-destructive h-8 w-8" style={{ color: "rgba(255,255,255,0.4)" }} onClick={handleDelete}>
             <Trash2 className="w-3.5 h-3.5" />
           </Button>
         </div>
       </div>
+      {reAnalyzeOpen && (
+        <ReAnalyzeDialog
+          video={{ id, title, status, user_id: "", created_at: "", updated_at: "" } as any}
+          existingClipCount={0}
+          open={reAnalyzeOpen}
+          onClose={() => setReAnalyzeOpen(false)}
+          onSuccess={() => setReAnalyzeOpen(false)}
+        />
+      )}
     </div>
   );
 };

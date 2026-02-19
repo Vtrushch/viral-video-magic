@@ -240,12 +240,28 @@
     "starter": "Inicial",
     "pro": "Pro",
     "enterprise": "Empresa",
-    "creditsPerMonth": "créditos/mes",
-    "unlimitedCredits": "Créditos ilimitados",
+    "creditsPerMonth": "renders/mes",
+    "unlimitedCredits": "Renders ilimitados",
     "comingSoon": "Próximamente",
     "currentPlan": "Plan Actual",
     "mostPopular": "Más Popular",
-    "perMonth": "/mes"
+    "perMonth": "/mes",
+    "rendersRemaining": "renders restantes",
+    "forRendering": "para renderizar clips",
+    "creditPerRender": "1 crédito por render",
+    "unlimitedAnalysis": "Análisis ilimitado",
+    "unlimitedVideoAnalysis": "Análisis de video ilimitado",
+    "unlimitedEditing": "Edición ilimitada",
+    "useOneCredit": "Esto usará 1 crédito",
+    "useNCredits": "Esto usará {{count}} créditos",
+    "notEnoughCredits": "Créditos insuficientes",
+    "needNCredits": "Necesitas {{count}} créditos"
+  },
+  "reanalyze": {
+    "reanalyze": "Re-analizar",
+    "regenerateClips": "Regenerar Clips",
+    "replaceClips": "Esto reemplazará tus clips actuales",
+    "areYouSure": "¿Estás seguro?"
   },
   "upload": {
     "addVideo": "Agregar Video",
