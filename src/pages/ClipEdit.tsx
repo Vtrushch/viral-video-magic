@@ -807,13 +807,13 @@ const ClipEdit = () => {
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => setClipStart(s => Math.max(0, s - 1))}
-                    className="w-7 h-7 rounded-md border border-border/50 hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all flex items-center justify-center text-[10px] font-bold"
+                    className="w-9 h-9 sm:w-7 sm:h-7 rounded-md border border-border/50 hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all flex items-center justify-center text-[10px] font-bold"
                     title="Start -1s"
                   >−1s</button>
                   <span className="text-primary min-w-[56px] text-center">{formatTime(clipStart)}</span>
                   <button
                     onClick={() => setClipStart(s => Math.min(clipEnd - 0.5, s + 1))}
-                    className="w-7 h-7 rounded-md border border-border/50 hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all flex items-center justify-center text-[10px] font-bold"
+                    className="w-9 h-9 sm:w-7 sm:h-7 rounded-md border border-border/50 hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all flex items-center justify-center text-[10px] font-bold"
                     title="Start +1s"
                   >+1s</button>
                   {clipStart !== originalClipStart && (
@@ -829,13 +829,13 @@ const ClipEdit = () => {
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => setClipEnd(e => Math.max(clipStart + 0.5, e - 1))}
-                    className="w-7 h-7 rounded-md border border-border/50 hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all flex items-center justify-center text-[10px] font-bold"
+                    className="w-9 h-9 sm:w-7 sm:h-7 rounded-md border border-border/50 hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all flex items-center justify-center text-[10px] font-bold"
                     title="End -1s"
                   >−1s</button>
                   <span className="text-primary min-w-[56px] text-center">{formatTime(clipEnd)}</span>
                   <button
                     onClick={() => setClipEnd(e => Math.min(totalDuration, e + 1))}
-                    className="w-7 h-7 rounded-md border border-border/50 hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all flex items-center justify-center text-[10px] font-bold"
+                    className="w-9 h-9 sm:w-7 sm:h-7 rounded-md border border-border/50 hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all flex items-center justify-center text-[10px] font-bold"
                     title="End +1s"
                   >+1s</button>
                   {clipEnd !== originalClipEnd && (
