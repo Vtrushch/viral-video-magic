@@ -357,17 +357,28 @@ const Admin = () => {
                       </span>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Select value={u.plan || "free"} onValueChange={(val) => handleSetPlan(uid, val)}>
-                        <SelectTrigger className="h-7 w-[100px] text-xs mx-auto">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="free">Free</SelectItem>
-                          <SelectItem value="starter">Starter</SelectItem>
-                          <SelectItem value="pro">Pro</SelectItem>
-                          <SelectItem value="agency">Agency</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="flex items-center justify-center gap-2">
+                        <span
+                          className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide"
+                          style={{
+                            background: (u.plan || "free") === "free" ? "hsl(var(--muted))" : (u.plan === "starter" ? "hsl(177,100%,39%,0.15)" : (u.plan === "pro" ? "hsl(270,95%,65%,0.15)" : "hsl(349,100%,59%,0.15)")),
+                            color: (u.plan || "free") === "free" ? "hsl(var(--muted-foreground))" : (u.plan === "starter" ? "hsl(177,100%,39%)" : (u.plan === "pro" ? "hsl(270,95%,65%)" : "hsl(349,100%,59%)")),
+                          }}
+                        >
+                          {(u.plan || "free")}
+                        </span>
+                        <Select value={u.plan || "free"} onValueChange={(val) => handleSetPlan(uid, val)}>
+                          <SelectTrigger className="h-7 w-[90px] text-xs text-foreground">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="free">Free</SelectItem>
+                            <SelectItem value="starter">Starter</SelectItem>
+                            <SelectItem value="pro">Pro</SelectItem>
+                            <SelectItem value="agency">Agency</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <Button

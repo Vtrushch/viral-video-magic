@@ -201,3 +201,8 @@
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* Hide Lovable badge */
+[data-lovable-badge], .lovable-badge, iframe[src*="lovable"] {
+  display: none !important;
+}
+
