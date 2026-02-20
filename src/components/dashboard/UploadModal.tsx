@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Upload, X, FileVideo, Link as LinkIcon, Loader2 } from "lucide-react";
+import { Upload, X, FileVideo, Link as LinkIcon, Loader2, Sparkles, Search, CloudUpload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
@@ -176,17 +176,40 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
           <TabsContent value="upload">
             {!file ? (
               <div
-                className={`border-2 border-dashed rounded-xl p-10 sm:p-12 text-center transition-colors cursor-pointer ${
-                  dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
+                className={`relative border-2 border-dashed rounded-2xl p-10 sm:p-12 text-center transition-all cursor-pointer group ${
+                  dragging
+                    ? "border-primary bg-primary/10 scale-[1.01]"
+                    : "border-border hover:border-primary/50 hover:bg-primary/5"
                 }`}
                 onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
                 onDragLeave={() => setDragging(false)}
                 onDrop={handleDrop}
                 onClick={() => inputRef.current?.click()}
               >
-                <Upload className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                <p className="text-sm font-medium mb-1">{t("upload.dragAndDrop")}</p>
-                <p className="text-xs text-muted-foreground">{t("upload.supportedFormats")}</p>
+                {/* Background gradient orb */}
+                <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full bg-primary/10 blur-3xl transition-opacity opacity-0 group-hover:opacity-100" />
+                </div>
+
+                {/* Icon */}
+                <div className="relative w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center"
+                  style={{ background: "linear-gradient(135deg, hsl(var(--primary)/0.2), hsl(var(--primary)/0.05))", border: "1px solid hsl(var(--primary)/0.3)" }}>
+                  <CloudUpload className="w-8 h-8 text-primary" />
+                </div>
+
+                <p className="text-base font-semibold mb-1 text-foreground">Drop your video here</p>
+                <p className="text-sm text-muted-foreground mb-4">or click to browse files</p>
+
+                {/* Format badges */}
+                <div className="flex items-center justify-center flex-wrap gap-2 text-xs">
+                  {["MP4", "MOV", "AVI", "WebM"].map(fmt => (
+                    <span key={fmt} className="px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium border border-border">
+                      {fmt}
+                    </span>
+                  ))}
+                  <span className="text-muted-foreground">• up to 2 hours</span>
+                </div>
+
                 <input
                   ref={inputRef}
                   type="file"
@@ -196,35 +219,82 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
                 />
               </div>
             ) : (
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
-                  <FileVideo className="w-8 h-8 text-primary flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{file.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {(file.size / (1024 * 1024)).toFixed(1)} MB
-                    </p>
+              <div className="space-y-3">
+                {/* File card */}
+                <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-4">
+                  <div className="flex items-center gap-3">
+                    {/* Video icon with gradient bg */}
+                    <div className="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center"
+                      style={{ background: "linear-gradient(135deg, hsl(var(--primary)/0.25), hsl(var(--primary)/0.08))", border: "1px solid hsl(var(--primary)/0.3)" }}>
+                      <FileVideo className="w-6 h-6 text-primary" />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate text-foreground">{file.name}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {(file.size / (1024 * 1024)).toFixed(1)} MB
+                      </p>
+                    </div>
+
+                    {!uploading && (
+                      <button
+                        onClick={() => setFile(null)}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
-                  {!uploading && (
-                    <Button variant="ghost" size="icon" onClick={() => setFile(null)} className="h-8 w-8">
-                      <X className="w-4 h-4" />
-                    </Button>
+
+                  {/* Upload progress */}
+                  {uploading && (
+                    <div className="space-y-2">
+                      <div className="relative h-2 rounded-full overflow-hidden bg-muted">
+                        <div
+                          className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
+                          style={{
+                            width: `${progress}%`,
+                            background: "linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary)/0.7))",
+                          }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-muted-foreground">
+                          {progress < 70 ? "Uploading..." : progress < 100 ? "Creating video entry..." : "Done!"}
+                        </p>
+                        <p className="text-xs font-medium text-foreground">{progress}%</p>
+                      </div>
+                    </div>
                   )}
                 </div>
 
-                {uploading && (
-                  <div className="space-y-2">
-                    <Progress value={progress} className="h-2" />
-                    <p className="text-xs text-muted-foreground text-center">{progress}% uploaded</p>
+                {/* What happens next info */}
+                {!uploading && (
+                  <div className="flex items-start gap-2.5 rounded-xl px-3 py-2.5 bg-primary/5 border border-primary/15">
+                    <Sparkles className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      After upload, AI will analyze your video and find the most viral moments — usually takes 1–3 minutes.
+                    </p>
                   </div>
                 )}
 
-                <div className="flex gap-2">
+                {/* Buttons */}
+                <div className="flex gap-2 pt-1">
                   <Button variant="outline" onClick={handleCancel} className="flex-1 min-h-[44px]" disabled={uploading}>
                     {t("upload.cancel")}
                   </Button>
                   <Button variant="hero" onClick={handleUpload} className="flex-1 min-h-[44px]" disabled={uploading}>
-                    {uploading ? t("upload.uploading") : t("upload.upload")}
+                    {uploading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Upload & Analyze
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
@@ -234,17 +304,24 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
           {/* YouTube URL Tab */}
           <TabsContent value="youtube">
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Input
-                  placeholder={t("upload.pasteYoutubeUrl")}
-                  value={youtubeUrl}
-                  onChange={(e) => setYoutubeUrl(e.target.value)}
-                  disabled={importing}
-                  className="h-12"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Supports youtube.com/watch and youtu.be/ links
-                </p>
+              <div className="space-y-3">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    placeholder={t("upload.pasteYoutubeUrl")}
+                    value={youtubeUrl}
+                    onChange={(e) => setYoutubeUrl(e.target.value)}
+                    disabled={importing}
+                    className="h-12 pl-10 text-sm"
+                  />
+                </div>
+
+                <div className="flex items-start gap-2.5 rounded-xl px-3 py-2.5 bg-primary/5 border border-primary/15">
+                  <Sparkles className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Paste a YouTube link — we'll download and analyze it automatically.
+                  </p>
+                </div>
               </div>
 
               <div className="flex gap-2">
@@ -260,10 +337,13 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
                   {importing ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      {t("upload.importing")}
+                      Importing...
                     </>
                   ) : (
-                    t("upload.import")
+                    <>
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Import & Analyze
+                    </>
                   )}
                 </Button>
               </div>
