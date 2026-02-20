@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Loader2, Sparkles, Zap, AlertTriangle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface RenderCreditDialogProps {
   open: boolean;
@@ -66,6 +67,12 @@ const RenderCreditDialog = ({
               </p>
             </div>
           </div>
+        )}
+
+        {hasEnough && (
+          <p className="text-xs text-muted-foreground/70 mt-2">
+            Free plan clips include a small CutViral.ai watermark. <Link to="/dashboard/upgrade" className="text-primary hover:underline">Upgrade to remove it.</Link>
+          </p>
         )}
 
         <div className="flex gap-2 pt-1">
