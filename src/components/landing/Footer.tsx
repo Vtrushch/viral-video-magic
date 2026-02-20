@@ -34,8 +34,8 @@ const Footer = () => {
             <div>
               <h4 className="font-semibold text-sm mb-3">{t('landing.footer.legal')}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><span className="opacity-50">{t('landing.footer.terms')}</span></li>
-                <li><span className="opacity-50">{t('landing.footer.privacy')}</span></li>
+                <li><Link to="/terms" className="hover:text-foreground transition-colors">{t('landing.footer.terms')}</Link></li>
+                <li><Link to="/privacy" className="hover:text-foreground transition-colors">{t('landing.footer.privacy')}</Link></li>
                 <li><span className="opacity-50">{t('landing.footer.about')}</span></li>
               </ul>
             </div>
