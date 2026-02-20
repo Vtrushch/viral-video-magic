@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import DashboardSidebar from "./DashboardSidebar";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const DashboardLayout = () => {
   return (
@@ -9,7 +10,9 @@ const DashboardLayout = () => {
         className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 pb-16 md:pb-0"
         style={{ maxWidth: "calc(100vw - var(--sidebar-width, 0px))", background: "#0F0F1A" }}
       >
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </main>
     </div>
   );
