@@ -17,6 +17,8 @@ import Upgrade from "./pages/Upgrade";
 import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
 import HighlightReelPage from "./pages/HighlightReelPage";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import DashboardLayout from "./components/layout/DashboardLayout";
 
@@ -31,6 +33,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route
             path="/dashboard"
             element={
