@@ -785,12 +785,19 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                       <Pencil className="w-3 h-3 mr-1" /> Edit
                     </Button>
                     {isReady && clip.file_path ? (
-                      <button
-                        className="inline-flex items-center gap-1 h-7 px-2 text-xs text-accent hover:text-accent rounded-md hover:bg-accent/10 transition-colors"
-                        onClick={() => handleDownload(clip)}
-                      >
-                        <Download className="w-3 h-3" /> Download
-                      </button>
+                      <>
+                        <button
+                          className="inline-flex items-center gap-1 h-7 px-2 text-xs text-accent hover:text-accent rounded-md hover:bg-accent/10 transition-colors"
+                          onClick={() => handleDownload(clip)}
+                        >
+                          <Download className="w-3 h-3" /> Download
+                        </button>
+                        {(credits?.plan === "free" || !credits?.plan) && (
+                          <span className="text-[9px] text-yellow-500/70 bg-yellow-500/10 rounded px-1.5 py-0.5">
+                            Watermark
+                          </span>
+                        )}
+                      </>
                     ) : isFailed ? (
                       <Button
                         variant="ghost"

@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -498,15 +498,24 @@ const ClipEdit = () => {
             <span className="gradient-text">Remix</span> — {clip.title}
           </h1>
         </div>
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <Button variant="outline" size="sm" onClick={handleSave} disabled={saving} className="min-h-[36px]">
-            <Save className="w-4 h-4 sm:mr-1" />
-            <span className="hidden sm:inline">{saving ? "Saving..." : "Save"}</span>
-          </Button>
-          <Button variant="hero" size="sm" onClick={handleRender} disabled={rendering} className="min-h-[36px]">
-            <Zap className="w-4 h-4 sm:mr-1" />
-            <span className="hidden sm:inline">{rendering ? "Rendering..." : "Render"}</span>
-          </Button>
+        <div className="flex flex-col items-end gap-1">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <Button variant="outline" size="sm" onClick={handleSave} disabled={saving} className="min-h-[36px]">
+              <Save className="w-4 h-4 sm:mr-1" />
+              <span className="hidden sm:inline">{saving ? "Saving..." : "Save"}</span>
+            </Button>
+            <Button variant="hero" size="sm" onClick={handleRender} disabled={rendering} className="min-h-[36px]">
+              <Zap className="w-4 h-4 sm:mr-1" />
+              <span className="hidden sm:inline">{rendering ? "Rendering..." : "Render"}</span>
+            </Button>
+          </div>
+          {(credits?.plan === "free" || !credits?.plan) && (
+            <p className="text-[10px] text-muted-foreground/60 flex items-center gap-1">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-yellow-500/60" />
+              Free plan — rendered clips include a CutViral.ai watermark.
+              <Link to="/dashboard/upgrade" className="text-primary hover:underline ml-0.5">Upgrade</Link>
+            </p>
+          )}
         </div>
       </div>
 
