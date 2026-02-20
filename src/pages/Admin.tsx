@@ -141,6 +141,26 @@ const Admin = () => {
     }
   };
 
+  const handleSetPlan = async (uid: string, plan: string) => {
+    setSubmitting(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("No session");
+
+      const res = await supabase.functions.invoke("admin-set-plan", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: { user_id: uid, plan },
+      });
+      if (res.error) throw new Error("Failed");
+      toast.success(`Plan set to ${plan.toUpperCase()}`);
+      fetchData();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to set plan");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleAddCredits = async (uid: string) => {
     const amount = parseInt(creditsToAdd);
     if (!amount || amount <= 0) {
@@ -250,6 +270,7 @@ const Admin = () => {
                 <TableHead className="text-muted-foreground text-center">Credits</TableHead>
                 <TableHead className="text-muted-foreground text-center">Used</TableHead>
                 <TableHead className="text-muted-foreground text-center">Remaining</TableHead>
+                <TableHead className="text-muted-foreground text-center">Plan</TableHead>
                 <TableHead className="text-muted-foreground text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -335,6 +356,19 @@ const Admin = () => {
                         {remaining}
                       </span>
                     </TableCell>
+                    <TableCell className="text-center">
+                      <Select value={u.plan || "free"} onValueChange={(val) => handleSetPlan(uid, val)}>
+                        <SelectTrigger className="h-7 w-[100px] text-xs mx-auto">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="free">Free</SelectItem>
+                          <SelectItem value="starter">Starter</SelectItem>
+                          <SelectItem value="pro">Pro</SelectItem>
+                          <SelectItem value="agency">Agency</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
                     <TableCell className="text-right">
                       <Button
                         variant="ghost"
@@ -349,7 +383,7 @@ const Admin = () => {
                   </TableRow>
                   {expandedUser === uid && (
                     <TableRow key={`${uid}-detail`}>
-                      <TableCell colSpan={9} className="p-4">
+                      <TableCell colSpan={10} className="p-4">
                         <div className="space-y-4">
                           {/* User's videos */}
                           <div>
