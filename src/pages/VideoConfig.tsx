@@ -11,9 +11,9 @@ import { apiFetch } from "@/lib/api";
 import type { Tables } from "@/integrations/supabase/types";
 
 const clipCountOptions = [
-  { value: 5, label: "5 clips", desc: "Quick · Best for testing" },
-  { value: 10, label: "10 clips", desc: "Recommended" },
-  { value: 15, label: "15 clips", desc: "Maximum coverage" },
+  { value: 5, desc: "Quick · Best for testing" },
+  { value: 10, desc: "Recommended" },
+  { value: 15, desc: "Maximum coverage" },
 ];
 
 const clipLengthOptions = [
@@ -28,7 +28,7 @@ const captionStyles = [
     label: "Hormozi Style",
     desc: "Yellow highlights, bold, attention-grabbing",
     sample: (
-      <span className="text-sm font-black tracking-tight">
+      <span className="text-sm font-black tracking-tight text-white">
         Make More <span className="text-yellow-400 font-black">MONEY</span> Today
       </span>
     ),
@@ -48,9 +48,7 @@ const captionStyles = [
     label: "Minimal",
     desc: "Clean, simple, elegant",
     sample: (
-      <span className="text-sm font-light tracking-wide italic opacity-90">
-        This changed everything
-      </span>
+      <span className="text-sm text-white/70 font-light">clean subtitles</span>
     ),
   },
   {
@@ -59,8 +57,9 @@ const captionStyles = [
     desc: "Customize colors in Remix Mode",
     badge: "Pro",
     sample: (
-      <span className="text-sm opacity-50">Custom...</span>
+      <span className="text-sm font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">YOUR STYLE</span>
     ),
+    sampleBg: "linear-gradient(135deg, hsl(349 100% 59% / 0.2), hsl(270 95% 65% / 0.2))",
   },
 ];
 
@@ -231,11 +230,14 @@ const VideoConfig = () => {
               {clipCountOptions.map((opt) => (
                 <button
                   key={opt.value}
-                  className={radioCard(clipCount === opt.value)}
-                  style={{ background: radioCardBg(clipCount === opt.value) }}
+                  className={`rounded-xl p-4 text-center transition-all border ${
+                    clipCount === opt.value
+                      ? "border-primary/60 bg-primary/10 text-foreground shadow-[0_0_16px_hsl(349,100%,59%,0.15)]"
+                      : "border-border/30 bg-muted/20 hover:border-border/60 text-muted-foreground"
+                  }`}
                   onClick={() => setClipCount(opt.value)}
                 >
-                  <span className="text-lg font-bold text-foreground">{opt.value}</span>
+                  <div className="text-xl font-bold text-foreground">{opt.value}</div>
                   <span className="text-xs text-muted-foreground">{opt.desc}</span>
                 </button>
               ))}
@@ -249,11 +251,14 @@ const VideoConfig = () => {
               {clipLengthOptions.map((opt) => (
                 <button
                   key={opt.value}
-                  className={radioCard(clipLength === opt.value)}
-                  style={{ background: radioCardBg(clipLength === opt.value) }}
+                  className={`rounded-xl p-4 text-center transition-all border flex flex-col items-center gap-1 ${
+                    clipLength === opt.value
+                      ? "border-primary/60 bg-primary/10 text-foreground shadow-[0_0_16px_hsl(349,100%,59%,0.15)]"
+                      : "border-border/30 bg-muted/20 hover:border-border/60 text-muted-foreground"
+                  }`}
                   onClick={() => setClipLength(opt.value)}
                 >
-                  <span className="font-semibold text-foreground">{opt.label}</span>
+                  <div className="font-semibold text-foreground">{opt.label}</div>
                   <span className="text-xs font-medium text-primary/80">{opt.time}</span>
                   <span className="text-xs text-muted-foreground">{opt.desc}</span>
                 </button>
@@ -282,7 +287,7 @@ const VideoConfig = () => {
                 }}
               >
                 <div className="w-full rounded-lg p-3 flex items-center justify-center min-h-[48px]"
-                  style={{ background: "hsl(0,0%,0%,0.4)" }}
+                  style={{ background: (opt as any).sampleBg || "hsl(0,0%,0%,0.4)" }}
                 >
                   {opt.sample}
                 </div>
@@ -318,8 +323,8 @@ const VideoConfig = () => {
                   : "border-border/30 bg-muted/20 hover:border-border/60"
               }`}
             >
-              <div className="w-6 h-10 border-2 border-current rounded-sm mx-auto mb-2 opacity-60" />
-              <div className="text-sm font-bold">9:16</div>
+              <div className={`w-6 h-10 border-2 rounded-sm mx-auto mb-2 ${outputFormat === "9:16" ? "border-primary" : "border-muted-foreground/40"}`} />
+              <div className="text-sm font-bold text-foreground">9:16</div>
               <p className="text-[10px] text-muted-foreground mt-0.5">TikTok, Reels, Shorts</p>
             </button>
             <button
@@ -330,8 +335,8 @@ const VideoConfig = () => {
                   : "border-border/30 bg-muted/20 hover:border-border/60"
               }`}
             >
-              <div className="w-8 h-8 border-2 border-current rounded-sm mx-auto mb-2 opacity-60" />
-              <div className="text-sm font-bold">1:1</div>
+              <div className={`w-8 h-8 border-2 rounded-sm mx-auto mb-2 ${outputFormat === "1:1" ? "border-primary" : "border-muted-foreground/40"}`} />
+              <div className="text-sm font-bold text-foreground">1:1</div>
               <p className="text-[10px] text-muted-foreground mt-0.5">Instagram Feed</p>
             </button>
             <button
@@ -342,8 +347,8 @@ const VideoConfig = () => {
                   : "border-border/30 bg-muted/20 hover:border-border/60"
               }`}
             >
-              <div className="w-10 h-6 border-2 border-current rounded-sm mx-auto mb-2 opacity-60" />
-              <div className="text-sm font-bold">16:9</div>
+              <div className={`w-10 h-6 border-2 rounded-sm mx-auto mb-2 ${outputFormat === "16:9" ? "border-primary" : "border-muted-foreground/40"}`} />
+              <div className="text-sm font-bold text-foreground">16:9</div>
               <p className="text-[10px] text-muted-foreground mt-0.5">YouTube</p>
             </button>
           </div>
