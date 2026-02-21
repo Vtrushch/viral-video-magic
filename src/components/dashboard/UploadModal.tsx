@@ -157,7 +157,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={handleCancel}>
-      <DialogContent className="w-full max-w-lg mx-auto dark sm:rounded-2xl rounded-none sm:top-1/2 top-auto bottom-0 translate-y-0 sm:-translate-y-1/2 sm:left-1/2 sm:-translate-x-1/2 fixed">
+      <DialogContent className="max-w-lg p-5 gap-4 sm:rounded-2xl fixed sm:relative bottom-0 sm:bottom-auto inset-x-0 sm:inset-x-auto rounded-t-2xl sm:rounded-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t("upload.addVideo")}</DialogTitle>
         </DialogHeader>
@@ -176,7 +176,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
           <TabsContent value="upload">
             {!file ? (
               <div
-                className={`relative border-2 border-dashed rounded-2xl p-10 sm:p-12 text-center transition-all cursor-pointer group ${
+                className={`relative border-2 border-dashed rounded-2xl p-6 sm:p-8 text-center transition-all cursor-pointer group ${
                   dragging
                     ? "border-primary bg-primary/10 scale-[1.01]"
                     : "border-border hover:border-primary/50 hover:bg-primary/5"
