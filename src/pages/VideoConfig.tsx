@@ -1,6 +1,6 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useEffect, useState, useMemo } from "react";
-import { ArrowLeft, Sparkles, Loader2, Clock, HardDrive, Calendar, ChevronDown, Globe, Info } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowLeft, Sparkles, Loader2, Clock, HardDrive, Calendar, ChevronDown, Info, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -56,21 +56,12 @@ const captionStyles = [
   {
     value: "custom",
     label: "Custom Style",
-    desc: "Design your own",
+    desc: "Customize colors in Remix Mode",
     badge: "Pro",
     sample: (
       <span className="text-sm opacity-50">Custom...</span>
     ),
   },
-];
-
-const languages = [
-  { code: "en", label: "English", desc: "Original language", price: null },
-  { code: "es", label: "Spanish", desc: "Auto-translate + captions", price: "+$0.10/clip" },
-  { code: "fr", label: "French", desc: "Auto-translate + captions", price: "+$0.10/clip" },
-  { code: "de", label: "German", desc: "Auto-translate + captions", price: "+$0.10/clip" },
-  { code: "pt", label: "Portuguese", desc: "Auto-translate + captions", price: "+$0.10/clip" },
-  { code: "ja", label: "Japanese", desc: "Auto-translate + captions", price: "+$0.10/clip" },
 ];
 
 function formatBytes(bytes: number | null) {
@@ -95,10 +86,9 @@ const VideoConfig = () => {
   const [clipCount, setClipCount] = useState(10);
   const [clipLength, setClipLength] = useState("medium");
   const [captionStyle, setCaptionStyle] = useState("hormozi");
-  const [selectedLangs, setSelectedLangs] = useState<string[]>(["en"]);
+  const [outputFormat, setOutputFormat] = useState("9:16");
   const [includeTranscription, setIncludeTranscription] = useState(false);
   const [includeChapters, setIncludeChapters] = useState(false);
-  const [includeBroll, setIncludeBroll] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -108,13 +98,6 @@ const VideoConfig = () => {
     });
   }, [id]);
 
-  const toggleLang = (code: string) => {
-    if (code === "en") return;
-    setSelectedLangs((prev) =>
-      prev.includes(code) ? prev.filter((l) => l !== code) : [...prev, code]
-    );
-  };
-
   const handleStartAnalysis = async () => {
     if (!id) return;
 
@@ -123,13 +106,11 @@ const VideoConfig = () => {
       clipCount,
       clipLength,
       captionStyle,
-      languages: selectedLangs,
+      outputFormat,
       includeTranscription,
       includeChapters,
-      includeBroll,
     };
 
-    // Pre-check: verify the video row exists before calling Modal
     const { data: verifyData, error: verifyError } = await supabase
       .from("videos")
       .select("id, file_path, status")
@@ -159,7 +140,6 @@ const VideoConfig = () => {
       return;
     }
 
-    // Trigger Modal analysis via HTTP webhook
     try {
       const modalResponse = await apiFetch('/analyze', { video_id: id });
       if (!modalResponse.ok) {
@@ -168,7 +148,6 @@ const VideoConfig = () => {
       }
     } catch (modalError) {
       console.error('Modal connection error:', modalError);
-      // Don't block UI - analysis will still work
     }
 
     toast.success("AI analysis started! This takes 2-3 minutes.");
@@ -178,9 +157,8 @@ const VideoConfig = () => {
   const handleSaveDraft = async () => {
     if (!id) return;
     const settings = {
-      clipCount, clipLength, captionStyle,
-      languages: selectedLangs,
-      includeTranscription, includeChapters, includeBroll,
+      clipCount, clipLength, captionStyle, outputFormat,
+      includeTranscription, includeChapters,
     };
     await supabase.from("videos").update({ settings } as any).eq("id", id);
     toast.success("Settings saved as draft.");
@@ -219,7 +197,6 @@ const VideoConfig = () => {
 
   return (
     <div className="p-6 lg:p-8 max-w-3xl mx-auto w-full animate-fade-in">
-      {/* Back */}
       <Link
         to="/dashboard"
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
@@ -227,7 +204,6 @@ const VideoConfig = () => {
         <ArrowLeft className="w-4 h-4" /> Back to videos
       </Link>
 
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-foreground mb-2">Configure Analysis</h1>
         <p className="text-muted-foreground text-sm mb-4">
@@ -249,7 +225,6 @@ const VideoConfig = () => {
             🎬 Clip Generation
           </h2>
 
-          {/* Clip Count */}
           <div>
             <Label className="text-sm font-medium text-foreground/80 mb-3 block">Number of clips to generate</Label>
             <div className="grid grid-cols-3 gap-3">
@@ -268,7 +243,6 @@ const VideoConfig = () => {
             <p className="text-xs text-muted-foreground mt-2">AI will find the most viral moments</p>
           </div>
 
-          {/* Clip Length */}
           <div>
             <Label className="text-sm font-medium text-foreground/80 mb-3 block">Preferred clip length</Label>
             <div className="grid grid-cols-3 gap-3">
@@ -293,11 +267,6 @@ const VideoConfig = () => {
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             🎨 Caption Style
           </h2>
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs"
-            style={{ background: "hsl(var(--accent)/0.08)", border: "1px solid hsl(var(--accent)/0.2)" }}>
-            <Globe className="w-3.5 h-3.5 text-accent flex-shrink-0" />
-            <span className="text-accent/90">🌍 Language auto-detected — subtitles will match your video's language</span>
-          </div>
           <div className="grid grid-cols-2 gap-3">
             {captionStyles.map((opt) => (
               <button
@@ -331,44 +300,52 @@ const VideoConfig = () => {
           </div>
         </section>
 
-        {/* 3. Languages */}
+        {/* 3. Output Format */}
         <section className={sectionCard}>
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            🌍 Languages
+            <Monitor className="w-5 h-5 text-primary" />
+            Output Format
           </h2>
-          <div className="grid grid-cols-2 gap-3">
-            {languages.map((lang) => {
-              const isEn = lang.code === "en";
-              const active = selectedLangs.includes(lang.code);
-              return (
-                <button
-                  key={lang.code}
-                  className={radioCard(active)}
-                  style={{ background: radioCardBg(active) }}
-                  onClick={() => toggleLang(lang.code)}
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <span className="font-semibold text-foreground text-sm">{lang.label}</span>
-                    {lang.price && (
-                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                        {lang.price}
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-xs text-muted-foreground">
-                    {isEn ? "Original language" : lang.desc}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-          <div className="flex items-start gap-2 rounded-xl p-3 text-xs"
-            style={{ background: "hsl(177,100%,39%,0.06)", border: "1px solid hsl(177,100%,39%,0.15)" }}
-          >
-            <Globe className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
-            <span className="text-accent/80">
-              <strong className="text-accent">Pro Tip:</strong> Multi-language clips reach 5× more audience!
-            </span>
+          <p className="text-xs text-muted-foreground">
+            Choose the aspect ratio for your clips
+          </p>
+          <div className="grid grid-cols-3 gap-3">
+            <button
+              onClick={() => setOutputFormat("9:16")}
+              className={`rounded-xl p-4 text-center transition-all border ${
+                outputFormat === "9:16"
+                  ? "border-primary/60 bg-primary/10 shadow-[0_0_16px_hsl(349,100%,59%,0.15)]"
+                  : "border-border/30 bg-muted/20 hover:border-border/60"
+              }`}
+            >
+              <div className="w-6 h-10 border-2 border-current rounded-sm mx-auto mb-2 opacity-60" />
+              <div className="text-sm font-bold">9:16</div>
+              <p className="text-[10px] text-muted-foreground mt-0.5">TikTok, Reels, Shorts</p>
+            </button>
+            <button
+              onClick={() => setOutputFormat("1:1")}
+              className={`rounded-xl p-4 text-center transition-all border ${
+                outputFormat === "1:1"
+                  ? "border-primary/60 bg-primary/10 shadow-[0_0_16px_hsl(349,100%,59%,0.15)]"
+                  : "border-border/30 bg-muted/20 hover:border-border/60"
+              }`}
+            >
+              <div className="w-8 h-8 border-2 border-current rounded-sm mx-auto mb-2 opacity-60" />
+              <div className="text-sm font-bold">1:1</div>
+              <p className="text-[10px] text-muted-foreground mt-0.5">Instagram Feed</p>
+            </button>
+            <button
+              onClick={() => setOutputFormat("16:9")}
+              className={`rounded-xl p-4 text-center transition-all border ${
+                outputFormat === "16:9"
+                  ? "border-primary/60 bg-primary/10 shadow-[0_0_16px_hsl(349,100%,59%,0.15)]"
+                  : "border-border/30 bg-muted/20 hover:border-border/60"
+              }`}
+            >
+              <div className="w-10 h-6 border-2 border-current rounded-sm mx-auto mb-2 opacity-60" />
+              <div className="text-sm font-bold">16:9</div>
+              <p className="text-[10px] text-muted-foreground mt-0.5">YouTube</p>
+            </button>
           </div>
         </section>
 
@@ -390,52 +367,43 @@ const VideoConfig = () => {
                 <Checkbox checked={includeChapters} onCheckedChange={(v) => setIncludeChapters(!!v)} />
                 <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors">Generate chapter markers</span>
               </label>
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <Checkbox checked={includeBroll} onCheckedChange={(v) => setIncludeBroll(!!v)} />
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors">Auto-suggest B-roll moments</span>
-                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-accent/15 text-accent">Beta</span>
-                </div>
-              </label>
             </CollapsibleContent>
           </div>
         </Collapsible>
 
-        {/* 5. Free Analysis info */}
-        <div className="glass-card rounded-2xl p-5 space-y-3">
-          <div className="flex items-center gap-2 text-sm">
+        {/* 5. Action */}
+        <div className="space-y-3 pb-8">
+          <div className="glass-card rounded-2xl p-5 flex items-center gap-2 text-sm">
             <Info className="w-4 h-4 text-accent flex-shrink-0" />
             <span className="text-accent font-semibold">Analysis is free — unlimited!</span>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Video analysis costs nothing. Credits are only used when you <strong className="text-foreground">render</strong> a clip.
-            1 credit = 1 rendered clip.
-          </p>
-        </div>
 
-        {/* 6. Action Buttons */}
-        <div className="flex gap-3 pb-8">
-          <Button
-            variant="outline"
-            size="lg"
-            className="flex-1"
-            onClick={handleSaveDraft}
-          >
-            Save as Draft
-          </Button>
-          <Button
-            variant="hero"
-            size="lg"
-            className="flex-1"
-            onClick={handleStartAnalysis}
-            disabled={submitting || selectedLangs.length === 0}
-          >
-            {submitting ? (
-              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Starting...</>
-            ) : (
-              <><Sparkles className="w-4 h-4 mr-2" /> Start AI Analysis →</>
-            )}
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              className="flex-1"
+              onClick={handleSaveDraft}
+            >
+              Save as Draft
+            </Button>
+            <Button
+              variant="hero"
+              size="lg"
+              className="flex-1 min-h-[52px] text-base"
+              onClick={handleStartAnalysis}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Starting...</>
+              ) : (
+                <><Sparkles className="w-5 h-5 mr-2" /> Start AI Analysis</>
+              )}
+            </Button>
+          </div>
+          <p className="text-xs text-center text-muted-foreground">
+            Free & unlimited — credits are only used when you render a clip
+          </p>
         </div>
       </div>
     </div>
