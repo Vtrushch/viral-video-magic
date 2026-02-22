@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sparkles, RotateCcw, Settings2 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Loader2, Sparkles, RotateCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 
 interface ReAnalyzeDialogProps {
@@ -24,12 +26,22 @@ const captionStyleOptions = [
   { value: "hormozi", label: "Hormozi" },
   { value: "mrbeast", label: "MrBeast" },
   { value: "minimal", label: "Minimal" },
+  { value: "custom", label: "Custom", pro: true },
+];
+const outputFormatOptions = [
+  { value: "9:16", label: "9:16", desc: "TikTok, Reels" },
+  { value: "1:1", label: "1:1", desc: "Instagram" },
+  { value: "16:9", label: "16:9", desc: "YouTube" },
 ];
 
 const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }: ReAnalyzeDialogProps) => {
-  const [clipCount, setClipCount] = useState(10);
-  const [clipLength, setClipLength] = useState("medium");
-  const [captionStyle, setCaptionStyle] = useState("hormozi");
+  const settings = video.settings as Record<string, unknown> | null;
+
+  const [clipCount, setClipCount] = useState<number>((settings?.clipCount as number) || 10);
+  const [clipLength, setClipLength] = useState<string>((settings?.clipLength as string) || "medium");
+  const [captionStyle, setCaptionStyle] = useState<string>((settings?.captionStyle as string) || "hormozi");
+  const [outputFormat, setOutputFormat] = useState<string>((settings?.outputFormat as string) || "9:16");
+  const [smartReframe, setSmartReframe] = useState<boolean>((settings?.smartReframe as boolean) || false);
   const [submitting, setSubmitting] = useState(false);
 
   if (!open) return null;
@@ -40,22 +52,17 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // 1. Delete all existing clips for this video
       await supabase.from("clips").delete().eq("video_id", video.id);
-
-      // 2. Delete all highlight reels for this video
       await supabase.from("highlight_reels" as any).delete().eq("video_id", video.id);
 
-      // 3. Update video status back to analyzing with new settings
-      const settings = { clipCount, clipLength, captionStyle, languages: ["en"] };
+      const newSettings = { clipCount, clipLength, captionStyle, outputFormat, smartReframe, languages: ["en"] };
       const { error } = await supabase
         .from("videos")
-        .update({ status: "analyzing", settings } as any)
+        .update({ status: "analyzing", settings: newSettings } as any)
         .eq("id", video.id);
 
       if (error) throw error;
 
-      // 4. Trigger Modal analysis
       try {
         await apiFetch("/analyze", { video_id: video.id });
       } catch (e) {
@@ -81,7 +88,7 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-background/80 backdrop-blur-md" />
       <div
-        className="relative z-10 w-full max-w-sm glass-card rounded-2xl p-6 space-y-5 animate-scale-in"
+        className="relative z-10 w-full max-w-sm glass-card rounded-2xl p-6 space-y-5 animate-scale-in max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -94,14 +101,6 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
             <p className="text-xs text-muted-foreground">Regenerate clips — free, no credit used</p>
           </div>
         </div>
-
-        {/* Warning */}
-        {existingClipCount > 0 && (
-          <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl text-xs"
-            style={{ background: "hsl(var(--destructive)/0.08)", border: "1px solid hsl(var(--destructive)/0.25)" }}>
-            <span className="text-destructive/80">⚠️ This will replace your current {existingClipCount} clip{existingClipCount !== 1 ? "s" : ""} and all highlight reels.</span>
-          </div>
-        )}
 
         {/* Clip Count */}
         <div className="space-y-2">
@@ -136,12 +135,63 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
           <div className="flex gap-2">
             {captionStyleOptions.map((opt) => (
               <button key={opt.value} onClick={() => setCaptionStyle(opt.value)}
-                className={`flex-1 ${btnBase} ${captionStyle === opt.value ? btnActive : btnInactive}`}>
+                className={cn(
+                  "flex-1 relative",
+                  btnBase,
+                  captionStyle === opt.value ? btnActive : btnInactive
+                )}>
                 {opt.label}
+                {opt.pro && (
+                  <span className="absolute -top-1.5 -right-1.5 text-[8px] font-bold bg-primary text-primary-foreground px-1 py-0.5 rounded-full leading-none">
+                    PRO
+                  </span>
+                )}
               </button>
             ))}
           </div>
         </div>
+
+        {/* Output Format */}
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Output format</label>
+          <div className="flex gap-2">
+            {outputFormatOptions.map((fmt) => (
+              <button
+                key={fmt.value}
+                onClick={() => setOutputFormat(fmt.value)}
+                className={cn(
+                  "flex-1 flex flex-col items-center",
+                  btnBase,
+                  outputFormat === fmt.value ? btnActive : btnInactive
+                )}
+              >
+                <span>{fmt.label}</span>
+                <span className="text-[10px] opacity-60">{fmt.desc}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Smart Reframing */}
+        <div className="flex items-center justify-between py-2">
+          <div>
+            <p className="text-xs font-medium text-foreground">Smart Reframing</p>
+            <p className="text-[10px] text-muted-foreground">AI keeps speaker centered</p>
+          </div>
+          <div className="flex items-center gap-2">
+            {smartReframe && (
+              <span className="text-[10px] text-muted-foreground">+30s</span>
+            )}
+            <Switch checked={smartReframe} onCheckedChange={setSmartReframe} />
+          </div>
+        </div>
+
+        {/* Info text */}
+        {existingClipCount > 0 && (
+          <p className="text-[11px] text-muted-foreground text-center">
+            This will replace your current clips with new ones
+          </p>
+        )}
 
         {/* Actions */}
         <div className="flex gap-2 pt-1">
