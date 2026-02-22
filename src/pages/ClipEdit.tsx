@@ -1,7 +1,7 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { Tables } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
@@ -78,6 +78,21 @@ const ClipEdit = () => {
 
   const { t } = useTranslation();
 
+
+  const styleColors: Record<string, { color: string; bg: string; fontWeight: string }> = {
+    hormozi: { color: "#FFD600", bg: "rgba(0,0,0,0.7)", fontWeight: "900" },
+    mrbeast: { color: "#FF3333", bg: "rgba(0,0,0,0.8)", fontWeight: "900" },
+    minimal: { color: "#FFFFFF", bg: "rgba(0,0,0,0.5)", fontWeight: "400" },
+    neon: { color: "#00FF00", bg: "rgba(0,0,0,0.6)", fontWeight: "700" },
+    fire: { color: "#FF4500", bg: "rgba(0,0,0,0.7)", fontWeight: "800" },
+    elegant: { color: "#F0F0F0", bg: "rgba(0,0,0,0.4)", fontWeight: "300" },
+    custom: { color: "#FFD600", bg: "rgba(0,0,0,0.7)", fontWeight: "900" },
+  };
+
+  const sizeMap = { small: "text-xs", medium: "text-sm", large: "text-base" };
+  const currentStyleColors = styleColors[captionStyle] || styleColors.hormozi;
+
+
   const [aiTitles, setAiTitles] = useState<{text: string; style: string}[]>([]);
   const [aiHashtags, setAiHashtags] = useState<string[]>([]);
   const [aiDescription, setAiDescription] = useState("");
@@ -111,7 +126,13 @@ const ClipEdit = () => {
     },
   });
 
-  // Fetch video
+  // Interactive subtitle preview text
+  const previewText = useMemo(() => {
+    const text = clip?.transcription || "";
+    const words = text.split(" ").slice(0, 5).join(" ");
+    return words || "Sample subtitle text";
+  }, [clip?.transcription]);
+
   const { data: video } = useQuery({
     queryKey: ["video-for-clip", clip?.video_id],
     queryFn: async () => {
@@ -652,13 +673,29 @@ const ClipEdit = () => {
                   />
                 )}
 
-                {/* Subtitle position indicator */}
-                <div
-                  className="absolute left-0 right-0 flex justify-center pointer-events-none z-[5]"
-                  style={{ top: `${subtitleY * 100}%`, transform: 'translateY(-50%)' }}
-                >
-                  <div className="bg-black/60 text-white text-[10px] px-3 py-1 rounded-full font-bold tracking-wide">
-                    SAMPLE TEXT
+                {/* Interactive subtitle preview */}
+                <div className="absolute inset-0 pointer-events-none z-[5]">
+                  <div
+                    className={cn(
+                      "text-center px-2 py-1 rounded mx-4 transition-all duration-200",
+                      sizeMap[subtitleSize]
+                    )}
+                    style={{
+                      position: 'absolute',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      top: `${subtitleY * 100}%`,
+                      color: customColor ? `#${customColor}` : currentStyleColors.color,
+                      backgroundColor: currentStyleColors.bg,
+                      fontWeight: currentStyleColors.fontWeight,
+                      fontStyle: captionStyle === "elegant" ? "italic" : "normal",
+                      textShadow: captionStyle === "neon"
+                        ? `0 0 10px ${currentStyleColors.color}, 0 0 20px ${currentStyleColors.color}`
+                        : "1px 1px 2px rgba(0,0,0,0.8)",
+                      maxWidth: '90%',
+                    }}
+                  >
+                    {previewText}
                   </div>
                 </div>
                 {/* Reload button — fixes freeze */}
