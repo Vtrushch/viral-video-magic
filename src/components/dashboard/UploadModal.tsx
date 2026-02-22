@@ -31,6 +31,46 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
 
   const MAX_FILE_SIZE_BYTES = 5120 * 1024 * 1024; // 5GB
 
+  const uploadFileWithProgress = (
+    file: File,
+    storagePath: string,
+    accessToken: string,
+    onProgress: (percent: number) => void
+  ): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+      const xhr = new XMLHttpRequest();
+
+      xhr.upload.addEventListener("progress", (e) => {
+        if (e.lengthComputable) {
+          const percent = Math.round((e.loaded / e.total) * 100);
+          onProgress(percent);
+        }
+      });
+
+      xhr.addEventListener("load", () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve();
+        } else {
+          reject(new Error(`Upload failed: ${xhr.status} ${xhr.statusText}`));
+        }
+      });
+
+      xhr.addEventListener("error", () => reject(new Error("Upload failed")));
+      xhr.addEventListener("abort", () => reject(new Error("Upload cancelled")));
+
+      xhr.open("POST", `${supabaseUrl}/storage/v1/object/raw-videos/${storagePath}`);
+      xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
+      xhr.setRequestHeader("apikey", anonKey);
+      xhr.setRequestHeader("Content-Type", file.type || "video/mp4");
+      xhr.setRequestHeader("x-upsert", "true");
+
+      xhr.send(file);
+    });
+  };
+
   const handleFileChange = (selectedFile: File) => {
     const validTypes = ["video/mp4", "video/quicktime", "video/x-msvideo", "video/webm"];
     if (!validTypes.includes(selectedFile.type)) {
@@ -55,17 +95,22 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
   const handleUpload = async () => {
     if (!file || !user) return;
     setUploading(true);
-    setProgress(10);
+    setProgress(0);
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error("Please sign in to upload");
+        setUploading(false);
+        return;
+      }
+
       const cleanTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]+/g, " ").trim();
       const fileName = `${user.id}/${Date.now()}_${file.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from("raw-videos")
-        .upload(fileName, file);
 
-      if (uploadError) throw uploadError;
-      setProgress(70);
+      await uploadFileWithProgress(file, fileName, session.access_token, (percent) => {
+        setProgress(percent);
+      });
 
       const { data: videoData, error: dbError } = await supabase.from("videos").insert({
         user_id: user.id,
@@ -201,11 +246,16 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
                           }}
                         />
                       </div>
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs text-muted-foreground">
-                          {progress < 70 ? "Uploading..." : progress < 100 ? "Creating video entry..." : "Done!"}
-                        </p>
-                        <p className="text-xs font-medium text-foreground">{progress}%</p>
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>
+                          {progress < 100 ? "Uploading..." : "Processing..."}
+                        </span>
+                        <span>
+                          {progress}%
+                          {progress < 100 && file && (
+                            <> • {((file.size * progress / 100) / (1024 * 1024)).toFixed(0)} / {(file.size / (1024 * 1024)).toFixed(0)} MB</>
+                          )}
+                        </span>
                       </div>
                     </div>
                   )}
