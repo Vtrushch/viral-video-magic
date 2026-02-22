@@ -29,10 +29,16 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
   const { user } = useAuth();
   const { t } = useTranslation();
 
+  const MAX_FILE_SIZE_BYTES = 5120 * 1024 * 1024; // 5GB
+
   const handleFileChange = (selectedFile: File) => {
     const validTypes = ["video/mp4", "video/quicktime", "video/x-msvideo", "video/webm"];
     if (!validTypes.includes(selectedFile.type)) {
       toast.error("Unsupported file type. Use MP4, MOV, AVI, or WebM.");
+      return;
+    }
+    if (selectedFile.size > MAX_FILE_SIZE_BYTES) {
+      toast.error(`File too large (${(selectedFile.size / (1024 * 1024 * 1024)).toFixed(1)}GB). Maximum: 5GB`);
       return;
     }
     setFile(selectedFile);
@@ -140,7 +146,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
                       {fmt}
                     </span>
                   ))}
-                  <span className="text-muted-foreground">• up to 2 hours</span>
+                  <span className="text-muted-foreground">• up to 2 hours • max 5GB</span>
                 </div>
 
                 <p className="text-[10px] text-muted-foreground/40 mt-3">
