@@ -1,10 +1,11 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Sparkles, Loader2, Clock, HardDrive, Calendar, ChevronDown, Info, Monitor } from "lucide-react";
+import { ArrowLeft, Sparkles, Loader2, Clock, HardDrive, Calendar, ChevronDown, Info, Monitor, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
@@ -88,6 +89,7 @@ const VideoConfig = () => {
   const [outputFormat, setOutputFormat] = useState("9:16");
   const [includeTranscription, setIncludeTranscription] = useState(false);
   const [includeChapters, setIncludeChapters] = useState(false);
+  const [smartReframe, setSmartReframe] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -108,6 +110,7 @@ const VideoConfig = () => {
       outputFormat,
       includeTranscription,
       includeChapters,
+      smartReframe,
     };
 
     const { data: verifyData, error: verifyError } = await supabase
@@ -157,7 +160,7 @@ const VideoConfig = () => {
     if (!id) return;
     const settings = {
       clipCount, clipLength, captionStyle, outputFormat,
-      includeTranscription, includeChapters,
+      includeTranscription, includeChapters, smartReframe,
     };
     await supabase.from("videos").update({ settings } as any).eq("id", id);
     toast.success("Settings saved as draft.");
@@ -351,6 +354,32 @@ const VideoConfig = () => {
               <div className="text-sm font-bold text-foreground">16:9</div>
               <p className="text-[10px] text-muted-foreground mt-0.5">YouTube</p>
             </button>
+          </div>
+        </section>
+
+        {/* Smart Reframing */}
+        <section className={sectionCard}>
+          <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-card/30">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <User className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">Smart Reframing</p>
+                <p className="text-[11px] text-muted-foreground">
+                  AI detects faces and keeps the speaker centered in frame
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {smartReframe && (
+                <span className="text-[10px] text-muted-foreground">+30s</span>
+              )}
+              <Switch
+                checked={smartReframe}
+                onCheckedChange={setSmartReframe}
+              />
+            </div>
           </div>
         </section>
 
