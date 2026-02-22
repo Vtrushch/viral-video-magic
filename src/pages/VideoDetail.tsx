@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Play, Download, Star, Clock, Calendar, Settings2,
   Loader2, AlertCircle, HardDrive, RotateCcw, CheckCircle2, Sparkles,
-  Search, Zap, Film, ChevronRight, XCircle, Eye, Pencil, RefreshCw, Clapperboard
+  Search, Zap, Film, ChevronRight, XCircle, Eye, Pencil, RefreshCw, Clapperboard, Share2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -792,6 +792,27 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                         >
                           <Download className="w-3 h-3" /> Download
                         </button>
+                        {typeof navigator.share !== 'undefined' && (
+                          <button
+                            className="sm:hidden inline-flex items-center gap-1 h-7 px-2 text-xs text-primary hover:text-primary/80 rounded-md hover:bg-primary/10 transition-colors"
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              try {
+                                const response = await fetch(clip.file_path!);
+                                const blob = await response.blob();
+                                const file = new File([blob], `${clip.title || 'clip'}.mp4`, { type: 'video/mp4' });
+                                await navigator.share({ files: [file], title: clip.title || 'CutViral clip' });
+                              } catch (err) {
+                                if (err instanceof Error && err.name !== 'AbortError') {
+                                  console.error('Share failed:', err);
+                                  handleDownload(clip);
+                                }
+                              }
+                            }}
+                          >
+                            <Share2 className="w-3 h-3" /> Share
+                          </button>
+                        )}
                         {(credits?.plan === "free" || !credits?.plan) && (
                           <span className="text-[9px] text-yellow-500/70 bg-yellow-500/10 rounded px-1.5 py-0.5">
                             Watermark
