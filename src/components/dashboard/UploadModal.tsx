@@ -1,10 +1,8 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Upload, X, FileVideo, Link as LinkIcon, Loader2, Sparkles, Search, CloudUpload } from "lucide-react";
+import { Upload, X, FileVideo, Loader2, Sparkles, CloudUpload } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +10,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
-import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -22,16 +19,11 @@ interface UploadModalProps {
   onClose: () => void;
 }
 
-const isValidYouTubeUrl = (url: string) =>
-  /(?:youtube\.com\/watch|youtu\.be\/)/.test(url);
-
 const UploadModal = ({ open, onClose }: UploadModalProps) => {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [dragging, setDragging] = useState(false);
-  const [youtubeUrl, setYoutubeUrl] = useState("");
-  const [importing, setImporting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -101,57 +93,10 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
     }
   };
 
-  const handleYouTubeImport = async () => {
-    if (!user) return;
-    if (!isValidYouTubeUrl(youtubeUrl.trim())) {
-      toast.error("Invalid YouTube URL. Use a youtube.com/watch or youtu.be/ link.");
-      return;
-    }
-
-    setImporting(true);
-    try {
-      const { data: videoData, error: dbError } = await supabase.from("videos").insert({
-        user_id: user.id,
-        title: "Importing from YouTube...",
-        status: "downloading",
-        source_url: youtubeUrl.trim(),
-        settings: {
-          clipCount: 10,
-          clipLength: "medium",
-          captionStyle: "hormozi",
-          languages: ["en"],
-        },
-      } as any).select().single();
-
-      if (dbError) throw dbError;
-
-      const res = await apiFetch("/youtube-import", {
-        youtube_url: youtubeUrl.trim(),
-        video_id: videoData.id,
-        user_id: user.id,
-      });
-
-      if (!res.ok) throw new Error("YouTube import request failed");
-
-      toast.success(t("toasts.youtubeImportStarted"));
-      setTimeout(() => {
-        handleCancel();
-        navigate(`/dashboard/videos/${videoData.id}`);
-      }, 300);
-    } catch (error: any) {
-      console.error("YouTube import error:", error);
-      toast.error(error.message || "Import failed");
-    } finally {
-      setImporting(false);
-    }
-  };
-
   const handleCancel = () => {
     setFile(null);
     setProgress(0);
     setUploading(false);
-    setYoutubeUrl("");
-    setImporting(false);
     onClose();
   };
 
@@ -159,22 +104,10 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
     <Dialog open={open} onOpenChange={handleCancel}>
       <DialogContent className="max-w-lg p-5 gap-4 sm:rounded-2xl fixed sm:relative bottom-0 sm:bottom-auto inset-x-0 sm:inset-x-auto rounded-t-2xl sm:rounded-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t("upload.addVideo")}</DialogTitle>
+          <DialogTitle>Upload Video</DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="upload" className="w-full">
-          <TabsList className="w-full">
-            <TabsTrigger value="upload" className="flex-1 gap-2">
-              <Upload className="w-4 h-4" /> {t("upload.uploadFile")}
-            </TabsTrigger>
-            <TabsTrigger value="youtube" className="flex-1 gap-2">
-              <LinkIcon className="w-4 h-4" /> {t("upload.youtubeUrl")}
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Upload File Tab */}
-          <TabsContent value="upload">
-            {!file ? (
+        {!file ? (
               <div
                 className={`relative border-2 border-dashed rounded-2xl p-6 sm:p-8 text-center transition-all cursor-pointer group ${
                   dragging
@@ -209,6 +142,10 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
                   ))}
                   <span className="text-muted-foreground">• up to 2 hours</span>
                 </div>
+
+                <p className="text-[10px] text-muted-foreground/40 mt-3">
+                  YouTube import coming soon
+                </p>
 
                 <input
                   ref={inputRef}
@@ -299,57 +236,6 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
                 </div>
               </div>
             )}
-          </TabsContent>
-
-          {/* YouTube URL Tab */}
-          <TabsContent value="youtube">
-            <div className="space-y-4">
-              <div className="space-y-3">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-                  <Input
-                    placeholder={t("upload.pasteYoutubeUrl")}
-                    value={youtubeUrl}
-                    onChange={(e) => setYoutubeUrl(e.target.value)}
-                    disabled={importing}
-                    className="h-12 pl-10 text-sm"
-                  />
-                </div>
-
-                <div className="flex items-start gap-2.5 rounded-xl px-3 py-2.5 bg-primary/5 border border-primary/15">
-                  <Sparkles className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Paste a YouTube link — we'll download and analyze it automatically.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={handleCancel} className="flex-1 min-h-[44px]" disabled={importing}>
-                  {t("upload.cancel")}
-                </Button>
-                <Button
-                  variant="hero"
-                  onClick={handleYouTubeImport}
-                  className="flex-1 min-h-[44px]"
-                  disabled={importing || !youtubeUrl.trim()}
-                >
-                  {importing ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Importing...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Import & Analyze
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
       </DialogContent>
     </Dialog>
   );
