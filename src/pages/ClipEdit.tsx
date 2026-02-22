@@ -365,6 +365,21 @@ const ClipEdit = () => {
     };
   }, [clipStart, clipEnd]);
 
+  // iOS video render fix — nudge video to render first frame
+  useEffect(() => {
+    const el = mobileVideoRef.current;
+    if (!el || !signedUrl) return;
+    
+    const handleCanPlay = () => {
+      if (el.currentTime === 0) {
+        el.currentTime = 0.001;
+      }
+    };
+    
+    el.addEventListener('canplay', handleCanPlay);
+    return () => el.removeEventListener('canplay', handleCanPlay);
+  }, [signedUrl]);
+
   // Smooth video seek when clip boundaries change (while paused)
   useEffect(() => {
     const el = getActiveVideoEl();
@@ -481,7 +496,7 @@ const ClipEdit = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-full" style={{ background: "#0F0F1A" }}>
+    <div className="flex flex-col min-h-full pb-24 sm:pb-0" style={{ background: "#0F0F1A" }}>
       {/* Header */}
       <div className="flex items-center gap-2 p-3 sm:p-4 border-b border-border/50 flex-shrink-0">
         <Button
@@ -522,9 +537,9 @@ const ClipEdit = () => {
       {/* Main editor area — vertical on mobile, horizontal on desktop */}
       <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-auto lg:overflow-hidden">
         {/* TOP/LEFT: Video preview */}
-        <div className="w-full lg:w-[60%] flex items-center justify-center p-4 sm:p-6 bg-background/50 flex-shrink-0 lg:flex-shrink">
+        <div className="w-full lg:w-[60%] flex items-start sm:items-center justify-center p-3 sm:p-6 bg-background/50 flex-shrink-0 lg:flex-shrink">
           {/* Mobile: plain video player, no phone frame */}
-          <div className="relative w-full max-w-[340px] block sm:hidden">
+          <div className="relative w-full max-w-[360px] mx-auto block sm:hidden">
             <div className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-black">
               {loading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
@@ -542,6 +557,9 @@ const ClipEdit = () => {
                   muted={muted}
                   playsInline
                   preload="auto"
+                  webkit-playsinline="true"
+                  x-webkit-airplay="allow"
+                  crossOrigin="anonymous"
                 />
               )}
               {/* Reload button — fixes freeze where audio continues but frame stalls */}

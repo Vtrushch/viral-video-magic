@@ -206,7 +206,7 @@ const VideoConfig = () => {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-foreground mb-2">Configure Analysis</h1>
         <p className="text-muted-foreground text-sm mb-4">
-          Set your preferences for <span className="text-foreground font-medium">{video.title}</span>
+          Set your preferences for <span className="text-foreground font-medium">{video.title && !video.title.match(/^[0-9a-f-]{36}/) ? video.title : "your video"}</span>
         </p>
         <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
           {video.duration && (
