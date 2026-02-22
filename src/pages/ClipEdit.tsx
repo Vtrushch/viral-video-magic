@@ -22,7 +22,11 @@ import {
   RefreshCw,
   Sparkles,
   ChevronDown,
+  Move,
+  Type,
+  ArrowUpDown,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type CaptionStyle = "hormozi" | "mrbeast" | "minimal" | "neon" | "fire" | "elegant" | "custom";
 
@@ -67,6 +71,11 @@ const ClipEdit = () => {
   const [retranscribing, setRetranscribing] = useState(false);
   const retranscribeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [creditDialogOpen, setCreditDialogOpen] = useState(false);
+
+  // New: crop & subtitle controls
+  const [cropX, setCropX] = useState(0.5);
+  const [subtitleSize, setSubtitleSize] = useState<"small" | "medium" | "large">("medium");
+  const [subtitleY, setSubtitleY] = useState(0.85);
   const { credits, refetch: refetchCredits } = useCredits();
 
   const { t } = useTranslation();
@@ -119,7 +128,7 @@ const ClipEdit = () => {
     enabled: !!clip?.video_id,
   });
 
-// Init clip boundaries and load transcription words
+// Init clip boundaries, transcription words, and crop default from face_x
   useEffect(() => {
     if (!clip) return;
     const s = parseFloat(clip.start_time || "0");
@@ -128,6 +137,13 @@ const ClipEdit = () => {
     setClipEnd(e);
     setOriginalClipStart(s);
     setOriginalClipEnd(e);
+
+    // Set default cropX from AI face detection
+    const analysis = clip.viral_analysis as Record<string, unknown> | null;
+    const faceX = analysis?.face_x as number | undefined;
+    if (typeof faceX === "number" && faceX >= 0 && faceX <= 1) {
+      setCropX(faceX);
+    }
 
     // Priority order for real transcription data:
     // 1. clip.transcription_words (DB column — Whisper words with timing, in original language)
@@ -155,7 +171,6 @@ const ClipEdit = () => {
       );
       setTranscriptLoading(false);
     } else {
-      // No transcript yet — show loading spinner; the query will poll every 3s
       setTranscript([]);
       setTranscriptLoading(true);
     }
@@ -451,6 +466,9 @@ const ClipEdit = () => {
         caption_style: captionStyle || "hormozi",
         custom_transcription: editedTranscription || undefined,
         custom_color: customColor || undefined,
+        crop_x: cropX,
+        subtitle_size: subtitleSize,
+        subtitle_y: subtitleY,
       });
       if (!res.ok) throw new Error("Render request failed");
 
@@ -632,7 +650,11 @@ const ClipEdit = () => {
                   <video
                     ref={videoRef}
                     src={signedUrl}
-                    className="w-full h-full object-cover"
+                    className="absolute h-full object-cover"
+                    style={{
+                      width: '316%',
+                      left: `${-(cropX * 216)}%`,
+                    }}
                     onLoadedMetadata={handleLoadedMetadata}
                     onTimeUpdate={handleTimeUpdate}
                     onEnded={() => { setPlaying(false); }}
@@ -641,6 +663,16 @@ const ClipEdit = () => {
                     preload="auto"
                   />
                 )}
+
+                {/* Subtitle position indicator */}
+                <div
+                  className="absolute left-0 right-0 flex justify-center pointer-events-none z-[5]"
+                  style={{ top: `${subtitleY * 100}%`, transform: 'translateY(-50%)' }}
+                >
+                  <div className="bg-black/60 text-white text-[10px] px-3 py-1 rounded-full font-bold tracking-wide">
+                    SAMPLE TEXT
+                  </div>
+                </div>
                 {/* Reload button — fixes freeze */}
                 <button
                   onClick={handleReload}
@@ -933,6 +965,90 @@ const ClipEdit = () => {
                     Reset
                   </button>
                 )}
+              </div>
+            </div>
+
+            {/* Caption Size */}
+            <div className="glass-card rounded-xl p-4 space-y-3">
+              <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                <Type className="w-3.5 h-3.5" />
+                Caption Size
+              </label>
+              <div className="flex gap-2">
+                {(["small", "medium", "large"] as const).map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSubtitleSize(size)}
+                    className={cn(
+                      "flex-1 py-1.5 rounded-md text-xs font-medium border transition-colors",
+                      subtitleSize === size
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border/50 text-muted-foreground hover:border-primary/30"
+                    )}
+                  >
+                    {size === "small" ? "S" : size === "medium" ? "M" : "L"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Caption Position */}
+            <div className="glass-card rounded-xl p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                  <ArrowUpDown className="w-3.5 h-3.5" />
+                  Caption Position
+                </label>
+                <button
+                  onClick={() => setSubtitleY(0.85)}
+                  className="text-[10px] text-primary hover:underline"
+                >
+                  Reset
+                </button>
+              </div>
+              <input
+                type="range"
+                min={10}
+                max={95}
+                value={subtitleY * 100}
+                onChange={(e) => setSubtitleY(Number(e.target.value) / 100)}
+                className="w-full h-1.5 accent-primary"
+              />
+              <div className="flex justify-between text-[10px] text-muted-foreground">
+                <span>↑ Top</span>
+                <span>Bottom ↓</span>
+              </div>
+            </div>
+
+            {/* Crop Position */}
+            <div className="glass-card rounded-xl p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                  <Move className="w-3.5 h-3.5" />
+                  Crop Position
+                </label>
+                <button
+                  onClick={() => {
+                    const analysis = clip?.viral_analysis as Record<string, unknown> | null;
+                    const faceX = analysis?.face_x as number | undefined;
+                    setCropX(typeof faceX === "number" ? faceX : 0.5);
+                  }}
+                  className="text-[10px] text-primary hover:underline"
+                >
+                  Reset to AI
+                </button>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={cropX * 100}
+                onChange={(e) => setCropX(Number(e.target.value) / 100)}
+                className="w-full h-1.5 accent-primary"
+              />
+              <div className="flex justify-between text-[10px] text-muted-foreground">
+                <span>← Left</span>
+                <span>Right →</span>
               </div>
             </div>
 
