@@ -22,7 +22,6 @@ import {
   RefreshCw,
   Sparkles,
   ChevronDown,
-  Move,
   Type,
   ArrowUpDown,
 } from "lucide-react";
@@ -72,8 +71,7 @@ const ClipEdit = () => {
   const retranscribeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [creditDialogOpen, setCreditDialogOpen] = useState(false);
 
-  // New: crop & subtitle controls
-  const [cropX, setCropX] = useState(0.5);
+  // Subtitle controls
   const [subtitleSize, setSubtitleSize] = useState<"small" | "medium" | "large">("medium");
   const [subtitleY, setSubtitleY] = useState(0.85);
   const { credits, refetch: refetchCredits } = useCredits();
@@ -137,13 +135,6 @@ const ClipEdit = () => {
     setClipEnd(e);
     setOriginalClipStart(s);
     setOriginalClipEnd(e);
-
-    // Set default cropX from AI face detection
-    const analysis = clip.viral_analysis as Record<string, unknown> | null;
-    const faceX = analysis?.face_x as number | undefined;
-    if (typeof faceX === "number" && faceX >= 0 && faceX <= 1) {
-      setCropX(faceX);
-    }
 
     // Priority order for real transcription data:
     // 1. clip.transcription_words (DB column — Whisper words with timing, in original language)
@@ -466,7 +457,7 @@ const ClipEdit = () => {
         caption_style: captionStyle || "hormozi",
         custom_transcription: editedTranscription || undefined,
         custom_color: customColor || undefined,
-        crop_x: cropX,
+        crop_x: (clip.viral_analysis as Record<string, unknown> | null)?.face_x ?? 0.5,
         subtitle_size: subtitleSize,
         subtitle_y: subtitleY,
       });
@@ -650,16 +641,13 @@ const ClipEdit = () => {
                   <video
                     ref={videoRef}
                     src={signedUrl}
-                    className="absolute h-full object-cover"
-                    style={{
-                      width: '316%',
-                      left: `${-(cropX * 216)}%`,
-                    }}
+                    className="w-full h-full object-contain rounded-lg"
                     onLoadedMetadata={handleLoadedMetadata}
                     onTimeUpdate={handleTimeUpdate}
                     onEnded={() => { setPlaying(false); }}
                     muted={muted}
                     playsInline
+                    controls
                     preload="auto"
                   />
                 )}
@@ -1017,38 +1005,6 @@ const ClipEdit = () => {
               <div className="flex justify-between text-[10px] text-muted-foreground">
                 <span>↑ Top</span>
                 <span>Bottom ↓</span>
-              </div>
-            </div>
-
-            {/* Crop Position */}
-            <div className="glass-card rounded-xl p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
-                  <Move className="w-3.5 h-3.5" />
-                  Crop Position
-                </label>
-                <button
-                  onClick={() => {
-                    const analysis = clip?.viral_analysis as Record<string, unknown> | null;
-                    const faceX = analysis?.face_x as number | undefined;
-                    setCropX(typeof faceX === "number" ? faceX : 0.5);
-                  }}
-                  className="text-[10px] text-primary hover:underline"
-                >
-                  Reset to AI
-                </button>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={cropX * 100}
-                onChange={(e) => setCropX(Number(e.target.value) / 100)}
-                className="w-full h-1.5 accent-primary"
-              />
-              <div className="flex justify-between text-[10px] text-muted-foreground">
-                <span>← Left</span>
-                <span>Right →</span>
               </div>
             </div>
 
