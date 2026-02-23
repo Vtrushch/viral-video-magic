@@ -145,6 +145,19 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     setCurrentTime(val);
   };
 
+  // iOS video render fix — nudge video to render first frame
+  useEffect(() => {
+    const el = mobileVideoRef.current;
+    if (!el || !signedUrl) return;
+    const handleCanPlay = () => {
+      if (el.currentTime === 0) {
+        el.currentTime = 0.001;
+      }
+    };
+    el.addEventListener('canplay', handleCanPlay);
+    return () => el.removeEventListener('canplay', handleCanPlay);
+  }, [signedUrl]);
+
   // Close on Escape
   useEffect(() => {
     if (!open) return;
@@ -206,9 +219,9 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
 
         {/* Video player area */}
         <div className="mx-auto lg:mx-0 flex-shrink-0">
-          {/* Mobile: clean video, no phone frame */}
-          <div className="block md:hidden w-full max-w-[360px] mx-auto">
-            <div className="relative aspect-[9/16] bg-black rounded-2xl overflow-hidden">
+          {/* Mobile: clean video, no phone frame — matches ClipEdit exactly */}
+          <div className="relative w-full max-w-[360px] mx-auto block sm:hidden">
+            <div className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-black">
               {loading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
                   <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -224,14 +237,16 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                 <video
                   ref={mobileVideoRef}
                   src={signedUrl}
-                  className={cropVideoClass}
-                  style={cropVideoStyle}
+                  className="w-full h-full object-contain"
                   onLoadedMetadata={handleLoadedMetadata}
                   onTimeUpdate={handleTimeUpdate}
                   onEnded={() => setPlaying(false)}
                   muted={muted}
                   playsInline
                   preload="auto"
+                  webkit-playsinline="true"
+                  x-webkit-airplay="allow"
+                  crossOrigin="anonymous"
                 />
               )}
               <button
@@ -290,7 +305,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
 
           {/* Desktop: phone mockup */}
           <div
-            className="hidden md:block relative rounded-[2.5rem] p-3 w-[280px] lg:w-[300px]"
+            className="hidden sm:block relative rounded-[2.5rem] p-3 w-[280px] lg:w-[300px]"
             style={{
               background: "linear-gradient(145deg, hsl(240,15%,16%), hsl(240,15%,10%))",
               boxShadow: "0 25px 60px -10px rgba(0,0,0,0.6), 0 0 40px -10px hsl(349,100%,59%,0.15), inset 0 1px 0 hsl(0,0%,100%,0.08)",
