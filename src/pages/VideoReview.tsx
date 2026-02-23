@@ -9,6 +9,7 @@ import { toast } from "@/components/ui/sonner";
 import { ArrowLeft, Play, Pencil, Eye, Flame } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
+import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
 
 const VideoReview = () => {
   const { id: videoId } = useParams<{ id: string }>();
@@ -204,21 +205,18 @@ const VideoReview = () => {
                   <span className="text-xs text-muted-foreground font-mono">#{index + 1}</span>
                 </div>
 
-                {/* Thumbnail */}
+                {/* Thumbnail with crop simulation */}
                 <div className="relative aspect-[9/16] rounded-lg overflow-hidden bg-muted/30 mb-3">
-                  {clip.thumbnail_url ? (
-                    <img
-                      src={clip.thumbnail_url}
-                      alt={clip.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Play className="w-10 h-10 text-muted-foreground/40" />
-                    </div>
-                  )}
+                  <ClipVideoThumbnail
+                    renderedUrl={clip.status === "ready" && clip.file_path ? clip.file_path : undefined}
+                    filePath={video?.file_path}
+                    startTime={clip.start_time}
+                    fallbackImageUrl={clip.thumbnail_url}
+                    faceX={(clip.viral_analysis as any)?.face_x ?? 0.5}
+                    alt={clip.title}
+                  />
                   {clip.duration && (
-                    <span className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm text-xs px-2 py-0.5 rounded-md">
+                    <span className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm text-xs px-2 py-0.5 rounded-md z-10">
                       {clip.duration}
                     </span>
                   )}

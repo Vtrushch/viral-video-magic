@@ -159,7 +159,21 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   if (!open || !clip || !video) return null;
 
   const progress = clipDuration > 0 ? ((currentTime - startTime) / clipDuration) * 100 : 0;
-  const viralAnalysis = clip.viral_analysis as { reason?: string; hook_strength?: number } | null;
+  const viralAnalysis = clip.viral_analysis as { reason?: string; hook_strength?: number; face_x?: number } | null;
+
+  // --- 9:16 crop simulation from 16:9 source ---
+  const isRendered = clip.status === "ready" && !!clip.file_path;
+  const faceX = viralAnalysis?.face_x ?? 0.5;
+  const videoWidthPercent = (16 / 9) / (9 / 16) * 100; // ~316%
+  const maxShift = videoWidthPercent - 100; // ~216%
+  const clampedLeft = Math.max(-maxShift, Math.min(0, -(faceX * maxShift)));
+
+  const cropVideoStyle: React.CSSProperties = isRendered
+    ? {}
+    : { width: `${videoWidthPercent}%`, left: `${clampedLeft}%` };
+  const cropVideoClass = isRendered
+    ? "w-full h-full object-contain"
+    : "absolute h-full object-cover";
 
   const formatTime = (s: number) => {
     const m = Math.floor(s / 60);
@@ -210,7 +224,8 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                 <video
                   ref={mobileVideoRef}
                   src={signedUrl}
-                  className="w-full h-full object-contain"
+                  className={cropVideoClass}
+                  style={cropVideoStyle}
                   onLoadedMetadata={handleLoadedMetadata}
                   onTimeUpdate={handleTimeUpdate}
                   onEnded={() => setPlaying(false)}
@@ -302,7 +317,8 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                 <video
                   ref={desktopVideoRef}
                   src={signedUrl}
-                  className="w-full h-full object-contain"
+                  className={cropVideoClass}
+                  style={cropVideoStyle}
                   onLoadedMetadata={handleLoadedMetadata}
                   onTimeUpdate={handleTimeUpdate}
                   onEnded={() => setPlaying(false)}
