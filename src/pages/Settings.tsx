@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, CreditCard, Palette, Sparkles, Zap, Crown, AlertTriangle, Globe } from "lucide-react";
+import { User, CreditCard, Palette, Sparkles, Zap, Crown, AlertTriangle, Globe, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCredits } from "@/hooks/useCredits";
 import { toast } from "sonner";
@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { changeLanguage, LANGUAGES } from "@/i18n/i18n";
 
 const SettingsPage = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { credits } = useCredits();
   const { t, i18n } = useTranslation();
   const [name, setName] = useState(user?.user_metadata?.full_name || "");
@@ -239,6 +239,17 @@ const SettingsPage = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Sign Out */}
+      <div className="max-w-2xl pt-6 mt-6 border-t border-border/50">
+        <button
+          onClick={signOut}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-lg border border-destructive/30 text-destructive text-sm font-medium hover:bg-destructive/10 transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
+          {t("nav.signOut")}
+        </button>
+      </div>
     </div>
   );
 };

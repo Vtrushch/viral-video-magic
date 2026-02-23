@@ -206,7 +206,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                 <video
                   ref={videoRef}
                   src={signedUrl}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   onLoadedMetadata={handleLoadedMetadata}
                   onTimeUpdate={handleTimeUpdate}
                   onEnded={() => setPlaying(false)}
