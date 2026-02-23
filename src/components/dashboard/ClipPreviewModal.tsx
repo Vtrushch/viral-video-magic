@@ -14,7 +14,24 @@ interface ClipPreviewModalProps {
 }
 
 const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const desktopVideoRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
+  const isMobileRef = useRef(false);
+
+  // Helper to get the active video element
+  const getVideoEl = useCallback(() => {
+    // Check which one is visible
+    if (mobileVideoRef.current && mobileVideoRef.current.offsetParent !== null) {
+      isMobileRef.current = true;
+      return mobileVideoRef.current;
+    }
+    if (desktopVideoRef.current && desktopVideoRef.current.offsetParent !== null) {
+      isMobileRef.current = false;
+      return desktopVideoRef.current;
+    }
+    // Fallback: try mobile first (for initial load before paint)
+    return mobileVideoRef.current || desktopVideoRef.current;
+  }, []);
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
@@ -64,16 +81,16 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
 
   // Seek to start when video loads — pause first, seek, wait for seeked
   const handleLoadedMetadata = useCallback(() => {
-    const el = videoRef.current;
+    const el = getVideoEl();
     if (!el) return;
     el.pause();
     el.currentTime = startTime;
     setLoading(false);
-  }, [startTime]);
+  }, [startTime, getVideoEl]);
 
   // Auto-pause at end_time
   const handleTimeUpdate = useCallback(() => {
-    const el = videoRef.current;
+    const el = getVideoEl();
     if (!el) return;
     setCurrentTime(el.currentTime);
     if (el.currentTime >= endTime) {
@@ -81,10 +98,10 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
       el.currentTime = startTime;
       setPlaying(false);
     }
-  }, [endTime, startTime]);
+  }, [endTime, startTime, getVideoEl]);
 
   const handleReload = () => {
-    const el = videoRef.current;
+    const el = getVideoEl();
     if (!el) return;
     setPlaying(false);
     el.pause();
@@ -92,7 +109,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   };
 
   const togglePlay = () => {
-    const el = videoRef.current;
+    const el = getVideoEl();
     if (!el) return;
     if (playing) {
       el.pause();
@@ -115,7 +132,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   };
 
   const handleScrub = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const el = videoRef.current;
+    const el = getVideoEl();
     if (!el) return;
     const val = parseFloat(e.target.value);
     el.pause();
@@ -152,7 +169,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-start md:items-center justify-center overflow-y-auto p-4"
       onClick={onClose}
     >
       {/* Backdrop */}
@@ -191,7 +208,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
               )}
               {signedUrl && (
                 <video
-                  ref={videoRef}
+                  ref={mobileVideoRef}
                   src={signedUrl}
                   className="w-full h-full object-contain"
                   onLoadedMetadata={handleLoadedMetadata}
@@ -283,7 +300,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
 
               {signedUrl && (
                 <video
-                  ref={videoRef}
+                  ref={desktopVideoRef}
                   src={signedUrl}
                   className="w-full h-full object-contain"
                   onLoadedMetadata={handleLoadedMetadata}
