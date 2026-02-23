@@ -19,6 +19,7 @@ import HighlightReelCard from "@/components/dashboard/HighlightReelCard";
 import RenderCreditDialog from "@/components/dashboard/RenderCreditDialog";
 import ReAnalyzeDialog from "@/components/dashboard/ReAnalyzeDialog";
 import { useCredits } from "@/hooks/useCredits";
+import { posthog } from "@/lib/posthog";
 
 const scoreColor = (score: number) => {
   if (score >= 8) return "bg-accent/15 text-accent";
@@ -551,6 +552,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     if (!clip.file_path) return;
     try {
       toast.info("Downloading clip...");
+      posthog.capture('clip_downloaded', { clip_id: clip.id });
       const response = await fetch(clip.file_path);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);

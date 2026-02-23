@@ -1,11 +1,17 @@
+import { useEffect } from "react";
 import { Check, Crown, Sparkles, Zap, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCredits } from "@/hooks/useCredits";
 import { useTranslation } from "react-i18next";
+import { posthog } from "@/lib/posthog";
 
 const Upgrade = () => {
   const { credits, loading } = useCredits();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    posthog.capture('pricing_viewed');
+  }, []);
 
   const plans = [
     {

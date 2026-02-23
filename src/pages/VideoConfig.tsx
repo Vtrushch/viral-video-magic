@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
 import type { Tables } from "@/integrations/supabase/types";
+import { posthog } from "@/lib/posthog";
 
 const clipCountOptions = [
   { value: 5, desc: "Quick · Best for testing" },
@@ -151,6 +152,14 @@ const VideoConfig = () => {
     } catch (modalError) {
       console.error('Modal connection error:', modalError);
     }
+
+    posthog.capture('analysis_started', {
+      clip_count: clipCount,
+      clip_length: clipLength,
+      caption_style: captionStyle,
+      output_format: outputFormat,
+      smart_reframe: smartReframe,
+    });
 
     toast.success("AI analysis started! This takes 2-3 minutes.");
     navigate(`/dashboard/videos/${id}`);
