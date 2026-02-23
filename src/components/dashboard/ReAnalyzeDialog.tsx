@@ -7,6 +7,7 @@ import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
+import { posthog } from "@/lib/posthog";
 
 interface ReAnalyzeDialogProps {
   open: boolean;
@@ -68,6 +69,11 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
       } catch (e) {
         console.error("Modal webhook error:", e);
       }
+
+      posthog.capture('video_reanalyzed', {
+        clip_count: clipCount,
+        smart_reframe: smartReframe,
+      });
 
       toast.success("Re-analysis started! Your clips will be regenerated.");
       onSuccess();

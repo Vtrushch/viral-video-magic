@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { posthog } from "@/lib/posthog";
 
 interface UploadModalProps {
   open: boolean;
@@ -108,6 +109,11 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
       const cleanTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]+/g, " ").trim();
       const fileName = `${user.id}/${Date.now()}_${file.name}`;
 
+      posthog.capture('video_upload_started', {
+        file_size_mb: Math.round(file.size / (1024 * 1024)),
+        source: 'file_upload',
+      });
+
       await uploadFileWithProgress(file, fileName, session.access_token, (percent) => {
         setProgress(percent);
       });
@@ -129,6 +135,11 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
       if (dbError) throw dbError;
       setProgress(100);
 
+      posthog.capture('video_upload_completed', {
+        file_size_mb: Math.round(file.size / (1024 * 1024)),
+        source: 'file_upload',
+      });
+
       toast.success(t("toasts.uploadSuccess"));
       setTimeout(() => {
         handleCancel();
@@ -138,6 +149,10 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
       }, 300);
     } catch (error: any) {
       console.error("Upload error:", error);
+      posthog.capture('video_upload_failed', {
+        error: error.message || "Unknown error",
+        source: 'file_upload',
+      });
       toast.error(error.message || "Upload failed");
       setUploading(false);
       setProgress(0);

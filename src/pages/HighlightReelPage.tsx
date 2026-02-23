@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
+import { posthog } from "@/lib/posthog";
 import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
 import RenderCreditDialog from "@/components/dashboard/RenderCreditDialog";
 import { useCredits } from "@/hooks/useCredits";
@@ -633,6 +634,7 @@ export default function HighlightReelPage() {
       const reelMins = Math.round(totalDuration / 60 * 10) / 10;
       const reelEstimate = totalDuration < 60 ? "~2 minutes" : totalDuration < 120 ? "~2–3 minutes" : "~3–5 minutes";
       toast.success(`Creating highlight reel (${reelEstimate} for ${reelMins < 1 ? Math.round(totalDuration) + "s" : reelMins.toFixed(1) + "m"} total)...`);
+      posthog.capture('highlight_reel_created', { clip_count: selectedIds.length });
       navigate(`/dashboard/videos/${videoIdForReel}`);
     } catch (err: any) {
       toast.error(err.message || "Failed to save highlight reel");

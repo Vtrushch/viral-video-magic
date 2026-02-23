@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
 import { apiFetch } from "@/lib/api";
 import { useCredits } from "@/hooks/useCredits";
+import { posthog } from "@/lib/posthog";
 import RenderCreditDialog from "@/components/dashboard/RenderCreditDialog";
 import LiveSubtitles from "@/components/LiveSubtitles";
 import {
@@ -470,6 +471,12 @@ const ClipEdit = () => {
         refetchCredits();
       }
       toast.success("Clip sent for rendering!");
+      posthog.capture('clip_render_started', {
+        caption_style: captionStyle,
+        subtitle_size: subtitleSize,
+        subtitle_y: subtitleY,
+        has_custom_color: !!customColor,
+      });
       navigate(`/dashboard/videos/${video.id}`);
     } catch {
       toast.error("Failed to start rendering");
@@ -1076,6 +1083,7 @@ const ClipEdit = () => {
                           setAiHashtags(data.hashtags || []);
                           setAiDescription(data.description || "");
                           toast.success(`Generated titles for ${aiPlatform}!`);
+                          posthog.capture('ai_titles_generated', { platform: aiPlatform });
                         } else {
                           toast.error("Failed to generate titles");
                         }
