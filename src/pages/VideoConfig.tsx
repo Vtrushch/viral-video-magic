@@ -1,11 +1,11 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Sparkles, Loader2, Clock, HardDrive, Calendar, ChevronDown, Info, Monitor, User } from "lucide-react";
+import { ArrowLeft, Sparkles, Loader2, Clock, HardDrive, Calendar, ChevronDown, Info, Monitor, User, Crop, ChevronLeft, ChevronRight, Maximize2, Crosshair } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
@@ -90,7 +90,7 @@ const VideoConfig = () => {
   const [outputFormat, setOutputFormat] = useState("9:16");
   const [includeTranscription, setIncludeTranscription] = useState(false);
   const [includeChapters, setIncludeChapters] = useState(false);
-  const [smartReframe, setSmartReframe] = useState(false);
+  const [reframeMode, setReframeMode] = useState<"smart" | "full" | "center">("smart");
 
   useEffect(() => {
     if (!id) return;
@@ -111,7 +111,7 @@ const VideoConfig = () => {
       outputFormat,
       includeTranscription,
       includeChapters,
-      smartReframe,
+      reframeMode,
     };
 
     const { data: verifyData, error: verifyError } = await supabase
@@ -158,7 +158,7 @@ const VideoConfig = () => {
       clip_length: clipLength,
       caption_style: captionStyle,
       output_format: outputFormat,
-      smart_reframe: smartReframe,
+      reframe_mode: reframeMode,
     });
 
     toast.success("AI analysis started! This takes 2-3 minutes.");
@@ -169,7 +169,7 @@ const VideoConfig = () => {
     if (!id) return;
     const settings = {
       clipCount, clipLength, captionStyle, outputFormat,
-      includeTranscription, includeChapters, smartReframe,
+      includeTranscription, includeChapters, reframeMode,
     };
     await supabase.from("videos").update({ settings } as any).eq("id", id);
     toast.success("Settings saved as draft.");
@@ -366,29 +366,74 @@ const VideoConfig = () => {
           </div>
         </section>
 
-        {/* Smart Reframing */}
+        {/* Reframe Mode */}
         <section className={sectionCard}>
-          <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-card/30">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                <User className="w-4 h-4 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground">Smart Reframing</p>
-                <p className="text-[11px] text-muted-foreground">
-                  AI detects faces and keeps the speaker centered in frame
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {smartReframe && (
-                <span className="text-[10px] text-muted-foreground">+30s</span>
+          <div className="flex items-center gap-2">
+            <Crop className="w-5 h-5 text-primary" />
+            <h2 className="text-lg font-semibold text-foreground">Reframe Mode</h2>
+          </div>
+          <p className="text-xs text-muted-foreground">How to crop landscape video to vertical</p>
+          <div className="grid grid-cols-3 gap-3">
+            {/* Smart */}
+            <button
+              onClick={() => setReframeMode("smart")}
+              className={cn(
+                "flex flex-col items-center gap-2 p-4 rounded-xl border transition-all",
+                reframeMode === "smart"
+                  ? "border-primary/60 bg-primary/10 shadow-[0_0_16px_hsl(349,100%,59%,0.15)]"
+                  : "border-border/30 bg-muted/20 hover:border-border/60"
               )}
-              <Switch
-                checked={smartReframe}
-                onCheckedChange={setSmartReframe}
-              />
-            </div>
+            >
+              <div className="relative w-10 h-14 rounded-md border-2 border-current flex items-center justify-center">
+                <User className="w-4 h-4" />
+                <ChevronLeft className="absolute -left-2 w-3 h-3 text-primary" />
+                <ChevronRight className="absolute -right-2 w-3 h-3 text-primary" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-semibold text-foreground">Smart</p>
+                <p className="text-[10px] text-muted-foreground">AI follows face</p>
+              </div>
+            </button>
+            {/* Full Frame */}
+            <button
+              onClick={() => setReframeMode("full")}
+              className={cn(
+                "flex flex-col items-center gap-2 p-4 rounded-xl border transition-all",
+                reframeMode === "full"
+                  ? "border-primary/60 bg-primary/10 shadow-[0_0_16px_hsl(349,100%,59%,0.15)]"
+                  : "border-border/30 bg-muted/20 hover:border-border/60"
+              )}
+            >
+              <div className="relative w-10 h-14 rounded-md border-2 border-current flex flex-col items-center justify-center overflow-hidden">
+                <div className="w-full h-3 bg-current opacity-20 rounded-t-sm" />
+                <div className="flex-1 w-full flex items-center justify-center">
+                  <Maximize2 className="w-4 h-4" />
+                </div>
+                <div className="w-full h-3 bg-current opacity-20 rounded-b-sm" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-semibold text-foreground">Full Frame</p>
+                <p className="text-[10px] text-muted-foreground">Fit with bars</p>
+              </div>
+            </button>
+            {/* Center */}
+            <button
+              onClick={() => setReframeMode("center")}
+              className={cn(
+                "flex flex-col items-center gap-2 p-4 rounded-xl border transition-all",
+                reframeMode === "center"
+                  ? "border-primary/60 bg-primary/10 shadow-[0_0_16px_hsl(349,100%,59%,0.15)]"
+                  : "border-border/30 bg-muted/20 hover:border-border/60"
+              )}
+            >
+              <div className="relative w-10 h-14 rounded-md border-2 border-current flex items-center justify-center">
+                <Crosshair className="w-4 h-4" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-semibold text-foreground">Center</p>
+                <p className="text-[10px] text-muted-foreground">Crop middle</p>
+              </div>
+            </button>
           </div>
         </section>
 

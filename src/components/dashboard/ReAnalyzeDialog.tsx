@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Loader2, Sparkles, RotateCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { apiFetch } from "@/lib/api";
@@ -42,7 +41,7 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
   const [clipLength, setClipLength] = useState<string>((settings?.clipLength as string) || "medium");
   const [captionStyle, setCaptionStyle] = useState<string>((settings?.captionStyle as string) || "hormozi");
   const [outputFormat, setOutputFormat] = useState<string>((settings?.outputFormat as string) || "9:16");
-  const [smartReframe, setSmartReframe] = useState<boolean>((settings?.smartReframe as boolean) || false);
+  const [reframeMode, setReframeMode] = useState<"smart" | "full" | "center">((settings?.reframeMode as "smart" | "full" | "center") || "smart");
   const [submitting, setSubmitting] = useState(false);
 
   if (!open) return null;
@@ -56,7 +55,7 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
       await supabase.from("clips").delete().eq("video_id", video.id);
       await supabase.from("highlight_reels" as any).delete().eq("video_id", video.id);
 
-      const newSettings = { clipCount, clipLength, captionStyle, outputFormat, smartReframe, languages: ["en"] };
+      const newSettings = { clipCount, clipLength, captionStyle, outputFormat, reframeMode, languages: ["en"] };
       const { error } = await supabase
         .from("videos")
         .update({ status: "analyzing", settings: newSettings } as any)
@@ -72,7 +71,7 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
 
       posthog.capture('video_reanalyzed', {
         clip_count: clipCount,
-        smart_reframe: smartReframe,
+        reframe_mode: reframeMode,
       });
 
       toast.success("Re-analysis started! Your clips will be regenerated.");
@@ -178,17 +177,29 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
           </div>
         </div>
 
-        {/* Smart Reframing */}
-        <div className="flex items-center justify-between py-2">
-          <div>
-            <p className="text-xs font-medium text-foreground">Smart Reframing</p>
-            <p className="text-[10px] text-muted-foreground">AI keeps speaker centered</p>
-          </div>
-          <div className="flex items-center gap-2">
-            {smartReframe && (
-              <span className="text-[10px] text-muted-foreground">+30s</span>
-            )}
-            <Switch checked={smartReframe} onCheckedChange={setSmartReframe} />
+        {/* Reframe Mode */}
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Reframe mode</label>
+          <div className="grid grid-cols-3 gap-1.5">
+            {([
+              { value: "smart" as const, label: "Smart", desc: "AI face" },
+              { value: "full" as const, label: "Full", desc: "With bars" },
+              { value: "center" as const, label: "Center", desc: "Crop" },
+            ]).map((mode) => (
+              <button
+                key={mode.value}
+                onClick={() => setReframeMode(mode.value)}
+                className={cn(
+                  "py-2 rounded-lg text-xs font-medium border transition-colors text-center",
+                  reframeMode === mode.value
+                    ? btnActive
+                    : btnInactive
+                )}
+              >
+                <div>{mode.label}</div>
+                <div className="text-[10px] opacity-60">{mode.desc}</div>
+              </button>
+            ))}
           </div>
         </div>
 
