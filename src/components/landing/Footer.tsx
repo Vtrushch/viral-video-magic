@@ -65,8 +65,14 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* Support */}
+        <div className="mt-8 text-center text-sm text-muted-foreground">
+          Need help?{" "}
+          <a href="mailto:support@hookcut.com" className="text-primary hover:underline">support@hookcut.com</a>
+        </div>
+
         {/* Copyright */}
-        <div className="mt-12 pt-6 border-t border-border text-center text-sm text-muted-foreground">
+        <div className="mt-4 pt-6 border-t border-border text-center text-sm text-muted-foreground">
           © {new Date().getFullYear()} Truhand LLC. {t('landing.footer.rights')}
         </div>
       </div>
