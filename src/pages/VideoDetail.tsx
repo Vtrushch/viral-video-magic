@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Play, Download, Star, Clock, Calendar, Settings2,
   Loader2, AlertCircle, HardDrive, RotateCcw, CheckCircle2, Sparkles,
-  Search, Zap, Film, ChevronRight, XCircle, Eye, Pencil, RefreshCw, Clapperboard, Share2
+  Search, Zap, Film, ChevronRight, XCircle, Eye, Pencil, RefreshCw, Clapperboard, Share2,
+  Scissors, X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -391,7 +392,16 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
   const [reAnalyzeOpen, setReAnalyzeOpen] = useState(false);
   const { credits, refetch: refetchCredits } = useCredits();
   const mainVideoRef = useRef<HTMLVideoElement>(null);
+  const manualVideoRef = useRef<HTMLVideoElement>(null);
   const settings = video.settings as any;
+
+  // Manual clip creator state
+  const [showManualCreator, setShowManualCreator] = useState(false);
+  const [manualStart, setManualStart] = useState(0);
+  const [manualEnd, setManualEnd] = useState(30);
+  const [manualTitle, setManualTitle] = useState("");
+  const [manualCurrentTime, setManualCurrentTime] = useState(0);
+  const [manualVideoDuration, setManualVideoDuration] = useState(100);
 
   // Load signed URL for main video player
   useEffect(() => {
@@ -583,6 +593,61 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
   const pendingCount = clips.filter(c => c.status === "pending").length;
   const readyCount = clips.filter(c => c.status === "ready").length;
 
+  const formatTimeManual = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const handleCreateManualClip = async () => {
+    const clipDuration = manualEnd - manualStart;
+    if (clipDuration < 5) {
+      toast.error("Clip too short", { description: "Minimum clip length is 5 seconds" });
+      return;
+    }
+    if (clipDuration > 180) {
+      toast.error("Clip too long", { description: "Maximum clip length is 3 minutes" });
+      return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { toast.error("Not authenticated"); return; }
+
+    const { data, error } = await supabase.from("clips").insert({
+      user_id: user.id,
+      video_id: video.id,
+      title: manualTitle || `Manual clip ${formatTimeManual(manualStart)}-${formatTimeManual(manualEnd)}`,
+      start_time: String(manualStart),
+      end_time: String(manualEnd),
+      duration_seconds: Math.round(clipDuration),
+      duration: formatTimeManual(clipDuration),
+      viral_score: 0,
+      viral_analysis: {
+        hook_strength: 0,
+        reason: "Manually created by user",
+        detected_language: "en",
+        face_x: 0.5,
+        reframe_mode: "center",
+        manual: true,
+      },
+      status: "pending",
+    } as any).select().single();
+
+    if (error) {
+      toast.error("Failed to create clip", { description: error.message });
+      return;
+    }
+
+    toast.success("Clip created!", { description: "You can now edit and render it" });
+    setShowManualCreator(false);
+    setManualTitle("");
+    setManualStart(0);
+    setManualEnd(30);
+    // Refresh clips
+    const { data: freshClips } = await supabase.from("clips").select("*").eq("video_id", video.id).order("viral_score", { ascending: false });
+    if (freshClips) setClips(freshClips);
+  };
+
   const statusDot = (status: string) => {
     if (status === "ready") return "bg-accent";
     if (status === "rendering") return "bg-secondary animate-pulse";
@@ -683,6 +748,13 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
           )}
         </div>
         <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+          <button
+            onClick={() => setShowManualCreator(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/30 text-primary text-xs font-medium hover:bg-primary/10 transition-colors"
+          >
+            <Scissors className="w-3.5 h-3.5" />
+            Create Clip Manually
+          </button>
           {clips.length >= 2 && (
             <>
               <Button
@@ -854,17 +926,146 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                   </div>
                 </div>
 
-                {/* Viral score circle */}
-                {clip.viral_score != null && (
+                {/* Viral score circle or manual badge */}
+                {(clip.viral_analysis as any)?.manual ? (
+                  <div className="w-10 h-10 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center flex-shrink-0 self-start">
+                    <Scissors className="w-4 h-4 text-blue-400" />
+                  </div>
+                ) : clip.viral_score != null ? (
                   <div className={`w-10 h-10 rounded-full border flex items-center justify-center flex-shrink-0 self-start ${scoreCircle(clip.viral_score)}`}>
                     <span className="text-sm font-bold">{clip.viral_score}</span>
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
           );
         })}
       </div>
+
+      {/* Manual Clip Creator Modal */}
+      {showManualCreator && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <div className="bg-card rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-border/50">
+              <div className="flex items-center gap-2">
+                <Scissors className="w-5 h-5 text-primary" />
+                <h2 className="text-lg font-semibold text-foreground">Create Clip Manually</h2>
+              </div>
+              <button onClick={() => setShowManualCreator(false)} className="text-muted-foreground hover:text-foreground">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Video Player */}
+            <div className="p-4">
+              <div className="relative w-full max-w-2xl mx-auto bg-black rounded-xl overflow-hidden">
+                <video
+                  ref={manualVideoRef}
+                  src={videoSignedUrl || ""}
+                  className="w-full h-auto"
+                  playsInline
+                  controls
+                  preload="auto"
+                  onTimeUpdate={(e) => setManualCurrentTime(e.currentTarget.currentTime)}
+                  onLoadedMetadata={(e) => {
+                    setManualVideoDuration(e.currentTarget.duration);
+                    setManualEnd(Math.min(30, e.currentTarget.duration));
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Timeline & Controls */}
+            <div className="px-4 pb-4 space-y-4">
+              {/* Time display */}
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">
+                  Selection: <span className="text-foreground font-mono">{formatTimeManual(manualStart)}</span> → <span className="text-foreground font-mono">{formatTimeManual(manualEnd)}</span>
+                </span>
+                <span className="text-primary font-medium">
+                  {Math.round(manualEnd - manualStart)}s clip
+                </span>
+              </div>
+
+              {/* Timeline bar */}
+              <div className="relative h-12 bg-muted/20 rounded-lg overflow-hidden">
+                <div
+                  className="absolute h-full bg-primary/20 border-l-2 border-r-2 border-primary"
+                  style={{
+                    left: `${(manualStart / manualVideoDuration) * 100}%`,
+                    width: `${((manualEnd - manualStart) / manualVideoDuration) * 100}%`,
+                  }}
+                />
+                <div
+                  className="absolute top-0 bottom-0 w-0.5 bg-white/80 z-10"
+                  style={{ left: `${(manualCurrentTime / manualVideoDuration) * 100}%` }}
+                />
+              </div>
+
+              {/* Start / End inputs */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[11px] text-muted-foreground">Start Time</label>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setManualStart(Math.max(0, manualStart - 1))} className="px-2 py-1 rounded border border-border/50 text-xs hover:border-primary/30 text-foreground">-1s</button>
+                    <span className="text-sm font-mono text-foreground flex-1 text-center">{formatTimeManual(manualStart)}</span>
+                    <button onClick={() => setManualStart(Math.min(manualEnd - 5, manualStart + 1))} className="px-2 py-1 rounded border border-border/50 text-xs hover:border-primary/30 text-foreground">+1s</button>
+                    <button
+                      onClick={() => { if (manualVideoRef.current) setManualStart(manualVideoRef.current.currentTime); }}
+                      className="px-2 py-1 rounded border border-primary/30 text-primary text-xs hover:bg-primary/10"
+                    >
+                      Set to Current
+                    </button>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] text-muted-foreground">End Time</label>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setManualEnd(Math.max(manualStart + 5, manualEnd - 1))} className="px-2 py-1 rounded border border-border/50 text-xs hover:border-primary/30 text-foreground">-1s</button>
+                    <span className="text-sm font-mono text-foreground flex-1 text-center">{formatTimeManual(manualEnd)}</span>
+                    <button onClick={() => setManualEnd(Math.min(manualVideoDuration, manualEnd + 1))} className="px-2 py-1 rounded border border-border/50 text-xs hover:border-primary/30 text-foreground">+1s</button>
+                    <button
+                      onClick={() => { if (manualVideoRef.current) setManualEnd(manualVideoRef.current.currentTime); }}
+                      className="px-2 py-1 rounded border border-primary/30 text-primary text-xs hover:bg-primary/10"
+                    >
+                      Set to Current
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Clip title */}
+              <div className="space-y-1">
+                <label className="text-[11px] text-muted-foreground">Clip Title (optional)</label>
+                <input
+                  type="text"
+                  value={manualTitle}
+                  onChange={(e) => setManualTitle(e.target.value)}
+                  placeholder="My custom clip"
+                  className="w-full px-3 py-2 rounded-lg border border-border/50 bg-background text-sm text-foreground placeholder:text-muted-foreground"
+                />
+              </div>
+
+              {/* Create button */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setShowManualCreator(false)}
+                  className="flex-1 py-2.5 rounded-lg border border-border/50 text-muted-foreground text-sm font-medium hover:text-foreground transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateManualClip}
+                  className="flex-1 py-2.5 rounded-lg bg-gradient-to-r from-primary to-pink-500 text-white text-sm font-medium hover:opacity-90 transition-opacity"
+                >
+                  Create Clip ({Math.round(manualEnd - manualStart)}s)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Clip Preview Modal */}
       <ClipPreviewModal
