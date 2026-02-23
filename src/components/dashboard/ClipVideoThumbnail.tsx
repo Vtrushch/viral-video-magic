@@ -10,6 +10,8 @@ interface ClipVideoThumbnailProps {
   startTime?: string | null;
   /** Fallback image (e.g. parent video thumbnail_url) */
   fallbackImageUrl?: string | null;
+  /** face_x (0-1) for 9:16 crop simulation from 16:9 source */
+  faceX?: number | null;
   alt: string;
   className?: string;
 }
@@ -19,6 +21,7 @@ const ClipVideoThumbnail = ({
   filePath,
   startTime,
   fallbackImageUrl,
+  faceX,
   alt,
   className = "",
 }: ClipVideoThumbnailProps) => {
@@ -97,8 +100,21 @@ const ClipVideoThumbnail = ({
     );
   }
 
+  // Crop simulation: if not a rendered clip and faceX is provided, simulate 9:16 crop
+  const isRawVideo = !renderedUrl && faceX != null;
+  const videoWidthPercent = (16 / 9) / (9 / 16) * 100; // ~316%
+  const maxShift = videoWidthPercent - 100; // ~216%
+  const clampedLeft = Math.max(-maxShift, Math.min(0, -((faceX ?? 0.5) * maxShift)));
+
+  const cropStyle: React.CSSProperties = isRawVideo
+    ? { width: `${videoWidthPercent}%`, left: `${clampedLeft}%` }
+    : {};
+  const videoClass = isRawVideo
+    ? `absolute h-full object-cover transition-opacity duration-300 ${seeked ? "opacity-100" : "opacity-0"}`
+    : `w-full h-full object-cover transition-opacity duration-300 ${seeked ? "opacity-100" : "opacity-0"}`;
+
   return (
-    <div className={`w-full h-full relative ${className}`}>
+    <div className={`w-full h-full relative overflow-hidden ${className}`}>
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-muted/20 z-10">
           <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -114,7 +130,8 @@ const ClipVideoThumbnail = ({
           onLoadedMetadata={handleLoadedMetadata}
           onSeeked={handleSeeked}
           onError={handleError}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${seeked ? "opacity-100" : "opacity-0"}`}
+          className={videoClass}
+          style={cropStyle}
         />
       )}
       {/* Show fallback image while video is loading/seeking */}
