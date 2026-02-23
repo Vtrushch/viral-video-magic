@@ -153,7 +153,9 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
         error: error.message || "Unknown error",
         source: 'file_upload',
       });
-      toast.error(error.message || "Upload failed");
+      toast.error("Upload failed", {
+        description: "Check your internet connection and try again. Max file size: 5GB.",
+      });
       setUploading(false);
       setProgress(0);
     }

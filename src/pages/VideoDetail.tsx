@@ -474,7 +474,10 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
             setRenderingIds((ids) => { const n = new Set(ids); n.delete(newClip.id); return n; });
             refetchCredits();
           } else if (old && old.status === "rendering" && newClip.status === "failed") {
-            toast.error(`Clip failed: ${newClip.title}`);
+            toast.error("Rendering failed", {
+              description: "Your credit was NOT charged. Try again or contact support@hookcut.com",
+              duration: 8000,
+            });
             setRenderingIds((ids) => { const n = new Set(ids); n.delete(newClip.id); return n; });
           }
         });
@@ -500,7 +503,9 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
       setClips(prev => prev.map(c => c.id === clip.id ? { ...c, status: "rendering" } : c));
     } catch {
       setRenderingIds(prev => { const n = new Set(prev); n.delete(clip.id); return n; });
-      toast.error(`Failed to start render for ${clip.title}`);
+      toast.error("Something went wrong", {
+        description: "Please try again. If the problem persists, contact support@hookcut.com",
+      });
     }
   }, [video, settings]);
 
@@ -821,14 +826,16 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                         )}
                       </>
                     ) : isFailed ? (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 px-2 text-xs text-destructive hover:text-destructive"
-                        onClick={() => renderClip(clip)}
-                      >
-                        <RefreshCw className="w-3 h-3 mr-1" /> Retry
-                      </Button>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-[10px] text-destructive font-medium">Rendering failed</span>
+                        <span className="text-[10px] text-muted-foreground">Credit not charged</span>
+                        <button
+                          onClick={() => renderClip(clip)}
+                          className="mt-0.5 text-[11px] text-primary hover:underline text-left"
+                        >
+                          ↻ Try Again
+                        </button>
+                      </div>
                     ) : (
                       <Button
                         variant="ghost"
@@ -946,17 +953,21 @@ const FailedState = ({ video }: { video: Tables<"videos"> }) => {
       <div>
         <h2 className="text-xl font-bold text-foreground mb-2">Analysis Failed</h2>
         <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          Something went wrong during processing. Please try again.
+          Something went wrong. Analysis is free — try again!
         </p>
       </div>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Button variant="hero" size="lg" onClick={handleRetry}>
-          <RotateCcw className="w-4 h-4 mr-2" /> Retry Analysis
+          <RotateCcw className="w-4 h-4 mr-2" /> Try Again
         </Button>
         <Button variant="outline" size="lg" onClick={() => navigate("/dashboard")}>
           Back to Dashboard
         </Button>
       </div>
+      <p className="text-xs text-muted-foreground">
+        Still having issues? Email us at{" "}
+        <a href="mailto:support@hookcut.com" className="text-primary hover:underline">support@hookcut.com</a>
+      </p>
     </div>
   );
 };

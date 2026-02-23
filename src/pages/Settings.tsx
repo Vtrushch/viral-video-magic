@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, CreditCard, Palette, Sparkles, Zap, Crown, AlertTriangle, Globe, LogOut } from "lucide-react";
+import { User, CreditCard, Palette, Sparkles, Zap, Crown, AlertTriangle, Globe, LogOut, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCredits } from "@/hooks/useCredits";
 import { toast } from "sonner";
@@ -127,7 +127,7 @@ const SettingsPage = () => {
               variant="outline"
               size="sm"
               className="border-destructive/40 text-destructive hover:bg-destructive/10"
-              onClick={() => toast.info("To delete your account, please contact support@cutviral.ai")}
+              onClick={() => toast.info("To delete your account, please contact support@hookcut.com")}
             >
               {t("settings.deleteAccount")}
             </Button>
@@ -239,6 +239,24 @@ const SettingsPage = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Support */}
+      <div className="max-w-2xl glass-card rounded-2xl p-6 space-y-3 mt-6">
+        <div className="flex items-center gap-2">
+          <Mail className="w-4 h-4 text-primary" />
+          <h3 className="font-semibold text-foreground">Support</h3>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Having issues or need help? We typically respond within a few hours.
+        </p>
+        <a
+          href="mailto:support@hookcut.com"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary/30 text-primary text-sm hover:bg-primary/10 transition-colors"
+        >
+          <Mail className="w-4 h-4" />
+          support@hookcut.com
+        </a>
+      </div>
 
       {/* Sign Out */}
       <div className="max-w-2xl pt-6 mt-6 border-t border-border/50">

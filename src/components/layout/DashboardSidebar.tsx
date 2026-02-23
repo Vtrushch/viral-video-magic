@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useCredits } from "@/hooks/useCredits";
 import {
-  Scissors, Video, Film, BarChart3, Settings, CreditCard, LogOut, ChevronLeft, ChevronRight, Shield, Sparkles, Globe,
+  Scissors, Video, Film, BarChart3, Settings, CreditCard, LogOut, ChevronLeft, ChevronRight, Shield, Sparkles, Globe, HelpCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -170,6 +170,27 @@ const DashboardSidebar = () => {
               </PopoverContent>
             </Popover>
           </div>
+        )}
+
+        {/* Help & Support */}
+        {!collapsed && (
+          <a
+            href="mailto:support@hookcut.com"
+            className="flex items-center gap-2 mx-2 mb-1 px-3 py-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-white/5"
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
+            Help & Support
+          </a>
+        )}
+        {collapsed && (
+          <a
+            href="mailto:support@hookcut.com"
+            className="mx-2 mb-1 p-2 rounded-lg hover:bg-white/5 transition-colors flex items-center justify-center"
+            style={{ color: "rgba(255,255,255,0.5)" }}
+            title="Help & Support"
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
+          </a>
         )}
 
         {/* Collapse toggle */}
