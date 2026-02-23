@@ -566,7 +566,7 @@ const ClipEdit = () => {
                 <video
                   ref={mobileVideoRef}
                   src={signedUrl}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   onLoadedMetadata={handleLoadedMetadata}
                   onTimeUpdate={handleTimeUpdate}
                   onEnded={() => { setPlaying(false); }}

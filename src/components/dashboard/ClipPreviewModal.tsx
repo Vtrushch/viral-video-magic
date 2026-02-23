@@ -173,21 +173,100 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
           <X className="w-5 h-5" />
         </Button>
 
-        {/* Phone mockup */}
+        {/* Video player area */}
         <div className="mx-auto lg:mx-0 flex-shrink-0">
+          {/* Mobile: clean video, no phone frame */}
+          <div className="block md:hidden w-full max-w-sm mx-auto">
+            <div className="relative aspect-[9/16] bg-black rounded-xl overflow-hidden">
+              {loading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
+                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
+              {error && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black z-10 text-destructive gap-2">
+                  <X className="w-8 h-8" />
+                  <p className="text-sm">{error}</p>
+                </div>
+              )}
+              {signedUrl && (
+                <video
+                  ref={videoRef}
+                  src={signedUrl}
+                  className="w-full h-full object-contain"
+                  onLoadedMetadata={handleLoadedMetadata}
+                  onTimeUpdate={handleTimeUpdate}
+                  onEnded={() => setPlaying(false)}
+                  muted={muted}
+                  playsInline
+                  preload="auto"
+                />
+              )}
+              <button
+                onClick={handleReload}
+                className="absolute top-2 right-2 z-20 w-7 h-7 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
+                title="Reload video"
+              >
+                <RefreshCw className="w-3 h-3 text-white/70" />
+              </button>
+              {words.length > 0 && (
+                <LiveSubtitles
+                  words={words}
+                  relativeTime={relativeTime}
+                  captionStyle={(clip.caption_style as CaptionStyle) ?? "hormozi"}
+                />
+              )}
+              {!playing && !loading && !error && (
+                <div
+                  className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer transition-opacity"
+                  onClick={togglePlay}
+                >
+                  <div className="w-14 h-14 rounded-full gradient-bg flex items-center justify-center shadow-lg glow-primary hover:scale-110 transition-transform">
+                    <Play className="w-6 h-6 text-primary-foreground ml-0.5" />
+                  </div>
+                </div>
+              )}
+              <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
+                <input
+                  type="range"
+                  min={startTime}
+                  max={endTime}
+                  step={0.1}
+                  value={Math.max(startTime, Math.min(currentTime, endTime))}
+                  onChange={handleScrub}
+                  className="w-full h-1 appearance-none rounded-full cursor-pointer mb-2"
+                  style={{
+                    background: `linear-gradient(to right, hsl(349,100%,59%) ${Math.max(0, progress)}%, hsl(0,0%,30%) ${Math.max(0, progress)}%)`,
+                  }}
+                />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <button onClick={togglePlay} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+                      {playing ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-white ml-0.5" />}
+                    </button>
+                    <button onClick={() => setMuted(!muted)} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+                      {muted ? <VolumeX className="w-4 h-4 text-white" /> : <Volume2 className="w-4 h-4 text-white" />}
+                    </button>
+                  </div>
+                  <span className="text-xs text-white/80 font-mono">
+                    {formatTime(Math.max(0, currentTime - startTime))} / {formatTime(clipDuration)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop: phone mockup */}
           <div
-            className="relative rounded-[2.5rem] p-3 w-[280px] sm:w-[300px]"
+            className="hidden md:block relative rounded-[2.5rem] p-3 w-[280px] lg:w-[300px]"
             style={{
               background: "linear-gradient(145deg, hsl(240,15%,16%), hsl(240,15%,10%))",
               boxShadow: "0 25px 60px -10px rgba(0,0,0,0.6), 0 0 40px -10px hsl(349,100%,59%,0.15), inset 0 1px 0 hsl(0,0%,100%,0.08)",
             }}
           >
-            {/* Notch */}
             <div className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-6 rounded-b-2xl z-10"
               style={{ background: "hsl(240,15%,8%)" }}
             />
-
-            {/* Screen */}
             <div className="relative aspect-[9/16] rounded-[2rem] overflow-hidden bg-black">
               {loading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
