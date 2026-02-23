@@ -2,14 +2,19 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import ClipsLibrary from "./pages/ClipsLibrary";
 import VideoDetail from "./pages/VideoDetail";
 import VideoConfig from "./pages/VideoConfig";
-import VideoReview from "./pages/VideoReview";
+
+const VideoReviewRedirect = () => {
+  const { id } = useParams();
+  return <Navigate to={`/dashboard/videos/${id}`} replace />;
+};
+
 import Settings from "./pages/Settings";
 import ClipEdit from "./pages/ClipEdit";
 import Admin from "./pages/Admin";
@@ -47,7 +52,7 @@ const App = () => (
             >
               <Route index element={<Dashboard />} />
               <Route path="videos/configure/:id" element={<VideoConfig />} />
-              <Route path="videos/review/:id" element={<VideoReview />} />
+              <Route path="videos/review/:id" element={<VideoReviewRedirect />} />
               <Route path="videos/:id" element={<VideoDetail />} />
               <Route path="videos/edit/:clipId" element={<ClipEdit />} />
               <Route path="settings" element={<Settings />} />
