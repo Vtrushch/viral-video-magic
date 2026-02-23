@@ -71,7 +71,7 @@ const RenderCreditDialog = ({
 
         {hasEnough && (
           <p className="text-xs text-muted-foreground/70 mt-2">
-            Free plan clips include a small CutViral.ai watermark. <Link to="/dashboard/upgrade" className="text-primary hover:underline">Upgrade to remove it.</Link>
+            Free plan clips include a small HookCut.com watermark. <Link to="/dashboard/upgrade" className="text-primary hover:underline">Upgrade to remove it.</Link>
           </p>
         )}
 

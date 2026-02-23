@@ -20,7 +20,7 @@ const Navbar = () => {
             <Scissors className="w-4 h-4 text-primary-foreground" />
           </div>
           <span className="text-foreground">
-            CutViral<span className="gradient-text">.ai</span>
+            Hook<span className="gradient-text">Cut</span>
           </span>
         </Link>
 
