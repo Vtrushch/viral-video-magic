@@ -518,15 +518,15 @@ const ClipEdit = () => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate(`/dashboard/videos/review/${video.id}`)}
-          className="shrink-0"
+          onClick={() => navigate(`/dashboard/videos/${video.id}`)}
+          className="shrink-0 text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="w-4 h-4 sm:mr-1" />
           <span className="hidden sm:inline">Back</span>
         </Button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-sm sm:text-lg font-bold truncate">
-            <span className="gradient-text">Remix</span> — {clip.title}
+          <h1 className="text-sm sm:text-lg font-semibold truncate text-foreground">
+            Remix <span className="text-muted-foreground font-normal">— {clip.title}</span>
           </h1>
         </div>
         <div className="flex flex-col items-end gap-1">
@@ -1300,10 +1300,10 @@ const ClipEdit = () => {
                   variant="ghost"
                   className="w-full justify-start text-muted-foreground"
                   onClick={() =>
-                    navigate(`/dashboard/videos/review/${video.id}`)
+                    navigate(`/dashboard/videos/${video.id}`)
                   }
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" /> Back to Review
+                  <ArrowLeft className="w-4 h-4 mr-2" /> Back to Video
                 </Button>
               </div>
             </div>
