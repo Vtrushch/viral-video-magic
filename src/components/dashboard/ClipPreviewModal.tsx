@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import { X, Play, Pause, Flame, Clock, Star, Volume2, VolumeX, RefreshCw } from "lucide-react";
+import { X, Play, Pause, Flame, Clock, Star, Volume2, VolumeX, RefreshCw, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
@@ -159,7 +159,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   if (!open || !clip || !video) return null;
 
   const progress = clipDuration > 0 ? ((currentTime - startTime) / clipDuration) * 100 : 0;
-  const viralAnalysis = clip.viral_analysis as { reason?: string; hook_strength?: number; face_x?: number } | null;
+  const viralAnalysis = clip.viral_analysis as { reason?: string; hook_strength?: number; face_x?: number; hook_variants?: { type: string; label: string; text: string }[] } | null;
 
   // --- 9:16 crop simulation from 16:9 source ---
   const isRendered = clip.status === "ready" && !!clip.file_path;
@@ -461,6 +461,20 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                     ))}
                   </div>
                   <span className="text-xs font-mono text-foreground/70">{viralAnalysis.hook_strength}/10</span>
+                </div>
+              )}
+
+              {/* Hook Variants */}
+              {viralAnalysis?.hook_variants && viralAnalysis.hook_variants.length > 0 && (
+                <div className="space-y-2 pt-2 border-t border-border/50">
+                  <p className="text-[11px] text-yellow-400 font-medium flex items-center gap-1">
+                    <Zap className="w-3 h-3" /> AI Hook Suggestions
+                  </p>
+                  {viralAnalysis.hook_variants.map((v, i) => (
+                    <p key={i} className="text-[11px] text-muted-foreground">
+                      <span className="text-foreground">{v.label}:</span> "{v.text}"
+                    </p>
+                  ))}
                 </div>
               )}
             </div>
