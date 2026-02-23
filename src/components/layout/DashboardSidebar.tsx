@@ -50,7 +50,7 @@ const DashboardSidebar = () => {
             </div>
             {!collapsed && (
               <span className="font-bold" style={{ color: "#E5E5E5" }}>
-                CutViral<span className="text-primary">.ai</span>
+                Hook<span className="text-primary">Cut</span>
               </span>
             )}
           </Link>

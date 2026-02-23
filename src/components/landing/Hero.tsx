@@ -14,7 +14,7 @@ const Hero = () => {
   ];
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden gradient-hero-bg">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden gradient-hero-bg" aria-label="HookCut hero">
       {/* Mesh gradient overlay */}
       <div className="absolute inset-0 mesh-gradient" />
       {/* Grid overlay */}

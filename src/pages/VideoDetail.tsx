@@ -879,7 +879,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                                 const response = await fetch(clip.file_path!);
                                 const blob = await response.blob();
                                 const file = new File([blob], `${clip.title || 'clip'}.mp4`, { type: 'video/mp4' });
-                                await navigator.share({ files: [file], title: clip.title || 'CutViral clip' });
+                                await navigator.share({ files: [file], title: clip.title || 'HookCut clip' });
                               } catch (err) {
                                 if (err instanceof Error && err.name !== 'AbortError') {
                                   console.error('Share failed:', err);

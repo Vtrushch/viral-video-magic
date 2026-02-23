@@ -16,7 +16,7 @@ const Privacy = () => {
         <div className="space-y-8 text-sm leading-relaxed text-muted-foreground">
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-2">1. Introduction</h2>
-            <p>Truhand LLC ("Company", "we", "us") operates CutViral.ai ("Service"). This Privacy Policy explains how we collect, use, disclose, and protect your personal information when you use our Service. We are committed to protecting your privacy and handling your data transparently.</p>
+            <p>Truhand LLC ("Company", "we", "us") operates HookCut.com ("Service"). This Privacy Policy explains how we collect, use, disclose, and protect your personal information when you use our Service. We are committed to protecting your privacy and handling your data transparently.</p>
           </section>
 
           <section>
@@ -47,7 +47,7 @@ const Privacy = () => {
 
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-2">4. Third-Party Services</h2>
-            <p className="mb-2">We use the following third-party services to operate CutViral.ai:</p>
+            <p className="mb-2">We use the following third-party services to operate HookCut.com:</p>
             <ul className="list-disc pl-5 space-y-1 mb-3">
               <li><strong className="text-foreground">Cloud Infrastructure</strong> — database, authentication, and file storage</li>
               <li><strong className="text-foreground">Google Gemini AI</strong> — video analysis and content generation</li>
@@ -80,7 +80,7 @@ const Privacy = () => {
               <li>Withdraw consent at any time</li>
             </ul>
             <p>To exercise any of these rights, please contact us at{" "}
-              <a href="mailto:support@cutviral.ai" className="text-primary hover:underline">support@cutviral.ai</a>.
+              <a href="mailto:support@hookcut.com" className="text-primary hover:underline">support@hookcut.com</a>.
             </p>
           </section>
 
@@ -107,7 +107,7 @@ const Privacy = () => {
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-2">12. Contact Us</h2>
             <p className="mb-2">If you have any questions about this Privacy Policy or our data practices, contact us at:</p>
-            <p>Truhand LLC<br />Chicago, IL, United States<br />Email: <a href="mailto:support@cutviral.ai" className="text-primary hover:underline">support@cutviral.ai</a></p>
+            <p>Truhand LLC<br />Chicago, IL, United States<br />Email: <a href="mailto:support@hookcut.com" className="text-primary hover:underline">support@hookcut.com</a></p>
           </section>
         </div>
       </div>

@@ -544,7 +544,7 @@ const ClipEdit = () => {
           {(credits?.plan === "free" || !credits?.plan) && (
             <p className="text-[10px] text-muted-foreground/60 flex items-center gap-1">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-yellow-500/60" />
-              Free plan — rendered clips include a CutViral.ai watermark.
+              Free plan — rendered clips include a HookCut.com watermark.
               <Link to="/dashboard/upgrade" className="text-primary hover:underline ml-0.5">Upgrade</Link>
             </p>
           )}

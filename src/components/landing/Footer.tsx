@@ -15,8 +15,8 @@ const Footer = () => {
               <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center">
                 <Scissors className="w-4 h-4 text-primary-foreground" />
               </div>
-              <span className="text-foreground">CutViral</span>
-              <span className="text-primary">.ai</span>
+              <span className="text-foreground">Hook</span>
+              <span className="text-primary">Cut</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs">
               {t('landing.footer.tagline')}
@@ -47,7 +47,7 @@ const Footer = () => {
           {/* Social */}
           <div className="flex gap-3">
             <a
-              href="https://twitter.com/cutviral"
+              href="https://twitter.com/hookcut"
               target="_blank"
               rel="noopener noreferrer"
               className="w-9 h-9 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all"

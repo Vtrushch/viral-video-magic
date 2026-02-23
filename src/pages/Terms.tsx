@@ -16,12 +16,12 @@ const Terms = () => {
         <div className="space-y-8 text-sm leading-relaxed text-muted-foreground">
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-2">1. Agreement to Terms</h2>
-            <p>By accessing or using CutViral.ai ("Service"), operated by Truhand LLC ("Company", "we", "us"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our Service.</p>
+            <p>By accessing or using HookCut.com ("Service"), operated by Truhand LLC ("Company", "we", "us"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our Service.</p>
           </section>
 
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-2">2. Description of Service</h2>
-            <p>CutViral.ai is an AI-powered video repurposing platform that helps users transform long-form video content into short-form clips optimized for social media platforms. The Service includes video analysis, clip generation, subtitle creation, and related features.</p>
+            <p>HookCut.com is an AI-powered video repurposing platform that helps users transform long-form video content into short-form clips optimized for social media platforms. The Service includes video analysis, clip generation, subtitle creation, and related features.</p>
           </section>
 
           <section>
@@ -92,7 +92,7 @@ const Terms = () => {
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-2">14. Contact</h2>
             <p className="mb-2">If you have any questions about these Terms, please contact us at:</p>
-            <p>Truhand LLC<br />Chicago, IL, United States<br />Email: <a href="mailto:support@cutviral.ai" className="text-primary hover:underline">support@cutviral.ai</a></p>
+            <p>Truhand LLC<br />Chicago, IL, United States<br />Email: <a href="mailto:support@hookcut.com" className="text-primary hover:underline">support@hookcut.com</a></p>
           </section>
         </div>
       </div>
