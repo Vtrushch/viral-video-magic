@@ -193,8 +193,8 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
         {/* Video player area */}
         <div className="mx-auto lg:mx-0 flex-shrink-0">
           {/* Mobile: clean video, no phone frame */}
-          <div className="block md:hidden w-full max-w-sm mx-auto">
-            <div className="relative bg-black rounded-xl overflow-hidden">
+          <div className="block md:hidden w-full max-w-[360px] mx-auto">
+            <div className="relative aspect-[9/16] bg-black rounded-2xl overflow-hidden">
               {loading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
                   <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
