@@ -65,6 +65,7 @@ const ClipEdit = () => {
   const [customColor, setCustomColor] = useState("");
   const [saving, setSaving] = useState(false);
   const [rendering, setRendering] = useState(false);
+  const [selectedHook, setSelectedHook] = useState<number | null>(null);
   const [transcriptLoading, setTranscriptLoading] = useState(false);
   const [retranscribing, setRetranscribing] = useState(false);
   const retranscribeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1166,6 +1167,74 @@ const ClipEdit = () => {
                 </div>
               )}
             </div>
+
+            {/* Hook Variants */}
+            {(() => {
+              const analysis = clip.viral_analysis as Record<string, unknown> | null;
+              const hookVariants = analysis?.hook_variants as { type: string; label: string; text: string }[] | undefined;
+              if (!hookVariants || hookVariants.length === 0) return null;
+
+              const handleApplyHook = (hookText: string, idx: number) => {
+                const currentText = transcript.filter(w => !w.deleted).map(w => w.word).join(" ");
+                const sentences = currentText.split(/(?<=[.!?])\s+/);
+                let newText: string;
+                if (sentences.length > 1) {
+                  sentences[0] = hookText;
+                  newText = sentences.join(" ");
+                } else {
+                  newText = hookText + " " + currentText;
+                }
+                // Re-split into word objects
+                const clipDur = clipEnd - clipStart;
+                const words = newText.trim().split(/\s+/);
+                const wordDur = words.length > 0 ? clipDur / words.length : 0;
+                setTranscript(words.map((word, i) => ({
+                  word,
+                  start: i * wordDur,
+                  end: (i + 1) * wordDur,
+                  deleted: false,
+                  edited: true,
+                })));
+                setSelectedHook(idx);
+                toast.success("Hook applied!", { description: "The opening line has been updated" });
+              };
+
+              return (
+                <div className="space-y-3 p-4 rounded-xl border border-border/50 bg-card/30">
+                  <div className="flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-yellow-400" />
+                    <h3 className="text-sm font-semibold text-foreground">Hook Variants</h3>
+                    <span className="text-[10px] text-muted-foreground bg-muted/30 px-1.5 py-0.5 rounded">AI Generated</span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    Choose how your clip should start. The first 3 seconds determine 80% of engagement.
+                  </p>
+                  <div className="space-y-2">
+                    {hookVariants.map((variant, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleApplyHook(variant.text, idx)}
+                        className={cn(
+                          "w-full text-left p-3 rounded-lg border transition-all",
+                          selectedHook === idx
+                            ? "border-yellow-400/50 bg-yellow-400/10"
+                            : "border-border/50 hover:border-yellow-400/30"
+                        )}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-[10px] font-medium text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 rounded">
+                            {variant.label}
+                          </span>
+                        </div>
+                        <p className="text-xs text-foreground leading-relaxed">
+                          "{variant.text}"
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* 3. TEXT EDITOR */}
             <div className="glass-card rounded-xl p-4 space-y-3">
