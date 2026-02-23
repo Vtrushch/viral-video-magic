@@ -294,7 +294,9 @@ export type Database = {
         }
         Returns: boolean
       }
-      increment_used_credits: { Args: { _user_id: string }; Returns: undefined }
+      increment_used_credits:
+        | { Args: { _user_id: string }; Returns: undefined }
+        | { Args: { p_amount?: number; p_user_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

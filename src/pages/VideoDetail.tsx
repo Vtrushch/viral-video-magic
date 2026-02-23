@@ -472,6 +472,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
           if (old && old.status === "rendering" && newClip.status === "ready") {
             toast.success(`✅ Clip ready: ${newClip.title}`);
             setRenderingIds((ids) => { const n = new Set(ids); n.delete(newClip.id); return n; });
+            refetchCredits();
           } else if (old && old.status === "rendering" && newClip.status === "failed") {
             toast.error(`Clip failed: ${newClip.title}`);
             setRenderingIds((ids) => { const n = new Set(ids); n.delete(newClip.id); return n; });
@@ -503,18 +504,10 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     }
   }, [video, settings]);
 
-  // Deduct N credits and trigger render — credits deducted AFTER successful render
+  // Trigger render — backend handles credit deduction after successful render
   const deductAndRender = useCallback(async (clipsToRender: Tables<"clips">[]) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    // Render first, then deduct credits only for successful renders
     await Promise.all(clipsToRender.map((clip) => renderClipActual(clip)));
-    // Deduct credits after successful render requests
-    await Promise.all(clipsToRender.map(() =>
-      supabase.rpc("increment_used_credits" as any, { _user_id: user.id })
-    ));
-    refetchCredits();
-  }, [renderClipActual, refetchCredits]);
+  }, [renderClipActual]);
 
   // Credit-gated render single clip
   const renderClip = useCallback((clip: Tables<"clips">) => {
@@ -729,7 +722,13 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
 
       {/* Clips grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {clips.map((clip) => {
+      {[...clips].sort((a, b) => {
+          const statusOrder: Record<string, number> = { ready: 0, rendering: 1, pending: 2, failed: 3 };
+          const orderA = statusOrder[a.status] ?? 2;
+          const orderB = statusOrder[b.status] ?? 2;
+          if (orderA !== orderB) return orderA - orderB;
+          return (b.viral_score ?? 0) - (a.viral_score ?? 0);
+        }).map((clip) => {
           const isRendering = clip.status === "rendering" || renderingIds.has(clip.id);
           const isReady = clip.status === "ready";
           const isFailed = clip.status === "failed";
