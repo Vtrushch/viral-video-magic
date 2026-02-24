@@ -40,7 +40,18 @@ interface HighlightReelEditorProps {
   } | null;
 }
 
-const CAPTION_STYLES = ["hormozi", "mrbeast", "minimal"] as const;
+type CaptionStyleId = "hormozi" | "mrbeast" | "minimal" | "neon" | "fire" | "elegant" | "custom";
+
+const CAPTION_STYLES: { id: CaptionStyleId; label: string; color: string }[] = [
+  { id: "hormozi", label: "Hormozi", color: "#FFD600" },
+  { id: "mrbeast", label: "MrBeast", color: "#FF3333" },
+  { id: "minimal", label: "Minimal", color: "#FFFFFF" },
+  { id: "neon", label: "Neon", color: "#00FF00" },
+  { id: "fire", label: "Fire", color: "#FF4500" },
+  { id: "elegant", label: "Elegant", color: "#F0F0F0" },
+];
+
+const CUSTOM_COLORS = ["FF0000", "00BFFF", "FFD600", "FF6B00", "A855F7", "22C55E"];
 
 // Clip timing override type
 interface ClipTiming {
@@ -204,6 +215,7 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
   const aiRecommendedIds = useMemo(() => (isEditing ? [] : defaultSelected), [defaultSelected, isEditing]);
 
   const [captionStyle, setCaptionStyle] = useState<string>(editingReel?.caption_style || "hormozi");
+  const [customColor, setCustomColor] = useState("");
   const [addTransitions, setAddTransitions] = useState(editingReel?.add_transitions ?? true);
   const [creating, setCreating] = useState(false);
 
@@ -356,6 +368,7 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
         clips: clipsPayload,
         caption_style: captionStyle,
         add_transitions: addTransitions,
+        custom_color: captionStyle === "custom" ? customColor : undefined,
       }).catch(() => {});
 
       onClose();
@@ -505,21 +518,52 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
               {/* Caption style */}
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">{t("videoConfig.captionStyle")}</label>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {CAPTION_STYLES.map((style) => (
                     <button
-                      key={style}
-                      onClick={() => setCaptionStyle(style)}
-                      className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium border transition-all capitalize ${
-                        captionStyle === style
+                      key={style.id}
+                      onClick={() => setCaptionStyle(style.id)}
+                      className={`flex flex-col items-center gap-1 py-2 px-2 rounded-lg text-xs font-medium border transition-all ${
+                        captionStyle === style.id
                           ? "border-primary/60 bg-primary/15 text-primary"
                           : "border-border/30 bg-card/20 text-muted-foreground hover:border-border/60"
                       }`}
                     >
-                      {style}
+                      <span className="w-3 h-3 rounded-full shrink-0" style={{ background: style.color }} />
+                      <span>{style.label}</span>
                     </button>
                   ))}
                 </div>
+                {/* Custom color */}
+                <div className="mt-2">
+                  <button
+                    onClick={() => setCaptionStyle("custom")}
+                    className={`w-full flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-medium border transition-all ${
+                      captionStyle === "custom"
+                        ? "border-primary/60 bg-primary/15 text-primary"
+                        : "border-border/30 bg-card/20 text-muted-foreground hover:border-border/60"
+                    }`}
+                  >
+                    🎨 Custom Color
+                  </button>
+                  {captionStyle === "custom" && (
+                    <div className="flex gap-2 mt-2 px-1">
+                      {CUSTOM_COLORS.map((c) => (
+                        <button
+                          key={c}
+                          onClick={() => setCustomColor(c)}
+                          className={`w-6 h-6 rounded-full border-2 transition-all ${
+                            customColor === c ? "border-white scale-110" : "border-transparent"
+                          }`}
+                          style={{ background: `#${c}` }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <p className="text-[10px] text-muted-foreground/60 mt-2 px-1">
+                  💬 Subtitle text is auto-generated. Change style and re-render.
+                </p>
               </div>
 
               {/* Transitions toggle */}

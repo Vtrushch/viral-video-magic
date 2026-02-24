@@ -32,7 +32,18 @@ type PlayerMode =
   | { type: "source"; clipId: string | null }     // source video, optionally bound to a clip
   | { type: "rendered"; clipId: string; url: string }; // rendered clip video
 
-const CAPTION_STYLES = ["hormozi", "mrbeast", "minimal"] as const;
+type CaptionStyleId = "hormozi" | "mrbeast" | "minimal" | "neon" | "fire" | "elegant" | "custom";
+
+const CAPTION_STYLES: { id: CaptionStyleId; label: string; preview: string; color: string }[] = [
+  { id: "hormozi", label: "Hormozi", preview: "Bold yellow, word highlight", color: "#FFD600" },
+  { id: "mrbeast", label: "MrBeast", preview: "White + red pop, large", color: "#FF3333" },
+  { id: "minimal", label: "Minimal", preview: "Clean white, lower-third", color: "#FFFFFF" },
+  { id: "neon", label: "Neon", preview: "Electric green glow", color: "#00FF00" },
+  { id: "fire", label: "Fire", preview: "Orange-red gradient feel", color: "#FF4500" },
+  { id: "elegant", label: "Elegant", preview: "Soft white, thin outline", color: "#F0F0F0" },
+];
+
+const CUSTOM_COLORS = ["FF0000", "00BFFF", "FFD600", "FF6B00", "A855F7", "22C55E"];
 
 /* ─── Helpers ─── */
 function parseTime(s: string | null | undefined): number {
@@ -239,7 +250,8 @@ export default function HighlightReelPage() {
   const progressRef = useRef<HTMLDivElement>(null);
 
   const [signedSourceUrl, setSignedSourceUrl] = useState<string | null>(null);
-  const [renderedClipUrl, setRenderedClipUrl] = useState<string | null>(null); // signed URL for rendered clip
+  const [renderedClipUrl, setRenderedClipUrl] = useState<string | null>(null);
+  const [renderedReelUrl, setRenderedReelUrl] = useState<string | null>(null);
 
   // playerMode drives which video element is shown and in what container
   const [playerMode, setPlayerMode] = useState<PlayerMode>({ type: "idle" });
@@ -260,6 +272,7 @@ export default function HighlightReelPage() {
   /* Editor state */
   const [title, setTitle] = useState("My Highlight Reel");
   const [captionStyle, setCaptionStyle] = useState<string>("hormozi");
+  const [customColor, setCustomColor] = useState("");
   const [addTransitions, setAddTransitions] = useState(true);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [aiRecommendedIds, setAiRecommendedIds] = useState<string[]>([]);
@@ -284,12 +297,17 @@ export default function HighlightReelPage() {
         if (isEditing && reelId) {
           const { data: r } = await supabase.from("highlight_reels" as any).select("*").eq("id", reelId).single();
           if (r) {
-            const { data: v } = await supabase.from("videos").select("*").eq("id", (r as any).video_id).single();
+            const reel = r as any;
+            const { data: v } = await supabase.from("videos").select("*").eq("id", reel.video_id).single();
             vid = v;
-            setTitle((r as any).title);
-            setCaptionStyle((r as any).caption_style || "hormozi");
-            setAddTransitions((r as any).add_transitions ?? true);
-            setSelectedIds((r as any).clip_ids || []);
+            setTitle(reel.title);
+            setCaptionStyle(reel.caption_style || "hormozi");
+            setAddTransitions(reel.add_transitions ?? true);
+            setSelectedIds(reel.clip_ids || []);
+            // If reel is ready, set rendered reel URL for preview
+            if (reel.status === "ready" && reel.file_path) {
+              setRenderedReelUrl(reel.file_path);
+            }
           }
         } else if (videoId) {
           const { data: v } = await supabase.from("videos").select("*").eq("id", videoId).single();
@@ -625,7 +643,11 @@ export default function HighlightReelPage() {
         clips: clipsPayload,
         caption_style: captionStyle,
         add_transitions: addTransitions,
+        custom_color: captionStyle === "custom" ? customColor : undefined,
       });
+
+      // Clear rendered reel preview since we're re-rendering
+      setRenderedReelUrl(null);
 
       // Deduct 1 credit — only after successful API request
       await supabase.rpc("increment_used_credits" as any, { _user_id: user.id });
@@ -728,8 +750,42 @@ export default function HighlightReelPage() {
           {/* Player area */}
           <div className="flex-1 flex items-center justify-center p-4 lg:p-6 min-h-[260px] lg:min-h-0 relative">
 
+            {/* ── RENDERED REEL PLAYER (9:16 vertical) — shown when editing a ready reel ── */}
+            {renderedReelUrl && playerMode.type === "idle" ? (
+              <div className="relative flex items-center justify-center h-full w-full">
+                <div
+                  className="relative rounded-xl overflow-hidden shadow-2xl"
+                  style={{
+                    maxHeight: "65vh",
+                    aspectRatio: "9/16",
+                    background: "#000",
+                    boxShadow: "0 0 60px -15px hsl(var(--primary)/0.3)",
+                  }}
+                >
+                  <video
+                    src={renderedReelUrl}
+                    className="w-full h-full object-contain cursor-pointer"
+                    style={{ background: "#000" }}
+                    controls
+                    playsInline
+                    preload="auto"
+                  />
+                  <div className="absolute top-2 left-2 text-[9px] font-semibold px-2 py-0.5 rounded-full"
+                    style={{ background: "hsl(var(--accent)/0.85)", color: "hsl(var(--accent-foreground))" }}>
+                    ✓ Rendered Reel
+                  </div>
+                </div>
+                <button
+                  onClick={() => setRenderedReelUrl(null)}
+                  className="absolute bottom-4 right-4 text-[10px] text-muted-foreground hover:text-foreground bg-black/50 px-2.5 py-1.5 rounded-lg backdrop-blur-sm"
+                >
+                  Switch to source preview →
+                </button>
+              </div>
+            ) : null}
+
             {/* ── RENDERED CLIP PLAYER (9:16 vertical) ── */}
-            {showRenderedPlayer && renderedClipUrl ? (
+            {!renderedReelUrl || playerMode.type !== "idle" ? (<>{showRenderedPlayer && renderedClipUrl ? (
               <div className="relative flex items-center justify-center h-full w-full">
                 <div
                   className="relative rounded-xl overflow-hidden shadow-2xl"
@@ -860,6 +916,7 @@ export default function HighlightReelPage() {
                 )}
               </div>
             </div>
+            </>) : null}
           </div>
 
           {/* Controls bar */}
@@ -1096,22 +1153,55 @@ export default function HighlightReelPage() {
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
                   {t("videoConfig.captionStyle")}
                 </label>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {CAPTION_STYLES.map((style) => (
                     <button
-                      key={style}
-                      onClick={() => setCaptionStyle(style)}
-                      className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium border transition-all capitalize ${
-                        captionStyle === style
+                      key={style.id}
+                      onClick={() => setCaptionStyle(style.id)}
+                      className={`flex flex-col items-center gap-1 py-2 px-2 rounded-lg text-xs font-medium border transition-all ${
+                        captionStyle === style.id
                           ? "border-primary/60 bg-primary/15 text-primary"
                           : "border-border/30 bg-card/20 text-muted-foreground hover:border-border/60"
                       }`}
                     >
-                      {style}
+                      <span className="w-3 h-3 rounded-full shrink-0" style={{ background: style.color }} />
+                      <span>{style.label}</span>
                     </button>
                   ))}
                 </div>
+                {/* Custom color */}
+                <div className="mt-2">
+                  <button
+                    onClick={() => setCaptionStyle("custom")}
+                    className={`w-full flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-medium border transition-all ${
+                      captionStyle === "custom"
+                        ? "border-primary/60 bg-primary/15 text-primary"
+                        : "border-border/30 bg-card/20 text-muted-foreground hover:border-border/60"
+                    }`}
+                  >
+                    🎨 Custom Color
+                  </button>
+                  {captionStyle === "custom" && (
+                    <div className="flex gap-2 mt-2 px-1">
+                      {CUSTOM_COLORS.map((c) => (
+                        <button
+                          key={c}
+                          onClick={() => setCustomColor(c)}
+                          className={`w-6 h-6 rounded-full border-2 transition-all ${
+                            customColor === c ? "border-white scale-110" : "border-transparent"
+                          }`}
+                          style={{ background: `#${c}` }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
+
+              {/* Subtitle note */}
+              <p className="text-[10px] text-muted-foreground/60 px-1">
+                💬 Subtitle text is auto-generated. Change caption style and re-render for different styling.
+              </p>
 
               {/* Transitions toggle */}
               <div>

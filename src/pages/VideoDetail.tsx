@@ -1179,6 +1179,11 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                 </div>
               </div>
 
+              {/* Time estimate */}
+              <p className="text-xs text-center text-muted-foreground">
+                ⏱️ Rendering takes 2-5 minutes depending on reel length. You can continue using the app while it renders.
+              </p>
+
               {/* Create Button */}
               <Button
                 variant="hero"
