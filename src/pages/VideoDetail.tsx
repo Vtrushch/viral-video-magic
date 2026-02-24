@@ -397,6 +397,12 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
 
   // Manual clip creator state
   const [showManualCreator, setShowManualCreator] = useState(false);
+
+  // Smart Reel state
+  const [showSmartReel, setShowSmartReel] = useState(false);
+  const [reelStyle, setReelStyle] = useState<"narrative" | "best_moments" | "energy">("narrative");
+  const [targetDuration, setTargetDuration] = useState(60);
+  const [isCreatingReel, setIsCreatingReel] = useState(false);
   const [manualStart, setManualStart] = useState(0);
   const [manualEnd, setManualEnd] = useState(30);
   const [manualTitle, setManualTitle] = useState("");
@@ -792,15 +798,13 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
           </button>
           {clips.length >= 2 && (
             <>
-              <Button
-                variant="hero-outline"
-                size="sm"
-                className="flex-1 sm:flex-none"
-                onClick={() => navigate(`/dashboard/highlight-reel/new/${video.id}`)}
-                title="Quick Reel — AI picks best clips"
+              <button
+                onClick={() => setShowSmartReel(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/30 text-primary text-xs font-medium hover:bg-primary/10 transition-colors"
               >
-                <Zap className="w-4 h-4 mr-1.5" /> Quick Reel
-              </Button>
+                <Sparkles className="w-3.5 h-3.5" />
+                Smart Reel
+              </button>
               <Button
                 variant="hero-outline"
                 size="sm"
@@ -1097,6 +1101,117 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                   Create Clip ({Math.round(manualEnd - manualStart)}s)
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Smart Reel Dialog */}
+      {showSmartReel && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" onClick={() => setShowSmartReel(false)}>
+          <div className="bg-card rounded-2xl w-full max-w-md overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-border/50">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" />
+                <h2 className="text-lg font-semibold text-foreground">AI Smart Reel</h2>
+              </div>
+              <button onClick={() => setShowSmartReel(false)} className="text-muted-foreground hover:text-foreground">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-5">
+              <p className="text-sm text-muted-foreground">
+                AI will analyze your clips and create a perfectly arranged highlight reel with narrative flow.
+              </p>
+
+              {/* Reel Style Selector */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-foreground">Reel Style</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { value: "narrative" as const, icon: "📖", label: "Narrative", desc: "Story arc with hook & climax" },
+                    { value: "best_moments" as const, icon: "⭐", label: "Best Moments", desc: "Top clips by viral score" },
+                    { value: "energy" as const, icon: "⚡", label: "Energy Build", desc: "Calm to explosive crescendo" },
+                  ].map((style) => (
+                    <button
+                      key={style.value}
+                      onClick={() => setReelStyle(style.value)}
+                      className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all text-center ${
+                        reelStyle === style.value
+                          ? "border-primary bg-primary/10"
+                          : "border-border/50 hover:border-primary/30"
+                      }`}
+                    >
+                      <span className="text-lg">{style.icon}</span>
+                      <span className="text-xs font-medium text-foreground">{style.label}</span>
+                      <span className="text-[10px] text-muted-foreground leading-tight">{style.desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Target Duration */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-foreground">Target Duration</label>
+                <div className="flex gap-2">
+                  {[30, 60, 90, 120].map((dur) => (
+                    <button
+                      key={dur}
+                      onClick={() => setTargetDuration(dur)}
+                      className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-colors ${
+                        targetDuration === dur
+                          ? "border-primary bg-primary/10 text-foreground"
+                          : "border-border/50 text-muted-foreground hover:border-primary/30"
+                      }`}
+                    >
+                      {dur}s
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Create Button */}
+              <Button
+                variant="hero"
+                className="w-full"
+                onClick={async () => {
+                  setIsCreatingReel(true);
+                  try {
+                    const res = await apiFetch("/create-smart-reel", {
+                      video_id: video.id,
+                      video_storage_path: video.file_path,
+                      caption_style: settings?.captionStyle || "hormozi",
+                      target_duration: targetDuration,
+                      style: reelStyle,
+                    });
+                    if (!res.ok) throw new Error("Failed");
+                    toast.success("Smart Reel is being created!", {
+                      description: `AI is selecting and arranging clips (${reelStyle} style, ~${targetDuration}s)`,
+                    });
+                    setShowSmartReel(false);
+                    fetchReels();
+                  } catch {
+                    toast.error("Failed to create Smart Reel", {
+                      description: "Please try again or contact support@hookcut.com",
+                    });
+                  } finally {
+                    setIsCreatingReel(false);
+                  }
+                }}
+                disabled={isCreatingReel}
+              >
+                {isCreatingReel ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> AI is building your reel...</>
+                ) : (
+                  <><Sparkles className="w-4 h-4 mr-2" /> Create Smart Reel</>
+                )}
+              </Button>
+
+              <p className="text-[10px] text-muted-foreground text-center">
+                AI selects the best clips and arranges them for maximum impact
+              </p>
             </div>
           </div>
         </div>
