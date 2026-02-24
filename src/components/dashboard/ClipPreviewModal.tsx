@@ -150,8 +150,8 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     const el = mobileVideoRef.current;
     if (!el || !signedUrl) return;
     const handleCanPlay = () => {
-      if (el.currentTime === 0) {
-        el.currentTime = 0.001;
+      if (el.currentTime < startTime) {
+        el.currentTime = startTime;
       }
     };
     el.addEventListener('canplay', handleCanPlay);
