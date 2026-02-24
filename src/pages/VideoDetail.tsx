@@ -638,7 +638,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
       return;
     }
 
-    toast.success("Clip created!", { description: "You can now edit and render it" });
+    toast.success("Clip created!", { description: "Generating subtitles... This takes a few seconds." });
     setShowManualCreator(false);
     setManualTitle("");
     setManualStart(0);
@@ -646,6 +646,41 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     // Refresh clips
     const { data: freshClips } = await supabase.from("clips").select("*").eq("video_id", video.id).order("viral_score", { ascending: false });
     if (freshClips) setClips(freshClips);
+
+    // Immediately transcribe the clip for subtitles
+    try {
+      await apiFetch("/transcribe-clip", {
+        clip_id: data.id,
+        video_storage_path: video.file_path,
+        start_time: manualStart,
+        end_time: manualEnd,
+      });
+
+      // Poll for transcription completion (check every 2s, max 30s)
+      let attempts = 0;
+      const pollInterval = setInterval(async () => {
+        attempts++;
+        const { data: updatedClip } = await supabase
+          .from("clips")
+          .select("transcription")
+          .eq("id", data.id)
+          .single();
+
+        if (updatedClip?.transcription || attempts > 15) {
+          clearInterval(pollInterval);
+          if (updatedClip?.transcription) {
+            toast.success("Subtitles ready!", { description: "You can now edit and render your clip." });
+          }
+          // Refresh to show updated clip with transcription
+          const { data: refreshedClips } = await supabase.from("clips").select("*").eq("video_id", video.id).order("viral_score", { ascending: false });
+          if (refreshedClips) setClips(refreshedClips);
+        }
+      }, 2000);
+    } catch (transcribeError) {
+      console.error("Transcription request failed:", transcribeError);
+      // Non-blocking — clip is created, transcription can happen during render as fallback
+      toast.info("Clip created", { description: "Subtitles will be generated when you render." });
+    }
   };
 
   const statusDot = (status: string) => {

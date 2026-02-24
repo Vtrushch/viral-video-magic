@@ -1255,6 +1255,16 @@ const ClipEdit = () => {
                     <p className="text-xs text-muted-foreground">{t("clipEdit.transcriptGenerating")}</p>
                     <p className="text-[10px] text-muted-foreground/50">{t("clipEdit.transcriptGeneratingHint")}</p>
                   </div>
+                ) : clip?.transcription === "" ? (
+                  <div className="flex flex-col items-center gap-2 py-4 text-center">
+                    <span className="text-2xl">🔇</span>
+                    <p className="text-xs text-muted-foreground">
+                      No speech detected in this clip.
+                    </p>
+                    <p className="text-[10px] text-muted-foreground/50">
+                      You can type your own subtitles in the render settings, or re-transcribe after adjusting the timeline.
+                    </p>
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center gap-2 py-4 text-center">
                     <span className="text-2xl">🎙️</span>
