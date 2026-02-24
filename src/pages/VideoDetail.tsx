@@ -434,31 +434,38 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     fetchReels();
   }, [fetchReels]);
 
-  // Poll every 5s for any reel that is still rendering/pending
+  // Realtime subscription for highlight_reels
+  useEffect(() => {
+    const channel = supabase
+      .channel(`highlight-reels-${video.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "highlight_reels",
+          filter: `video_id=eq.${video.id}`,
+        },
+        (payload: any) => {
+          console.log("Reel updated:", payload);
+          fetchReels();
+          if (payload.new?.status === "ready") {
+            toast.success(`🎬 Highlight reel ready: ${payload.new.title}`, { duration: 5000 });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [video.id, fetchReels]);
+
+  // Poll every 5s for any reel that is still rendering/pending (fallback)
   useEffect(() => {
     const hasActiveReel = reels.some((r) => r.status === "rendering" || r.status === "pending");
     if (!hasActiveReel) return;
-    const interval = setInterval(async () => {
-      const { data } = await supabase
-        .from("highlight_reels" as any)
-        .select("*")
-        .eq("video_id", video.id)
-        .order("created_at", { ascending: false });
-      const freshReels = data as any[] | null;
-      if (!freshReels) return;
-      setReels((prev) => {
-        // detect newly ready reels for toast
-        prev.forEach((oldReel) => {
-          const updated = freshReels.find((r) => r.id === oldReel.id);
-          if (updated && updated.status === "ready" && oldReel.status !== "ready") {
-            toast.success(`🎬 Highlight reel ready: ${updated.title}`, { duration: 5000 });
-          }
-        });
-        return freshReels;
-      });
-    }, 5000);
+    const interval = setInterval(() => fetchReels(), 5000);
     return () => clearInterval(interval);
-  }, [video.id, reels]);
+  }, [video.id, reels, fetchReels]);
 
   const toggleMainPlayer = () => {
     const el = mainVideoRef.current;
@@ -1191,7 +1198,9 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                       description: `AI is selecting and arranging clips (${reelStyle} style, ~${targetDuration}s)`,
                     });
                     setShowSmartReel(false);
-                    fetchReels();
+                    // Delay refetch to allow backend to insert the reel
+                    setTimeout(() => fetchReels(), 2000);
+                    setTimeout(() => fetchReels(), 5000);
                   } catch {
                     toast.error("Failed to create Smart Reel", {
                       description: "Please try again or contact support@hookcut.com",
