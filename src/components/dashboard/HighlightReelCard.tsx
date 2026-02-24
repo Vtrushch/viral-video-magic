@@ -39,6 +39,7 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
   const [showPreview, setShowPreview] = useState(false);
 
   const status = STATUS_STYLES[reel.status] || STATUS_STYLES.pending;
+  const isRendering = reel.status === "rendering" || reel.status === "pending";
 
   const formatDur = (s: number | null) => {
     if (!s) return "—";
@@ -114,6 +115,12 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
             <span className="flex items-center gap-1"><Layers className="w-3 h-3" />{reel.clip_ids.length} clips</span>
             <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatDur(reel.duration_seconds)}</span>
           </div>
+          {isRendering && (
+            <div className="flex items-center gap-1.5 mt-1">
+              <Loader2 className="w-3 h-3 animate-spin text-primary" />
+              <span className="text-[10px] text-primary animate-pulse">Rendering... ~2-5 min</span>
+            </div>
+          )}
           {/* AI Plan roles */}
           {reel.ai_plan?.clips && (
             <div className="flex flex-wrap gap-1 mt-1.5">
