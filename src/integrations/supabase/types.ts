@@ -94,10 +94,12 @@ export type Database = {
       highlight_reels: {
         Row: {
           add_transitions: boolean
+          ai_plan: Json | null
           caption_style: string
           clip_ids: string[]
           clip_order: number[]
           created_at: string
+          description: string | null
           duration_seconds: number | null
           file_path: string | null
           id: string
@@ -109,10 +111,12 @@ export type Database = {
         }
         Insert: {
           add_transitions?: boolean
+          ai_plan?: Json | null
           caption_style?: string
           clip_ids?: string[]
           clip_order?: number[]
           created_at?: string
+          description?: string | null
           duration_seconds?: number | null
           file_path?: string | null
           id?: string
@@ -124,10 +128,12 @@ export type Database = {
         }
         Update: {
           add_transitions?: boolean
+          ai_plan?: Json | null
           caption_style?: string
           clip_ids?: string[]
           clip_order?: number[]
           created_at?: string
+          description?: string | null
           duration_seconds?: number | null
           file_path?: string | null
           id?: string

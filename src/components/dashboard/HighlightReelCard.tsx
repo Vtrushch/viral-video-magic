@@ -15,6 +15,8 @@ interface Reel {
   caption_style: string;
   add_transitions: boolean;
   created_at: string;
+  description?: string | null;
+  ai_plan?: any;
 }
 
 interface HighlightReelCardProps {
@@ -99,11 +101,33 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
               {reel.status === "rendering" && <Loader2 className="w-2.5 h-2.5 mr-1 animate-spin" />}
               {status.label}
             </span>
+            {reel.ai_plan && (
+              <span className="inline-flex items-center text-[10px] font-medium px-2 py-0.5 rounded-md border border-primary/20 bg-primary/10 text-primary">
+                ✨ AI
+              </span>
+            )}
           </div>
+          {reel.description && (
+            <p className="text-[11px] text-muted-foreground mb-1 line-clamp-1">{reel.description}</p>
+          )}
           <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
             <span className="flex items-center gap-1"><Layers className="w-3 h-3" />{reel.clip_ids.length} clips</span>
             <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatDur(reel.duration_seconds)}</span>
           </div>
+          {/* AI Plan roles */}
+          {reel.ai_plan?.clips && (
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {reel.ai_plan.clips.map((c: any, i: number) => (
+                <span
+                  key={i}
+                  className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary/80 border border-primary/15"
+                  title={c.reason}
+                >
+                  {c.role}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Actions */}
