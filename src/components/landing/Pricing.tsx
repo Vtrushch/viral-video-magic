@@ -1,37 +1,12 @@
-import { Check } from "lucide-react";
+import { Check, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { PLANS, ADDON_PACK } from "@/constants/pricing";
 
 const Pricing = () => {
   const { t } = useTranslation();
-
-  const plans = [
-    {
-      key: "plan1",
-      name: t('landing.pricing.plan1Name'),
-      price: 9,
-      description: t('landing.pricing.plan1Desc'),
-      features: ["5 videos/month", "40 clips/month", "720p export", "Basic captions", "Email support"],
-      popular: false,
-    },
-    {
-      key: "plan2",
-      name: t('landing.pricing.plan2Name'),
-      price: 19,
-      description: t('landing.pricing.plan2Desc'),
-      features: ["25 videos/month", "100 clips/month", "1080p export", "Animated captions", "Multi-language", "Priority support"],
-      popular: true,
-    },
-    {
-      key: "plan3",
-      name: t('landing.pricing.plan3Name'),
-      price: 39,
-      description: t('landing.pricing.plan3Desc'),
-      features: ["Unlimited videos", "300 clips/month", "4K export", "Custom branding", "API access", "Team seats", "Dedicated support"],
-      popular: false,
-    },
-  ];
+  const plans = Object.values(PLANS);
 
   return (
     <section id="pricing" className="py-28 relative overflow-hidden gradient-hero-bg">
@@ -50,11 +25,11 @@ const Pricing = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto items-start">
           {plans.map((plan, i) => (
             <div
-              key={plan.key}
-              className={`relative rounded-2xl p-8 transition-all duration-500 opacity-0 animate-fade-in ${
+              key={plan.name}
+              className={`relative rounded-2xl p-7 transition-all duration-500 opacity-0 animate-fade-in ${
                 plan.popular
                   ? "glass-card glow-border scale-[1.03] border-primary/30"
                   : "glass-card-hover"
@@ -69,29 +44,54 @@ const Pricing = () => {
               <h3 className="text-xl font-bold text-foreground mb-1">{plan.name}</h3>
               <p className="text-sm text-muted-foreground mb-5">{plan.description}</p>
               <div className="flex items-baseline gap-1 mb-8">
-                <span className="text-5xl font-black text-foreground">${plan.price}</span>
-                <span className="text-muted-foreground">{t('landing.pricing.perMonth')}</span>
+                <span className="text-4xl font-black text-foreground">
+                  {plan.price === 0 ? "Free" : `$${plan.price}`}
+                </span>
+                {plan.price > 0 && (
+                  <span className="text-muted-foreground">{t('landing.pricing.perMonth')}</span>
+                )}
               </div>
               <Button
                 variant={plan.popular ? "hero" : "hero-outline"}
                 className="w-full mb-8"
                 asChild
               >
-                <Link to="/auth">
-                  {plan.key === "plan3" ? t('landing.pricing.contactSales') : t('landing.pricing.getStarted')}
-                </Link>
+                <Link to="/auth">{plan.cta}</Link>
               </Button>
-              <ul className="space-y-3">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-3 text-sm text-muted-foreground">
-                    <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
+              <ul className="space-y-2.5">
+                {plan.features.map((feature) =>
+                  feature.includes("coming soon") ? (
+                    <li key={feature} className="flex items-start gap-2 text-xs opacity-50">
+                      <Clock className="w-3.5 h-3.5 text-muted-foreground mt-0.5 shrink-0" />
+                      <span className="text-muted-foreground italic">{feature}</span>
+                    </li>
+                  ) : (
+                    <li key={feature} className="flex items-start gap-2 text-xs">
+                      <Check className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
+                      <span className="text-muted-foreground">{feature}</span>
+                    </li>
+                  )
+                )}
               </ul>
             </div>
           ))}
         </div>
+
+        {/* Add-on pack */}
+        <div className="max-w-2xl mx-auto mt-10 opacity-0 animate-fade-in" style={{ animationDelay: "0.7s" }}>
+          <div className="glass-card rounded-2xl p-6 text-center">
+            <p className="text-sm font-semibold text-foreground mb-1">Need more clips?</p>
+            <p className="text-muted-foreground text-sm">
+              +${ADDON_PACK.price} for {ADDON_PACK.renders} extra renders. Available on any paid plan. Max {ADDON_PACK.maxPerMonth} extra/month.
+            </p>
+          </div>
+        </div>
+
+        {/* Footer note */}
+        <p className="text-center text-xs text-muted-foreground/60 mt-6 opacity-0 animate-fade-in" style={{ animationDelay: "0.8s" }}>
+          Payment integration coming soon. Need more renders?{" "}
+          <a href="mailto:support@hookcut.com" className="text-primary hover:underline">Contact us</a> and we'll set you up.
+        </p>
       </div>
     </section>
   );
