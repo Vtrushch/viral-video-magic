@@ -54,9 +54,9 @@ const Navbar = () => {
             </PopoverContent>
           </Popover>
 
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" asChild>
-            <Link to="/auth">{t('landing.nav.signIn')}</Link>
-          </Button>
+          <Link to="/auth" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+            {t('landing.nav.signIn')}
+          </Link>
           <Button variant="hero" size="sm" asChild>
             <Link to="/auth">{t('landing.nav.getStarted')}</Link>
           </Button>
@@ -90,9 +90,9 @@ const Navbar = () => {
               </button>
             ))}
           </div>
-          <div className="flex gap-3 pt-2">
-            <Button variant="ghost" size="sm" asChild><Link to="/auth">{t('landing.nav.signIn')}</Link></Button>
-            <Button variant="hero" size="sm" asChild><Link to="/auth">{t('landing.nav.getStarted')}</Link></Button>
+          <div className="flex flex-col gap-2 pt-2">
+            <Link to="/auth" className="text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.signIn')}</Link>
+            <Button variant="hero" size="sm" asChild><Link to="/auth" onClick={() => setMobileOpen(false)}>{t('landing.nav.getStarted')}</Link></Button>
           </div>
         </div>
       )}

@@ -904,14 +904,14 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                   </div>
 
                   {/* Action buttons */}
-                  <div className="flex items-center gap-1.5 mt-2">
+                  <div className="flex items-center gap-1.5 mt-2 flex-wrap">
                     <Button
                       variant="ghost"
                       size="sm"
                       className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
                       onClick={() => setPreviewClip(clip)}
                     >
-                      <Eye className="w-3 h-3 mr-1" /> Preview
+                      <Eye className="w-3 h-3 sm:mr-1" /><span className="hidden sm:inline">Preview</span>
                     </Button>
                     <Button
                       variant="ghost"
@@ -919,7 +919,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                       className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
                       onClick={() => navigate(`/dashboard/videos/edit/${clip.id}`)}
                     >
-                      <Pencil className="w-3 h-3 mr-1" /> Edit
+                      <Pencil className="w-3 h-3 sm:mr-1" /><span className="hidden sm:inline">Edit</span>
                     </Button>
                     {isReady && clip.file_path ? (
                       <>
@@ -927,7 +927,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                           className="inline-flex items-center gap-1 h-7 px-2 text-xs text-accent hover:text-accent rounded-md hover:bg-accent/10 transition-colors"
                           onClick={() => handleDownload(clip)}
                         >
-                          <Download className="w-3 h-3" /> Download
+                          <Download className="w-3 h-3 sm:mr-0.5" /><span className="hidden sm:inline">Download</span>
                         </button>
                         {typeof navigator.share !== 'undefined' && (
                           <button

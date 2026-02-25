@@ -47,7 +47,7 @@ const Hero = () => {
           className="text-lg md:text-xl max-w-2xl mx-auto mb-12 text-muted-foreground leading-relaxed opacity-0 animate-fade-in"
           style={{ animationDelay: "0.2s" }}
         >
-          {t('landing.hero.subheading')}
+          {t('landing.hero.subheading')}{" "}
           <br className="hidden sm:block" />
           {t('landing.hero.stopEditing')}
         </p>

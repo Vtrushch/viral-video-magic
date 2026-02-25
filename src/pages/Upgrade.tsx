@@ -90,7 +90,7 @@ const Upgrade = () => {
             {loading
               ? "Loading your credits..."
               : credits
-              ? `You're on the ${credits.plan} plan with ${credits.remaining} renders remaining.`
+              ? `You're on the ${credits.plan} plan with ${credits.remaining} render${credits.remaining === 1 ? '' : 's'} remaining.`
               : "Choose a plan to get started."}
           </p>
         </div>
