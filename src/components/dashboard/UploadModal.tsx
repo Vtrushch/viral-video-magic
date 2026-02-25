@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { posthog } from "@/lib/posthog";
+import { useVideoLimit } from "@/hooks/useVideoLimit";
 
 interface UploadModalProps {
   open: boolean;
@@ -29,6 +30,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useTranslation();
+  const { canUpload, videosRemaining, videoLimit, plan, loading: limitLoading } = useVideoLimit();
 
   const MAX_FILE_SIZE_BYTES = 5120 * 1024 * 1024; // 5GB
 
@@ -175,53 +177,72 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
           <DialogTitle>Upload Video</DialogTitle>
         </DialogHeader>
 
-        {!file ? (
-              <div
-                className={`relative border-2 border-dashed rounded-2xl p-6 sm:p-8 text-center transition-all cursor-pointer group ${
-                  dragging
-                    ? "border-primary bg-primary/10 scale-[1.01]"
-                    : "border-border hover:border-primary/50 hover:bg-primary/5"
-                }`}
-                onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-                onDragLeave={() => setDragging(false)}
-                onDrop={handleDrop}
-                onClick={() => inputRef.current?.click()}
-              >
-                {/* Background gradient orb */}
-                <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full bg-primary/10 blur-3xl transition-opacity opacity-0 group-hover:opacity-100" />
+        {!canUpload && !limitLoading ? (
+          <div className="text-center space-y-3 py-6">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-destructive/10 flex items-center justify-center">
+              <CloudUpload className="w-7 h-7 text-destructive" />
+            </div>
+            <p className="text-sm font-medium text-foreground">Video limit reached for this month</p>
+            <p className="text-xs text-muted-foreground">
+              Your {plan} plan allows {videoLimit === -1 ? "unlimited" : videoLimit} video{videoLimit !== 1 ? "s" : ""}/month.
+              Resets on the 1st.
+            </p>
+            <a href="/dashboard/upgrade" className="text-xs text-primary hover:underline inline-block">
+              Upgrade for more videos →
+            </a>
+          </div>
+        ) : !file ? (
+              <div>
+                <div
+                  className={`relative border-2 border-dashed rounded-2xl p-6 sm:p-8 text-center transition-all cursor-pointer group ${
+                    dragging
+                      ? "border-primary bg-primary/10 scale-[1.01]"
+                      : "border-border hover:border-primary/50 hover:bg-primary/5"
+                  }`}
+                  onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+                  onDragLeave={() => setDragging(false)}
+                  onDrop={handleDrop}
+                  onClick={() => inputRef.current?.click()}
+                >
+                  {/* Background gradient orb */}
+                  <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full bg-primary/10 blur-3xl transition-opacity opacity-0 group-hover:opacity-100" />
+                  </div>
+
+                  {/* Icon */}
+                  <div className="relative w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center"
+                    style={{ background: "linear-gradient(135deg, hsl(var(--primary)/0.2), hsl(var(--primary)/0.05))", border: "1px solid hsl(var(--primary)/0.3)" }}>
+                    <CloudUpload className="w-8 h-8 text-primary" />
+                  </div>
+
+                  <p className="text-base font-semibold mb-1 text-foreground">Drop your video here</p>
+                  <p className="text-sm text-muted-foreground mb-4">or click to browse files</p>
+
+                  {/* Format badges */}
+                  <div className="flex items-center justify-center flex-wrap gap-2 text-xs">
+                    {["MP4", "MOV", "AVI", "WebM"].map(fmt => (
+                      <span key={fmt} className="px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium border border-border">
+                        {fmt}
+                      </span>
+                    ))}
+                    <span className="text-muted-foreground">• up to 2 hours • max 5GB</span>
+                  </div>
+
+                  <p className="text-[10px] text-muted-foreground/40 mt-3">
+                    YouTube import coming soon
+                  </p>
+
+                  <input
+                    ref={inputRef}
+                    type="file"
+                    accept=".mp4,.mov,.avi,.webm"
+                    className="hidden"
+                    onChange={(e) => e.target.files?.[0] && handleFileChange(e.target.files[0])}
+                  />
                 </div>
-
-                {/* Icon */}
-                <div className="relative w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center"
-                  style={{ background: "linear-gradient(135deg, hsl(var(--primary)/0.2), hsl(var(--primary)/0.05))", border: "1px solid hsl(var(--primary)/0.3)" }}>
-                  <CloudUpload className="w-8 h-8 text-primary" />
-                </div>
-
-                <p className="text-base font-semibold mb-1 text-foreground">Drop your video here</p>
-                <p className="text-sm text-muted-foreground mb-4">or click to browse files</p>
-
-                {/* Format badges */}
-                <div className="flex items-center justify-center flex-wrap gap-2 text-xs">
-                  {["MP4", "MOV", "AVI", "WebM"].map(fmt => (
-                    <span key={fmt} className="px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium border border-border">
-                      {fmt}
-                    </span>
-                  ))}
-                  <span className="text-muted-foreground">• up to 2 hours • max 5GB</span>
-                </div>
-
-                <p className="text-[10px] text-muted-foreground/40 mt-3">
-                  YouTube import coming soon
+                <p className="text-xs text-muted-foreground text-center mt-2">
+                  {videosRemaining === Infinity ? "Unlimited" : videosRemaining} video{videosRemaining !== 1 ? "s" : ""} remaining this month
                 </p>
-
-                <input
-                  ref={inputRef}
-                  type="file"
-                  accept=".mp4,.mov,.avi,.webm"
-                  className="hidden"
-                  onChange={(e) => e.target.files?.[0] && handleFileChange(e.target.files[0])}
-                />
               </div>
             ) : (
               <div className="space-y-3">

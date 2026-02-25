@@ -99,12 +99,30 @@ const DashboardSidebar = () => {
             </div>
             <p className="text-lg font-bold text-foreground">{credits.remaining}</p>
             <p className="text-[10px] text-muted-foreground">{credits.remaining} of {credits.total_credits} remaining</p>
+            {/* Progress bar */}
+            <div className="h-1.5 bg-border/50 rounded-full mt-2 overflow-hidden">
+              <div
+                className={cn(
+                  "h-full rounded-full transition-all",
+                  credits.remaining <= 3 ? "bg-destructive" : credits.remaining <= 10 ? "bg-yellow-500" : "bg-primary"
+                )}
+                style={{ width: `${credits.total_credits > 0 ? (credits.remaining / credits.total_credits) * 100 : 0}%` }}
+              />
+            </div>
+            {credits.remaining <= 5 && (
+              <Link to="/dashboard/upgrade" className="text-[10px] text-primary hover:underline mt-1 block">
+                {credits.remaining === 0 ? "Upgrade for more credits →" : "Running low — upgrade →"}
+              </Link>
+            )}
           </div>
         )}
         {collapsed && credits && (
           <div className="mx-2 mb-2 flex flex-col items-center">
             <Sparkles className="w-4 h-4 text-primary mb-1" />
-            <span className="text-xs font-bold text-foreground">{credits.remaining}</span>
+            <span className={cn(
+              "text-xs font-bold",
+              credits.remaining <= 3 ? "text-destructive" : credits.remaining <= 10 ? "text-yellow-500" : "text-foreground"
+            )}>{credits.remaining}</span>
           </div>
         )}
 
