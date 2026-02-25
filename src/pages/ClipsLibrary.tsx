@@ -336,7 +336,7 @@ const ClipsLibrary = () => {
                             {clip.duration_seconds}s
                           </span>
                         )}
-                        <span className="truncate">{videoMap[clip.video_id]?.title || ""}</span>
+                        <span className="truncate">{videoMap[clip.video_id]?.title || "Unknown video"}</span>
                       </div>
 
                       {/* Action buttons */}
