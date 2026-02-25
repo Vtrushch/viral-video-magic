@@ -504,6 +504,14 @@ const ClipEdit = () => {
     );
   };
 
+  // Crop simulation: determine reframe mode and face position
+  const reframeMode = (clip?.viral_analysis as Record<string, unknown> | null)?.reframe_mode as string || (video?.settings as Record<string, unknown> | null)?.reframeMode as string || 'center';
+  const faceX = reframeMode === 'smart'
+    ? ((clip?.viral_analysis as Record<string, unknown> | null)?.face_x as number ?? 0.5)
+    : 0.5;
+  const cropObjectFit = reframeMode === 'full' ? 'contain' : 'cover';
+  const cropObjectPosition = reframeMode === 'full' ? undefined : `${faceX * 100}% center`;
+
   if (!clip || !video) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -567,7 +575,8 @@ const ClipEdit = () => {
                 <video
                   ref={mobileVideoRef}
                   src={signedUrl}
-                  className="w-full h-full object-contain"
+                  className={`w-full h-full ${cropObjectFit === 'cover' ? 'object-cover' : 'object-contain'}`}
+                  style={cropObjectPosition ? { objectPosition: cropObjectPosition } : undefined}
                   onLoadedMetadata={handleLoadedMetadata}
                   onTimeUpdate={handleTimeUpdate}
                   onEnded={() => { setPlaying(false); }}
@@ -649,7 +658,8 @@ const ClipEdit = () => {
                   <video
                     ref={videoRef}
                     src={signedUrl}
-                    className="w-full h-full object-contain rounded-lg"
+                    className={`w-full h-full ${cropObjectFit === 'cover' ? 'object-cover' : 'object-contain'} rounded-lg`}
+                    style={cropObjectPosition ? { objectPosition: cropObjectPosition } : undefined}
                     onLoadedMetadata={handleLoadedMetadata}
                     onTimeUpdate={handleTimeUpdate}
                     onEnded={() => { setPlaying(false); }}

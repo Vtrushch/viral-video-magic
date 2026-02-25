@@ -706,6 +706,11 @@ export default function HighlightReelPage() {
   const activeClip = activeClipId ? clips.find((c) => c.id === activeClipId) : null;
   const activeClipIndex = activeClipId ? selectedIds.indexOf(activeClipId) : -1;
 
+  // Crop simulation for source video based on active clip's face_x
+  const activeClipFaceX = activeClip
+    ? ((activeClip.viral_analysis as Record<string, unknown> | null)?.face_x as number ?? 0.5)
+    : 0.5;
+
   // Now-playing label
   const nowPlayingLabel = activeClip
     ? `Clip ${activeClipIndex + 1} of ${selectedClips.length} — ${activeClip.title}`
@@ -921,8 +926,12 @@ export default function HighlightReelPage() {
                   <video
                     ref={sourceVideoRef}
                     src={signedSourceUrl}
-                    className="w-full block cursor-pointer"
-                    style={{ maxHeight: "65vh", objectFit: "contain", background: "#000" }}
+                    className="w-full block cursor-pointer object-cover"
+                    style={{
+                      maxHeight: "65vh",
+                      background: "#000",
+                      objectPosition: playerMode.type === "source" ? `${activeClipFaceX * 100}% center` : "50% center",
+                    }}
                     onTimeUpdate={handleSourceTimeUpdate}
                     onLoadedMetadata={() => {
                       const el = sourceVideoRef.current;
