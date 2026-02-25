@@ -5,7 +5,7 @@ import {
   ArrowLeft, GripVertical, Sparkles, Clock, Loader2, Film, Zap,
   ChevronLeft, ChevronRight, Play, Pause, RefreshCw, Plus, X,
   ChevronRight as BreadcrumbChevron, PlayCircle, Volume2, VolumeX,
-  MousePointerClick,
+  MousePointerClick, User, Monitor, Crosshair,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -276,6 +276,9 @@ export default function HighlightReelPage() {
   const [captionStyle, setCaptionStyle] = useState<string>("hormozi");
   const [customColor, setCustomColor] = useState("");
   const [addTransitions, setAddTransitions] = useState(true);
+  const [reframeMode, setReframeMode] = useState<string>("smart");
+  const [subtitleSize, setSubtitleSize] = useState<string>("medium");
+  const [subtitleY, setSubtitleY] = useState(0.85);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [aiRecommendedIds, setAiRecommendedIds] = useState<string[]>([]);
   const [timingOverrides, setTimingOverrides] = useState<Record<string, ClipTiming>>({});
@@ -675,6 +678,9 @@ export default function HighlightReelPage() {
         caption_style: captionStyle,
         add_transitions: addTransitions,
         custom_color: captionStyle === "custom" ? customColor : undefined,
+        reframe_mode: reframeMode,
+        subtitle_size: subtitleSize,
+        subtitle_y: subtitleY,
       });
 
       // Clear rendered reel preview since we're re-rendering
@@ -706,10 +712,19 @@ export default function HighlightReelPage() {
   const activeClip = activeClipId ? clips.find((c) => c.id === activeClipId) : null;
   const activeClipIndex = activeClipId ? selectedIds.indexOf(activeClipId) : -1;
 
-  // Crop simulation for source video based on active clip's face_x
+  // Crop simulation based on reframe mode
   const activeClipFaceX = activeClip
     ? ((activeClip.viral_analysis as Record<string, unknown> | null)?.face_x as number ?? 0.5)
     : 0.5;
+  const videoObjectFit = reframeMode === "full" ? "object-contain" : "object-cover";
+  const videoObjectPosition = reframeMode === "full"
+    ? "50% center"
+    : reframeMode === "smart"
+      ? `${activeClipFaceX * 100}% center`
+      : "50% center";
+
+  // Subtitle size classes
+  const subtitleSizeClass = subtitleSize === "small" ? "text-sm" : subtitleSize === "large" ? "text-2xl" : "text-lg";
 
   // Now-playing label
   const nowPlayingLabel = activeClip
@@ -926,11 +941,11 @@ export default function HighlightReelPage() {
                   <video
                     ref={sourceVideoRef}
                     src={signedSourceUrl}
-                    className="w-full block cursor-pointer object-cover"
+                    className={`w-full block cursor-pointer ${videoObjectFit}`}
                     style={{
                       maxHeight: "65vh",
                       background: "#000",
-                      objectPosition: playerMode.type === "source" ? `${activeClipFaceX * 100}% center` : "50% center",
+                      objectPosition: videoObjectPosition,
                     }}
                     onTimeUpdate={handleSourceTimeUpdate}
                     onLoadedMetadata={() => {
@@ -956,12 +971,19 @@ export default function HighlightReelPage() {
                   const timing = timingOverrides[clipId] || { startTime: trans.startTime, endTime: trans.endTime };
                   const relTime = currentTime - timing.startTime;
                   return (
-                    <LiveSubtitles
-                      words={trans.words}
-                      relativeTime={relTime}
-                      captionStyle={captionStyle as CaptionStyle}
-                      customColor={customColor}
-                    />
+                    <div
+                      className={`absolute left-0 right-0 pointer-events-none z-20 ${subtitleSizeClass}`}
+                      style={{ top: `${subtitleY * 100}%`, transform: "translateY(-50%)" }}
+                    >
+                      <div className="relative">
+                        <LiveSubtitles
+                          words={trans.words}
+                          relativeTime={relTime}
+                          captionStyle={captionStyle as CaptionStyle}
+                          customColor={customColor}
+                        />
+                      </div>
+                    </div>
                   );
                 })()}
 
@@ -1217,6 +1239,32 @@ export default function HighlightReelPage() {
                 )}
               </div>
 
+              {/* Reframe Mode */}
+              <div className="space-y-2">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Output Format</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { value: "smart", icon: <User className="w-4 h-4" />, label: "Smart", desc: "AI face tracking" },
+                    { value: "full", icon: <Monitor className="w-4 h-4" />, label: "Full Frame", desc: "Letterbox with bars" },
+                    { value: "center", icon: <Crosshair className="w-4 h-4" />, label: "Center", desc: "Crop middle" },
+                  ].map((mode) => (
+                    <button
+                      key={mode.value}
+                      onClick={() => setReframeMode(mode.value)}
+                      className={`flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 transition-all ${
+                        reframeMode === mode.value
+                          ? "border-primary bg-primary/10"
+                          : "border-border/50 hover:border-primary/30"
+                      }`}
+                    >
+                      {mode.icon}
+                      <span className="text-[11px] font-medium">{mode.label}</span>
+                      <span className="text-[9px] text-muted-foreground">{mode.desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Caption style */}
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
@@ -1264,6 +1312,52 @@ export default function HighlightReelPage() {
                       ))}
                     </div>
                   )}
+                </div>
+              </div>
+
+              {/* Caption Layout */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Caption Layout</h3>
+                  <span className="text-[10px] text-muted-foreground">Applied on render</span>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs text-muted-foreground">Size</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { value: "small", label: "S" },
+                      { value: "medium", label: "M" },
+                      { value: "large", label: "L" },
+                    ].map((size) => (
+                      <button
+                        key={size.value}
+                        onClick={() => setSubtitleSize(size.value)}
+                        className={`py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                          subtitleSize === size.value
+                            ? "border-primary bg-primary/10 text-foreground"
+                            : "border-border/50 text-muted-foreground hover:border-primary/30"
+                        }`}
+                      >
+                        {size.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs text-muted-foreground">Position</label>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] text-muted-foreground">Top</span>
+                    <input
+                      type="range"
+                      min={0.1}
+                      max={0.95}
+                      step={0.05}
+                      value={subtitleY}
+                      onChange={(e) => setSubtitleY(parseFloat(e.target.value))}
+                      className="flex-1 accent-primary"
+                    />
+                    <span className="text-[10px] text-muted-foreground">Bottom</span>
+                  </div>
                 </div>
               </div>
 
