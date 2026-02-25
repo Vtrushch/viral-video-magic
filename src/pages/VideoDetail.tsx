@@ -835,11 +835,22 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
             size="sm"
             className="flex-1 sm:flex-none"
             onClick={renderAll}
-            disabled={pendingCount === 0}
+            disabled={pendingCount === 0 || (credits?.remaining ?? 0) === 0}
           >
             <Sparkles className="w-4 h-4 mr-1.5" />
-            {pendingCount > 0 ? `Render All (${pendingCount} clips)` : "All Rendered"}
+            {(credits?.remaining ?? 0) === 0
+              ? "No credits"
+              : pendingCount > 0
+              ? (credits?.remaining ?? 0) >= pendingCount
+                ? `Render All (${pendingCount} clips)`
+                : `Need ${pendingCount - (credits?.remaining ?? 0)} more credits`
+              : "All Rendered"}
           </Button>
+          {(credits?.remaining ?? 0) === 0 && pendingCount > 0 && (
+            <a href="/dashboard/upgrade" className="text-[10px] text-primary hover:underline self-center">
+              Upgrade →
+            </a>
+          )}
         </div>
       </div>
 
@@ -957,19 +968,26 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                         </button>
                       </div>
                     ) : (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 px-2 text-xs text-primary hover:text-primary"
-                        onClick={() => renderClip(clip)}
-                        disabled={isRendering}
-                      >
-                        {isRendering ? (
-                          <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Rendering ({getRenderTimeEstimate(clip)})</>
-                        ) : (
-                          <><Sparkles className="w-3 h-3 mr-1" /> Render</>
-                        )}
-                      </Button>
+                      (credits?.remaining ?? 0) > 0 ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 text-xs text-primary hover:text-primary"
+                          onClick={() => renderClip(clip)}
+                          disabled={isRendering}
+                        >
+                          {isRendering ? (
+                            <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Rendering ({getRenderTimeEstimate(clip)})</>
+                          ) : (
+                            <><Sparkles className="w-3 h-3 mr-1" /> Render</>
+                          )}
+                        </Button>
+                      ) : (
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] text-muted-foreground">No credits</span>
+                          <a href="/dashboard/upgrade" className="text-[10px] text-primary hover:underline">Upgrade →</a>
+                        </div>
+                      )
                     )}
                   </div>
                 </div>
@@ -1225,8 +1243,8 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                 )}
               </Button>
 
-              <p className="text-[10px] text-muted-foreground text-center">
-                AI selects the best clips and arranges them for maximum impact
+              <p className="text-[10px] text-center text-muted-foreground">
+                Smart Reel uses 1 render credit
               </p>
             </div>
           </div>
