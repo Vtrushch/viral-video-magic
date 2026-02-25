@@ -282,6 +282,7 @@ export default function HighlightReelPage() {
   const [saving, setSaving] = useState(false);
   const [showAddPanel, setShowAddPanel] = useState(false);
   const [creditDialogOpen, setCreditDialogOpen] = useState(false);
+  const [showRenderedReel, setShowRenderedReel] = useState(false);
   const { credits, refetch: refetchCredits } = useCredits();
 
   /* Clip transcriptions for live subtitle overlay */
@@ -678,6 +679,7 @@ export default function HighlightReelPage() {
 
       // Clear rendered reel preview since we're re-rendering
       setRenderedReelUrl(null);
+      setShowRenderedReel(false);
 
       // Deduct 1 credit — only after successful API request
       await supabase.rpc("increment_used_credits" as any, { _user_id: user.id });
@@ -780,8 +782,8 @@ export default function HighlightReelPage() {
           {/* Player area */}
           <div className="flex-1 flex items-center justify-center p-4 lg:p-6 min-h-[260px] lg:min-h-0 relative">
 
-            {/* ── RENDERED REEL PLAYER (9:16 vertical) — shown when editing a ready reel ── */}
-            {renderedReelUrl && playerMode.type === "idle" ? (
+            {/* ── RENDERED REEL PLAYER (9:16 vertical) — shown when user toggles to it ── */}
+            {renderedReelUrl && showRenderedReel && playerMode.type === "idle" ? (
               <div className="relative flex items-center justify-center h-full w-full">
                 <div
                   className="relative rounded-xl overflow-hidden shadow-2xl"
@@ -805,17 +807,20 @@ export default function HighlightReelPage() {
                     ✓ Rendered Reel
                   </div>
                 </div>
+                <p className="absolute bottom-14 left-1/2 -translate-x-1/2 text-[10px] text-green-400 text-center whitespace-nowrap">
+                  Showing final rendered version with embedded subtitles
+                </p>
                 <button
-                  onClick={() => setRenderedReelUrl(null)}
-                  className="absolute bottom-4 right-4 text-[10px] text-muted-foreground hover:text-foreground bg-black/50 px-2.5 py-1.5 rounded-lg backdrop-blur-sm"
+                  onClick={() => setShowRenderedReel(false)}
+                  className="absolute bottom-4 right-4 text-[10px] text-muted-foreground hover:text-foreground bg-black/50 px-2.5 py-1.5 rounded-lg backdrop-blur-sm flex items-center gap-1"
                 >
-                  Switch to source preview →
+                  <span>✏️</span> Back to editor
                 </button>
               </div>
             ) : null}
 
             {/* ── RENDERED CLIP PLAYER (9:16 vertical) ── */}
-            {!renderedReelUrl || playerMode.type !== "idle" ? (<>{showRenderedPlayer && renderedClipUrl ? (
+            {!(renderedReelUrl && showRenderedReel) || playerMode.type !== "idle" ? (<>{showRenderedPlayer && renderedClipUrl ? (
               <div className="relative flex items-center justify-center h-full w-full">
                 <div
                   className="relative rounded-xl overflow-hidden shadow-2xl"
@@ -885,16 +890,23 @@ export default function HighlightReelPage() {
 
                 {/* Empty state overlay */}
                 {playerMode.type === "idle" && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-10 pointer-events-none">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-10">
                     <div className="flex flex-col items-center gap-3 text-center px-6">
                       <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                         <MousePointerClick className="w-6 h-6 text-primary/60" />
                       </div>
                       <p className="text-sm font-medium text-muted-foreground/70">Click a clip to preview</p>
-                      <div className="flex items-center gap-2 text-muted-foreground/40">
-                        <span className="text-xs">Rendered clips show final quality</span>
-                        <ChevronRight className="w-3.5 h-3.5" />
-                      </div>
+                      <p className="text-[10px] text-muted-foreground text-center">
+                        Live preview — change caption style to see updates instantly
+                      </p>
+                      {renderedReelUrl && (
+                        <button
+                          onClick={() => setShowRenderedReel(true)}
+                          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mt-1 pointer-events-auto"
+                        >
+                          <span>👁</span> Preview final render
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
