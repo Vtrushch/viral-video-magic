@@ -109,9 +109,9 @@ const DashboardSidebar = () => {
                 style={{ width: `${credits.total_credits > 0 ? (credits.remaining / credits.total_credits) * 100 : 0}%` }}
               />
             </div>
-            {credits.remaining <= 5 && (
+            {(credits.remaining <= 5 || credits.plan === "free") && (
               <Link to="/dashboard/upgrade" className="text-[10px] text-primary hover:underline mt-1 block">
-                {credits.remaining === 0 ? "Upgrade for more credits →" : "Running low — upgrade →"}
+                {credits.remaining === 0 ? "Upgrade for more credits →" : credits.plan === "free" && credits.remaining <= 3 ? "Upgrade your plan →" : "Running low — upgrade →"}
               </Link>
             )}
           </div>

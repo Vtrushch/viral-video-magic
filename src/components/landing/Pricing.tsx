@@ -56,7 +56,7 @@ const Pricing = () => {
                 className="w-full mb-8"
                 asChild
               >
-                <Link to="/auth">{plan.cta}</Link>
+                <Link to={`/auth?plan=${Object.keys(PLANS)[i]}`}>{plan.cta}</Link>
               </Button>
               <ul className="space-y-2.5">
                 {plan.features.map((feature) =>
@@ -87,11 +87,6 @@ const Pricing = () => {
           </div>
         </div>
 
-        {/* Footer note */}
-        <p className="text-center text-xs text-muted-foreground/60 mt-6 opacity-0 animate-fade-in" style={{ animationDelay: "0.8s" }}>
-          Payment integration coming soon. Need more renders?{" "}
-          <a href="mailto:support@hookcut.com" className="text-primary hover:underline">Contact us</a> and we'll set you up.
-        </p>
       </div>
     </section>
   );

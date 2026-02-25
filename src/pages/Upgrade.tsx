@@ -1,10 +1,13 @@
-import { useEffect } from "react";
-import { Check, Clock, Crown, Sparkles, Zap, Building2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Check, Clock, Crown, Sparkles, Zap, Building2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCredits } from "@/hooks/useCredits";
 import { useTranslation } from "react-i18next";
 import { posthog } from "@/lib/posthog";
-import { PLANS, ADDON_PACK, type PlanKey } from "@/constants/pricing";
+import { PLANS, ADDON_PACK, STRIPE_PRICES, type PlanKey } from "@/constants/pricing";
+import { apiFetch } from "@/lib/api";
+import { toast } from "sonner";
 
 const PLAN_ICONS: Record<PlanKey, React.ElementType> = {
   free: Zap,
@@ -14,12 +17,67 @@ const PLAN_ICONS: Record<PlanKey, React.ElementType> = {
 };
 
 const Upgrade = () => {
-  const { credits, loading } = useCredits();
+  const { credits, loading, refetch: refetchCredits } = useCredits();
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
   useEffect(() => {
     posthog.capture('pricing_viewed');
   }, []);
+
+  useEffect(() => {
+    const success = searchParams.get("success");
+    const canceled = searchParams.get("canceled");
+
+    if (success === "true") {
+      toast.success("🎉 Payment successful! Your plan is now active.", { duration: 5000 });
+      refetchCredits();
+      setSearchParams({});
+    }
+
+    if (canceled === "true") {
+      toast.info("Payment was canceled. No charges were made.");
+      setSearchParams({});
+    }
+  }, [searchParams]);
+
+  const handleCheckout = async (planKey: string) => {
+    if (planKey === "free") return;
+
+    const priceId = STRIPE_PRICES[planKey];
+    if (!priceId) return;
+
+    setCheckoutLoading(planKey);
+    try {
+      const res = await apiFetch("/create-checkout", {
+        price_id: priceId,
+        success_url: `${window.location.origin}/dashboard/upgrade?success=true`,
+        cancel_url: `${window.location.origin}/dashboard/upgrade?canceled=true`,
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error("Failed to create checkout session");
+      }
+    } catch (err) {
+      toast.error("Payment error. Please try again.");
+      console.error(err);
+    } finally {
+      setCheckoutLoading(null);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    try {
+      const res = await apiFetch("/create-portal", {});
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch {
+      toast.error("Could not open billing portal");
+    }
+  };
 
   const planEntries = Object.entries(PLANS) as [PlanKey, typeof PLANS[PlanKey]][];
 
@@ -99,9 +157,18 @@ const Upgrade = () => {
                   variant={isCurrent ? "outline" : "hero"}
                   size="sm"
                   className="w-full mb-5"
-                  disabled={isCurrent}
+                  disabled={isCurrent || key === "free" || checkoutLoading === key}
+                  onClick={() => handleCheckout(key)}
                 >
-                  {isCurrent ? t("upgrade.currentPlan") : plan.price === 0 ? t("upgrade.currentPlan") : t("upgrade.comingSoon")}
+                  {checkoutLoading === key ? (
+                    <><Loader2 className="w-4 h-4 animate-spin mr-1" /> Redirecting...</>
+                  ) : isCurrent ? (
+                    t("upgrade.currentPlan")
+                  ) : key === "free" ? (
+                    t("upgrade.currentPlan")
+                  ) : (
+                    `Upgrade to ${plan.name}`
+                  )}
                 </Button>
 
                 <ul className="space-y-2.5 mt-auto">
@@ -124,19 +191,44 @@ const Upgrade = () => {
           })}
         </div>
 
+        {/* Manage Subscription */}
+        {credits && credits.plan !== "free" && (
+          <div className="mt-6 text-center">
+            <Button variant="outline" size="sm" onClick={handleManageSubscription}>
+              Manage Subscription & Billing
+            </Button>
+          </div>
+        )}
+
         {/* Add-on pack */}
         <div className="mt-8 rounded-2xl p-6 text-center" style={{ background: "hsl(240,15%,10%,0.4)", border: "1px solid hsl(0,0%,100%,0.06)" }}>
           <p className="text-sm font-semibold text-foreground mb-1">Need more clips?</p>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-sm mb-3">
             +${ADDON_PACK.price} for {ADDON_PACK.renders} extra renders. Available on any paid plan. Max {ADDON_PACK.maxPerMonth} extra/month.
           </p>
+          {credits && credits.plan !== "free" ? (
+            <Button
+              variant="hero-outline"
+              size="sm"
+              onClick={() => handleCheckout("render_pack")}
+              disabled={checkoutLoading === "render_pack"}
+            >
+              {checkoutLoading === "render_pack" ? (
+                <><Loader2 className="w-4 h-4 animate-spin mr-1" /> Processing...</>
+              ) : (
+                "Buy Render Pack — $9"
+              )}
+            </Button>
+          ) : (
+            <p className="text-xs text-muted-foreground">Upgrade to a paid plan first to buy render packs.</p>
+          )}
         </div>
 
         {/* Contact */}
         <div className="mt-4 rounded-2xl p-6 text-center" style={{ background: "hsl(240,15%,10%,0.4)", border: "1px solid hsl(0,0%,100%,0.06)" }}>
           <p className="text-sm text-muted-foreground">
-            Payment integration coming soon. Need more renders now?{" "}
-            <a href="mailto:support@hookcut.com" className="text-primary font-medium hover:underline">Contact us</a> and we'll set you up.
+            Questions about billing?{" "}
+            <a href="mailto:support@hookcut.com" className="text-primary font-medium hover:underline">Contact us</a>.
           </p>
         </div>
       </div>

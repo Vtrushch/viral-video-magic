@@ -96,3 +96,10 @@ export const ADDON_PACK = {
 } as const;
 
 export type PlanKey = keyof typeof PLANS;
+
+export const STRIPE_PRICES: Record<string, string> = {
+  starter: "price_1T4oE83CjW6GJ5ED9WzYBlKp",
+  pro: "price_1T4oEa3CjW6GJ5EDRjoWkUi4",
+  agency: "price_1T4oF13CjW6GJ5EDGtzLDtzP",
+  render_pack: "price_1T4oFM3CjW6GJ5EDxLMIsrwD",
+};
