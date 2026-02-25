@@ -88,10 +88,23 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
 
   return (
     <>
-      <div className="glass-card rounded-xl p-4 flex items-center gap-4">
-        {/* Icon */}
-        <div className="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center shrink-0">
-          <Film className="w-5 h-5 text-primary-foreground" />
+      <div className="glass-card rounded-xl p-4 flex items-start gap-4">
+        {/* 9:16 thumbnail */}
+        <div className="w-16 h-28 rounded-xl overflow-hidden bg-black border border-border/30 shrink-0">
+          {reel.status === 'ready' && reel.file_path ? (
+            <video
+              src={reel.file_path}
+              className="w-full h-full object-cover"
+              muted
+              playsInline
+              preload="metadata"
+              onLoadedMetadata={(e) => { (e.target as HTMLVideoElement).currentTime = 1; }}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Film className="w-5 h-5 text-muted-foreground/40" />
+            </div>
+          )}
         </div>
 
         {/* Info */}

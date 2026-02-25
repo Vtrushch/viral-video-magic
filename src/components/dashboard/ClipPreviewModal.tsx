@@ -177,16 +177,21 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   // --- 9:16 crop simulation from 16:9 source ---
   const isRendered = clip.status === "ready" && !!clip.file_path;
   const faceX = viralAnalysis?.face_x ?? 0.5;
-  const videoWidthPercent = (16 / 9) / (9 / 16) * 100; // ~316%
-  const maxShift = videoWidthPercent - 100; // ~216%
-  const clampedLeft = Math.max(-maxShift, Math.min(0, -(faceX * maxShift)));
+  const reframeMode = (viralAnalysis as any)?.reframe_mode || "center";
 
-  const cropVideoStyle: React.CSSProperties = isRendered
-    ? {}
-    : { width: `${videoWidthPercent}%`, left: `${clampedLeft}%` };
-  const cropVideoClass = isRendered
-    ? "w-full h-full object-contain"
-    : "absolute h-full object-cover";
+  // Use object-cover + objectPosition for crop simulation
+  let cropVideoClass: string;
+  let cropVideoStyle: React.CSSProperties = {};
+
+  if (isRendered) {
+    cropVideoClass = "w-full h-full object-contain";
+  } else if (reframeMode === "full") {
+    cropVideoClass = "w-full h-full object-contain";
+  } else {
+    const posX = reframeMode === "smart" ? faceX : 0.5;
+    cropVideoClass = "w-full h-full object-cover";
+    cropVideoStyle = { objectPosition: `${posX * 100}% center` };
+  }
 
   const formatTime = (s: number) => {
     const m = Math.floor(s / 60);
@@ -237,7 +242,8 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                 <video
                   ref={mobileVideoRef}
                   src={signedUrl}
-                  className="w-full h-full object-contain"
+                  className={cropVideoClass}
+                  style={cropVideoStyle}
                   onLoadedMetadata={handleLoadedMetadata}
                   onTimeUpdate={handleTimeUpdate}
                   onEnded={() => setPlaying(false)}

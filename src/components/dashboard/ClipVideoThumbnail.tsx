@@ -12,6 +12,8 @@ interface ClipVideoThumbnailProps {
   fallbackImageUrl?: string | null;
   /** face_x (0-1) for 9:16 crop simulation from 16:9 source */
   faceX?: number | null;
+  /** Reframe mode: smart (use faceX), center, full (letterbox) */
+  reframeMode?: "smart" | "center" | "full";
   alt: string;
   className?: string;
 }
@@ -22,6 +24,7 @@ const ClipVideoThumbnail = ({
   startTime,
   fallbackImageUrl,
   faceX,
+  reframeMode = "smart",
   alt,
   className = "",
 }: ClipVideoThumbnailProps) => {
@@ -100,18 +103,23 @@ const ClipVideoThumbnail = ({
     );
   }
 
-  // Crop simulation: if not a rendered clip and faceX is provided, simulate 9:16 crop
-  const isRawVideo = !renderedUrl && faceX != null;
-  const videoWidthPercent = (16 / 9) / (9 / 16) * 100; // ~316%
-  const maxShift = videoWidthPercent - 100; // ~216%
-  const clampedLeft = Math.max(-maxShift, Math.min(0, -((faceX ?? 0.5) * maxShift)));
+  // Crop simulation based on reframe mode
+  const isRawVideo = !renderedUrl;
+  let videoClass: string;
+  let cropStyle: React.CSSProperties = {};
 
-  const cropStyle: React.CSSProperties = isRawVideo
-    ? { width: `${videoWidthPercent}%`, left: `${clampedLeft}%` }
-    : {};
-  const videoClass = isRawVideo
-    ? `absolute h-full object-cover transition-opacity duration-300 ${seeked ? "opacity-100" : "opacity-0"}`
-    : `w-full h-full object-cover transition-opacity duration-300 ${seeked ? "opacity-100" : "opacity-0"}`;
+  if (isRawVideo && reframeMode === "full") {
+    // Full frame: letterbox
+    videoClass = `w-full h-full object-contain transition-opacity duration-300 ${seeked ? "opacity-100" : "opacity-0"}`;
+  } else if (isRawVideo) {
+    // Smart or Center: crop with object-cover + objectPosition
+    const posX = reframeMode === "smart" ? (faceX ?? 0.5) : 0.5;
+    videoClass = `w-full h-full object-cover transition-opacity duration-300 ${seeked ? "opacity-100" : "opacity-0"}`;
+    cropStyle = { objectPosition: `${posX * 100}% center` };
+  } else {
+    // Rendered clip
+    videoClass = `w-full h-full object-cover transition-opacity duration-300 ${seeked ? "opacity-100" : "opacity-0"}`;
+  }
 
   return (
     <div className={`w-full h-full relative overflow-hidden ${className}`}>
