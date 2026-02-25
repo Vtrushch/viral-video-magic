@@ -869,8 +869,10 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                         filePath={clip.status !== "ready" ? video.file_path : null}
                         startTime={clip.start_time}
                         fallbackImageUrl={clip.thumbnail_url || video.thumbnail_url || null}
+                        faceX={(clip.viral_analysis as any)?.face_x ?? 0.5}
+                        reframeMode={settings?.reframeMode || "center"}
                         alt={clip.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full"
                       />
                     <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
                   </div>
