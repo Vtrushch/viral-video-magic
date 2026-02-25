@@ -16,6 +16,8 @@ import { posthog } from "@/lib/posthog";
 import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
 import RenderCreditDialog from "@/components/dashboard/RenderCreditDialog";
 import { useCredits } from "@/hooks/useCredits";
+import LiveSubtitles from "@/components/LiveSubtitles";
+import type { CaptionStyle } from "@/components/LiveSubtitles";
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent,
 } from "@dnd-kit/core";
@@ -282,6 +284,8 @@ export default function HighlightReelPage() {
   const [creditDialogOpen, setCreditDialogOpen] = useState(false);
   const { credits, refetch: refetchCredits } = useCredits();
 
+  /* Clip transcriptions for live subtitle overlay */
+  const [clipTranscriptions, setClipTranscriptions] = useState<Record<string, { words: { word: string; start: number; end: number }[]; startTime: number; endTime: number }>>({});
   /* Derived: which clip is currently active in the player */
   const activeClipId = playerMode.type !== "idle" ? (
     playerMode.type === "rendered" ? playerMode.clipId : playerMode.clipId
@@ -344,6 +348,32 @@ export default function HighlightReelPage() {
     }
     load();
   }, [isEditing, reelId, videoId]);
+
+  /* ─── Fetch transcription words for all selected clips ─── */
+  useEffect(() => {
+    if (selectedIds.length === 0) return;
+    const fetchTranscriptions = async () => {
+      const { data } = await supabase
+        .from("clips")
+        .select("id, transcription_words, start_time, end_time")
+        .in("id", selectedIds);
+      if (data) {
+        const map: Record<string, any> = {};
+        data.forEach((clip: any) => {
+          const words = clip.transcription_words as { word: string; start: number; end: number }[] | null;
+          if (words && Array.isArray(words) && words.length > 0) {
+            map[clip.id] = {
+              words,
+              startTime: parseTime(clip.start_time),
+              endTime: parseTime(clip.end_time),
+            };
+          }
+        });
+        setClipTranscriptions(map);
+      }
+    };
+    fetchTranscriptions();
+  }, [selectedIds]);
 
   /* ─── Signed URL for source video ─── */
   useEffect(() => {
@@ -896,6 +926,24 @@ export default function HighlightReelPage() {
                   />
                 )}
 
+                {/* Live subtitle overlay on source video */}
+                {(() => {
+                  const clipId = playerMode.type === "source" ? playerMode.clipId : null;
+                  if (!clipId) return null;
+                  const trans = clipTranscriptions[clipId];
+                  if (!trans || trans.words.length === 0) return null;
+                  const timing = timingOverrides[clipId] || { startTime: trans.startTime, endTime: trans.endTime };
+                  const relTime = currentTime - timing.startTime;
+                  return (
+                    <LiveSubtitles
+                      words={trans.words}
+                      relativeTime={relTime}
+                      captionStyle={captionStyle as CaptionStyle}
+                      customColor={customColor}
+                    />
+                  );
+                })()}
+
                 {/* Flash icon overlay */}
                 {flashIcon && !showRenderedPlayer && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -1200,8 +1248,43 @@ export default function HighlightReelPage() {
 
               {/* Subtitle note */}
               <p className="text-[10px] text-muted-foreground/60 px-1">
-                💬 Subtitle text is auto-generated. Change caption style and re-render for different styling.
+                💬 Subtitle text is auto-generated. Change caption style above — preview updates live on the video.
               </p>
+
+              {/* Per-clip subtitle words */}
+              {activeClipId && clipTranscriptions[activeClipId] && (
+                <div className="space-y-2">
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Subtitles — Clip {activeClipIndex + 1}: {activeClip?.title}
+                  </h3>
+                  <div className="flex flex-wrap gap-1 p-3 rounded-lg border border-border/50 bg-card/30 max-h-40 overflow-y-auto">
+                    {clipTranscriptions[activeClipId].words.map((word: any, i: number) => {
+                      const timing = timingOverrides[activeClipId] || { startTime: clipTranscriptions[activeClipId].startTime, endTime: clipTranscriptions[activeClipId].endTime };
+                      const relTime = currentTime - timing.startTime;
+                      const isWordActive = relTime >= word.start && relTime < word.end + 0.08;
+                      return (
+                        <span
+                          key={i}
+                          className={`text-xs px-1 py-0.5 rounded cursor-pointer transition-colors ${
+                            isWordActive
+                              ? "bg-primary/30 text-foreground font-medium"
+                              : "text-muted-foreground hover:bg-card"
+                          }`}
+                          onClick={() => {
+                            const el = sourceVideoRef.current;
+                            if (el) {
+                              el.currentTime = timing.startTime + word.start;
+                              setCurrentTime(timing.startTime + word.start);
+                            }
+                          }}
+                        >
+                          {word.word}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Transitions toggle */}
               <div>
