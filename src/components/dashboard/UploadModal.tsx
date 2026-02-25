@@ -30,7 +30,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useTranslation();
-  const { canUpload, videosRemaining, videoLimit, plan, loading: limitLoading } = useVideoLimit();
+  const { canUpload, uploadsRemaining, uploadLimit, storageRemaining, storageLimit, activeVideos, plan, loading: limitLoading } = useVideoLimit();
 
   const MAX_FILE_SIZE_BYTES = 5120 * 1024 * 1024; // 5GB
 
@@ -182,13 +182,16 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
             <div className="w-14 h-14 mx-auto rounded-2xl bg-destructive/10 flex items-center justify-center">
               <CloudUpload className="w-7 h-7 text-destructive" />
             </div>
-            <p className="text-sm font-medium text-foreground">Video limit reached for this month</p>
+            <p className="text-sm font-medium text-foreground">
+              {uploadsRemaining <= 0 ? "Upload limit reached for this month" : "Video storage full"}
+            </p>
             <p className="text-xs text-muted-foreground">
-              Your {plan} plan allows {videoLimit === -1 ? "unlimited" : videoLimit} video{videoLimit !== 1 ? "s" : ""}/month.
-              Resets on the 1st.
+              {uploadsRemaining <= 0
+                ? `Your ${plan} plan allows ${uploadLimit === -1 ? "unlimited" : uploadLimit} upload${uploadLimit !== 1 ? "s" : ""}/month.`
+                : `You have ${activeVideos}/${storageLimit === -1 ? "∞" : storageLimit} videos stored. Delete old videos or upgrade.`}
             </p>
             <a href="/dashboard/upgrade" className="text-xs text-primary hover:underline inline-block">
-              Upgrade for more videos →
+              Upgrade for more →
             </a>
           </div>
         ) : !file ? (
@@ -241,7 +244,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
                   />
                 </div>
                 <p className="text-xs text-muted-foreground text-center mt-2">
-                  {videosRemaining === Infinity ? "Unlimited" : videosRemaining} video{videosRemaining !== 1 ? "s" : ""} remaining this month
+                  {uploadsRemaining === Infinity ? "Unlimited" : uploadsRemaining} upload{uploadsRemaining !== 1 ? "s" : ""} remaining this month · {activeVideos}/{storageLimit === -1 ? "∞" : storageLimit} stored
                 </p>
               </div>
             ) : (
