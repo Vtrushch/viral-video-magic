@@ -5,7 +5,7 @@ import {
   ArrowLeft, GripVertical, Sparkles, Clock, Loader2, Film, Zap,
   ChevronLeft, ChevronRight, Play, Pause, RefreshCw, Plus, X,
   ChevronRight as BreadcrumbChevron, PlayCircle, Volume2, VolumeX,
-  MousePointerClick, User, Monitor, Crosshair,
+  MousePointerClick,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -276,7 +276,8 @@ export default function HighlightReelPage() {
   const [captionStyle, setCaptionStyle] = useState<string>("hormozi");
   const [customColor, setCustomColor] = useState("");
   const [addTransitions, setAddTransitions] = useState(true);
-  const [reframeMode, setReframeMode] = useState<string>("smart");
+  // reframeMode is derived from video settings (set in Configure), not editable here
+  const reframeMode = (video?.settings as any)?.reframeMode || "center";
   const [subtitleSize, setSubtitleSize] = useState<string>("medium");
   const [subtitleY, setSubtitleY] = useState(0.85);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -1237,32 +1238,6 @@ export default function HighlightReelPage() {
                 {showAddPanel && availableClips.length === 0 && (
                   <p className="text-center text-xs text-muted-foreground/50 mt-2 py-4">All clips are already selected</p>
                 )}
-              </div>
-
-              {/* Reframe Mode */}
-              <div className="space-y-2">
-                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Output Format</h3>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { value: "smart", icon: <User className="w-4 h-4" />, label: "Smart", desc: "AI face tracking" },
-                    { value: "full", icon: <Monitor className="w-4 h-4" />, label: "Full Frame", desc: "Letterbox with bars" },
-                    { value: "center", icon: <Crosshair className="w-4 h-4" />, label: "Center", desc: "Crop middle" },
-                  ].map((mode) => (
-                    <button
-                      key={mode.value}
-                      onClick={() => setReframeMode(mode.value)}
-                      className={`flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 transition-all ${
-                        reframeMode === mode.value
-                          ? "border-primary bg-primary/10"
-                          : "border-border/50 hover:border-primary/30"
-                      }`}
-                    >
-                      {mode.icon}
-                      <span className="text-[11px] font-medium">{mode.label}</span>
-                      <span className="text-[9px] text-muted-foreground">{mode.desc}</span>
-                    </button>
-                  ))}
-                </div>
               </div>
 
               {/* Caption style */}
