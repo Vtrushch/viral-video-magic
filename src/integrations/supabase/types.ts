@@ -242,6 +242,7 @@ export type Database = {
           analysis_result: Json | null
           created_at: string
           credits_used: number | null
+          deleted_at: string | null
           duration: string | null
           duration_seconds: number | null
           error_message: string | null
@@ -260,6 +261,7 @@ export type Database = {
           analysis_result?: Json | null
           created_at?: string
           credits_used?: number | null
+          deleted_at?: string | null
           duration?: string | null
           duration_seconds?: number | null
           error_message?: string | null
@@ -278,6 +280,7 @@ export type Database = {
           analysis_result?: Json | null
           created_at?: string
           credits_used?: number | null
+          deleted_at?: string | null
           duration?: string | null
           duration_seconds?: number | null
           error_message?: string | null
@@ -299,6 +302,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      count_uploads_this_period: {
+        Args: { p_user_id: string }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

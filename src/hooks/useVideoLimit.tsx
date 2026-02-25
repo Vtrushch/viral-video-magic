@@ -7,55 +7,59 @@ import { PLANS, type PlanKey } from "@/constants/pricing";
 export function useVideoLimit() {
   const { user } = useAuth();
   const { credits, loading: creditsLoading } = useCredits();
-  const [videosThisMonth, setVideosThisMonth] = useState(0);
+  const [uploadsThisPeriod, setUploadsThisPeriod] = useState(0);
+  const [activeVideos, setActiveVideos] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchCounts = async () => {
     if (!user) {
       setLoading(false);
       return;
     }
-    const fetchCount = async () => {
-      const startOfMonth = new Date();
-      startOfMonth.setDate(1);
-      startOfMonth.setHours(0, 0, 0, 0);
 
-      const { count } = await supabase
-        .from("videos")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .gte("created_at", startOfMonth.toISOString());
+    // Count uploads this period (includes soft-deleted) via RPC
+    const { data: rpcCount } = await supabase.rpc("count_uploads_this_period", {
+      p_user_id: user.id,
+    });
+    setUploadsThisPeriod(rpcCount ?? 0);
 
-      setVideosThisMonth(count ?? 0);
-      setLoading(false);
-    };
-    fetchCount();
+    // Count active (non-deleted) videos — RLS already filters deleted_at IS NULL
+    const { count } = await supabase
+      .from("videos")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id);
+    setActiveVideos(count ?? 0);
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchCounts();
   }, [user]);
 
   const plan = (credits?.plan?.toLowerCase() || "free") as PlanKey;
   const planData = PLANS[plan] || PLANS.free;
-  const videoLimit = planData.videos;
-  const videosRemaining = videoLimit === -1 ? Infinity : Math.max(0, videoLimit - videosThisMonth);
-  const canUpload = videosRemaining > 0;
+  const uploadLimit = planData.videos;
+  const storageLimit = planData.maxStorage;
+  const uploadsRemaining = uploadLimit === -1 ? Infinity : Math.max(0, uploadLimit - uploadsThisPeriod);
+  const storageRemaining = storageLimit === -1 ? Infinity : Math.max(0, storageLimit - activeVideos);
+  const canUpload = (uploadLimit === -1 || uploadsThisPeriod < uploadLimit) &&
+                    (storageLimit === -1 || activeVideos < storageLimit);
 
   return {
-    videosThisMonth,
-    videoLimit,
-    videosRemaining,
+    uploadsThisPeriod,
+    activeVideos,
+    uploadLimit,
+    storageLimit,
+    uploadsRemaining,
+    storageRemaining,
     canUpload,
     plan,
     loading: loading || creditsLoading,
-    refetch: async () => {
-      if (!user) return;
-      const startOfMonth = new Date();
-      startOfMonth.setDate(1);
-      startOfMonth.setHours(0, 0, 0, 0);
-      const { count } = await supabase
-        .from("videos")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .gte("created_at", startOfMonth.toISOString());
-      setVideosThisMonth(count ?? 0);
-    },
+    // Legacy aliases
+    videosThisMonth: uploadsThisPeriod,
+    videoLimit: uploadLimit,
+    videosRemaining: uploadsRemaining,
+    refetch: fetchCounts,
   };
 }
