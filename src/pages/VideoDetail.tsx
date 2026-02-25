@@ -1211,12 +1211,14 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                 onClick={async () => {
                   setIsCreatingReel(true);
                   try {
+                    const styleLabels = { narrative: "Narrative", best_moments: "Best Moments", energy: "Energy" };
                     const res = await apiFetch("/create-smart-reel", {
                       video_id: video.id,
                       video_storage_path: video.file_path,
                       caption_style: settings?.captionStyle || "hormozi",
                       target_duration: targetDuration,
                       style: reelStyle,
+                      title: `${video.title} — ${styleLabels[reelStyle]} Reel`,
                     });
                     if (!res.ok) throw new Error("Failed");
                     toast.success("Smart Reel is being created!", {
