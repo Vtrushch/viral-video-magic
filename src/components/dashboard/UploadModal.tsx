@@ -259,7 +259,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate text-foreground">{file.name}</p>
+                      <p className="text-sm font-medium truncate max-w-[200px] sm:max-w-full text-foreground">{file.name}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">
                         {(file.size / (1024 * 1024)).toFixed(1)} MB
                       </p>
@@ -313,11 +313,11 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
                 )}
 
                 {/* Buttons */}
-                <div className="flex gap-2 pt-1">
-                  <Button variant="outline" onClick={handleCancel} className="flex-1 min-h-[44px]" disabled={uploading}>
+                <div className="flex flex-col-reverse sm:flex-row gap-2 pt-1">
+                  <Button variant="outline" onClick={handleCancel} className="w-full sm:flex-1 min-h-[44px]" disabled={uploading}>
                     {t("upload.cancel")}
                   </Button>
-                  <Button variant="hero" onClick={handleUpload} className="flex-1 min-h-[44px]" disabled={uploading}>
+                  <Button variant="hero" onClick={handleUpload} className="w-full sm:flex-1 min-h-[44px]" disabled={uploading}>
                     {uploading ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />

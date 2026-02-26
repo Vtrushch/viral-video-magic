@@ -13,7 +13,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import { posthog } from "@/lib/posthog";
 
 const clipCountOptions = [
-  { value: 5, desc: "Quick · Best for testing" },
+  { value: 5, desc: "Quick — Best for testing" },
   { value: 10, desc: "Recommended" },
   { value: 15, desc: "Maximum coverage" },
 ];
@@ -238,19 +238,19 @@ const VideoConfig = () => {
 
           <div>
             <Label className="text-sm font-medium text-foreground/80 mb-3 block">Number of clips to generate</Label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {clipCountOptions.map((opt) => (
                 <button
                   key={opt.value}
-                  className={`rounded-xl p-4 text-center transition-all border ${
+                  className={`rounded-xl p-2 sm:p-4 text-center transition-all border min-w-0 ${
                     clipCount === opt.value
                       ? "border-primary/60 bg-primary/10 text-foreground shadow-[0_0_16px_hsl(349,100%,59%,0.15)]"
                       : "border-border/30 bg-muted/20 hover:border-border/60 text-muted-foreground"
                   }`}
                   onClick={() => setClipCount(opt.value)}
                 >
-                  <div className="text-xl font-bold text-foreground">{opt.value}</div>
-                  <span className="text-xs text-muted-foreground">{opt.desc}</span>
+                  <div className="text-lg sm:text-xl font-bold text-foreground">{opt.value}</div>
+                  <span className="text-[10px] sm:text-xs text-muted-foreground leading-tight">{opt.desc}</span>
                 </button>
               ))}
             </div>
@@ -259,20 +259,20 @@ const VideoConfig = () => {
 
           <div>
             <Label className="text-sm font-medium text-foreground/80 mb-3 block">Preferred clip length</Label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {clipLengthOptions.map((opt) => (
                 <button
                   key={opt.value}
-                  className={`rounded-xl p-4 text-center transition-all border flex flex-col items-center gap-1 ${
+                  className={`rounded-xl p-2 sm:p-4 text-center transition-all border flex flex-col items-center gap-0.5 sm:gap-1 min-w-0 ${
                     clipLength === opt.value
                       ? "border-primary/60 bg-primary/10 text-foreground shadow-[0_0_16px_hsl(349,100%,59%,0.15)]"
                       : "border-border/30 bg-muted/20 hover:border-border/60 text-muted-foreground"
                   }`}
                   onClick={() => setClipLength(opt.value)}
                 >
-                  <div className="font-semibold text-foreground">{opt.label}</div>
-                  <span className="text-xs font-medium text-primary/80">{opt.time}</span>
-                  <span className="text-xs text-muted-foreground">{opt.desc}</span>
+                  <div className="text-sm sm:text-base font-semibold text-foreground">{opt.label}</div>
+                  <span className="text-[10px] sm:text-xs font-medium text-primary/80">{opt.time}</span>
+                  <span className="text-[10px] sm:text-xs text-muted-foreground leading-tight">{opt.desc}</span>
                 </button>
               ))}
             </div>
