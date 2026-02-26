@@ -296,7 +296,7 @@ const ClipsLibrary = () => {
                     style={{ background: "hsl(240, 15%, 10%)" }}
                   >
                     {/* Video preview */}
-                    <div className="relative aspect-[9/16] max-h-[300px] bg-black">
+                    <div className="relative w-full bg-black rounded-t-xl overflow-hidden" style={{ height: '280px' }}>
                       <video
                         src={clip.file_path || undefined}
                         className="w-full h-full object-contain"
