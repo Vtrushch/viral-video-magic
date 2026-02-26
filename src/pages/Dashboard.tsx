@@ -22,6 +22,7 @@ const Dashboard = () => {
       .from("videos")
       .select("*")
       .eq("user_id", user.id)
+      .is("deleted_at", null)
       .order("created_at", { ascending: false });
 
     if (!error && data) setVideos(data);

@@ -98,7 +98,7 @@ const Analytics = () => {
   const { data: videos = [], isLoading: videosLoading } = useQuery({
     queryKey: ["analytics-videos", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("videos").select("*").order("created_at", { ascending: false });
+      const { data } = await supabase.from("videos").select("*").is("deleted_at", null).order("created_at", { ascending: false });
       return data || [];
     },
     enabled: !!user,

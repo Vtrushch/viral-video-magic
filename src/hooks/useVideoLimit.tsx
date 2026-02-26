@@ -23,11 +23,12 @@ export function useVideoLimit() {
     });
     setUploadsThisPeriod(rpcCount ?? 0);
 
-    // Count active (non-deleted) videos — RLS already filters deleted_at IS NULL
+    // Count active (non-deleted) videos
     const { count } = await supabase
       .from("videos")
       .select("*", { count: "exact", head: true })
-      .eq("user_id", user.id);
+      .eq("user_id", user.id)
+      .is("deleted_at", null);
     setActiveVideos(count ?? 0);
 
     setLoading(false);
