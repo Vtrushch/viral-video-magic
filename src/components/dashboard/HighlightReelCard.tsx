@@ -88,13 +88,13 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
 
   return (
     <>
-      <div className="glass-card rounded-xl p-4 flex items-start gap-4">
-        {/* 9:16 thumbnail */}
-        <div className="w-16 h-28 rounded-xl overflow-hidden bg-black border border-border/30 shrink-0">
+      <div className="rounded-xl border border-border/50 overflow-hidden group transition-all duration-200 hover:border-border" style={{ background: "hsl(240, 15%, 10%)" }}>
+        {/* Full-width video preview */}
+        <div className="relative w-full bg-black overflow-hidden" style={{ height: '280px' }}>
           {reel.status === 'ready' && reel.file_path ? (
             <video
               src={reel.file_path}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               muted
               playsInline
               preload="metadata"
@@ -102,112 +102,119 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <Film className="w-5 h-5 text-muted-foreground/40" />
+              <Film className="w-10 h-10 text-muted-foreground/30" />
             </div>
           )}
-        </div>
-
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <h4 className="text-sm font-semibold text-foreground truncate">{reel.title}</h4>
+          {/* Status badge */}
+          <div className="absolute top-2 left-2">
             <span className={`inline-flex items-center text-[10px] font-medium px-2 py-0.5 rounded-md border ${status.color} ${status.bg} ${status.border} ${reel.status === "rendering" ? "animate-pulse" : ""}`}>
               {reel.status === "rendering" && <Loader2 className="w-2.5 h-2.5 mr-1 animate-spin" />}
               {status.label}
             </span>
-            {reel.ai_plan && (
+          </div>
+          {reel.ai_plan && (
+            <div className="absolute top-2 right-2">
               <span className="inline-flex items-center text-[10px] font-medium px-2 py-0.5 rounded-md border border-primary/20 bg-primary/10 text-primary">
                 ✨ AI
               </span>
-            )}
-          </div>
-          {reel.description && (
-            <p className="text-[11px] text-muted-foreground mb-1 line-clamp-1">{reel.description}</p>
+            </div>
           )}
+          {/* Play overlay for ready reels */}
+          {reel.status === "ready" && reel.file_path && (
+            <button
+              onClick={() => setShowPreview(true)}
+              className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/30 transition-colors"
+            >
+              <Play className="w-10 h-10 text-white/70 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </button>
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="p-3 space-y-2">
+          <h3 className="text-sm font-semibold text-foreground line-clamp-2">{reel.title}</h3>
+          {reel.description && (
+            <p className="text-[11px] text-muted-foreground line-clamp-2">{reel.description}</p>
+          )}
+
           <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
             <span className="flex items-center gap-1"><Layers className="w-3 h-3" />{reel.clip_ids.length} clips</span>
             <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatDur(reel.duration_seconds)}</span>
           </div>
+
           {isRendering && (
-            <div className="flex items-center gap-1.5 mt-1">
+            <div className="flex items-center gap-1.5">
               <Loader2 className="w-3 h-3 animate-spin text-primary" />
               <span className="text-[10px] text-primary animate-pulse">Rendering... ~2-5 min</span>
             </div>
           )}
-          {/* AI Plan roles */}
+
+          {/* AI Plan roles — deduplicated */}
           {reel.ai_plan?.clips && (
-            <div className="flex flex-wrap gap-1 mt-1.5">
-              {reel.ai_plan.clips.map((c: any, i: number) => (
+            <div className="flex flex-wrap gap-1">
+              {[...new Set(reel.ai_plan.clips.map((c: any) => c.role).filter(Boolean))].map((role: string) => (
                 <span
-                  key={i}
+                  key={role}
                   className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary/80 border border-primary/15"
-                  title={c.reason}
                 >
-                  {c.role}
+                  {role}
                 </span>
               ))}
             </div>
           )}
-        </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
-          {/* Preview — only when ready */}
-          {reel.status === "ready" && reel.file_path && (
-            <Button variant="ghost" size="sm" onClick={() => setShowPreview(true)} className="h-8 text-xs text-muted-foreground hover:text-foreground">
-              <Eye className="w-3.5 h-3.5 mr-1" /> Preview
-            </Button>
-          )}
-
-          {/* Edit */}
-          {onEdit && (
-            <Button variant="ghost" size="sm" onClick={() => onEdit(reel)} className="h-8 text-xs text-muted-foreground hover:text-foreground">
-              <Pencil className="w-3.5 h-3.5 mr-1" /> Edit
-            </Button>
-          )}
-
-          {/* Download */}
-          {reel.status === "ready" && reel.file_path && (
-            <Button variant="hero-outline" size="sm" onClick={handleDownload} disabled={downloading} className="h-8 text-xs">
-              {downloading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <><Download className="w-3.5 h-3.5 mr-1" />Download</>}
-            </Button>
-          )}
-
-          {/* Delete */}
-          {showConfirmDelete ? (
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] text-destructive font-medium">Delete?</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 px-2 text-[10px] text-destructive hover:bg-destructive/10"
-                onClick={handleDelete}
-                disabled={deleting}
+          {/* Action buttons */}
+          <div className="flex gap-2 pt-1">
+            {reel.status === "ready" && reel.file_path && (
+              <button
+                onClick={handleDownload}
+                disabled={downloading}
+                className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors disabled:opacity-50"
               >
-                {deleting ? <Loader2 className="w-3 h-3 animate-spin" /> : "Yes"}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 px-2 text-[10px] text-muted-foreground"
-                onClick={() => setShowConfirmDelete(false)}
+                {downloading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                Download
+              </button>
+            )}
+            {reel.status === "ready" && reel.file_path && (
+              <button
+                onClick={() => setShowPreview(true)}
+                className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-border/50 text-muted-foreground text-xs font-medium hover:text-foreground hover:border-primary/30 transition-colors"
               >
-                No
-              </Button>
-            </div>
-          ) : (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-muted-foreground/50 hover:text-destructive"
-              onClick={() => setShowConfirmDelete(true)}
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </Button>
-          )}
+                <Eye className="w-3.5 h-3.5" />
+                Preview
+              </button>
+            )}
+            {onEdit && (
+              <button
+                onClick={() => onEdit(reel)}
+                className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-border/50 text-muted-foreground text-xs font-medium hover:text-foreground hover:border-primary/30 transition-colors"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+                Edit
+              </button>
+            )}
+            {/* Delete */}
+            {showConfirmDelete ? (
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] text-destructive font-medium">Delete?</span>
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-[10px] text-destructive hover:bg-destructive/10" onClick={handleDelete} disabled={deleting}>
+                  {deleting ? <Loader2 className="w-3 h-3 animate-spin" /> : "Yes"}
+                </Button>
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-[10px] text-muted-foreground" onClick={() => setShowConfirmDelete(false)}>
+                  No
+                </Button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowConfirmDelete(true)}
+                className="flex items-center justify-center w-8 py-1.5 rounded-lg border border-border/50 text-muted-foreground/50 hover:text-destructive hover:border-destructive/30 transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
-
       {/* Preview Modal */}
       {showPreview && reel.file_path && (
         <div
