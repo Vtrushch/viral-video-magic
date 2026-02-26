@@ -188,9 +188,8 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
         table: "videos",
         filter: `id=eq.${video.id}`,
       }, (payload: any) => {
-        if (payload.new.status === "ready" || payload.new.status === "failed") {
-          window.location.reload();
-        }
+        // Let parent VideoDetail handle state transition via its own subscription
+        // No window.location.reload() — React will unmount AnalyzingState naturally
       })
       .subscribe();
 
@@ -409,6 +408,11 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
   const [manualCurrentTime, setManualCurrentTime] = useState(0);
   const [manualVideoDuration, setManualVideoDuration] = useState(100);
 
+  // If parent passes new clips (e.g. after realtime fetch), update local state
+  useEffect(() => {
+    if (initialClips.length > 0) setClips(initialClips);
+  }, [initialClips]);
+
   // Load signed URL for main video player
   useEffect(() => {
     if (!video.file_path) return;
@@ -466,16 +470,6 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     const interval = setInterval(() => fetchReels(), 5000);
     return () => clearInterval(interval);
   }, [video.id, reels, fetchReels]);
-
-  const toggleMainPlayer = () => {
-    const el = mainVideoRef.current;
-    if (!el) return;
-    if (playerPlaying) { el.pause(); setPlayerPlaying(false); }
-    else { el.play().catch(() => {}); setPlayerPlaying(true); }
-  };
-
-  // Sync clips from parent
-  useEffect(() => { setClips(initialClips); }, [initialClips]);
 
   // Poll every 5s for any clip that is still rendering
   useEffect(() => {
@@ -541,6 +535,24 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
   const renderClip = useCallback((clip: Tables<"clips">) => {
     setCreditDialog({ type: "single", clip });
   }, []);
+
+  // Show loading if clips haven't arrived yet
+  if (clips.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 gap-3">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground">Loading clips...</p>
+      </div>
+    );
+  }
+
+  const toggleMainPlayer = () => {
+    const el = mainVideoRef.current;
+    if (!el) return;
+    if (playerPlaying) { el.pause(); setPlayerPlaying(false); }
+    else { el.play().catch(() => {}); setPlayerPlaying(true); }
+  };
+
 
   // Credit-gated render all
   const renderAll = () => {
@@ -1381,6 +1393,11 @@ const VideoDetail = () => {
   const [clips, setClips] = useState<Tables<"clips">[]>([]);
   const [loading, setLoading] = useState(true);
   const [reAnalyzeOpen, setReAnalyzeOpen] = useState(false);
+  const videoRef = useRef<Tables<"videos"> | null>(null);
+
+  useEffect(() => {
+    videoRef.current = video;
+  }, [video]);
 
   useEffect(() => {
     if (!id) return;
@@ -1395,14 +1412,23 @@ const VideoDetail = () => {
     };
     fetchData();
 
-    // Poll every 5s while status is analyzing
+    // Poll every 5s
     const poll = setInterval(async () => {
       const { data } = await supabase.from("videos").select("*").eq("id", id).single();
-      if (data && data.status !== video?.status) {
-        setVideo(data);
-        if (data.status === "ready" || data.status === "failed") {
-          const { data: clipsData } = await supabase.from("clips").select("*").eq("video_id", id).order("viral_score", { ascending: false });
-          if (clipsData) setClips(clipsData);
+      if (data) {
+        const prevStatus = videoRef.current?.status;
+        if (data.status !== prevStatus) {
+          setVideo(data);
+        }
+        // Always refetch clips when status is ready (they may still be loading)
+        if (data.status === "ready") {
+          const { data: clipsData } = await supabase
+            .from("clips").select("*")
+            .eq("video_id", id)
+            .order("viral_score", { ascending: false });
+          if (clipsData && clipsData.length > 0) {
+            setClips(clipsData);
+          }
         }
       }
     }, 5000);
@@ -1418,8 +1444,14 @@ const VideoDetail = () => {
       }, async (payload: any) => {
         setVideo(payload.new);
         if (payload.new.status === "ready" || payload.new.status === "failed") {
-          const { data: clipsData } = await supabase.from("clips").select("*").eq("video_id", id).order("viral_score", { ascending: false });
-          if (clipsData) setClips(clipsData);
+          // Small delay to let clips finish writing to DB
+          setTimeout(async () => {
+            const { data: clipsData } = await supabase
+              .from("clips").select("*")
+              .eq("video_id", id)
+              .order("viral_score", { ascending: false });
+            if (clipsData) setClips(clipsData);
+          }, 2000);
         }
       })
       .subscribe();
