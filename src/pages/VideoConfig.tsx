@@ -1,10 +1,8 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Sparkles, Loader2, Clock, HardDrive, Calendar, ChevronDown, Info, Monitor, User, Crop, ChevronLeft, ChevronRight, Maximize2, Crosshair } from "lucide-react";
+import { ArrowLeft, Sparkles, Loader2, Clock, HardDrive, Calendar, Info, Monitor, User, Crop, ChevronLeft, ChevronRight, Maximize2, Crosshair } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -82,14 +80,10 @@ const VideoConfig = () => {
   const [video, setVideo] = useState<Tables<"videos"> | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [advancedOpen, setAdvancedOpen] = useState(false);
-
   const [clipCount, setClipCount] = useState(10);
   const [clipLength, setClipLength] = useState("medium");
   const [captionStyle, setCaptionStyle] = useState("hormozi");
   const [outputFormat, setOutputFormat] = useState("9:16");
-  const [includeTranscription, setIncludeTranscription] = useState(false);
-  const [includeChapters, setIncludeChapters] = useState(false);
   const [reframeMode, setReframeMode] = useState<"smart" | "full" | "center">("smart");
 
   useEffect(() => {
@@ -109,8 +103,6 @@ const VideoConfig = () => {
       clipLength,
       captionStyle,
       outputFormat,
-      includeTranscription,
-      includeChapters,
       reframeMode,
     };
 
@@ -168,8 +160,7 @@ const VideoConfig = () => {
   const handleSaveDraft = async () => {
     if (!id) return;
     const settings = {
-      clipCount, clipLength, captionStyle, outputFormat,
-      includeTranscription, includeChapters, reframeMode,
+      clipCount, clipLength, captionStyle, outputFormat, reframeMode,
     };
     await supabase.from("videos").update({ settings } as any).eq("id", id);
     toast.success("Settings saved as draft.");
@@ -437,48 +428,18 @@ const VideoConfig = () => {
           </div>
         </section>
 
-        {/* 4. Advanced Options */}
-        <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
-          <div className={sectionCard}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full">
-              <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                ⚙️ Advanced Options
-              </h2>
-              <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform duration-200 ${advancedOpen ? "rotate-180" : ""}`} />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-4 pt-2">
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <Checkbox checked={includeTranscription} onCheckedChange={(v) => setIncludeTranscription(!!v)} />
-                <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors">Include full transcription</span>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <Checkbox checked={includeChapters} onCheckedChange={(v) => setIncludeChapters(!!v)} />
-                <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors">Generate chapter markers</span>
-              </label>
-            </CollapsibleContent>
-          </div>
-        </Collapsible>
-
-        {/* 5. Action */}
+        {/* Action */}
         <div className="space-y-3 pb-8">
           <div className="glass-card rounded-2xl p-5 flex items-center gap-2 text-sm">
             <Info className="w-4 h-4 text-accent flex-shrink-0" />
             <span className="text-accent font-semibold">Analysis is free — unlimited!</span>
           </div>
 
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              size="lg"
-              className="flex-1"
-              onClick={handleSaveDraft}
-            >
-              Save as Draft
-            </Button>
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button
               variant="hero"
               size="lg"
-              className="flex-1 min-h-[52px] text-base"
+              className="w-full sm:flex-1 min-h-[52px] text-base"
               onClick={handleStartAnalysis}
               disabled={submitting}
             >
@@ -487,6 +448,14 @@ const VideoConfig = () => {
               ) : (
                 <><Sparkles className="w-5 h-5 mr-2" /> Start AI Analysis</>
               )}
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full sm:flex-1"
+              onClick={handleSaveDraft}
+            >
+              Save as Draft
             </Button>
           </div>
           <p className="text-xs text-center text-muted-foreground">
