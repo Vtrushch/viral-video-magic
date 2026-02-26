@@ -112,13 +112,6 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
               {status.label}
             </span>
           </div>
-          {reel.ai_plan && (
-            <div className="absolute top-2 right-2">
-              <span className="inline-flex items-center text-[10px] font-medium px-2 py-0.5 rounded-md border border-primary/20 bg-primary/10 text-primary">
-                ✨ AI
-              </span>
-            </div>
-          )}
           {/* Play overlay for ready reels */}
           {reel.status === "ready" && reel.file_path && (
             <button
