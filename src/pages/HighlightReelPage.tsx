@@ -752,7 +752,7 @@ export default function HighlightReelPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-full" style={{ background: "hsl(240,15%,7%)" }}>
+    <div className="flex flex-col min-h-full pb-24 sm:pb-0" style={{ background: "hsl(240,15%,7%)" }}>
       {/* ─── Header bar ─── */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50 flex-shrink-0" style={{ background: "hsl(240,15%,9%)" }}>
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground flex-1 min-w-0">
@@ -907,7 +907,9 @@ export default function HighlightReelPage() {
 
             {/* ── SOURCE VIDEO PLAYER (16:9 horizontal or idle) ── */}
             <div className={`w-full transition-all duration-300 ${showRenderedPlayer ? "hidden" : "block"}`}>
-              <div className="relative w-full rounded-lg overflow-hidden bg-black border border-white/10">
+              {/* 9:16 crop simulation container — matches ClipEdit preview */}
+              <div className="relative mx-auto rounded-xl overflow-hidden bg-black border border-white/10"
+                style={{ maxWidth: "320px", aspectRatio: "9/16", maxHeight: "65vh" }}>
 
                 {/* Empty state overlay */}
                 {playerMode.type === "idle" && (
@@ -933,7 +935,7 @@ export default function HighlightReelPage() {
                 )}
 
                 {!signedSourceUrl && (
-                  <div className="w-full flex items-center justify-center bg-black" style={{ aspectRatio: "16/9" }}>
+                  <div className="w-full h-full flex items-center justify-center bg-black">
                     <Loader2 className="w-8 h-8 text-muted-foreground/40 animate-spin" />
                   </div>
                 )}
@@ -942,9 +944,8 @@ export default function HighlightReelPage() {
                   <video
                     ref={sourceVideoRef}
                     src={signedSourceUrl}
-                    className={`w-full block cursor-pointer ${videoObjectFit}`}
+                    className={`w-full h-full block cursor-pointer ${videoObjectFit}`}
                     style={{
-                      maxHeight: "65vh",
                       background: "#000",
                       objectPosition: videoObjectPosition,
                     }}
