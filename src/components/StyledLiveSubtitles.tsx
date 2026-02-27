@@ -13,6 +13,10 @@ interface StyledLiveSubtitlesProps {
   style: SubtitleStyle;
   groupSize?: number;
   sampleText?: string;
+  /** Optional continuous vertical position override (0 = top, 1 = bottom). Overrides style.position when provided. */
+  positionY?: number;
+  /** Optional size multiplier (e.g. 0.8 for small, 1 for medium, 1.3 for large) */
+  sizeScale?: number;
 }
 
 const TOLERANCE = 0.08;
@@ -23,6 +27,8 @@ export default function StyledLiveSubtitles({
   style,
   groupSize,
   sampleText,
+  positionY,
+  sizeScale = 1,
 }: StyledLiveSubtitlesProps) {
   const effectiveGroupSize = groupSize ?? style.maxWordsPerLine ?? 4;
 
@@ -54,9 +60,14 @@ export default function StyledLiveSubtitles({
 
   if (group.length === 0) return null;
 
-  // Position mapping with safe zones
+  // Position mapping — positionY override takes priority
   const positionStyle: React.CSSProperties = {};
-  if (style.position === "top") {
+  if (positionY !== undefined) {
+    // Continuous positioning: positionY is 0–1 (0=top, 1=bottom)
+    positionStyle.top = `${Math.max(5, Math.min(90, positionY * 100))}%`;
+    positionStyle.bottom = "auto";
+    positionStyle.transform = "translateY(-50%)";
+  } else if (style.position === "top") {
     positionStyle.top = "10%";
     positionStyle.bottom = "auto";
   } else if (style.position === "center") {
@@ -120,6 +131,7 @@ export default function StyledLiveSubtitles({
               word={w.word}
               isActive={isActive}
               style={style}
+              sizeScale={sizeScale}
             />
           );
         })}
@@ -132,10 +144,12 @@ function StyledWord({
   word,
   isActive,
   style,
+  sizeScale = 1,
 }: {
   word: string;
   isActive: boolean;
   style: SubtitleStyle;
+  sizeScale?: number;
 }) {
   const color = isActive ? style.highlightColor : style.textColor;
 
@@ -153,7 +167,7 @@ function StyledWord({
   const wordStyle: React.CSSProperties = {
     fontFamily: `'${style.fontFamily}', sans-serif`,
     fontWeight: style.fontWeight,
-    fontSize: `${Math.max(20, Math.min(48, style.fontSize)) * 0.6}px`,
+    fontSize: `${Math.max(20, Math.min(48, style.fontSize)) * 0.6 * sizeScale}px`,
     color,
     textShadow: shadows.length > 0 ? shadows.join(", ") : undefined,
     textTransform: style.textTransform as React.CSSProperties["textTransform"],
