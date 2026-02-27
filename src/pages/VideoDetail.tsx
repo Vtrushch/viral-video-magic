@@ -920,7 +920,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                      className="h-7 min-h-[44px] px-2 text-xs text-muted-foreground hover:text-foreground"
                       onClick={() => setPreviewClip(clip)}
                     >
                       <Eye className="w-3 h-3 sm:mr-1" /><span className="hidden sm:inline">Preview</span>
@@ -928,7 +928,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                      className="h-7 min-h-[44px] px-2 text-xs text-muted-foreground hover:text-foreground"
                       onClick={() => navigate(`/dashboard/videos/edit/${clip.id}`)}
                     >
                       <Pencil className="w-3 h-3 sm:mr-1" /><span className="hidden sm:inline">Edit</span>
@@ -984,7 +984,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-7 px-2 text-xs text-primary hover:text-primary"
+                          className="h-7 min-h-[44px] px-2 text-xs text-primary hover:text-primary"
                           onClick={() => renderClip(clip)}
                           disabled={isRendering}
                         >
