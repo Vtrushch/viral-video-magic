@@ -57,8 +57,8 @@ export default function SubtitleStylePicker({ value, onChange }: SubtitleStylePi
         Subtitle Style
       </h3>
 
-      {/* Preset grid — horizontal scroll on mobile, grid on desktop */}
-      <div className="flex gap-2 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible scrollbar-hide snap-x">
+      {/* Preset strip — 2-row horizontal scroll on desktop, 1-row on mobile */}
+      <div className="grid grid-rows-2 grid-flow-col auto-cols-[100px] md:auto-cols-[110px] gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x">
         {SUBTITLE_PRESETS.map((preset) => {
           const isSelected = value.presetId === preset.presetId;
           return (
@@ -66,22 +66,19 @@ export default function SubtitleStylePicker({ value, onChange }: SubtitleStylePi
               key={preset.presetId}
               onClick={() => applyPreset(preset)}
               className={cn(
-                "relative flex-shrink-0 w-[120px] md:w-auto rounded-lg p-2.5 text-left transition-all duration-200 snap-start",
+                "relative snap-start rounded-lg p-2 text-left transition-all duration-200",
                 isSelected
                   ? "ring-2 ring-purple-500 shadow-lg shadow-purple-500/30 bg-purple-500/10"
                   : "ring-1 ring-white/10 hover:ring-white/30 bg-muted/20"
               )}
             >
-              {/* Checkmark badge */}
               {isSelected && (
                 <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center z-10">
                   <Check className="w-3 h-3 text-white" />
                 </div>
               )}
-
-              {/* Mini preview */}
               <div
-                className="w-full h-8 rounded mb-1.5 flex items-center justify-center overflow-hidden"
+                className="w-full h-7 rounded mb-1 flex items-center justify-center overflow-hidden"
                 style={{ background: "#111" }}
               >
                 {fontsReady ? (
@@ -89,7 +86,7 @@ export default function SubtitleStylePicker({ value, onChange }: SubtitleStylePi
                     style={{
                       fontFamily: `'${preset.fontFamily}', sans-serif`,
                       fontWeight: preset.fontWeight,
-                      fontSize: "11px",
+                      fontSize: "10px",
                       color: preset.textColor,
                       textShadow: preset.strokeWidth > 0
                         ? `1px 1px 0 ${preset.strokeColor}, -1px -1px 0 ${preset.strokeColor}`
@@ -101,24 +98,27 @@ export default function SubtitleStylePicker({ value, onChange }: SubtitleStylePi
                     <span style={{ color: preset.highlightColor }}>Your</span> text
                   </span>
                 ) : (
-                  <div className="w-16 h-3 rounded bg-white/10 animate-pulse" />
+                  <div className="w-12 h-2.5 rounded bg-white/10 animate-pulse" />
                 )}
               </div>
-              <div className="text-[11px] font-semibold text-foreground truncate">{preset.name}</div>
-              {/* Hide description on mobile */}
-              <p className="hidden md:block text-[9px] text-muted-foreground leading-tight line-clamp-1 mt-0.5">{preset.description}</p>
+              <div className="text-[10px] font-semibold text-foreground truncate">{preset.name}</div>
             </button>
           );
         })}
       </div>
 
-      {/* Customize toggle */}
+      {/* Customize toggle with summary */}
       <button
         onClick={() => setCustomizeOpen(!customizeOpen)}
         className="w-full flex items-center justify-between py-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
       >
         <span className="font-medium">Customize</span>
-        <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", customizeOpen && "rotate-180")} />
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-muted-foreground/60 hidden sm:inline">
+            {value.animation !== "none" ? value.animation.replace("-", " ") : "No anim"} · {value.fontSize}px · {value.position}
+          </span>
+          <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", customizeOpen && "rotate-180")} />
+        </div>
       </button>
 
       {customizeOpen && (
