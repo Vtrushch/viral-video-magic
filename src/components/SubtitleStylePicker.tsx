@@ -30,7 +30,7 @@ const ANIMATION_OPTIONS: { value: SubtitleStyle["animation"]; label: string }[] 
 ];
 
 export default function SubtitleStylePicker({ value, onChange }: SubtitleStylePickerProps) {
-  const [customizeOpen, setCustomizeOpen] = useState(false);
+  const [customizeOpen, setCustomizeOpen] = useState(false); // collapsed by default
   const [fontsReady, setFontsReady] = useState(false);
 
   useEffect(() => {
@@ -68,12 +68,12 @@ export default function SubtitleStylePicker({ value, onChange }: SubtitleStylePi
               className={cn(
                 "relative snap-start rounded-lg p-2 text-left transition-all duration-200",
                 isSelected
-                  ? "ring-2 ring-purple-500 shadow-lg shadow-purple-500/30 bg-purple-500/10"
-                  : "ring-1 ring-white/10 hover:ring-white/30 bg-muted/20"
+                  ? "ring-2 ring-purple-500/50 shadow-lg shadow-purple-500/20 bg-purple-500/10"
+                  : "ring-1 ring-white/10 hover:ring-white/25 bg-muted/20"
               )}
             >
               {isSelected && (
-                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center z-10">
+                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center z-10 shadow-md shadow-purple-500/30">
                   <Check className="w-3 h-3 text-white" />
                 </div>
               )}
