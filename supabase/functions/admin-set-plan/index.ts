@@ -43,10 +43,10 @@ Deno.serve(async (req) => {
 
     // Plan credit allocations
     const planCredits: Record<string, number> = {
-      free: 3,
-      starter: 30,
+      free: 10,
+      starter: 40,
       pro: 100,
-      agency: 500,
+      agency: 250,
     };
 
     // Update or create user_credits row
