@@ -539,7 +539,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
             )}
 
             {/* Scrollable tab content */}
-            <div ref={contentRef} className="overflow-y-auto overscroll-contain flex-1 min-h-0">
+            <div ref={contentRef} className="overflow-y-auto overflow-x-hidden overscroll-contain flex-1 min-h-0">
               {activeTab === "file" && renderFileTab()}
               {activeTab === "youtube" && !file && renderYoutubeTab()}
             </div>
