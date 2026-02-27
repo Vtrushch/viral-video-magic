@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Upload, X, FileVideo, Loader2, Sparkles, CloudUpload, Youtube, Link2, ArrowRight, Info } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -52,6 +52,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
   const [youtubeImporting, setYoutubeImporting] = useState(false);
   const [copyrightConfirmed, setCopyrightConfirmed] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useTranslation();
@@ -276,7 +277,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
     <div className="flex gap-1 p-1 rounded-xl bg-muted/50 border border-border/30">
       <button
         type="button"
-        onClick={() => { if (!uploading && !youtubeImporting) { setActiveTab("file"); setCopyrightConfirmed(false); } }}
+        onClick={() => { if (!uploading && !youtubeImporting) { setActiveTab("file"); setCopyrightConfirmed(false); contentRef.current?.scrollTo({ top: 0 }); } }}
         className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-sm font-medium transition-all min-h-[44px] ${
           activeTab === "file"
             ? "bg-background shadow-sm text-foreground border border-border/50"
@@ -288,7 +289,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
       </button>
       <button
         type="button"
-        onClick={() => { if (!uploading && !youtubeImporting) { setActiveTab("youtube"); setCopyrightConfirmed(false); } }}
+        onClick={() => { if (!uploading && !youtubeImporting) { setActiveTab("youtube"); setCopyrightConfirmed(false); contentRef.current?.scrollTo({ top: 0 }); } }}
         className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-sm font-medium transition-all min-h-[44px] ${
           activeTab === "youtube"
             ? "bg-background shadow-sm text-foreground border border-border/50"
@@ -459,7 +460,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
           For best quality, upload your original video file directly via the
           <button
             type="button"
-            onClick={() => { setActiveTab("file"); setCopyrightConfirmed(false); }}
+            onClick={() => { setActiveTab("file"); setCopyrightConfirmed(false); contentRef.current?.scrollTo({ top: 0 }); }}
             className="text-primary hover:underline mx-1 font-medium"
           >
             Upload File
@@ -516,21 +517,27 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={handleCancel}>
-      <DialogContent className="max-w-lg p-5 gap-4 sm:rounded-2xl fixed sm:relative bottom-0 sm:bottom-auto inset-x-0 sm:inset-x-auto rounded-t-2xl sm:rounded-2xl max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-lg p-5 gap-4 sm:rounded-2xl fixed sm:relative bottom-0 sm:bottom-auto inset-x-0 sm:inset-x-auto rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[85vh]">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>{t("upload.addVideo")}</DialogTitle>
         </DialogHeader>
 
         {!canUpload && !limitLoading ? (
           renderLimitReached()
         ) : (
-          <div className="space-y-4">
-            {/* Only show tabs when not mid-upload and no file selected */}
-            {!file && !uploading && !youtubeImporting && renderTabs()}
+          <div className="flex flex-col min-h-0">
+            {/* Tabs - fixed at top */}
+            {!file && !uploading && !youtubeImporting && (
+              <div className="flex-shrink-0 mb-4">
+                {renderTabs()}
+              </div>
+            )}
 
-            {/* Tab content */}
-            {activeTab === "file" && renderFileTab()}
-            {activeTab === "youtube" && !file && renderYoutubeTab()}
+            {/* Scrollable tab content */}
+            <div ref={contentRef} className="overflow-y-auto flex-1 min-h-0">
+              {activeTab === "file" && renderFileTab()}
+              {activeTab === "youtube" && !file && renderYoutubeTab()}
+            </div>
           </div>
         )}
       </DialogContent>
