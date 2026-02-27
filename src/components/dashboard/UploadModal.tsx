@@ -517,7 +517,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={handleCancel}>
-      <DialogContent className="max-w-lg p-5 gap-4 sm:rounded-2xl fixed sm:relative bottom-0 sm:bottom-auto inset-x-0 sm:inset-x-auto rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[85vh]">
+      <DialogContent className="max-w-lg p-5 gap-4 sm:rounded-2xl fixed sm:relative bottom-0 sm:bottom-auto inset-x-0 sm:inset-x-auto rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[80vh] sm:max-h-[85vh] overflow-hidden">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>{t("upload.addVideo")}</DialogTitle>
         </DialogHeader>
