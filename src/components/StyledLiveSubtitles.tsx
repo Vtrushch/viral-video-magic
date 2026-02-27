@@ -17,6 +17,8 @@ interface StyledLiveSubtitlesProps {
   positionY?: number;
   /** Optional size multiplier (e.g. 0.8 for small, 1 for medium, 1.3 for large) */
   sizeScale?: number;
+  /** Width of the preview container in px. Used to scale font size relative to 1080p render width. */
+  containerWidth?: number;
 }
 
 const TOLERANCE = 0.08;
@@ -29,7 +31,10 @@ export default function StyledLiveSubtitles({
   sampleText,
   positionY,
   sizeScale = 1,
+  containerWidth,
 }: StyledLiveSubtitlesProps) {
+  // Scale factor: render target is 1080px wide, preview is smaller
+  const scaleFactor = containerWidth ? containerWidth / 1080 : 0.6;
   const effectiveGroupSize = groupSize ?? style.maxWordsPerLine ?? 4;
 
   const { group, groupKey } = useMemo(() => {
@@ -104,7 +109,7 @@ export default function StyledLiveSubtitles({
 
   return (
     <div
-      className="absolute left-[5%] right-[5%] text-center pointer-events-none z-20"
+      className="absolute left-[8%] right-[8%] text-center pointer-events-none z-20"
       style={positionStyle}
     >
       <div
@@ -119,6 +124,7 @@ export default function StyledLiveSubtitles({
           animationIterationCount: animationIteration,
           animationFillMode: "both",
           ["--subtitle-glow-color" as string]: style.shadow?.color || style.highlightColor,
+          lineHeight: 1.2,
         }}
       >
         {group.map((w, wi) => {
@@ -132,6 +138,7 @@ export default function StyledLiveSubtitles({
               isActive={isActive}
               style={style}
               sizeScale={sizeScale}
+              scaleFactor={scaleFactor}
             />
           );
         })}
@@ -145,35 +152,40 @@ function StyledWord({
   isActive,
   style,
   sizeScale = 1,
+  scaleFactor = 0.6,
 }: {
   word: string;
   isActive: boolean;
   style: SubtitleStyle;
   sizeScale?: number;
+  scaleFactor?: number;
 }) {
   const color = isActive ? style.highlightColor : style.textColor;
 
-  // Build text-shadow
-  const shadows: string[] = [];
+  // Build text-shadow — always include a readability shadow
+  const shadows: string[] = [
+    "0 2px 8px rgba(0,0,0,0.8)",
+    "0 0 4px rgba(0,0,0,0.5)",
+  ];
   if (style.strokeWidth > 0 && style.strokeColor !== "transparent") {
-    const sw = style.strokeWidth;
+    const sw = style.strokeWidth * scaleFactor;
     const sc = style.strokeColor;
     shadows.push(`${sw}px ${sw}px 0 ${sc}`, `${-sw}px ${-sw}px 0 ${sc}`, `${sw}px ${-sw}px 0 ${sc}`, `${-sw}px ${sw}px 0 ${sc}`);
   }
   if (style.shadow?.enabled) {
-    shadows.push(`${style.shadow.offsetX}px ${style.shadow.offsetY}px ${style.shadow.blur}px ${style.shadow.color}`);
+    shadows.push(`${style.shadow.offsetX * scaleFactor}px ${style.shadow.offsetY * scaleFactor}px ${style.shadow.blur * scaleFactor}px ${style.shadow.color}`);
   }
 
   const wordStyle: React.CSSProperties = {
     fontFamily: `'${style.fontFamily}', sans-serif`,
     fontWeight: style.fontWeight,
-    fontSize: `${Math.max(20, Math.min(48, style.fontSize)) * 0.6 * sizeScale}px`,
+    fontSize: `${style.fontSize * scaleFactor * sizeScale}px`,
     color,
-    textShadow: shadows.length > 0 ? shadows.join(", ") : undefined,
+    textShadow: shadows.join(", "),
     textTransform: style.textTransform as React.CSSProperties["textTransform"],
-    letterSpacing: `${style.letterSpacing}px`,
-    lineHeight: style.lineHeight,
-    transform: isActive ? "scale(1.12)" : "scale(1)",
+    letterSpacing: `${style.letterSpacing * scaleFactor}px`,
+    lineHeight: 1.2,
+    transform: isActive ? "scale(1.15)" : "scale(1)",
     transition: "transform 0.12s ease, color 0.1s ease",
     display: "inline-block",
   };

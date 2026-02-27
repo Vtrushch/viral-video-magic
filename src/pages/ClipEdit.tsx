@@ -47,6 +47,9 @@ const ClipEdit = () => {
   const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
+  const desktopPreviewRef = useRef<HTMLDivElement>(null);
+  const mobilePreviewRef = useRef<HTMLDivElement>(null);
+  const [previewWidth, setPreviewWidth] = useState(330);
 
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -85,6 +88,17 @@ const ClipEdit = () => {
 
   // Load all preset fonts on mount
   useEffect(() => { loadAllPresetFonts(); }, []);
+
+  // Measure preview container width for subtitle scaling
+  useEffect(() => {
+    const el = desktopPreviewRef.current || mobilePreviewRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setPreviewWidth(entry.contentRect.width);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
 
 
@@ -588,7 +602,7 @@ const ClipEdit = () => {
           {/* Mobile: sticky compact video at top */}
           <div className="sticky top-0 z-10 block sm:hidden bg-[#0F0F1A]">
             <div className="relative w-full max-w-[360px] mx-auto p-3">
-              <div className="relative aspect-[9/16] max-h-[40vh] mx-auto rounded-2xl overflow-hidden bg-black">
+              <div ref={mobilePreviewRef} className="relative aspect-[9/16] max-h-[40vh] mx-auto rounded-2xl overflow-hidden bg-black">
                 {loading && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
                     <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -625,6 +639,7 @@ const ClipEdit = () => {
                   positionY={subtitleY}
                   sizeScale={subtitleSize === "small" ? 0.8 : subtitleSize === "large" ? 1.3 : 1}
                   sampleText={activeWords.length === 0 ? "Your captions will appear here" : undefined}
+                  containerWidth={previewWidth}
                 />
                 {!playing && !loading && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer" onClick={togglePlay}>
@@ -661,7 +676,7 @@ const ClipEdit = () => {
                 }}
               >
                 <div className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-6 rounded-b-2xl z-10" style={{ background: "hsl(240,15%,8%)" }} />
-                <div className="relative aspect-[9/16] max-h-[80vh] rounded-[2rem] overflow-hidden bg-black">
+                <div ref={desktopPreviewRef} className="relative aspect-[9/16] max-h-[80vh] rounded-[2rem] overflow-hidden bg-black">
                   {loading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
                       <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -692,6 +707,7 @@ const ClipEdit = () => {
                     positionY={subtitleY}
                     sizeScale={subtitleSize === "small" ? 0.8 : subtitleSize === "large" ? 1.3 : 1}
                     sampleText={activeWords.length === 0 ? "Your captions will appear here" : undefined}
+                    containerWidth={previewWidth}
                   />
                   {!playing && !loading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer" onClick={togglePlay}>
