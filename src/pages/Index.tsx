@@ -4,8 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
 import HowItWorks from "@/components/landing/HowItWorks";
-import Features from "@/components/landing/Features";
-import Pricing from "@/components/landing/Pricing";
+import WhyHookCut from "@/components/landing/Features";
+import ComparisonAndCTA from "@/components/landing/Pricing";
 import Footer from "@/components/landing/Footer";
 
 const Index = () => {
@@ -20,13 +20,14 @@ const Index = () => {
     };
     checkAuth();
   }, [navigate]);
+
   return (
     <div className="min-h-screen dark">
       <Navbar />
       <Hero />
       <HowItWorks />
-      <Features />
-      <Pricing />
+      <WhyHookCut />
+      <ComparisonAndCTA />
       <Footer />
     </div>
   );

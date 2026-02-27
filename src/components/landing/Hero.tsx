@@ -1,55 +1,67 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Zap, Globe, Smartphone } from "lucide-react";
+import { ArrowRight, Play } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+const CYCLING_WORDS = ["podcast", "interview", "webinar", "vlog", "lecture"];
 
 const Hero = () => {
   const { t } = useTranslation();
+  const [wordIndex, setWordIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
 
-  const pills = [
-    { icon: Sparkles, text: t('landing.hero.pills.aiFinds') },
-    { icon: Zap, text: t('landing.hero.pills.proCaptions') },
-    { icon: Globe, text: t('landing.hero.pills.languages') },
-    { icon: Smartphone, text: t('landing.hero.pills.export') },
-  ];
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setWordIndex((prev) => (prev + 1) % CYCLING_WORDS.length);
+        setVisible(true);
+      }, 300);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden gradient-hero-bg" aria-label="HookCut hero">
-      {/* Mesh gradient overlay */}
-      <div className="absolute inset-0 mesh-gradient" />
-      {/* Grid overlay */}
+      <div className="absolute inset-0 mesh-gradient opacity-40" />
       <div className="absolute inset-0 grid-overlay" />
 
-      {/* Animated orbs */}
-      <div className="absolute top-1/4 left-[15%] w-[500px] h-[500px] rounded-full blur-[120px] animate-float" style={{ background: "hsl(349, 100%, 59%, 0.06)" }} />
-      <div className="absolute bottom-1/4 right-[15%] w-[400px] h-[400px] rounded-full blur-[120px] animate-float" style={{ background: "hsl(270, 95%, 65%, 0.06)", animationDelay: "3s" }} />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[150px]" style={{ background: "hsl(177, 100%, 39%, 0.03)" }} />
+      {/* Subtle animated orbs */}
+      <div className="absolute top-1/4 left-[15%] w-[400px] h-[400px] rounded-full blur-[140px] animate-float" style={{ background: "hsl(349, 100%, 59%, 0.05)" }} />
+      <div className="absolute bottom-1/4 right-[15%] w-[350px] h-[350px] rounded-full blur-[140px] animate-float" style={{ background: "hsl(270, 95%, 65%, 0.05)", animationDelay: "3s" }} />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[160px]" style={{ background: "hsl(177, 100%, 39%, 0.02)" }} />
 
       <div className="relative z-10 container mx-auto px-6 text-center pt-24 pb-16">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card text-sm text-primary mb-10 opacity-0 animate-fade-in">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>{t('landing.hero.badge')}</span>
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card text-sm text-muted-foreground mb-10 opacity-0 animate-fade-in">
+          <span className="w-2 h-2 rounded-full bg-emerald-500" style={{ boxShadow: "0 0 8px hsl(160, 84%, 39%, 0.6)" }} />
+          <span>Analysis is free. Always.</span>
         </div>
 
-        {/* Heading */}
+        {/* Headline */}
         <h1
-          className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black max-w-5xl mx-auto mb-8 leading-[1.05] opacity-0 animate-fade-in text-glow"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black max-w-4xl mx-auto mb-8 leading-[1.05] opacity-0 animate-fade-in"
           style={{ animationDelay: "0.1s" }}
         >
-          <span className="text-foreground">{t('landing.hero.heading1')}</span>{" "}
-          <span className="gradient-text">{t('landing.hero.heading2')}</span>{" "}
-          <span className="text-foreground">{t('landing.hero.heading3')}</span>
+          <span className="text-foreground">Your next </span>
+          <span className="shimmer-text font-serif-display italic">viral short</span>
+          <br />
+          <span className="text-foreground">is hiding in your </span>
+          <span
+            className="text-primary inline-block min-w-[140px] sm:min-w-[200px] transition-all duration-300"
+            style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(8px)" }}
+          >
+            {CYCLING_WORDS[wordIndex]}
+          </span>
         </h1>
 
         {/* Subheading */}
         <p
-          className="text-lg md:text-xl max-w-2xl mx-auto mb-12 text-muted-foreground leading-relaxed opacity-0 animate-fade-in"
+          className="text-base sm:text-lg md:text-xl max-w-xl mx-auto mb-12 text-muted-foreground leading-relaxed opacity-0 animate-fade-in"
           style={{ animationDelay: "0.2s" }}
         >
-          {t('landing.hero.subheading')}{" "}
-          <br className="hidden sm:block" />
-          {t('landing.hero.stopEditing')}
+          Upload up to 2 hours of video. AI finds the 15 most viral moments, adds pro captions, and reframes for TikTok — in 3 minutes.
         </p>
 
         {/* CTA */}
@@ -57,54 +69,30 @@ const Hero = () => {
           className="flex flex-col sm:flex-row gap-4 justify-center items-center opacity-0 animate-fade-in"
           style={{ animationDelay: "0.3s" }}
         >
-          <Button variant="hero" size="lg" className="text-base px-8 py-6 animate-pulse-glow" asChild>
+          <Button variant="hero" size="lg" className="text-base px-8 py-6 animate-pulse-glow min-h-[44px]" asChild>
             <Link to="/auth">
-              {t('landing.hero.getStartedFree')}
+              Start Free — No Card Needed
               <ArrowRight className="w-4 h-4 ml-1" />
             </Link>
           </Button>
-          <Button variant="hero-outline" size="lg" className="text-base px-8 py-6" asChild>
-            <a href="#how-it-works">{t('landing.hero.seeHowItWorks')}</a>
+          <Button variant="hero-outline" size="lg" className="text-base px-8 py-6 min-h-[44px]" asChild>
+            <a href="#how-it-works">
+              <Play className="w-4 h-4 mr-1 fill-current" />
+              Watch Demo
+            </a>
           </Button>
         </div>
 
-        {/* Feature Pills */}
+        {/* Social Proof Pills */}
         <div
-          className="flex flex-wrap justify-center gap-3 mt-16 opacity-0 animate-fade-in"
+          className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-16 text-xs sm:text-sm text-muted-foreground opacity-0 animate-fade-in"
           style={{ animationDelay: "0.5s" }}
         >
-          {pills.map((item) => (
-            <div
-              key={item.text}
-              className="flex items-center gap-2 px-4 py-2 rounded-full glass-card text-sm text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-300 cursor-default"
-            >
-              <item.icon className="w-4 h-4 text-primary" />
-              <span>{item.text}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Social proof */}
-        <div
-          className="mt-20 opacity-0 animate-fade-in"
-          style={{ animationDelay: "0.7s" }}
-        >
-          <p className="text-sm text-muted-foreground mb-6">{t('landing.hero.builtBy')}</p>
-          <div className="flex flex-wrap justify-center gap-3">
-            {[
-              { icon: "✨", text: t('landing.hero.badge1') },
-              { icon: "🔒", text: t('landing.hero.badge2') },
-              { icon: "⚡", text: t('landing.hero.badge3') },
-            ].map((badge) => (
-              <div
-                key={badge.text}
-                className="flex items-center gap-2 px-4 py-2 rounded-full glass-card text-sm text-muted-foreground"
-              >
-                <span>{badge.icon}</span>
-                <span>{badge.text}</span>
-              </div>
-            ))}
-          </div>
+          <span>✨ 10 free renders to start</span>
+          <span className="hidden sm:inline text-border">|</span>
+          <span>🎬 99 languages</span>
+          <span className="hidden sm:inline text-border">|</span>
+          <span>💰 Pay per clip, not per minute</span>
         </div>
       </div>
     </section>

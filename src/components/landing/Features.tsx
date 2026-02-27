@@ -1,88 +1,79 @@
-import { Crosshair, Captions, Globe, BarChart3, ScanSearch } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useScrollRevealChildren } from "@/hooks/useScrollReveal";
 
-const Features = () => {
+const features = [
+  { emoji: "🎯", title: "Smart face tracking", description: "AI detects faces and reframes your video to keep the speaker centered in 9:16." },
+  { emoji: "🔤", title: "10+ caption styles", description: "Hormozi, MrBeast, Karaoke, Minimal — trending styles that make your clips pop." },
+  { emoji: "📱", title: "YouTube import", description: "Paste any public YouTube link. We download up to 1080p, analyze, and clip — all automatic." },
+  { emoji: "🔄", title: "Remix Mode", description: "Swap hooks, change caption styles, try different crops — experiment freely before rendering." },
+  { emoji: "🎬", title: "Hook A/B variants", description: "AI generates alternative hooks for each clip. Test which opening grabs more attention." },
+  { emoji: "🌍", title: "99 languages", description: "Auto-detected language with pro captions. From English to Ukrainian to Japanese." },
+];
+
+const creditItems = [
+  { symbol: "∞", label: "Free uploads", green: true },
+  { symbol: "∞", label: "Free analysis", green: true },
+  { symbol: "∞", label: "Free editing", green: true },
+  { symbol: "1", label: "Credit per render", green: false },
+];
+
+const WhyHookCut = () => {
   const { t } = useTranslation();
-
-  const features = [
-    {
-      icon: Crosshair,
-      title: t('landing.features.feature1Title'),
-      description: t('landing.features.feature1Desc'),
-    },
-    {
-      icon: Captions,
-      title: t('landing.features.feature2Title'),
-      description: t('landing.features.feature2Desc'),
-    },
-    {
-      icon: Globe,
-      title: t('landing.features.feature3Title'),
-      description: t('landing.features.feature3Desc'),
-      badge: "99 " + t('landing.features.languagesBadge'),
-    },
-    {
-      icon: ScanSearch,
-      title: t('landing.features.feature5Title'),
-      description: t('landing.features.feature5Desc'),
-      highlight: true,
-    },
-    {
-      icon: BarChart3,
-      title: t('landing.features.feature4Title'),
-      description: t('landing.features.feature4Desc'),
-    },
-  ];
+  const containerRef = useScrollRevealChildren();
 
   return (
-    <section id="features" className="py-28 relative overflow-hidden gradient-hero-bg">
-      <div className="absolute inset-0 mesh-gradient opacity-40" />
+    <section className="py-24 sm:py-28 relative overflow-hidden gradient-hero-bg">
+      <div className="absolute inset-0 mesh-gradient opacity-30" />
 
-      <div className="relative z-10 container mx-auto px-6">
-        <div className="text-center mb-16">
-          <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3 opacity-0 animate-fade-in">
-            {t('landing.features.label')}
+      <div className="relative z-10 container mx-auto px-6 sm:px-8" ref={containerRef}>
+        {/* Header */}
+        <div className="text-center mb-16" data-reveal data-reveal-delay="0">
+          <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3 opacity-0 translate-y-8 transition-all duration-700">
+            WHY HOOKCUT
           </p>
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground opacity-0 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-            {t('landing.features.heading')}{" "}
-            <span className="gradient-text">{t('landing.features.headingAccent')}</span>
+          <h2 className="text-3xl md:text-5xl font-bold text-foreground opacity-0 translate-y-8 transition-all duration-700" data-reveal data-reveal-delay="100">
+            Built different.{" "}
+            <span className="font-serif-display italic text-muted-foreground">Priced fair.</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto opacity-0 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-            {t('landing.features.subheading')}
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        {/* Credits Explainer */}
+        <div
+          className="max-w-3xl mx-auto mb-16 rounded-2xl p-8 sm:p-10 text-center border border-primary/10 opacity-0 translate-y-8 transition-all duration-700"
+          style={{ background: "linear-gradient(135deg, hsl(349,100%,59%,0.05), hsl(270,95%,65%,0.05))" }}
+          data-reveal
+          data-reveal-delay="150"
+        >
+          <p className="text-xs font-bold text-primary uppercase tracking-widest mb-4">HOW OUR PRICING WORKS</p>
+          <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
+            1 credit = 1 rendered clip. That's it.
+          </h3>
+          <p className="text-sm sm:text-base text-muted-foreground mb-8 max-w-lg mx-auto leading-relaxed">
+            Upload, analyze, edit, preview — all <strong className="text-foreground">free and unlimited</strong>. You only spend a credit when you render the final clip. No minutes cap, no hidden fees.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {creditItems.map((item) => (
+              <div key={item.label} className="flex flex-col items-center gap-1">
+                <span className={`text-3xl font-black ${item.green ? "text-emerald-500" : "text-primary"}`}>
+                  {item.symbol}
+                </span>
+                <span className="text-xs text-muted-foreground">{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Feature Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 max-w-5xl mx-auto">
           {features.map((feature, i) => (
             <div
               key={feature.title}
-              className={`group glass-card-hover rounded-2xl p-8 opacity-0 animate-fade-in relative overflow-hidden ${
-                feature.highlight ? "md:col-span-2 lg:col-span-1" : ""
-              }`}
-              style={{ animationDelay: `${0.25 + i * 0.1}s` }}
+              className="glass-card rounded-2xl p-6 hover:border-primary/15 hover:-translate-y-1 transition-all duration-300 opacity-0 translate-y-8"
+              data-reveal
+              data-reveal-delay={String(200 + i * 80)}
             >
-              {feature.highlight && (
-                <div className="absolute top-3 right-3">
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                    style={{ background: "hsl(var(--accent)/0.2)", color: "hsl(var(--accent))", border: "1px solid hsl(var(--accent)/0.3)" }}>
-                    ✨ AI
-                  </span>
-                </div>
-              )}
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 ${
-                feature.highlight ? "gradient-accent-bg" : "gradient-bg"
-              }`}>
-                <feature.icon className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <div className="flex items-center gap-2 mb-2 flex-wrap">
-                <h3 className="text-lg font-bold text-foreground">{feature.title}</h3>
-                {feature.badge && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
-                    style={{ background: "hsl(var(--primary)/0.15)", color: "hsl(var(--primary))", border: "1px solid hsl(var(--primary)/0.3)" }}>
-                    {feature.badge}
-                  </span>
-                )}
-              </div>
+              <span className="text-2xl mb-3 block">{feature.emoji}</span>
+              <h3 className="text-lg font-bold text-foreground mb-2">{feature.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
             </div>
           ))}
@@ -92,5 +83,4 @@ const Features = () => {
   );
 };
 
-export default Features;
-
+export default WhyHookCut;
