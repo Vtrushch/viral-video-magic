@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
+import { getSignedUrl, prefetchSignedUrls } from "@/lib/signedUrlCache";
 import { toast } from "sonner";
 import { downloadClip, clipFilename } from "@/lib/downloadClip";
 import { apiFetch } from "@/lib/api";
@@ -414,16 +415,20 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     if (initialClips.length > 0) setClips(initialClips);
   }, [initialClips]);
 
-  // Load signed URL for main video player
+  // Load signed URL for main video player — cached
   useEffect(() => {
     if (!video.file_path) return;
-    supabase.storage
-      .from("raw-videos")
-      .createSignedUrl(video.file_path, 3600)
-      .then(({ data, error }) => {
-        if (!error && data?.signedUrl) setVideoSignedUrl(data.signedUrl);
-      });
+    getSignedUrl("raw-videos", video.file_path).then((url) => {
+      if (url) setVideoSignedUrl(url);
+    });
   }, [video.file_path]);
+
+  // Prefetch signed URLs for all clips so preview modal opens instantly
+  useEffect(() => {
+    if (clips.length > 0 && video.file_path) {
+      prefetchSignedUrls("raw-videos", [video.file_path]);
+    }
+  }, [clips, video.file_path]);
 
   // Load highlight reels for this video
   const fetchReels = useCallback(async () => {
