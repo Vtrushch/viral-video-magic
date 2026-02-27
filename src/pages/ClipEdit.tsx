@@ -78,6 +78,7 @@ const ClipEdit = () => {
   const [subtitleSize, setSubtitleSize] = useState<"small" | "medium" | "large">("medium");
   const [subtitleY, setSubtitleY] = useState(0.85);
   const [subtitleStyle, setSubtitleStyle] = useState<SubtitleStyle>(getDefaultStyle());
+  const [captionLayoutOpen, setCaptionLayoutOpen] = useState(false);
   const { credits, refetch: refetchCredits } = useCredits();
 
   const { t } = useTranslation();
@@ -580,118 +581,36 @@ const ClipEdit = () => {
         </div>
       </div>
 
-      {/* Main editor area — vertical on mobile, horizontal on desktop */}
-      <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-auto lg:overflow-hidden">
-        {/* TOP/LEFT: Video preview */}
-        <div className="w-full lg:w-[60%] flex items-start sm:items-center justify-center p-3 sm:p-6 bg-background/50 flex-shrink-0 lg:flex-shrink">
-          {/* Mobile: plain video player, no phone frame */}
-          <div className="relative w-full max-w-[360px] mx-auto block sm:hidden">
-            <div className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-black">
-              {loading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
-                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                </div>
-              )}
-              {signedUrl && (
-                <video
-                  ref={mobileVideoRef}
-                  src={signedUrl}
-                  className={`w-full h-full ${cropObjectFit === 'cover' ? 'object-cover' : 'object-contain'}`}
-                  style={cropObjectPosition ? { objectPosition: cropObjectPosition } : undefined}
-                  onLoadedMetadata={handleLoadedMetadata}
-                  onTimeUpdate={handleTimeUpdate}
-                  onEnded={() => { setPlaying(false); }}
-                  muted={muted}
-                  playsInline
-                  preload="auto"
-                  webkit-playsinline="true"
-                  x-webkit-airplay="allow"
-                  crossOrigin="anonymous"
-                />
-              )}
-              {/* Reload button — fixes freeze where audio continues but frame stalls */}
-              <button
-                onClick={handleReload}
-                className="absolute top-2 right-2 z-20 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
-                title="Reload video"
-              >
-                <RefreshCw className="w-3.5 h-3.5 text-white/80" />
-              </button>
-              {/* Live subtitles — mobile */}
-              <StyledLiveSubtitles
-                words={activeWords}
-                relativeTime={relativeTime}
-                style={subtitleStyle}
-                positionY={subtitleY}
-                sizeScale={subtitleSize === "small" ? 0.8 : subtitleSize === "large" ? 1.3 : 1}
-                sampleText={activeWords.length === 0 ? "Your captions will appear here" : undefined}
-              />
-              {!playing && !loading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer" onClick={togglePlay}>
-                  <div className="w-14 h-14 rounded-full gradient-bg flex items-center justify-center shadow-lg glow-primary hover:scale-110 transition-transform">
-                    <Play className="w-6 h-6 text-primary-foreground ml-0.5" />
-                  </div>
-                </div>
-              )}
-              <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent z-10">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <button onClick={togglePlay} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
-                      {playing ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-white ml-0.5" />}
-                    </button>
-                    <button onClick={() => setMuted(!muted)} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
-                      {muted ? <VolumeX className="w-4 h-4 text-white" /> : <Volume2 className="w-4 h-4 text-white" />}
-                    </button>
-                  </div>
-                  <span className="text-xs text-white/80 font-mono">{formatTime(Math.max(0, currentTime - clipStart))} / {formatTime(clipDuration)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Desktop: phone mockup */}
-          <div className="relative flex-shrink-0 hidden sm:block">
-            {/* Phone mockup */}
-            <div
-              className="relative rounded-[2.5rem] p-3 w-[320px] xl:w-[340px]"
-              style={{
-                background:
-                  "linear-gradient(145deg, hsl(240,15%,16%), hsl(240,15%,10%))",
-                boxShadow:
-                  "0 25px 60px -10px rgba(0,0,0,0.6), 0 0 40px -10px hsl(349,100%,59%,0.15), inset 0 1px 0 hsl(0,0%,100%,0.08)",
-              }}
-            >
-              {/* Notch */}
-              <div
-                className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-6 rounded-b-2xl z-10"
-                style={{ background: "hsl(240,15%,8%)" }}
-              />
-
-              {/* Screen */}
-              <div className="relative aspect-[9/16] rounded-[2rem] overflow-hidden bg-black">
+      {/* Main editor area — two-column sticky on desktop, stacked on mobile */}
+      <div className="flex-1 flex flex-col lg:flex-row lg:items-start gap-0 lg:gap-6 p-0 lg:p-6 overflow-auto">
+        {/* LEFT: Sticky video preview — ALWAYS VISIBLE on desktop */}
+        <div className="w-full lg:w-[42%] lg:sticky lg:top-4 lg:self-start flex-shrink-0">
+          {/* Mobile: sticky compact video at top */}
+          <div className="sticky top-0 z-10 block sm:hidden bg-[#0F0F1A]">
+            <div className="relative w-full max-w-[360px] mx-auto p-3">
+              <div className="relative aspect-[9/16] max-h-[40vh] mx-auto rounded-2xl overflow-hidden bg-black">
                 {loading && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
                     <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                   </div>
                 )}
-
                 {signedUrl && (
                   <video
-                    ref={videoRef}
+                    ref={mobileVideoRef}
                     src={signedUrl}
-                    className={`w-full h-full ${cropObjectFit === 'cover' ? 'object-cover' : 'object-contain'} rounded-lg`}
+                    className={`w-full h-full ${cropObjectFit === 'cover' ? 'object-cover' : 'object-contain'}`}
                     style={cropObjectPosition ? { objectPosition: cropObjectPosition } : undefined}
                     onLoadedMetadata={handleLoadedMetadata}
                     onTimeUpdate={handleTimeUpdate}
                     onEnded={() => { setPlaying(false); }}
                     muted={muted}
                     playsInline
-                    controls
                     preload="auto"
+                    webkit-playsinline="true"
+                    x-webkit-airplay="allow"
+                    crossOrigin="anonymous"
                   />
                 )}
-
-                {/* Reload button — fixes freeze */}
                 <button
                   onClick={handleReload}
                   className="absolute top-2 right-2 z-20 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
@@ -699,8 +618,6 @@ const ClipEdit = () => {
                 >
                   <RefreshCw className="w-3.5 h-3.5 text-white/80" />
                 </button>
-
-                {/* Live subtitles — desktop */}
                 <StyledLiveSubtitles
                   words={activeWords}
                   relativeTime={relativeTime}
@@ -709,61 +626,106 @@ const ClipEdit = () => {
                   sizeScale={subtitleSize === "small" ? 0.8 : subtitleSize === "large" ? 1.3 : 1}
                   sampleText={activeWords.length === 0 ? "Your captions will appear here" : undefined}
                 />
-
-                {/* Play overlay */}
                 {!playing && !loading && (
-                  <div
-                    className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer"
-                    onClick={togglePlay}
-                  >
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer" onClick={togglePlay}>
                     <div className="w-14 h-14 rounded-full gradient-bg flex items-center justify-center shadow-lg glow-primary hover:scale-110 transition-transform">
                       <Play className="w-6 h-6 text-primary-foreground ml-0.5" />
                     </div>
                   </div>
                 )}
-
-                {/* Bottom controls */}
                 <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent z-10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <button
-                        onClick={togglePlay}
-                        className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
-                      >
-                        {playing ? (
-                          <Pause className="w-4 h-4 text-white" />
-                        ) : (
-                          <Play className="w-4 h-4 text-white ml-0.5" />
-                        )}
+                      <button onClick={togglePlay} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+                        {playing ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-white ml-0.5" />}
                       </button>
-                      <button
-                        onClick={() => setMuted(!muted)}
-                        className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
-                      >
-                        {muted ? (
-                          <VolumeX className="w-4 h-4 text-white" />
-                        ) : (
-                          <Volume2 className="w-4 h-4 text-white" />
-                        )}
+                      <button onClick={() => setMuted(!muted)} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+                        {muted ? <VolumeX className="w-4 h-4 text-white" /> : <Volume2 className="w-4 h-4 text-white" />}
                       </button>
                     </div>
-                    <span className="text-xs text-white/80 font-mono">
-                      {formatTime(Math.max(0, currentTime - clipStart))} /{" "}
-                      {formatTime(clipDuration)}
-                    </span>
+                    <span className="text-xs text-white/80 font-mono">{formatTime(Math.max(0, currentTime - clipStart))} / {formatTime(clipDuration)}</span>
                   </div>
                 </div>
               </div>
             </div>
-            {/* Subtitle info text below phone */}
-            <p className="text-center text-xs mt-3 px-2" style={{ color: "hsl(var(--muted-foreground)/0.6)" }}>
-              🌍 Subtitles auto-detected in video's language
-            </p>
+          </div>
+
+          {/* Desktop: phone mockup */}
+          <div className="relative hidden sm:flex items-center justify-center">
+            <div>
+              <div
+                className="relative rounded-[2.5rem] p-3 w-[300px] xl:w-[340px]"
+                style={{
+                  background: "linear-gradient(145deg, hsl(240,15%,16%), hsl(240,15%,10%))",
+                  boxShadow: "0 25px 60px -10px rgba(0,0,0,0.6), 0 0 40px -10px hsl(349,100%,59%,0.15), inset 0 1px 0 hsl(0,0%,100%,0.08)",
+                }}
+              >
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-6 rounded-b-2xl z-10" style={{ background: "hsl(240,15%,8%)" }} />
+                <div className="relative aspect-[9/16] max-h-[80vh] rounded-[2rem] overflow-hidden bg-black">
+                  {loading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
+                      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
+                  {signedUrl && (
+                    <video
+                      ref={videoRef}
+                      src={signedUrl}
+                      className={`w-full h-full ${cropObjectFit === 'cover' ? 'object-cover' : 'object-contain'} rounded-lg`}
+                      style={cropObjectPosition ? { objectPosition: cropObjectPosition } : undefined}
+                      onLoadedMetadata={handleLoadedMetadata}
+                      onTimeUpdate={handleTimeUpdate}
+                      onEnded={() => { setPlaying(false); }}
+                      muted={muted}
+                      playsInline
+                      controls
+                      preload="auto"
+                    />
+                  )}
+                  <button onClick={handleReload} className="absolute top-2 right-2 z-20 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors" title="Reload video">
+                    <RefreshCw className="w-3.5 h-3.5 text-white/80" />
+                  </button>
+                  <StyledLiveSubtitles
+                    words={activeWords}
+                    relativeTime={relativeTime}
+                    style={subtitleStyle}
+                    positionY={subtitleY}
+                    sizeScale={subtitleSize === "small" ? 0.8 : subtitleSize === "large" ? 1.3 : 1}
+                    sampleText={activeWords.length === 0 ? "Your captions will appear here" : undefined}
+                  />
+                  {!playing && !loading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer" onClick={togglePlay}>
+                      <div className="w-14 h-14 rounded-full gradient-bg flex items-center justify-center shadow-lg glow-primary hover:scale-110 transition-transform">
+                        <Play className="w-6 h-6 text-primary-foreground ml-0.5" />
+                      </div>
+                    </div>
+                  )}
+                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent z-10">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <button onClick={togglePlay} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+                          {playing ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-white ml-0.5" />}
+                        </button>
+                        <button onClick={() => setMuted(!muted)} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+                          {muted ? <VolumeX className="w-4 h-4 text-white" /> : <Volume2 className="w-4 h-4 text-white" />}
+                        </button>
+                      </div>
+                      <span className="text-xs text-white/80 font-mono">
+                        {formatTime(Math.max(0, currentTime - clipStart))} / {formatTime(clipDuration)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p className="text-center text-xs mt-3 px-2" style={{ color: "hsl(var(--muted-foreground)/0.6)" }}>
+                🌍 Subtitles auto-detected in video's language
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* BOTTOM/RIGHT: Editor controls */}
-        <div className="w-full lg:w-[40%] border-t lg:border-t-0 lg:border-l border-border/50 overflow-y-auto">
+        {/* RIGHT: Scrollable controls */}
+        <div className="w-full lg:w-[58%] lg:overflow-y-auto lg:max-h-[calc(100vh-80px)]">
           <div className="p-4 sm:p-5 space-y-5">
 
             {/* Detected language badge */}
@@ -932,73 +894,83 @@ const ClipEdit = () => {
               />
             </div>
 
-            {/* Caption Layout */}
-            <div className="space-y-3 p-3 rounded-lg border border-border/50 bg-card/30">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-foreground">Caption Layout</label>
-                <span className="text-[10px] text-muted-foreground/60">Applied on render</span>
-              </div>
-
-              <div className="flex gap-4 items-start">
-                {/* Phone wireframe diagram */}
-                <div className="relative w-16 h-28 rounded-lg border-2 border-muted-foreground/30 bg-muted/10 flex-shrink-0 overflow-hidden">
-                  <div className="absolute inset-1 rounded bg-muted/20" />
-                  <div
-                    className="absolute left-1 right-1 h-3 rounded-sm bg-primary/40 border border-primary/60 transition-all duration-200"
-                    style={{ top: `${Math.max(10, Math.min(85, subtitleY * 100))}%` }}
-                  />
-                  <div
-                    className="absolute left-1 right-1 flex items-center justify-center transition-all duration-200"
-                    style={{ top: `${Math.max(10, Math.min(85, subtitleY * 100))}%` }}
-                  >
-                    <span className={cn(
-                      "text-primary font-bold leading-none",
-                      subtitleSize === "small" ? "text-[5px]" : subtitleSize === "medium" ? "text-[6px]" : "text-[8px]"
-                    )}>
-                      Aa
-                    </span>
-                  </div>
+            {/* Caption Layout — collapsed by default */}
+            <div className="space-y-2 p-3 rounded-lg border border-border/50 bg-card/30">
+              <button
+                onClick={() => setCaptionLayoutOpen(!captionLayoutOpen)}
+                className="w-full flex items-center justify-between"
+              >
+                <label className="text-sm font-medium text-foreground cursor-pointer">Caption Layout</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-muted-foreground/60">
+                    {subtitleSize.charAt(0).toUpperCase() + subtitleSize.slice(1)} · {Math.round(subtitleY * 100)}%
+                  </span>
+                  <ChevronDown className={cn("w-3.5 h-3.5 text-muted-foreground transition-transform", captionLayoutOpen && "rotate-180")} />
                 </div>
+              </button>
 
-                {/* Controls next to diagram */}
-                <div className="flex-1 space-y-3">
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] text-muted-foreground">Size</label>
-                    <div className="flex gap-1.5">
-                      {(["small", "medium", "large"] as const).map((size) => (
-                        <button
-                          key={size}
-                          onClick={() => setSubtitleSize(size)}
-                          className={cn(
-                            "flex-1 py-1 rounded text-[11px] font-medium border transition-colors",
-                            subtitleSize === size
-                              ? "border-primary bg-primary/10 text-primary"
-                              : "border-border/50 text-muted-foreground hover:border-primary/30"
-                          )}
-                        >
-                          {size === "small" ? "S" : size === "medium" ? "M" : "L"}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] text-muted-foreground">Position</label>
-                    <input
-                      type="range"
-                      min={10}
-                      max={95}
-                      value={subtitleY * 100}
-                      onChange={(e) => setSubtitleY(Number(e.target.value) / 100)}
-                      className="w-full h-1 accent-primary"
+              {captionLayoutOpen && (
+                <div className="flex gap-4 items-start pt-2">
+                  {/* Phone wireframe diagram */}
+                  <div className="relative w-16 h-28 rounded-lg border-2 border-muted-foreground/30 bg-muted/10 flex-shrink-0 overflow-hidden">
+                    <div className="absolute inset-1 rounded bg-muted/20" />
+                    <div
+                      className="absolute left-1 right-1 h-3 rounded-sm bg-primary/40 border border-primary/60 transition-all duration-200"
+                      style={{ top: `${Math.max(10, Math.min(85, subtitleY * 100))}%` }}
                     />
-                    <div className="flex justify-between text-[9px] text-muted-foreground/50">
-                      <span>Top</span>
-                      <span>Bottom</span>
+                    <div
+                      className="absolute left-1 right-1 flex items-center justify-center transition-all duration-200"
+                      style={{ top: `${Math.max(10, Math.min(85, subtitleY * 100))}%` }}
+                    >
+                      <span className={cn(
+                        "text-primary font-bold leading-none",
+                        subtitleSize === "small" ? "text-[5px]" : subtitleSize === "medium" ? "text-[6px]" : "text-[8px]"
+                      )}>
+                        Aa
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Controls next to diagram */}
+                  <div className="flex-1 space-y-3">
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] text-muted-foreground">Size</label>
+                      <div className="flex gap-1.5">
+                        {(["small", "medium", "large"] as const).map((size) => (
+                          <button
+                            key={size}
+                            onClick={() => setSubtitleSize(size)}
+                            className={cn(
+                              "flex-1 py-1 rounded text-[11px] font-medium border transition-colors",
+                              subtitleSize === size
+                                ? "border-primary bg-primary/10 text-primary"
+                                : "border-border/50 text-muted-foreground hover:border-primary/30"
+                            )}
+                          >
+                            {size === "small" ? "S" : size === "medium" ? "M" : "L"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] text-muted-foreground">Position</label>
+                      <input
+                        type="range"
+                        min={10}
+                        max={95}
+                        value={subtitleY * 100}
+                        onChange={(e) => setSubtitleY(Number(e.target.value) / 100)}
+                        className="w-full h-1 accent-primary"
+                      />
+                      <div className="flex justify-between text-[9px] text-muted-foreground/50">
+                        <span>Top</span>
+                        <span>Bottom</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* 2.5 AI TITLES & HASHTAGS */}
