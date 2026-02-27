@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import { X, Play, Pause, Flame, Clock, Star, Volume2, VolumeX, RefreshCw, Zap } from "lucide-react";
+import { X, Play, Pause, Flame, Clock, Star, Volume2, VolumeX, RefreshCw, Zap, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import LiveSubtitles from "@/components/LiveSubtitles";
 import type { CaptionStyle } from "@/components/LiveSubtitles";
+import { getSignedUrl } from "@/lib/signedUrlCache";
 
 interface ClipPreviewModalProps {
   clip: Tables<"clips"> | null;
@@ -18,9 +18,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
   const isMobileRef = useRef(false);
 
-  // Helper to get the active video element
   const getVideoEl = useCallback(() => {
-    // Check which one is visible
     if (mobileVideoRef.current && mobileVideoRef.current.offsetParent !== null) {
       isMobileRef.current = true;
       return mobileVideoRef.current;
@@ -29,10 +27,9 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
       isMobileRef.current = false;
       return desktopVideoRef.current;
     }
-    // Fallback: try mobile first (for initial load before paint)
     return mobileVideoRef.current || desktopVideoRef.current;
   }, []);
-  const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -43,7 +40,6 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   const endTime = parseFloat(clip?.end_time || "0");
   const clipDuration = endTime - startTime;
 
-  // Build word list from transcription_words
   const words = useMemo(() => {
     if (!clip?.transcription_words) return [];
     const raw = clip.transcription_words as unknown[];
@@ -51,33 +47,31 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     return raw as { word: string; start: number; end: number }[];
   }, [clip?.transcription_words]);
 
-  // relativeTime: subtract clip start so subtitle timestamps (0-based) align correctly
   const relativeTime = currentTime - startTime;
 
-  // Get signed URL on open
+  // Get signed URL on open — uses cache for instant replay
   useEffect(() => {
     if (!open || !video?.file_path) return;
     setLoading(true);
     setError(null);
-    setSignedUrl(null);
+    setVideoUrl(null);
+    setPlaying(false);
+    setCurrentTime(0);
 
-    supabase.storage
-      .from("raw-videos")
-      .createSignedUrl(video.file_path, 3600)
-      .then(({ data, error: err }) => {
-        if (err || !data?.signedUrl) {
-          setError("Failed to load video");
-          setLoading(false);
-          return;
-        }
-        setSignedUrl(data.signedUrl);
-      });
+    getSignedUrl("raw-videos", video.file_path).then((url) => {
+      if (url) {
+        setVideoUrl(url);
+      } else {
+        setError("Failed to load video");
+        setLoading(false);
+      }
+    });
 
     return () => {
       setPlaying(false);
-      setSignedUrl(null);
+      setVideoUrl(null);
     };
-  }, [open, video.file_path]);
+  }, [open, video?.file_path]);
 
   // Seek to start when video loads — pause first, seek, wait for seeked
   const handleLoadedMetadata = useCallback(() => {
@@ -145,18 +139,17 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     setCurrentTime(val);
   };
 
-  // Force-load video when signed URL becomes available
+  // Force-load video when URL becomes available
   useEffect(() => {
-    if (!signedUrl) return;
-    // Explicitly load both refs so the video is ready to play immediately
+    if (!videoUrl) return;
     [desktopVideoRef, mobileVideoRef].forEach((ref) => {
       const el = ref.current;
       if (el) {
-        el.src = signedUrl;
+        el.src = videoUrl;
         el.load();
       }
     });
-  }, [signedUrl]);
+  }, [videoUrl]);
 
   // Close on Escape
   useEffect(() => {
@@ -238,10 +231,10 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                   <p className="text-sm">{error}</p>
                 </div>
               )}
-              {signedUrl && (
+              {videoUrl && (
                 <video
                   ref={mobileVideoRef}
-                  src={signedUrl}
+                  src={videoUrl}
                   className={cropVideoClass}
                   style={cropVideoStyle}
                   onLoadedMetadata={handleLoadedMetadata}
@@ -334,10 +327,10 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                 </div>
               )}
 
-              {signedUrl && (
+              {videoUrl && (
                 <video
                   ref={desktopVideoRef}
-                  src={signedUrl}
+                  src={videoUrl}
                   className={cropVideoClass}
                   style={cropVideoStyle}
                   onLoadedMetadata={handleLoadedMetadata}

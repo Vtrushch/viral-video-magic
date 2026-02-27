@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getSignedUrl } from "@/lib/signedUrlCache";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import type { Tables } from "@/integrations/supabase/types";
@@ -208,21 +209,18 @@ const ClipEdit = () => {
     }
   }, [clip, video]);
 
-  // Get signed URL
+  // Get signed URL — cached
   useEffect(() => {
     if (!video?.file_path) return;
     setLoading(true);
-    supabase.storage
-      .from("raw-videos")
-      .createSignedUrl(video.file_path, 3600)
-      .then(({ data, error }) => {
-        if (error || !data?.signedUrl) {
-          toast.error("Failed to load video");
-          setLoading(false);
-          return;
-        }
-        setSignedUrl(data.signedUrl);
-      });
+    getSignedUrl("raw-videos", video.file_path).then((url) => {
+      if (url) {
+        setSignedUrl(url);
+      } else {
+        toast.error("Failed to load video");
+        setLoading(false);
+      }
+    });
   }, [video?.file_path]);
 
   // Helper: get the active video element (desktop or mobile)
