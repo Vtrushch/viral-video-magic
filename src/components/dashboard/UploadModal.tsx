@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Upload, X, FileVideo, Loader2, Sparkles, CloudUpload, Youtube, Link2, ArrowRight } from "lucide-react";
+import { Upload, X, FileVideo, Loader2, Sparkles, CloudUpload, Youtube, Link2, ArrowRight, Info } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
@@ -49,6 +50,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
   const [dragging, setDragging] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [youtubeImporting, setYoutubeImporting] = useState(false);
+  const [copyrightConfirmed, setCopyrightConfirmed] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -245,6 +247,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
     setUploading(false);
     setYoutubeUrl("");
     setYoutubeImporting(false);
+    setCopyrightConfirmed(false);
     onClose();
   };
 
@@ -273,7 +276,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
     <div className="flex gap-1 p-1 rounded-xl bg-muted/50 border border-border/30">
       <button
         type="button"
-        onClick={() => { if (!uploading && !youtubeImporting) setActiveTab("file"); }}
+        onClick={() => { if (!uploading && !youtubeImporting) { setActiveTab("file"); setCopyrightConfirmed(false); } }}
         className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-sm font-medium transition-all min-h-[44px] ${
           activeTab === "file"
             ? "bg-background shadow-sm text-foreground border border-border/50"
@@ -285,7 +288,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
       </button>
       <button
         type="button"
-        onClick={() => { if (!uploading && !youtubeImporting) setActiveTab("youtube"); }}
+        onClick={() => { if (!uploading && !youtubeImporting) { setActiveTab("youtube"); setCopyrightConfirmed(false); } }}
         className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-sm font-medium transition-all min-h-[44px] ${
           activeTab === "youtube"
             ? "bg-background shadow-sm text-foreground border border-border/50"
@@ -422,9 +425,8 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
     <div className="space-y-4">
       {/* YouTube branding header */}
       <div className="text-center space-y-2 py-2">
-        <div className="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center"
-          style={{ background: "linear-gradient(135deg, hsl(0 70% 50% / 0.15), hsl(0 70% 50% / 0.05))", border: "1px solid hsl(0 70% 50% / 0.2)" }}>
-          <Youtube className="w-7 h-7 text-red-500" />
+        <div className="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center bg-destructive/10 border border-destructive/20">
+          <Youtube className="w-7 h-7 text-destructive" />
         </div>
         <p className="text-base font-semibold text-foreground">{t("upload.youtubeImportTitle")}</p>
         <p className="text-sm text-muted-foreground">{t("upload.youtubeImportDesc")}</p>
@@ -441,7 +443,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
             className="pl-10 h-12 text-base rounded-xl border-border/50 bg-muted/20 focus-visible:border-primary/50"
             disabled={youtubeImporting}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && youtubeUrl.trim() && isValidYouTubeUrl(youtubeUrl.trim())) handleYoutubeImport();
+              if (e.key === "Enter" && youtubeUrl.trim() && isValidYouTubeUrl(youtubeUrl.trim()) && copyrightConfirmed) handleYoutubeImport();
             }}
           />
         </div>
@@ -450,10 +452,40 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
         )}
       </div>
 
-      {/* Hint */}
+      {/* Quality tip */}
+      <div className="flex items-start gap-2.5 rounded-xl px-3 py-2.5 bg-muted/40 border border-border/30">
+        <Info className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          For best quality, upload your original video file directly via the
+          <button
+            type="button"
+            onClick={() => { setActiveTab("file"); setCopyrightConfirmed(false); }}
+            className="text-primary hover:underline mx-1 font-medium"
+          >
+            Upload File
+          </button>
+          tab. YouTube re-encodes videos which may reduce quality.
+        </p>
+      </div>
+
+      {/* Public videos hint */}
       <div className="flex items-start gap-2.5 rounded-xl px-3 py-2.5 bg-primary/5 border border-primary/15">
         <Sparkles className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
         <p className="text-xs text-muted-foreground leading-relaxed">{t("upload.youtubeImportHint")}</p>
+      </div>
+
+      {/* Copyright checkbox */}
+      <div className="flex items-start gap-3">
+        <Checkbox
+          id="copyright"
+          checked={copyrightConfirmed}
+          onCheckedChange={(checked) => setCopyrightConfirmed(checked === true)}
+          className="mt-0.5"
+          disabled={youtubeImporting}
+        />
+        <label htmlFor="copyright" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+          I confirm I have the right to use this video. HookCut is not responsible for copyright violations. Some videos may fail to download due to restrictions set by the uploader.
+        </label>
       </div>
 
       {/* Buttons */}
@@ -465,7 +497,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
           variant="hero"
           onClick={handleYoutubeImport}
           className="w-full sm:flex-1 min-h-[44px]"
-          disabled={youtubeImporting || !youtubeUrl.trim() || !isValidYouTubeUrl(youtubeUrl.trim())}
+          disabled={youtubeImporting || !youtubeUrl.trim() || !isValidYouTubeUrl(youtubeUrl.trim()) || !copyrightConfirmed}
         >
           {youtubeImporting ? (
             <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t("upload.youtubeImportBtnImporting")}</>
