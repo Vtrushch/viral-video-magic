@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Play, Download, Star, Clock, Calendar, Settings2,
   Loader2, AlertCircle, HardDrive, RotateCcw, CheckCircle2, Sparkles,
-  Search, Zap, Film, ChevronRight, XCircle, Eye, Pencil, RefreshCw, Clapperboard, Share2,
+  Search, Zap, Film, ChevronRight, XCircle, Eye, Pencil, RefreshCw, Clapperboard,
   Scissors, X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { downloadClip, clipFilename } from "@/lib/downloadClip";
 import { apiFetch } from "@/lib/api";
 import type { Tables } from "@/integrations/supabase/types";
 import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
@@ -584,20 +585,10 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
   const handleDownload = async (clip: Tables<"clips">) => {
     if (!clip.file_path) return;
     try {
-      toast.info("Downloading clip...");
       posthog.capture('clip_downloaded', { clip_id: clip.id });
-      const response = await fetch(clip.file_path);
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${clip.title}.mp4`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      await downloadClip(clip.file_path, clipFilename(clip.title, clip.id));
     } catch {
-      toast.error("Failed to download clip");
+      // downloadClip already shows error toast
     }
   };
 
@@ -936,32 +927,13 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                     {isReady && clip.file_path ? (
                       <>
                         <button
-                          className="inline-flex items-center gap-1 h-7 px-2 text-xs text-accent hover:text-accent rounded-md hover:bg-accent/10 transition-colors"
+                          className="inline-flex items-center gap-1 h-7 min-h-[44px] px-2 text-xs text-accent hover:text-accent rounded-md hover:bg-accent/10 transition-colors"
                           onClick={() => handleDownload(clip)}
                         >
-                          <Download className="w-3 h-3 sm:mr-0.5" /><span className="hidden sm:inline">Download</span>
+                          <Download className="w-3 h-3 sm:mr-0.5" />
+                          <span className="sm:hidden">Save</span>
+                          <span className="hidden sm:inline">Download</span>
                         </button>
-                        {typeof navigator.share !== 'undefined' && (
-                          <button
-                            className="sm:hidden inline-flex items-center gap-1 h-7 px-2 text-xs text-primary hover:text-primary/80 rounded-md hover:bg-primary/10 transition-colors"
-                            onClick={async (e) => {
-                              e.stopPropagation();
-                              try {
-                                const response = await fetch(clip.file_path!);
-                                const blob = await response.blob();
-                                const file = new File([blob], `${clip.title || 'clip'}.mp4`, { type: 'video/mp4' });
-                                await navigator.share({ files: [file], title: clip.title || 'HookCut clip' });
-                              } catch (err) {
-                                if (err instanceof Error && err.name !== 'AbortError') {
-                                  console.error('Share failed:', err);
-                                  handleDownload(clip);
-                                }
-                              }
-                            }}
-                          >
-                            <Share2 className="w-3 h-3" /> Share
-                          </button>
-                        )}
                         {(credits?.plan === "free" || !credits?.plan) && (
                           <span className="text-[9px] text-yellow-500/70 bg-yellow-500/10 rounded px-1.5 py-0.5">
                             Watermark

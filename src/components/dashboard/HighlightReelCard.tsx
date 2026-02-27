@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { downloadClip, clipFilename } from "@/lib/downloadClip";
 
 interface Reel {
   id: string;
@@ -52,19 +53,9 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
     if (!reel.file_path) return;
     setDownloading(true);
     try {
-      const response = await fetch(reel.file_path);
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${reel.title}.mp4`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      toast.success("Downloading reel...");
+      await downloadClip(reel.file_path, clipFilename(reel.title, reel.id));
     } catch {
-      toast.error("Failed to download reel");
+      // downloadClip already shows error toast
     } finally {
       setDownloading(false);
     }
