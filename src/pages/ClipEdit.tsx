@@ -175,15 +175,21 @@ const ClipEdit = () => {
       setTranscriptLoading(true);
     }
 
-    // Load subtitle style from saved caption_style (presetId)
-    const savedPresetId = clip.caption_style || (video?.settings as Record<string, unknown> | null)?.captionStyle as string;
-    if (savedPresetId) {
-      const preset = getPresetById(savedPresetId);
-      if (preset) {
-        const { name, description, tags, ...style } = preset;
-        setSubtitleStyle(style);
+    // Load subtitle style: prefer full JSON, then preset by ID, then default
+    const savedJson = (clip as any).subtitle_style_json as SubtitleStyle | null;
+    if (savedJson && typeof savedJson === 'object' && savedJson.presetId) {
+      setSubtitleStyle(savedJson);
+      setCaptionStyle(savedJson.presetId as CaptionStyle);
+    } else {
+      const savedPresetId = clip.caption_style || (video?.settings as Record<string, unknown> | null)?.captionStyle as string;
+      if (savedPresetId) {
+        const preset = getPresetById(savedPresetId);
+        if (preset) {
+          const { name, description, tags, ...style } = preset;
+          setSubtitleStyle(style);
+        }
+        setCaptionStyle(savedPresetId as CaptionStyle);
       }
-      setCaptionStyle(savedPresetId as CaptionStyle);
     }
   }, [clip, video]);
 
@@ -428,6 +434,7 @@ const ClipEdit = () => {
           duration_seconds: Math.round(clipDuration),
           duration: `${Math.floor(clipDuration / 60)}:${Math.floor(clipDuration % 60).toString().padStart(2, "0")}`,
           caption_style: subtitleStyle.presetId,
+          subtitle_style_json: subtitleStyle,
           transcription: editedTranscription,
           transcription_words: transcript
             .filter(w => !w.deleted)
@@ -460,6 +467,7 @@ const ClipEdit = () => {
           start_time: clipStart.toFixed(3),
           end_time: clipEnd.toFixed(3),
           caption_style: subtitleStyle.presetId,
+          subtitle_style_json: subtitleStyle,
           transcription: editedTranscription,
         } as any)
         .eq("id", clip.id);
@@ -610,13 +618,12 @@ const ClipEdit = () => {
                 <RefreshCw className="w-3.5 h-3.5 text-white/80" />
               </button>
               {/* Live subtitles — mobile */}
-              {activeWords.length > 0 && (
-                <StyledLiveSubtitles
-                  words={activeWords}
-                  relativeTime={relativeTime}
-                  style={subtitleStyle}
-                />
-              )}
+              <StyledLiveSubtitles
+                words={activeWords}
+                relativeTime={relativeTime}
+                style={subtitleStyle}
+                sampleText={activeWords.length === 0 ? "Your captions will appear here" : undefined}
+              />
               {!playing && !loading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer" onClick={togglePlay}>
                   <div className="w-14 h-14 rounded-full gradient-bg flex items-center justify-center shadow-lg glow-primary hover:scale-110 transition-transform">
@@ -692,13 +699,12 @@ const ClipEdit = () => {
                 </button>
 
                 {/* Live subtitles — desktop */}
-                {activeWords.length > 0 && (
-                  <StyledLiveSubtitles
-                    words={activeWords}
-                    relativeTime={relativeTime}
-                    style={subtitleStyle}
-                  />
-                )}
+                <StyledLiveSubtitles
+                  words={activeWords}
+                  relativeTime={relativeTime}
+                  style={subtitleStyle}
+                  sampleText={activeWords.length === 0 ? "Your captions will appear here" : undefined}
+                />
 
                 {/* Play overlay */}
                 {!playing && !loading && (

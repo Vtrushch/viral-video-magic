@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ChevronDown, RotateCcw, AlignVerticalJustifyStart, AlignVerticalJustifyCenter, AlignVerticalJustifyEnd } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Check, ChevronDown, RotateCcw, AlignVerticalJustifyStart, AlignVerticalJustifyCenter, AlignVerticalJustifyEnd } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
@@ -31,6 +31,11 @@ const ANIMATION_OPTIONS: { value: SubtitleStyle["animation"]; label: string }[] 
 
 export default function SubtitleStylePicker({ value, onChange }: SubtitleStylePickerProps) {
   const [customizeOpen, setCustomizeOpen] = useState(false);
+  const [fontsReady, setFontsReady] = useState(false);
+
+  useEffect(() => {
+    document.fonts.ready.then(() => setFontsReady(true));
+  }, []);
 
   const applyPreset = (preset: SubtitlePreset) => {
     const { name, description, tags, ...style } = preset;
@@ -53,43 +58,58 @@ export default function SubtitleStylePicker({ value, onChange }: SubtitleStylePi
       </h3>
 
       {/* Preset grid — horizontal scroll on mobile, grid on desktop */}
-      <div className="flex gap-2 overflow-x-auto pb-2 lg:grid lg:grid-cols-3 lg:overflow-visible scrollbar-hide">
-        {SUBTITLE_PRESETS.map((preset) => (
-          <button
-            key={preset.presetId}
-            onClick={() => applyPreset(preset)}
-            className={cn(
-              "flex-shrink-0 w-[110px] lg:w-auto rounded-lg p-2.5 text-left transition-all duration-200 border",
-              value.presetId === preset.presetId
-                ? "border-primary/60 bg-primary/10 shadow-[0_0_12px_hsl(349,100%,59%,0.15)]"
-                : "border-border/30 bg-muted/20 hover:border-border/60"
-            )}
-          >
-            {/* Mini preview */}
-            <div
-              className="w-full h-8 rounded mb-1.5 flex items-center justify-center overflow-hidden"
-              style={{ background: "#111" }}
+      <div className="flex gap-2 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible scrollbar-hide snap-x">
+        {SUBTITLE_PRESETS.map((preset) => {
+          const isSelected = value.presetId === preset.presetId;
+          return (
+            <button
+              key={preset.presetId}
+              onClick={() => applyPreset(preset)}
+              className={cn(
+                "relative flex-shrink-0 w-[120px] md:w-auto rounded-lg p-2.5 text-left transition-all duration-200 snap-start",
+                isSelected
+                  ? "ring-2 ring-purple-500 shadow-lg shadow-purple-500/30 bg-purple-500/10"
+                  : "ring-1 ring-white/10 hover:ring-white/30 bg-muted/20"
+              )}
             >
-              <span
-                style={{
-                  fontFamily: `'${preset.fontFamily}', sans-serif`,
-                  fontWeight: preset.fontWeight,
-                  fontSize: "11px",
-                  color: preset.textColor,
-                  textShadow: preset.strokeWidth > 0
-                    ? `1px 1px 0 ${preset.strokeColor}, -1px -1px 0 ${preset.strokeColor}`
-                    : undefined,
-                  textTransform: preset.textTransform as React.CSSProperties["textTransform"],
-                  letterSpacing: `${preset.letterSpacing * 0.5}px`,
-                }}
+              {/* Checkmark badge */}
+              {isSelected && (
+                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center z-10">
+                  <Check className="w-3 h-3 text-white" />
+                </div>
+              )}
+
+              {/* Mini preview */}
+              <div
+                className="w-full h-8 rounded mb-1.5 flex items-center justify-center overflow-hidden"
+                style={{ background: "#111" }}
               >
-                <span style={{ color: preset.highlightColor }}>Your</span> text
-              </span>
-            </div>
-            <div className="text-[11px] font-semibold text-foreground truncate">{preset.name}</div>
-            <p className="text-[9px] text-muted-foreground leading-tight line-clamp-1 mt-0.5">{preset.description}</p>
-          </button>
-        ))}
+                {fontsReady ? (
+                  <span
+                    style={{
+                      fontFamily: `'${preset.fontFamily}', sans-serif`,
+                      fontWeight: preset.fontWeight,
+                      fontSize: "11px",
+                      color: preset.textColor,
+                      textShadow: preset.strokeWidth > 0
+                        ? `1px 1px 0 ${preset.strokeColor}, -1px -1px 0 ${preset.strokeColor}`
+                        : undefined,
+                      textTransform: preset.textTransform as React.CSSProperties["textTransform"],
+                      letterSpacing: `${preset.letterSpacing * 0.5}px`,
+                    }}
+                  >
+                    <span style={{ color: preset.highlightColor }}>Your</span> text
+                  </span>
+                ) : (
+                  <div className="w-16 h-3 rounded bg-white/10 animate-pulse" />
+                )}
+              </div>
+              <div className="text-[11px] font-semibold text-foreground truncate">{preset.name}</div>
+              {/* Hide description on mobile */}
+              <p className="hidden md:block text-[9px] text-muted-foreground leading-tight line-clamp-1 mt-0.5">{preset.description}</p>
+            </button>
+          );
+        })}
       </div>
 
       {/* Customize toggle */}
@@ -127,6 +147,7 @@ export default function SubtitleStylePicker({ value, onChange }: SubtitleStylePi
                 </button>
               ))}
             </div>
+            <p className="text-[9px] text-muted-foreground/60 text-center">Optimized for TikTok/Reels</p>
           </div>
 
           {/* Text Color */}

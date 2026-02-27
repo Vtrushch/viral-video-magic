@@ -28,6 +28,7 @@ export type Database = {
           render_started_at: string | null
           start_time: string | null
           status: string
+          subtitle_style_json: Json | null
           thumbnail_url: string | null
           title: string
           transcription: string | null
@@ -50,6 +51,7 @@ export type Database = {
           render_started_at?: string | null
           start_time?: string | null
           status?: string
+          subtitle_style_json?: Json | null
           thumbnail_url?: string | null
           title: string
           transcription?: string | null
@@ -72,6 +74,7 @@ export type Database = {
           render_started_at?: string | null
           start_time?: string | null
           status?: string
+          subtitle_style_json?: Json | null
           thumbnail_url?: string | null
           title?: string
           transcription?: string | null
