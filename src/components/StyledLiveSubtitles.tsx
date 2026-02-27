@@ -12,6 +12,7 @@ interface StyledLiveSubtitlesProps {
   relativeTime: number;
   style: SubtitleStyle;
   groupSize?: number;
+  sampleText?: string;
 }
 
 const TOLERANCE = 0.08;
@@ -21,10 +22,19 @@ export default function StyledLiveSubtitles({
   relativeTime,
   style,
   groupSize,
+  sampleText,
 }: StyledLiveSubtitlesProps) {
   const effectiveGroupSize = groupSize ?? style.maxWordsPerLine ?? 4;
 
   const { group, groupKey } = useMemo(() => {
+    // If no words but sampleText provided, create fake words
+    if (words.length === 0 && sampleText) {
+      const fakeWords = sampleText.split(/\s+/).map((w, i) => ({
+        word: w, start: i * 0.5, end: (i + 1) * 0.5,
+      }));
+      return { group: fakeWords.slice(0, effectiveGroupSize), groupKey: "sample" };
+    }
+
     if (words.length === 0) return { group: [], groupKey: "" };
 
     let activeIdx = words.findIndex(
@@ -40,7 +50,7 @@ export default function StyledLiveSubtitles({
     const start = Math.floor(activeIdx / effectiveGroupSize) * effectiveGroupSize;
     const g = words.slice(start, start + effectiveGroupSize);
     return { group: g, groupKey: `g-${start}` };
-  }, [words, relativeTime, effectiveGroupSize]);
+  }, [words, relativeTime, effectiveGroupSize, sampleText]);
 
   if (group.length === 0) return null;
 
@@ -79,6 +89,8 @@ export default function StyledLiveSubtitles({
   const animationIteration =
     style.animation === "bounce" || style.animation === "glow-pulse" ? "infinite" : "1";
 
+  const isSample = words.length === 0 && !!sampleText;
+
   return (
     <div
       className="absolute left-[5%] right-[5%] text-center pointer-events-none z-20"
@@ -99,8 +111,9 @@ export default function StyledLiveSubtitles({
         }}
       >
         {group.map((w, wi) => {
-          const isActive =
-            relativeTime >= w.start && relativeTime < w.end + TOLERANCE;
+          const isActive = isSample
+            ? wi === 0
+            : relativeTime >= w.start && relativeTime < w.end + TOLERANCE;
           return (
             <StyledWord
               key={`${wi}-${w.word}`}
@@ -134,13 +147,13 @@ function StyledWord({
     shadows.push(`${sw}px ${sw}px 0 ${sc}`, `${-sw}px ${-sw}px 0 ${sc}`, `${sw}px ${-sw}px 0 ${sc}`, `${-sw}px ${sw}px 0 ${sc}`);
   }
   if (style.shadow?.enabled) {
-    shadows.push(`${style.shadow.offsetX}px ${style.shadow.offsetY}px ${style.shadow.blur}px ${isActive ? style.shadow.color : style.shadow.color}`);
+    shadows.push(`${style.shadow.offsetX}px ${style.shadow.offsetY}px ${style.shadow.blur}px ${style.shadow.color}`);
   }
 
   const wordStyle: React.CSSProperties = {
     fontFamily: `'${style.fontFamily}', sans-serif`,
     fontWeight: style.fontWeight,
-    fontSize: `${Math.max(20, Math.min(48, style.fontSize)) * 0.6}px`, // Scale down for preview
+    fontSize: `${Math.max(20, Math.min(48, style.fontSize)) * 0.6}px`,
     color,
     textShadow: shadows.length > 0 ? shadows.join(", ") : undefined,
     textTransform: style.textTransform as React.CSSProperties["textTransform"],
