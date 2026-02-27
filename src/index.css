@@ -172,14 +172,29 @@
   }
 
   @keyframes captionPop {
-    0% {
-      opacity: 0;
-      transform: scale(0.9) translateY(4px);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
+    0% { opacity: 0; transform: scale(0.9) translateY(4px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  @keyframes subtitlePopUp {
+    0% { transform: scale(0); opacity: 0; }
+    70% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes subtitleBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  @keyframes subtitleFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes subtitleGlowPulse {
+    0%, 100% { text-shadow: 0 0 10px var(--subtitle-glow-color, #C084FC); }
+    50% { text-shadow: 0 0 25px var(--subtitle-glow-color, #C084FC), 0 0 50px var(--subtitle-glow-color, #C084FC); }
   }
 
   @keyframes flash-fade {
