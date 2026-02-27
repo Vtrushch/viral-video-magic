@@ -17,8 +17,10 @@ import {
   Clapperboard,
   Pencil,
   Clock,
+  Play,
 } from "lucide-react";
 import HighlightReelCard from "@/components/dashboard/HighlightReelCard";
+import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
 
 type MainTab = "clips" | "reels";
 type SortBy = "viral_score" | "created_at" | "duration_seconds";
@@ -36,6 +38,7 @@ const ClipsLibrary = () => {
   const [sortBy, setSortBy] = useState<SortBy>("viral_score");
   const [selectedClips, setSelectedClips] = useState<Set<string>>(new Set());
   const [downloading, setDownloading] = useState<string | null>(null);
+  const [previewClip, setPreviewClip] = useState<Tables<"clips"> | null>(null);
 
   const { data: clips = [], isLoading: clipsLoading } = useQuery({
     queryKey: ["all-clips-ready", user?.id],
@@ -208,7 +211,7 @@ const ClipsLibrary = () => {
       <div className="flex gap-1 p-1 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm w-fit mb-6">
         <button
           onClick={() => setMainTab("clips")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+          className={`flex items-center gap-2 px-4 py-2 min-h-[44px] rounded-lg text-sm font-medium transition-all duration-200 ${
             mainTab === "clips"
               ? "gradient-bg text-primary-foreground shadow-lg shadow-primary/20"
               : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
@@ -220,7 +223,7 @@ const ClipsLibrary = () => {
         </button>
         <button
           onClick={() => setMainTab("reels")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+          className={`flex items-center gap-2 px-4 py-2 min-h-[44px] rounded-lg text-sm font-medium transition-all duration-200 ${
             mainTab === "reels"
               ? "gradient-bg text-primary-foreground shadow-lg shadow-primary/20"
               : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
@@ -243,18 +246,18 @@ const ClipsLibrary = () => {
                   variant="outline"
                   size="sm"
                   onClick={selectedClips.size > 0 ? () => setSelectedClips(new Set()) : selectAllReady}
-                  className="text-xs h-9"
+                  className="text-xs min-h-[44px]"
                 >
                   <CheckSquare className="w-3.5 h-3.5 mr-1.5" />
                   {selectedClips.size > 0 ? "Deselect" : `Select ${clips.length}`}
                 </Button>
               )}
-              <div className="flex items-center gap-1.5 px-3 h-9 rounded-lg bg-card/50 border border-border/50">
+              <div className="flex items-center gap-1.5 px-3 min-h-[44px] rounded-lg bg-card/50 border border-border/50">
                 <ArrowUpDown className="w-3.5 h-3.5 text-muted-foreground" />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as SortBy)}
-                  className="bg-transparent text-xs text-foreground outline-none cursor-pointer pr-1"
+                  className="bg-transparent text-xs text-foreground outline-none cursor-pointer pr-1 min-h-[44px]"
                 >
                   {SORT_OPTIONS.map((opt) => (
                     <option key={opt.id} value={opt.id} className="bg-card text-foreground">
@@ -280,7 +283,7 @@ const ClipsLibrary = () => {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {sortedClips.map((clip) => {
                 const scoreStyle = getScoreStyle(clip.viral_score);
                 const isSelected = selectedClips.has(clip.id);
@@ -295,22 +298,44 @@ const ClipsLibrary = () => {
                     }`}
                     style={{ background: "hsl(240, 15%, 10%)" }}
                   >
-                    {/* Video preview */}
-                    <div className="relative w-full bg-black rounded-t-xl overflow-hidden" style={{ height: '280px' }}>
-                      <video
-                        src={clip.file_path || undefined}
-                        className="w-full h-full object-contain"
-                        preload="metadata"
-                        playsInline
-                        controls
-                      />
+                    {/* Thumbnail preview */}
+                    <div
+                      className="relative w-full aspect-video bg-black rounded-t-xl overflow-hidden cursor-pointer"
+                      onClick={() => setPreviewClip(clip)}
+                    >
+                      {clip.thumbnail_url ? (
+                        <img
+                          src={clip.thumbnail_url}
+                          alt={clip.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : clip.file_path ? (
+                        <video
+                          src={`${clip.file_path}#t=0.5`}
+                          className="w-full h-full object-contain"
+                          preload="metadata"
+                          muted
+                          playsInline
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-muted/20">
+                          <Film className="w-8 h-8 text-muted-foreground/30" />
+                        </div>
+                      )}
+                      {/* Play overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="w-12 h-12 rounded-full bg-primary/90 flex items-center justify-center shadow-lg">
+                          <Play className="w-5 h-5 text-primary-foreground ml-0.5" />
+                        </div>
+                      </div>
                       <div className="absolute top-2 right-2 flex items-center gap-1.5">
                         <span className="text-[10px] bg-accent/20 text-accent px-2 py-0.5 rounded-full border border-accent/30">
                           Ready
                         </span>
                         <button
                           onClick={(e) => { e.stopPropagation(); toggleSelect(clip.id); }}
-                          className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                          className={`w-7 h-7 min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center transition-all duration-200 ${
                             isSelected
                               ? "bg-primary border-2 border-primary"
                               : "border-2 border-white/30 bg-black/30 backdrop-blur-sm hover:border-white/60"
@@ -344,7 +369,7 @@ const ClipsLibrary = () => {
                         <button
                           onClick={() => handleDownload(clip)}
                           disabled={downloading === clip.id}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors disabled:opacity-50"
+                          className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors disabled:opacity-50"
                         >
                           {downloading === clip.id ? (
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -355,7 +380,7 @@ const ClipsLibrary = () => {
                         </button>
                         <button
                           onClick={() => navigate(`/dashboard/videos/edit/${clip.id}`)}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-border/50 text-muted-foreground text-xs font-medium hover:text-foreground hover:border-primary/30 transition-colors"
+                          className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] py-1.5 rounded-lg border border-border/50 text-muted-foreground text-xs font-medium hover:text-foreground hover:border-primary/30 transition-colors"
                         >
                           <Pencil className="w-3.5 h-3.5" />
                           Re-edit
@@ -384,7 +409,7 @@ const ClipsLibrary = () => {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {reels.map((reel) => (
                 <HighlightReelCard
                   key={reel.id}
@@ -395,6 +420,16 @@ const ClipsLibrary = () => {
             </div>
           )}
         </div>
+      )}
+
+      {/* Clip Preview Modal */}
+      {previewClip && (
+        <ClipPreviewModal
+          clip={previewClip}
+          video={videoMap[previewClip.video_id] ? { id: previewClip.video_id, file_path: videoMap[previewClip.video_id].file_path, title: videoMap[previewClip.video_id].title } as Tables<"videos"> : null}
+          open={!!previewClip}
+          onClose={() => setPreviewClip(null)}
+        />
       )}
     </div>
   );
