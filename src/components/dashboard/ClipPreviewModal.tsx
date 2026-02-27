@@ -145,17 +145,17 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     setCurrentTime(val);
   };
 
-  // iOS video render fix — nudge video to render first frame
+  // Force-load video when signed URL becomes available
   useEffect(() => {
-    const el = mobileVideoRef.current;
-    if (!el || !signedUrl) return;
-    const handleCanPlay = () => {
-      if (el.currentTime < startTime) {
-        el.currentTime = startTime;
+    if (!signedUrl) return;
+    // Explicitly load both refs so the video is ready to play immediately
+    [desktopVideoRef, mobileVideoRef].forEach((ref) => {
+      const el = ref.current;
+      if (el) {
+        el.src = signedUrl;
+        el.load();
       }
-    };
-    el.addEventListener('canplay', handleCanPlay);
-    return () => el.removeEventListener('canplay', handleCanPlay);
+    });
   }, [signedUrl]);
 
   // Close on Escape
