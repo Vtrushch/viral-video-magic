@@ -1,94 +1,119 @@
-import { Check, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Check, X, Minus } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { PLANS, ADDON_PACK } from "@/constants/pricing";
+import { useScrollRevealChildren } from "@/hooks/useScrollReveal";
 
-const Pricing = () => {
+const comparisonRows = [
+  { feature: "Upload & analyze", hookcut: "Free, unlimited", others: "Per-minute billing" },
+  { feature: "Edit before paying", hookcut: "Yes — full editor", others: "Limited or none" },
+  { feature: "1-hour video analysis", hookcut: "0 credits", others: "~60 credits" },
+  { feature: "Pricing model", hookcut: "Per rendered clip", others: "Per processing minute" },
+  { feature: "YouTube import", hookcut: true, others: "Varies" },
+  { feature: "Face tracking reframe", hookcut: true, others: true },
+  { feature: "Caption styles", hookcut: "10+", others: "3–5" },
+  { feature: "Hook A/B variants", hookcut: true, others: false },
+  { feature: "Remix Mode", hookcut: true, others: false },
+  { feature: "Languages supported", hookcut: "99", others: "10–30" },
+  { feature: "Save to Camera Roll", hookcut: true, others: false },
+];
+
+function CellValue({ value }: { value: boolean | string }) {
+  if (value === true) return <Check className="w-4 h-4 text-emerald-500 mx-auto" />;
+  if (value === false) return <X className="w-4 h-4 text-muted-foreground/40 mx-auto" />;
+  return <span>{value}</span>;
+}
+
+const ComparisonAndCTA = () => {
   const { t } = useTranslation();
-  const plans = Object.values(PLANS);
+  const containerRef = useScrollRevealChildren();
 
   return (
-    <section id="pricing" className="py-28 relative overflow-hidden gradient-hero-bg">
-      <div className="absolute inset-0 mesh-gradient opacity-30" />
+    <>
+      {/* Comparison */}
+      <section className="py-24 sm:py-28 relative overflow-hidden gradient-hero-bg">
+        <div className="absolute inset-0 mesh-gradient opacity-20" />
+        <div className="relative z-10 container mx-auto px-6 sm:px-8" ref={containerRef}>
+          <div className="text-center mb-16" data-reveal data-reveal-delay="0">
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3 text-emerald-500 opacity-0 translate-y-8 transition-all duration-700">
+              HONEST COMPARISON
+            </p>
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground opacity-0 translate-y-8 transition-all duration-700" data-reveal data-reveal-delay="100">
+              We charge for{" "}
+              <span className="font-serif-display italic text-muted-foreground">clips, not minutes</span>
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground mt-4 max-w-xl mx-auto opacity-0 translate-y-8 transition-all duration-700" data-reveal data-reveal-delay="150">
+              Most tools charge per processing minute — so a 1-hour video costs 60 credits before you even see a single clip. We don't.
+            </p>
+          </div>
 
-      <div className="relative z-10 container mx-auto px-6">
-        <div className="text-center mb-16">
-          <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3 opacity-0 animate-fade-in">
-            {t('landing.pricing.label')}
-          </p>
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground opacity-0 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-            {t('landing.pricing.heading')} <span className="gradient-text">{t('landing.pricing.headingAccent')}</span>
-          </h2>
-          <p className="text-lg text-muted-foreground opacity-0 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-            {t('landing.pricing.subheading')}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto items-start">
-          {plans.map((plan, i) => (
-            <div
-              key={plan.name}
-              className={`relative rounded-2xl p-7 transition-all duration-500 opacity-0 animate-fade-in ${
-                plan.popular
-                  ? "glass-card glow-border scale-[1.03] border-primary/30"
-                  : "glass-card-hover"
-              }`}
-              style={{ animationDelay: `${0.25 + i * 0.1}s` }}
-            >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full gradient-bg text-xs font-semibold text-primary-foreground">
-                  {t('landing.pricing.mostPopular')}
-                </div>
-              )}
-              <h3 className="text-xl font-bold text-foreground mb-1">{plan.name}</h3>
-              <p className="text-sm text-muted-foreground mb-5">{plan.description}</p>
-              <div className="flex items-baseline gap-1 mb-8">
-                <span className="text-4xl font-black text-foreground">
-                  {plan.price === 0 ? "Free" : `$${plan.price}`}
-                </span>
-                {plan.price > 0 && (
-                  <span className="text-muted-foreground">{t('landing.pricing.perMonth')}</span>
-                )}
-              </div>
-              <Button
-                variant={plan.popular ? "hero" : "hero-outline"}
-                className="w-full mb-8"
-                asChild
-              >
-                <Link to={`/auth?plan=${Object.keys(PLANS)[i]}`}>{plan.cta}</Link>
-              </Button>
-              <ul className="space-y-2.5">
-                {plan.features.map((feature) =>
-                  feature.includes("coming soon") ? (
-                    <li key={feature} className="flex items-start gap-2 text-xs opacity-50">
-                      <Clock className="w-3.5 h-3.5 text-muted-foreground mt-0.5 shrink-0" />
-                      <span className="text-muted-foreground italic">{feature}</span>
-                    </li>
-                  ) : (
-                    <li key={feature} className="flex items-start gap-2 text-xs">
-                      <Check className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
-                      <span className="text-muted-foreground">{feature}</span>
-                    </li>
-                  )
-                )}
-              </ul>
+          <div
+            className="max-w-3xl mx-auto rounded-2xl border border-border overflow-hidden opacity-0 translate-y-8 transition-all duration-700"
+            data-reveal
+            data-reveal-delay="200"
+          >
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[500px]">
+                <thead>
+                  <tr className="border-b border-border bg-muted/30">
+                    <th className="text-left p-4 font-semibold text-muted-foreground">Feature</th>
+                    <th className="text-center p-4 font-bold text-primary">HookCut</th>
+                    <th className="text-center p-4 font-semibold text-muted-foreground">Others*</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparisonRows.map((row, i) => (
+                    <tr key={row.feature} className={`border-b border-border/50 ${i % 2 === 0 ? "bg-muted/5" : ""}`}>
+                      <td className="p-4 text-foreground font-medium">{row.feature}</td>
+                      <td className="p-4 text-center text-emerald-500 font-medium">
+                        <CellValue value={row.hookcut} />
+                      </td>
+                      <td className="p-4 text-center text-muted-foreground">
+                        <CellValue value={row.others} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ))}
-        </div>
-
-        {/* Add-on pack */}
-        <div className="max-w-2xl mx-auto mt-10 opacity-0 animate-fade-in" style={{ animationDelay: "0.7s" }}>
-          <div className="glass-card rounded-2xl p-6 text-center">
-            <p className="text-sm font-semibold text-foreground mb-1">Need more clips?</p>
-            <p className="text-muted-foreground text-sm">
-              +${ADDON_PACK.price} for {ADDON_PACK.renders} extra renders. Available on any paid plan. Max {ADDON_PACK.maxPerMonth} extra/month.
+            <p className="text-[11px] text-muted-foreground/60 p-4">
+              *Based on publicly available pricing from Opus Clip, Vizard, and similar tools as of 2025.
             </p>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-24 sm:py-28 relative overflow-hidden gradient-hero-bg">
+        <div className="absolute inset-0 mesh-gradient opacity-40" />
+        <div className="relative z-10 container mx-auto px-6 sm:px-8 text-center">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-foreground mb-6 opacity-0 animate-fade-in">
+              Ready to find your next{" "}
+              <span className="shimmer-text font-serif-display italic">viral clip</span>?
+            </h2>
+            <p className="text-base sm:text-lg text-muted-foreground mb-10 opacity-0 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+              Start with 10 free renders. No credit card. Cancel anytime.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center opacity-0 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+              <Button variant="hero" size="lg" className="text-base px-8 py-6 animate-pulse-glow min-h-[44px]" asChild>
+                <Link to="/auth">
+                  Get Started Free
+                  <ArrowRight className="w-4 h-4 ml-1" />
+                </Link>
+              </Button>
+              <Button variant="hero-outline" size="lg" className="text-base px-8 py-6 min-h-[44px]" asChild>
+                <Link to="/auth">See Pricing Plans</Link>
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground/60 mt-6 opacity-0 animate-fade-in" style={{ animationDelay: "0.4s" }}>
+              Free plan includes 10 render credits • Paid plans from $9/mo
+            </p>
+          </div>
+        </div>
+      </section>
+    </>
   );
 };
 
-export default Pricing;
+export default ComparisonAndCTA;
