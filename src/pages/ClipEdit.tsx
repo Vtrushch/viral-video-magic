@@ -651,7 +651,7 @@ const ClipEdit = () => {
           <div className="relative flex-shrink-0 hidden sm:block">
             {/* Phone mockup */}
             <div
-              className="relative rounded-[2.5rem] p-3 w-[280px]"
+              className="relative rounded-[2.5rem] p-3 w-[320px] xl:w-[340px]"
               style={{
                 background:
                   "linear-gradient(145deg, hsl(240,15%,16%), hsl(240,15%,10%))",
