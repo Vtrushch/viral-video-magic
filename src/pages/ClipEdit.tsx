@@ -622,6 +622,8 @@ const ClipEdit = () => {
                 words={activeWords}
                 relativeTime={relativeTime}
                 style={subtitleStyle}
+                positionY={subtitleY}
+                sizeScale={subtitleSize === "small" ? 0.8 : subtitleSize === "large" ? 1.3 : 1}
                 sampleText={activeWords.length === 0 ? "Your captions will appear here" : undefined}
               />
               {!playing && !loading && (
@@ -703,6 +705,8 @@ const ClipEdit = () => {
                   words={activeWords}
                   relativeTime={relativeTime}
                   style={subtitleStyle}
+                  positionY={subtitleY}
+                  sizeScale={subtitleSize === "small" ? 0.8 : subtitleSize === "large" ? 1.3 : 1}
                   sampleText={activeWords.length === 0 ? "Your captions will appear here" : undefined}
                 />
 
