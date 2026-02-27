@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Upload, X, FileVideo, Loader2, Sparkles, CloudUpload, Youtube, Link2, ArrowRight, Info } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -59,6 +59,11 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
   const { canUpload, uploadsRemaining, uploadLimit, storageRemaining, storageLimit, activeVideos, plan, loading: limitLoading } = useVideoLimit();
 
   const MAX_FILE_SIZE_BYTES = 5120 * 1024 * 1024; // 5GB
+
+  useEffect(() => {
+    if (!open) return;
+    contentRef.current?.scrollTo({ top: 0 });
+  }, [activeTab, open]);
 
   const uploadFileWithProgress = (
     file: File,
@@ -517,7 +522,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={handleCancel}>
-      <DialogContent className="max-w-lg p-5 gap-4 sm:rounded-2xl fixed sm:relative bottom-0 sm:bottom-auto inset-x-0 sm:inset-x-auto rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[80vh] sm:max-h-[85vh] overflow-hidden">
+      <DialogContent className="max-w-lg p-5 gap-4 sm:rounded-2xl fixed sm:relative bottom-0 sm:bottom-auto inset-x-0 sm:inset-x-auto rounded-t-2xl sm:rounded-2xl flex flex-col h-[80dvh] sm:h-auto sm:max-h-[85vh] overflow-hidden">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>{t("upload.addVideo")}</DialogTitle>
         </DialogHeader>
@@ -534,7 +539,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
             )}
 
             {/* Scrollable tab content */}
-            <div ref={contentRef} className="overflow-y-auto flex-1 min-h-0">
+            <div ref={contentRef} className="overflow-y-auto overscroll-contain flex-1 min-h-0">
               {activeTab === "file" && renderFileTab()}
               {activeTab === "youtube" && !file && renderYoutubeTab()}
             </div>
