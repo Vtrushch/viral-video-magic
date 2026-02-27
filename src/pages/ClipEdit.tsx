@@ -11,6 +11,9 @@ import { useCredits } from "@/hooks/useCredits";
 import { posthog } from "@/lib/posthog";
 import RenderCreditDialog from "@/components/dashboard/RenderCreditDialog";
 import LiveSubtitles from "@/components/LiveSubtitles";
+import StyledLiveSubtitles from "@/components/StyledLiveSubtitles";
+import SubtitleStylePicker from "@/components/SubtitleStylePicker";
+import { type SubtitleStyle, getDefaultStyle, getPresetById, loadAllPresetFonts } from "@/config/subtitlePresets";
 import {
   ArrowLeft,
   Play,
@@ -74,9 +77,13 @@ const ClipEdit = () => {
   // Subtitle controls
   const [subtitleSize, setSubtitleSize] = useState<"small" | "medium" | "large">("medium");
   const [subtitleY, setSubtitleY] = useState(0.85);
+  const [subtitleStyle, setSubtitleStyle] = useState<SubtitleStyle>(getDefaultStyle());
   const { credits, refetch: refetchCredits } = useCredits();
 
   const { t } = useTranslation();
+
+  // Load all preset fonts on mount
+  useEffect(() => { loadAllPresetFonts(); }, []);
 
 
 
@@ -168,9 +175,15 @@ const ClipEdit = () => {
       setTranscriptLoading(true);
     }
 
-    const settings = video?.settings as Record<string, unknown> | null;
-    if (settings?.captionStyle) {
-      setCaptionStyle(settings.captionStyle as CaptionStyle);
+    // Load subtitle style from saved caption_style (presetId)
+    const savedPresetId = clip.caption_style || (video?.settings as Record<string, unknown> | null)?.captionStyle as string;
+    if (savedPresetId) {
+      const preset = getPresetById(savedPresetId);
+      if (preset) {
+        const { name, description, tags, ...style } = preset;
+        setSubtitleStyle(style);
+      }
+      setCaptionStyle(savedPresetId as CaptionStyle);
     }
   }, [clip, video]);
 
@@ -414,7 +427,7 @@ const ClipEdit = () => {
           end_time: clipEnd.toFixed(3),
           duration_seconds: Math.round(clipDuration),
           duration: `${Math.floor(clipDuration / 60)}:${Math.floor(clipDuration % 60).toString().padStart(2, "0")}`,
-          caption_style: captionStyle,
+          caption_style: subtitleStyle.presetId,
           transcription: editedTranscription,
           transcription_words: transcript
             .filter(w => !w.deleted)
@@ -446,7 +459,7 @@ const ClipEdit = () => {
           status: "queued",
           start_time: clipStart.toFixed(3),
           end_time: clipEnd.toFixed(3),
-          caption_style: captionStyle,
+          caption_style: subtitleStyle.presetId,
           transcription: editedTranscription,
         } as any)
         .eq("id", clip.id);
@@ -456,9 +469,9 @@ const ClipEdit = () => {
         video_storage_path: video.file_path,
         start_time: clipStart,
         end_time: clipEnd,
-        caption_style: captionStyle || "hormozi",
+        caption_style: subtitleStyle.presetId || "bold-pop",
         custom_transcription: editedTranscription || undefined,
-        custom_color: customColor || undefined,
+        subtitle_style: subtitleStyle,
         crop_x: (clip.viral_analysis as Record<string, unknown> | null)?.face_x ?? 0.5,
         subtitle_size: subtitleSize,
         subtitle_y: subtitleY,
@@ -598,11 +611,10 @@ const ClipEdit = () => {
               </button>
               {/* Live subtitles — mobile */}
               {activeWords.length > 0 && (
-                <LiveSubtitles
+                <StyledLiveSubtitles
                   words={activeWords}
                   relativeTime={relativeTime}
-                  captionStyle={captionStyle}
-                  customColor={customColor}
+                  style={subtitleStyle}
                 />
               )}
               {!playing && !loading && (
@@ -681,11 +693,10 @@ const ClipEdit = () => {
 
                 {/* Live subtitles — desktop */}
                 {activeWords.length > 0 && (
-                  <LiveSubtitles
+                  <StyledLiveSubtitles
                     words={activeWords}
                     relativeTime={relativeTime}
-                    captionStyle={captionStyle}
-                    customColor={customColor}
+                    style={subtitleStyle}
                   />
                 )}
 
@@ -903,66 +914,12 @@ const ClipEdit = () => {
               </div>
             </div>
 
-            {/* 2. CAPTION STYLE */}
-            <div className="glass-card rounded-xl p-4 space-y-3">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                Caption Style
-              </h3>
-              <div className="flex gap-2 overflow-x-auto pb-2 lg:grid lg:grid-cols-3 lg:overflow-visible scrollbar-hide">
-                {CAPTION_STYLES.map((style) => (
-                  <button
-                    key={style.id}
-                    onClick={() => {
-                      setCaptionStyle(style.id);
-                      setCustomColor("");
-                    }}
-                    className={`flex-shrink-0 w-[100px] lg:w-auto rounded-lg p-2.5 text-center transition-all duration-200 border ${
-                      captionStyle === style.id && !customColor
-                        ? "border-primary/60 bg-primary/10 shadow-[0_0_12px_hsl(349,100%,59%,0.15)]"
-                        : "border-border/30 bg-muted/20 hover:border-border/60"
-                    }`}
-                  >
-                    <div
-                      className="text-xs font-bold mb-0.5"
-                      style={{ color: style.color, textShadow: "1px 1px 0 #000" }}
-                    >
-                      {style.label}
-                    </div>
-                    <p className="text-[9px] text-muted-foreground leading-tight line-clamp-2">
-                      {style.preview}
-                    </p>
-                  </button>
-                ))}
-              </div>
-              {/* Custom color picker */}
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] text-muted-foreground whitespace-nowrap">Custom color:</span>
-                <div className="flex gap-1.5">
-                  {["#FF5500", "#00BFFF", "#FF69B4", "#8B5CF6", "#10B981", "#FACC15"].map((hex) => (
-                    <button
-                      key={hex}
-                      onClick={() => {
-                        setCustomColor(hex.replace("#", ""));
-                        setCaptionStyle("custom" as CaptionStyle);
-                      }}
-                      className={`w-6 h-6 rounded-full border-2 transition-all ${
-                        customColor === hex.replace("#", "")
-                          ? "border-white scale-110"
-                          : "border-transparent hover:border-white/50"
-                      }`}
-                      style={{ backgroundColor: hex }}
-                    />
-                  ))}
-                </div>
-                {customColor && (
-                  <button
-                    onClick={() => { setCustomColor(""); setCaptionStyle("hormozi"); }}
-                    className="text-[10px] text-muted-foreground hover:text-primary ml-auto"
-                  >
-                    Reset
-                  </button>
-                )}
-              </div>
+            {/* 2. SUBTITLE STYLE */}
+            <div className="glass-card rounded-xl p-4">
+              <SubtitleStylePicker
+                value={subtitleStyle}
+                onChange={setSubtitleStyle}
+              />
             </div>
 
             {/* Caption Layout */}
