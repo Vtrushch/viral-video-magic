@@ -16,8 +16,9 @@ import { posthog } from "@/lib/posthog";
 import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
 import RenderCreditDialog from "@/components/dashboard/RenderCreditDialog";
 import { useCredits } from "@/hooks/useCredits";
-import LiveSubtitles from "@/components/LiveSubtitles";
-import type { CaptionStyle } from "@/components/LiveSubtitles";
+import StyledLiveSubtitles from "@/components/StyledLiveSubtitles";
+import SubtitleStylePicker from "@/components/SubtitleStylePicker";
+import { type SubtitleStyle, getDefaultStyle, getPresetById, loadAllPresetFonts } from "@/config/subtitlePresets";
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent,
 } from "@dnd-kit/core";
@@ -34,18 +35,7 @@ type PlayerMode =
   | { type: "source"; clipId: string | null }     // source video, optionally bound to a clip
   | { type: "rendered"; clipId: string; url: string }; // rendered clip video
 
-type CaptionStyleId = "hormozi" | "mrbeast" | "minimal" | "neon" | "fire" | "elegant" | "custom";
-
-const CAPTION_STYLES: { id: CaptionStyleId; label: string; preview: string; color: string }[] = [
-  { id: "hormozi", label: "Hormozi", preview: "Bold yellow, word highlight", color: "#FFD600" },
-  { id: "mrbeast", label: "MrBeast", preview: "White + red pop, large", color: "#FF3333" },
-  { id: "minimal", label: "Minimal", preview: "Clean white, lower-third", color: "#FFFFFF" },
-  { id: "neon", label: "Neon", preview: "Electric green glow", color: "#00FF00" },
-  { id: "fire", label: "Fire", preview: "Orange-red gradient feel", color: "#FF4500" },
-  { id: "elegant", label: "Elegant", preview: "Soft white, thin outline", color: "#F0F0F0" },
-];
-
-const CUSTOM_COLORS = ["FF0000", "00BFFF", "FFD600", "FF6B00", "A855F7", "22C55E"];
+/* Old caption style types removed — now using SubtitleStyle from subtitlePresets */
 
 /* ─── Helpers ─── */
 function parseTime(s: string | null | undefined): number {
@@ -273,13 +263,11 @@ export default function HighlightReelPage() {
 
   /* Editor state */
   const [title, setTitle] = useState("My Highlight Reel");
-  const [captionStyle, setCaptionStyle] = useState<string>("hormozi");
-  const [customColor, setCustomColor] = useState("");
+  const [subtitleStyle, setSubtitleStyle] = useState<SubtitleStyle>(getDefaultStyle());
+  const [subtitleSize, setSubtitleSize] = useState<"small" | "medium" | "large">("medium");
   const [addTransitions, setAddTransitions] = useState(true);
   // reframeMode is derived from video settings (set in Configure), not editable here
   const reframeMode = (video?.settings as any)?.reframeMode || "center";
-  const [subtitleSize, setSubtitleSize] = useState<string>("medium");
-  const [subtitleY, setSubtitleY] = useState(0.85);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [aiRecommendedIds, setAiRecommendedIds] = useState<string[]>([]);
   const [timingOverrides, setTimingOverrides] = useState<Record<string, ClipTiming>>({});
@@ -296,6 +284,9 @@ export default function HighlightReelPage() {
     playerMode.type === "rendered" ? playerMode.clipId : playerMode.clipId
   ) : null;
 
+  /* ─── Load preset fonts ─── */
+  useEffect(() => { loadAllPresetFonts(); }, []);
+
   /* ─── Load data ─── */
   useEffect(() => {
     async function load() {
@@ -310,7 +301,13 @@ export default function HighlightReelPage() {
             const { data: v } = await supabase.from("videos").select("*").eq("id", reel.video_id).single();
             vid = v;
             setTitle(reel.title);
-            setCaptionStyle(reel.caption_style || "hormozi");
+            // Load subtitle style from saved caption_style (preset ID)
+            const savedPresetId = reel.caption_style || "bold-pop";
+            const preset = getPresetById(savedPresetId);
+            if (preset) {
+              const { name, description, tags, ...style } = preset;
+              setSubtitleStyle(style);
+            }
             setAddTransitions(reel.add_transitions ?? true);
             setSelectedIds(reel.clip_ids || []);
             // If reel is ready, set rendered reel URL for preview
@@ -644,7 +641,7 @@ export default function HighlightReelPage() {
             title,
             clip_ids: selectedIds,
             clip_order: selectedIds.map((_, i) => i),
-            caption_style: captionStyle,
+            caption_style: subtitleStyle.presetId,
             add_transitions: addTransitions,
             status: "pending",
             file_path: null,
@@ -662,7 +659,7 @@ export default function HighlightReelPage() {
             title,
             clip_ids: selectedIds,
             clip_order: selectedIds.map((_, i) => i),
-            caption_style: captionStyle,
+            caption_style: subtitleStyle.presetId,
             add_transitions: addTransitions,
             status: "pending",
           })
@@ -676,12 +673,11 @@ export default function HighlightReelPage() {
         reel_id: reelRowId,
         video_storage_path: video!.file_path,
         clips: clipsPayload,
-        caption_style: captionStyle,
+        caption_style: subtitleStyle.presetId,
         add_transitions: addTransitions,
-        custom_color: captionStyle === "custom" ? customColor : undefined,
         reframe_mode: reframeMode,
         subtitle_size: subtitleSize,
-        subtitle_y: subtitleY,
+        subtitle_style: subtitleStyle,
       });
 
       // Clear rendered reel preview since we're re-rendering
@@ -724,8 +720,8 @@ export default function HighlightReelPage() {
       ? `${activeClipFaceX * 100}% center`
       : "50% center";
 
-  // Subtitle size classes
-  const subtitleSizeClass = subtitleSize === "small" ? "text-sm" : subtitleSize === "large" ? "text-2xl" : "text-lg";
+  // Subtitle size scale
+  const sizeScale = subtitleSize === "small" ? 0.8 : subtitleSize === "large" ? 1.3 : 1;
 
   // Now-playing label
   const nowPlayingLabel = activeClip
@@ -973,19 +969,12 @@ export default function HighlightReelPage() {
                   const timing = timingOverrides[clipId] || { startTime: trans.startTime, endTime: trans.endTime };
                   const relTime = currentTime - timing.startTime;
                   return (
-                    <div
-                      className={`absolute left-0 right-0 pointer-events-none z-20 ${subtitleSizeClass}`}
-                      style={{ top: `${subtitleY * 100}%`, transform: "translateY(-50%)" }}
-                    >
-                      <div className="relative">
-                        <LiveSubtitles
-                          words={trans.words}
-                          relativeTime={relTime}
-                          captionStyle={captionStyle as CaptionStyle}
-                          customColor={customColor}
-                        />
-                      </div>
-                    </div>
+                    <StyledLiveSubtitles
+                      words={trans.words}
+                      relativeTime={relTime}
+                      style={subtitleStyle}
+                      sizeScale={sizeScale}
+                    />
                   );
                 })()}
 
@@ -1241,105 +1230,19 @@ export default function HighlightReelPage() {
                 )}
               </div>
 
-              {/* Caption style */}
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-                  {t("videoConfig.captionStyle")}
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {CAPTION_STYLES.map((style) => (
-                    <button
-                      key={style.id}
-                      onClick={() => setCaptionStyle(style.id)}
-                      className={`flex flex-col items-center gap-1 py-2 px-2 rounded-lg text-xs font-medium border transition-all ${
-                        captionStyle === style.id
-                          ? "border-primary/60 bg-primary/15 text-primary"
-                          : "border-border/30 bg-card/20 text-muted-foreground hover:border-border/60"
-                      }`}
-                    >
-                      <span className="w-3 h-3 rounded-full shrink-0" style={{ background: style.color }} />
-                      <span>{style.label}</span>
-                    </button>
-                  ))}
-                </div>
-                {/* Custom color */}
-                <div className="mt-2">
-                  <button
-                    onClick={() => setCaptionStyle("custom")}
-                    className={`w-full flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-medium border transition-all ${
-                      captionStyle === "custom"
-                        ? "border-primary/60 bg-primary/15 text-primary"
-                        : "border-border/30 bg-card/20 text-muted-foreground hover:border-border/60"
-                    }`}
-                  >
-                    🎨 Custom Color
-                  </button>
-                  {captionStyle === "custom" && (
-                    <div className="flex gap-2 mt-2 px-1">
-                      {CUSTOM_COLORS.map((c) => (
-                        <button
-                          key={c}
-                          onClick={() => setCustomColor(c)}
-                          className={`w-6 h-6 rounded-full border-2 transition-all ${
-                            customColor === c ? "border-white scale-110" : "border-transparent"
-                          }`}
-                          style={{ background: `#${c}` }}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Caption Layout */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Caption Layout</h3>
-                  <span className="text-[10px] text-muted-foreground">Applied on render</span>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs text-muted-foreground">Size</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { value: "small", label: "S" },
-                      { value: "medium", label: "M" },
-                      { value: "large", label: "L" },
-                    ].map((size) => (
-                      <button
-                        key={size.value}
-                        onClick={() => setSubtitleSize(size.value)}
-                        className={`py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-                          subtitleSize === size.value
-                            ? "border-primary bg-primary/10 text-foreground"
-                            : "border-border/50 text-muted-foreground hover:border-primary/30"
-                        }`}
-                      >
-                        {size.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs text-muted-foreground">Position</label>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] text-muted-foreground">Top</span>
-                    <input
-                      type="range"
-                      min={0.1}
-                      max={0.95}
-                      step={0.05}
-                      value={subtitleY}
-                      onChange={(e) => setSubtitleY(parseFloat(e.target.value))}
-                      className="flex-1 accent-primary"
-                    />
-                    <span className="text-[10px] text-muted-foreground">Bottom</span>
-                  </div>
-                </div>
+              {/* Subtitle Style — shared component */}
+              <div className="glass-card rounded-xl p-4">
+                <SubtitleStylePicker
+                  value={subtitleStyle}
+                  onChange={setSubtitleStyle}
+                  subtitleSize={subtitleSize}
+                  onSizeChange={setSubtitleSize}
+                />
               </div>
 
               {/* Subtitle note */}
               <p className="text-[10px] text-muted-foreground/60 px-1">
-                💬 Subtitle text is auto-generated. Change caption style above — preview updates live on the video.
+                💬 Subtitle text is auto-generated. Change style above — preview updates live on the video.
               </p>
 
               {/* Per-clip subtitle words */}
