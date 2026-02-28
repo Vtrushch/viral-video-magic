@@ -33,12 +33,12 @@ const scoreColor = (score: number) => {
   return "bg-muted text-muted-foreground";
 };
 
-const statusConfig: Record<string, { class: string; label: string }> = {
-  uploading: { class: "bg-yellow-500/15 text-yellow-400 border-yellow-500/20", label: "Uploaded" },
-  downloading: { class: "bg-secondary/15 text-secondary border-secondary/20", label: "Downloading" },
-  analyzing: { class: "bg-secondary/15 text-secondary border-secondary/20", label: "Analyzing" },
-  ready: { class: "bg-accent/15 text-accent border-accent/20", label: "Ready" },
-  failed: { class: "bg-destructive/15 text-destructive border-destructive/20", label: "Failed" },
+const statusConfig: Record<string, { class: string; labelKey: string }> = {
+  uploading: { class: "bg-yellow-500/15 text-yellow-400 border-yellow-500/20", labelKey: "videoDetail.uploaded" },
+  downloading: { class: "bg-secondary/15 text-secondary border-secondary/20", labelKey: "videoDetail.downloading" },
+  analyzing: { class: "bg-secondary/15 text-secondary border-secondary/20", labelKey: "videoDetail.analyzing" },
+  ready: { class: "bg-accent/15 text-accent border-accent/20", labelKey: "videoDetail.ready" },
+  failed: { class: "bg-destructive/15 text-destructive border-destructive/20", labelKey: "videoDetail.failed" },
 };
 
 function formatBytes(bytes: number | null) {
@@ -81,14 +81,14 @@ const DownloadingState = ({ video }: { video: Tables<"videos"> }) => {
         </div>
       </div>
       <div>
-        <h2 className="text-xl font-bold text-foreground mb-2">Downloading from YouTube...</h2>
-        <p className="text-sm text-muted-foreground">This usually takes 1–2 minutes depending on video length</p>
+        <h2 className="text-xl font-bold text-foreground mb-2">{t("videoDetail.downloadingFromYoutube")}</h2>
+        <p className="text-sm text-muted-foreground">{t("videoDetail.downloadingTime")}</p>
       </div>
       <div className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs"
         style={{ background: "hsl(177,100%,39%,0.06)", border: "1px solid hsl(177,100%,39%,0.15)" }}
       >
         <span className="text-accent">💡</span>
-        <span className="text-accent/80">You can close this page. We'll notify you when it's ready!</span>
+        <span className="text-accent/80">{t("videoDetail.downloadingHint")}</span>
       </div>
     </div>
   );
@@ -97,6 +97,7 @@ const DownloadingState = ({ video }: { video: Tables<"videos"> }) => {
 /* ─── Uploaded State ─── */
 const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const settings = video.settings as any;
 
   const handleStartDefault = async () => {
@@ -105,10 +106,10 @@ const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
       .update({ status: "analyzing" } as any)
       .eq("id", video.id);
     if (error) {
-      toast.error("Failed to start analysis");
+      toast.error(t("videoDetail.failedToStartAnalysis"));
       return;
     }
-    toast.success("AI analysis started!");
+    toast.success(t("toasts.analysisStartedShort"));
     window.location.reload();
   };
 
@@ -118,17 +119,17 @@ const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
         <Settings2 className="w-8 h-8 text-primary-foreground" />
       </div>
       <div>
-        <h2 className="text-xl font-bold text-foreground mb-2">Configure Your Video Settings</h2>
+        <h2 className="text-xl font-bold text-foreground mb-2">{t("videoDetail.configureSettings")}</h2>
         <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          Choose how you want AI to process your video before starting analysis
+          {t("videoDetail.configureDesc")}
         </p>
       </div>
 
       {settings && (
         <div className="glass-card rounded-xl p-5 text-left max-w-sm mx-auto space-y-2">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Current Settings</h3>
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">{t("videoDetail.currentSettings")}</h3>
           <div className="space-y-1.5 text-sm text-foreground/80">
-            <p className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-accent" /> Generate {settings.clipCount || 10} clips</p>
+            <p className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-accent" /> {t("videoDetail.generateNClips", { count: settings.clipCount || 10 })}</p>
             <p className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-accent" /> {settings.clipLength || "medium"} length</p>
             <p className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-accent" /> {settings.captionStyle || "hormozi"} captions</p>
             <p className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-accent" /> {(settings.languages || ["en"]).join(", ")}</p>
@@ -138,10 +139,10 @@ const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
 
       <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
         <Button variant="hero" size="lg" onClick={() => navigate(`/dashboard/videos/configure/${video.id}`)}>
-          <Settings2 className="w-4 h-4 mr-2" /> Configure Settings
+          <Settings2 className="w-4 h-4 mr-2" /> {t("videoDetail.configureSettingsBtn")}
         </Button>
         <Button variant="outline" size="lg" onClick={handleStartDefault}>
-          <Sparkles className="w-4 h-4 mr-2" /> Start with Defaults
+          <Sparkles className="w-4 h-4 mr-2" /> {t("videoDetail.startWithDefaults")}
         </Button>
       </div>
     </div>
@@ -149,14 +150,14 @@ const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
 };
 
 /* ─── Smart time estimate based on file size ─── */
-function getAnalysisTimeEstimate(fileSizeBytes: number | null): string {
-  if (!fileSizeBytes) return "Usually takes 2–3 minutes";
+function getAnalysisTimeEstimateKey(fileSizeBytes: number | null): string {
+  if (!fileSizeBytes) return "analyzing.timeEstimate2_3";
   const mb = fileSizeBytes / (1024 * 1024);
-  if (mb < 20) return "Usually takes 1–2 minutes";
-  if (mb < 50) return "Usually takes 2–3 minutes";
-  if (mb < 100) return "Usually takes 3–5 minutes";
-  if (mb < 200) return "Usually takes 5–8 minutes";
-  return "Usually takes 8–15 minutes";
+  if (mb < 20) return "analyzing.timeEstimate1_2";
+  if (mb < 50) return "analyzing.timeEstimate2_3";
+  if (mb < 100) return "analyzing.timeEstimate3_5";
+  if (mb < 200) return "analyzing.timeEstimate5_8";
+  return "analyzing.timeEstimate8_15";
 }
 
 /* ─── Analyzing State ─── */
@@ -178,10 +179,10 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
 
   // Time-based phase label
   const phaseLabel = (() => {
-    if (elapsedSeconds < 30) return "Uploading to AI...";
-    if (elapsedSeconds < 120) return "AI is watching your video...";
-    if (elapsedSeconds < 240) return "Finding the best moments...";
-    return "Almost done!";
+    if (elapsedSeconds < 30) return t("analyzing.uploadingPhase");
+    if (elapsedSeconds < 120) return t("analyzing.watchingPhase");
+    if (elapsedSeconds < 240) return t("analyzing.findingPhase");
+    return t("analyzing.almostDone");
   })();
 
   useEffect(() => {
@@ -217,7 +218,7 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
   const handleNotify = () => {
     localStorage.setItem(`notify_on_complete_${video.id}`, "true");
     setNotified(true);
-    toast.success("We'll notify you when your clips are ready!");
+    toast.success(t("toasts.notifyWhenDone"));
   };
 
   const steps = [
@@ -227,7 +228,7 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
     { icon: Film, label: t("analyzing.generatingClips"), done: currentStep > 3 },
   ];
 
-  const timeEstimate = getAnalysisTimeEstimate(video.file_size);
+  const timeEstimate = t(getAnalysisTimeEstimateKey(video.file_size));
 
   return (
     <div className="glass-card rounded-2xl p-10 text-center space-y-8">
@@ -247,7 +248,7 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
       {/* Progress bar */}
       <div className="max-w-md mx-auto space-y-2">
         <Progress value={progress} className="h-2.5" />
-        <p className="text-xs text-muted-foreground">{Math.round(progress)}% complete</p>
+        <p className="text-xs text-muted-foreground">{t("videoDetail.percentComplete", { percent: Math.round(progress) })}</p>
       </div>
 
       {/* Steps */}
@@ -287,7 +288,7 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
           <div className="inline-flex items-center gap-2 text-xs text-accent/80 px-4 py-2.5 rounded-xl"
             style={{ background: "hsl(349,100%,59%,0.06)", border: "1px solid hsl(349,100%,59%,0.15)" }}>
             <CheckCircle2 className="w-4 h-4 text-accent" />
-            We'll notify you when your clips are ready!
+            {t("analyzing.notified")}
           </div>
         ) : (
           <button
@@ -295,7 +296,7 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
             className="inline-flex items-center gap-2 text-xs px-4 py-2.5 rounded-xl transition-all hover:opacity-90"
             style={{ background: "hsl(349,100%,59%,0.08)", border: "1px solid hsl(349,100%,59%,0.2)", color: "hsl(349,100%,72%)" }}
           >
-            📧 Get notified when done
+            {t("analyzing.notifyMe")}
           </button>
         )}
       </div>
@@ -384,6 +385,7 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
 
 /* ─── Ready State ─── */
 const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables<"videos">; clips: Tables<"clips">[]; onReAnalyze?: () => void }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [clips, setClips] = useState(initialClips);
   const [previewClip, setPreviewClip] = useState<Tables<"clips"> | null>(null);
@@ -463,7 +465,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
           console.log("Reel updated:", payload);
           fetchReels();
           if (payload.new?.status === "ready") {
-            toast.success(`🎬 Highlight reel ready: ${payload.new.title}`, { duration: 5000 });
+            toast.success(t("toasts.reelReady", { title: payload.new.title }), { duration: 5000 });
           }
         }
       )
@@ -496,12 +498,12 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
         updated.forEach((newClip) => {
           const old = prev.find((c) => c.id === newClip.id);
           if (old && old.status === "rendering" && newClip.status === "ready") {
-            toast.success(`✅ Clip ready: ${newClip.title}`);
+            toast.success(t("toasts.clipReady", { title: newClip.title }));
             setRenderingIds((ids) => { const n = new Set(ids); n.delete(newClip.id); return n; });
             refetchCredits();
           } else if (old && old.status === "rendering" && newClip.status === "failed") {
-            toast.error("Rendering failed", {
-              description: "Your credit was NOT charged. Try again or contact support@hookcut.com",
+            toast.error(t("videoDetail.renderingFailed"), {
+              description: t("videoDetail.renderingFailedDesc"),
               duration: 8000,
             });
             setRenderingIds((ids) => { const n = new Set(ids); n.delete(newClip.id); return n; });
@@ -514,7 +516,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
   }, [video.id, clips, renderingIds]);
 
   const renderClipActual = useCallback(async (clip: Tables<"clips">) => {
-    if (!video.file_path) { toast.error("Video file not found"); return; }
+    if (!video.file_path) { toast.error(t("videoDetail.videoFileNotFound")); return; }
     setRenderingIds(prev => new Set(prev).add(clip.id));
     try {
       const res = await apiFetch("/render", {
@@ -529,8 +531,8 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
       setClips(prev => prev.map(c => c.id === clip.id ? { ...c, status: "rendering" } : c));
     } catch {
       setRenderingIds(prev => { const n = new Set(prev); n.delete(clip.id); return n; });
-      toast.error("Something went wrong", {
-        description: "Please try again. If the problem persists, contact support@hookcut.com",
+      toast.error(t("videoDetail.somethingWentWrong"), {
+        description: t("videoDetail.somethingWentWrongDesc"),
       });
     }
   }, [video, settings]);
@@ -550,7 +552,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-3">
         <Loader2 className="w-6 h-6 animate-spin text-primary" />
-        <p className="text-sm text-muted-foreground">Loading clips...</p>
+        <p className="text-sm text-muted-foreground">{t("videoDetail.loadingClips")}</p>
       </div>
     );
   }
@@ -566,7 +568,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
   // Credit-gated render all
   const renderAll = () => {
     const pending = clips.filter(c => c.status === "pending");
-    if (pending.length === 0) { toast.info("No pending clips to render"); return; }
+    if (pending.length === 0) { toast.info(t("videoDetail.noPendingClips")); return; }
     setCreditDialog({ type: "all", clips: pending });
   };
 
@@ -626,11 +628,11 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
   const handleCreateManualClip = async () => {
     const clipDuration = manualEnd - manualStart;
     if (clipDuration < 5) {
-      toast.error("Clip too short", { description: "Minimum clip length is 5 seconds" });
+      toast.error(t("manualClip.clipTooShort"), { description: t("manualClip.minLength") });
       return;
     }
     if (clipDuration > 180) {
-      toast.error("Clip too long", { description: "Maximum clip length is 3 minutes" });
+      toast.error(t("manualClip.clipTooLong"), { description: t("manualClip.maxLength") });
       return;
     }
 
@@ -658,11 +660,11 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     } as any).select().single();
 
     if (error) {
-      toast.error("Failed to create clip", { description: error.message });
+      toast.error(t("manualClip.failedToCreate"), { description: error.message });
       return;
     }
 
-    toast.success("Clip created!", { description: "Generating subtitles... This takes a few seconds." });
+    toast.success(t("manualClip.clipCreated"), { description: t("manualClip.generatingSubtitles") });
     setShowManualCreator(false);
     setManualTitle("");
     setManualStart(0);
@@ -693,7 +695,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
         if (updatedClip?.transcription || attempts > 15) {
           clearInterval(pollInterval);
           if (updatedClip?.transcription) {
-            toast.success("Subtitles ready!", { description: "You can now edit and render your clip." });
+            toast.success(t("manualClip.subtitlesReady"), { description: t("manualClip.editAndRender") });
           }
           // Refresh to show updated clip with transcription
           const { data: refreshedClips } = await supabase.from("clips").select("*").eq("video_id", video.id).order("viral_score", { ascending: false });
@@ -703,7 +705,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     } catch (transcribeError) {
       console.error("Transcription request failed:", transcribeError);
       // Non-blocking — clip is created, transcription can happen during render as fallback
-      toast.info("Clip created", { description: "Subtitles will be generated when you render." });
+      toast.info(t("manualClip.clipCreated"), { description: t("manualClip.subtitlesFallback") });
     }
   };
 
@@ -724,9 +726,9 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     return (
       <div className="glass-card rounded-2xl p-10 text-center space-y-4">
         <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto" />
-        <h2 className="text-lg font-semibold text-foreground">No clips generated</h2>
-        <p className="text-sm text-muted-foreground">Something went wrong during processing.</p>
-        <Button variant="hero"><RotateCcw className="w-4 h-4 mr-2" /> Retry Analysis</Button>
+        <h2 className="text-lg font-semibold text-foreground">{t("videoDetail.noClipsGenerated")}</h2>
+        <p className="text-sm text-muted-foreground">{t("videoDetail.processingError")}</p>
+        <Button variant="hero"><RotateCcw className="w-4 h-4 mr-2" /> {t("videoDetail.retryAnalysis")}</Button>
       </div>
     );
   }
@@ -779,7 +781,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                       <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{formatDate(video.created_at)}</span>
                     </div>
                   </div>
-                  <Badge className="bg-accent/15 text-accent border-accent/20 border text-xs">Ready</Badge>
+                  <Badge className="bg-accent/15 text-accent border-accent/20 border text-xs">{t("videoDetail.ready")}</Badge>
                 </div>
               </div>
             </>
@@ -791,19 +793,19 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
       <div className="glass-card rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">
           <Sparkles className="w-4 h-4 text-primary" />
-          <h3 className="text-base font-semibold text-foreground">Generated Clips ({clips.length})</h3>
+          <h3 className="text-base font-semibold text-foreground">{t("videoDetail.generatedClips")} ({clips.length})</h3>
           {readyCount > 0 && (
-            <span className="text-xs text-accent bg-accent/10 px-2 py-0.5 rounded-full">{readyCount} ready</span>
+            <span className="text-xs text-accent bg-accent/10 px-2 py-0.5 rounded-full">{t("videoDetail.readyCount", { count: readyCount })}</span>
           )}
           {/* Render-All progress tracker */}
           {clips.some(c => c.status === "rendering" || renderingIds.has(c.id)) && (
             <span className="text-xs text-muted-foreground bg-muted/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
               <Loader2 className="w-3 h-3 animate-spin text-primary" />
-              ✅ {readyCount}/{clips.length} ready &nbsp;⏳ {clips.filter(c => c.status === "rendering" || renderingIds.has(c.id)).length} rendering...
+              ✅ {readyCount}/{clips.length} {t("videoDetail.ready")} &nbsp;⏳ {clips.filter(c => c.status === "rendering" || renderingIds.has(c.id)).length} {t("videoDetail.renderingCount", { count: clips.filter(c => c.status === "rendering" || renderingIds.has(c.id)).length })}
             </span>
           )}
           {readyCount === clips.length && clips.length > 0 && !clips.some(c => c.status === "rendering" || renderingIds.has(c.id)) && (
-            <span className="text-xs text-accent bg-accent/10 px-2.5 py-1 rounded-full">✅ {clips.length}/{clips.length} all done! 🎉</span>
+            <span className="text-xs text-accent bg-accent/10 px-2.5 py-1 rounded-full">✅ {clips.length}/{clips.length} {t("videoDetail.allDone")} 🎉</span>
           )}
         </div>
         <div className="flex flex-wrap gap-2 w-full sm:w-auto">
@@ -812,7 +814,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/30 text-primary text-xs font-medium hover:bg-primary/10 transition-colors"
           >
             <Scissors className="w-3.5 h-3.5" />
-            Create Clip Manually
+            {t("videoDetail.createClipManually")}
           </button>
           {clips.length >= 2 && (
             <>
@@ -821,7 +823,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/30 text-primary text-xs font-medium hover:bg-primary/10 transition-colors"
               >
                 <Sparkles className="w-3.5 h-3.5" />
-                Smart Reel
+                {t("videoDetail.smartReel")}
               </button>
               <Button
                 variant="hero-outline"
@@ -829,7 +831,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                 className="flex-1 sm:flex-none"
                 onClick={() => navigate(`/dashboard/highlight-reel/new/${video.id}`)}
               >
-                <Clapperboard className="w-4 h-4 mr-1.5" /> Create Highlight Reel
+                <Clapperboard className="w-4 h-4 mr-1.5" /> {t("videoDetail.createHighlightReel")}
               </Button>
             </>
           )}
@@ -839,7 +841,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
             className="flex-1 sm:flex-none"
             onClick={() => navigate(`/dashboard/videos/review/${video.id}`)}
           >
-            <Eye className="w-4 h-4 mr-1.5" /> Review & Select
+            <Eye className="w-4 h-4 mr-1.5" /> {t("videoDetail.reviewSelect")}
           </Button>
           <Button
             variant="hero"
@@ -850,12 +852,12 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
           >
             <Sparkles className="w-4 h-4 mr-1.5" />
             {(credits?.remaining ?? 0) === 0
-              ? "No credits"
+              ? t("videoDetail.noCredits")
               : pendingCount > 0
               ? (credits?.remaining ?? 0) >= pendingCount
-                ? `Render All (${pendingCount} clips)`
-                : `Need ${pendingCount - (credits?.remaining ?? 0)} more credits`
-              : "All Rendered"}
+                ? t("videoDetail.renderNClips", { count: pendingCount })
+                : t("videoDetail.needMoreCredits", { count: pendingCount - (credits?.remaining ?? 0) })
+              : t("videoDetail.allRendered")}
           </Button>
           {(credits?.remaining ?? 0) === 0 && pendingCount > 0 && (
             <a href="/dashboard/upgrade" className="text-[10px] text-primary hover:underline self-center">
@@ -922,7 +924,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                       className="h-7 min-h-[44px] px-2 text-xs text-muted-foreground hover:text-foreground"
                       onClick={() => setPreviewClip(clip)}
                     >
-                      <Eye className="w-3 h-3 sm:mr-1" /><span className="hidden sm:inline">Preview</span>
+                      <Eye className="w-3 h-3 sm:mr-1" /><span className="hidden sm:inline">{t("videoDetail.preview")}</span>
                     </Button>
                     <Button
                       variant="ghost"
@@ -930,7 +932,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                       className="h-7 min-h-[44px] px-2 text-xs text-muted-foreground hover:text-foreground"
                       onClick={() => navigate(`/dashboard/videos/edit/${clip.id}`)}
                     >
-                      <Pencil className="w-3 h-3 sm:mr-1" /><span className="hidden sm:inline">Edit</span>
+                      <Pencil className="w-3 h-3 sm:mr-1" /><span className="hidden sm:inline">{t("videoDetail.edit")}</span>
                     </Button>
                     {isReady && clip.file_path ? (
                       <>
@@ -939,24 +941,24 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                           onClick={() => handleDownload(clip)}
                         >
                           <Download className="w-3 h-3 sm:mr-0.5" />
-                          <span className="sm:hidden">Save</span>
-                          <span className="hidden sm:inline">Download</span>
+                          <span className="sm:hidden">{t("clips.saveVideo")}</span>
+                          <span className="hidden sm:inline">{t("videoDetail.download")}</span>
                         </button>
                         {(credits?.plan === "free" || !credits?.plan) && (
                           <span className="text-[9px] text-yellow-500/70 bg-yellow-500/10 rounded px-1.5 py-0.5">
-                            Watermark
+                            {t("videoDetail.watermark")}
                           </span>
                         )}
                       </>
                     ) : isFailed ? (
                       <div className="flex flex-col gap-0.5">
-                        <span className="text-[10px] text-destructive font-medium">Rendering failed</span>
-                        <span className="text-[10px] text-muted-foreground">Credit not charged</span>
+                        <span className="text-[10px] text-destructive font-medium">{t("videoDetail.renderingFailed")}</span>
+                        <span className="text-[10px] text-muted-foreground">{t("videoDetail.creditNotCharged")}</span>
                         <button
                           onClick={() => renderClip(clip)}
                           className="mt-0.5 text-[11px] text-primary hover:underline text-left"
                         >
-                          ↻ Try Again
+                          ↻ {t("videoDetail.tryAgain")}
                         </button>
                       </div>
                     ) : (
@@ -969,15 +971,15 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                           disabled={isRendering}
                         >
                           {isRendering ? (
-                            <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Rendering ({getRenderTimeEstimate(clip)})</>
+                            <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> {t("videoDetail.renderingTime", { time: getRenderTimeEstimate(clip) })}</>
                           ) : (
-                            <><Sparkles className="w-3 h-3 mr-1" /> Render</>
+                            <><Sparkles className="w-3 h-3 mr-1" /> {t("videoDetail.render")}</>
                           )}
                         </Button>
                       ) : (
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[10px] text-muted-foreground">No credits</span>
-                          <a href="/dashboard/upgrade" className="text-[10px] text-primary hover:underline">Upgrade →</a>
+                          <span className="text-[10px] text-muted-foreground">{t("videoDetail.noCredits")}</span>
+                          <a href="/dashboard/upgrade" className="text-[10px] text-primary hover:underline">{t("videoDetail.upgradeLink")}</a>
                         </div>
                       )
                     )}
@@ -1008,7 +1010,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
             <div className="flex items-center justify-between p-4 border-b border-border/50">
               <div className="flex items-center gap-2">
                 <Scissors className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-semibold text-foreground">Create Clip Manually</h2>
+                <h2 className="text-lg font-semibold text-foreground">{t("manualClip.title")}</h2>
               </div>
               <button onClick={() => setShowManualCreator(false)} className="text-muted-foreground hover:text-foreground">
                 <X className="w-5 h-5" />
@@ -1039,10 +1041,10 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
               {/* Time display */}
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
-                  Selection: <span className="text-foreground font-mono">{formatTimeManual(manualStart)}</span> → <span className="text-foreground font-mono">{formatTimeManual(manualEnd)}</span>
+                  {t("manualClip.selection")}: <span className="text-foreground font-mono">{formatTimeManual(manualStart)}</span> → <span className="text-foreground font-mono">{formatTimeManual(manualEnd)}</span>
                 </span>
                 <span className="text-primary font-medium">
-                  {Math.round(manualEnd - manualStart)}s clip
+                  {t("manualClip.clipSec", { count: Math.round(manualEnd - manualStart) })}
                 </span>
               </div>
 
@@ -1064,7 +1066,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
               {/* Start / End inputs */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[11px] text-muted-foreground">Start Time</label>
+                  <label className="text-[11px] text-muted-foreground">{t("manualClip.startTime")}</label>
                   <div className="flex items-center gap-2">
                     <button onClick={() => setManualStart(Math.max(0, manualStart - 1))} className="px-2 py-1 rounded border border-border/50 text-xs hover:border-primary/30 text-foreground">-1s</button>
                     <span className="text-sm font-mono text-foreground flex-1 text-center">{formatTimeManual(manualStart)}</span>
@@ -1073,12 +1075,12 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                       onClick={() => { if (manualVideoRef.current) setManualStart(manualVideoRef.current.currentTime); }}
                       className="px-2 py-1 rounded border border-primary/30 text-primary text-xs hover:bg-primary/10"
                     >
-                      Set to Current
+                      {t("manualClip.setCurrent")}
                     </button>
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[11px] text-muted-foreground">End Time</label>
+                  <label className="text-[11px] text-muted-foreground">{t("manualClip.endTime")}</label>
                   <div className="flex items-center gap-2">
                     <button onClick={() => setManualEnd(Math.max(manualStart + 5, manualEnd - 1))} className="px-2 py-1 rounded border border-border/50 text-xs hover:border-primary/30 text-foreground">-1s</button>
                     <span className="text-sm font-mono text-foreground flex-1 text-center">{formatTimeManual(manualEnd)}</span>
@@ -1087,7 +1089,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                       onClick={() => { if (manualVideoRef.current) setManualEnd(manualVideoRef.current.currentTime); }}
                       className="px-2 py-1 rounded border border-primary/30 text-primary text-xs hover:bg-primary/10"
                     >
-                      Set to Current
+                      {t("manualClip.setCurrent")}
                     </button>
                   </div>
                 </div>
@@ -1095,12 +1097,12 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
 
               {/* Clip title */}
               <div className="space-y-1">
-                <label className="text-[11px] text-muted-foreground">Clip Title (optional)</label>
+                <label className="text-[11px] text-muted-foreground">{t("manualClip.clipTitle")}</label>
                 <input
                   type="text"
                   value={manualTitle}
                   onChange={(e) => setManualTitle(e.target.value)}
-                  placeholder="My custom clip"
+                  placeholder={t("manualClip.placeholder")}
                   className="w-full px-3 py-2 rounded-lg border border-border/50 bg-background text-sm text-foreground placeholder:text-muted-foreground"
                 />
               </div>
@@ -1111,13 +1113,13 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                   onClick={() => setShowManualCreator(false)}
                   className="flex-1 py-2.5 rounded-lg border border-border/50 text-muted-foreground text-sm font-medium hover:text-foreground transition-colors"
                 >
-                  Cancel
+                  {t("upload.cancel")}
                 </button>
                 <button
                   onClick={handleCreateManualClip}
                   className="flex-1 py-2.5 rounded-lg bg-gradient-to-r from-primary to-pink-500 text-white text-sm font-medium hover:opacity-90 transition-opacity"
                 >
-                  Create Clip ({Math.round(manualEnd - manualStart)}s)
+                  {t("manualClip.createClip")} ({Math.round(manualEnd - manualStart)}s)
                 </button>
               </div>
             </div>
@@ -1133,7 +1135,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
             <div className="flex items-center justify-between p-4 border-b border-border/50">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-semibold text-foreground">AI Smart Reel</h2>
+                <h2 className="text-lg font-semibold text-foreground">{t("smartReel.title")}</h2>
               </div>
               <button onClick={() => setShowSmartReel(false)} className="text-muted-foreground hover:text-foreground">
                 <X className="w-5 h-5" />
@@ -1142,17 +1144,17 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
 
             <div className="p-4 space-y-5">
               <p className="text-sm text-muted-foreground">
-                AI will analyze your clips and create a perfectly arranged highlight reel with narrative flow.
+                {t("smartReel.description")}
               </p>
 
               {/* Reel Style Selector */}
               <div className="space-y-2">
-                <label className="text-xs font-medium text-foreground">Reel Style</label>
+                <label className="text-xs font-medium text-foreground">{t("smartReel.reelStyle")}</label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { value: "narrative" as const, icon: "📖", label: "Narrative", desc: "Story arc with hook & climax" },
-                    { value: "best_moments" as const, icon: "⭐", label: "Best Moments", desc: "Top clips by viral score" },
-                    { value: "energy" as const, icon: "⚡", label: "Energy Build", desc: "Calm to explosive crescendo" },
+                    { value: "narrative" as const, icon: "📖", label: t("smartReel.narrative"), desc: t("smartReel.narrativeDesc") },
+                    { value: "best_moments" as const, icon: "⭐", label: t("smartReel.bestMoments"), desc: t("smartReel.bestMomentsDesc") },
+                    { value: "energy" as const, icon: "⚡", label: t("smartReel.energy"), desc: t("smartReel.energyDesc") },
                   ].map((style) => (
                     <button
                       key={style.value}
@@ -1173,7 +1175,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
 
               {/* Target Duration */}
               <div className="space-y-2">
-                <label className="text-xs font-medium text-foreground">Target Duration</label>
+                <label className="text-xs font-medium text-foreground">{t("smartReel.targetDuration")}</label>
                 <div className="flex gap-2">
                   {[30, 60, 90, 120].map((dur) => (
                     <button
@@ -1193,7 +1195,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
 
               {/* Time estimate */}
               <p className="text-xs text-center text-muted-foreground">
-                ⏱️ Rendering takes 2-5 minutes depending on reel length. You can continue using the app while it renders.
+                ⏱️ {t("smartReel.renderTimeHint")}
               </p>
 
               {/* Create Button */}
@@ -1214,8 +1216,8 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                       title: `${video.title} — ${styleLabels[reelStyle]} Reel`,
                     });
                     if (res.ok) {
-                      toast.success("Smart Reel is being created! This takes 2-5 minutes.", {
-                        description: `AI is selecting and arranging clips (${reelStyle} style, ~${targetDuration}s)`,
+                      toast.success(t("smartReel.created"), {
+                        description: t("smartReel.createdDesc", { style: reelStyle, duration: targetDuration }),
                       });
                       setShowSmartReel(false);
                       setTimeout(() => fetchReels(), 2000);
@@ -1223,11 +1225,11 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                     } else {
                       let detail = "Unknown error";
                       try { const err = await res.json(); detail = err.detail || err.message || detail; } catch {}
-                      toast.error(`Failed to create Smart Reel: ${detail}`);
+                      toast.error(t("smartReel.failedToCreate", { detail }));
                     }
                   } catch {
-                    toast.info("Request timed out, but your Smart Reel may still be building.", {
-                      description: "Check back in a few minutes.",
+                    toast.info(t("smartReel.timeout"), {
+                      description: t("smartReel.timeoutDesc"),
                     });
                     setShowSmartReel(false);
                   } finally {
@@ -1237,10 +1239,10 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                 disabled={isCreatingReel}
               >
                 {isCreatingReel ? (
-                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Creating...</>
-                ) : (
-                  <><Sparkles className="w-4 h-4 mr-2" /> Create Smart Reel</>
-                )}
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t("smartReel.creating")}</>
+                 ) : (
+                    <><Sparkles className="w-4 h-4 mr-2" /> {t("smartReel.createSmartReel")}</>
+                  )}
               </Button>
             </div>
           </div>
@@ -1279,16 +1281,16 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Clapperboard className="w-4 h-4 text-primary" />
-            <h3 className="text-base font-semibold text-foreground">Highlight Reels</h3>
+            <h3 className="text-base font-semibold text-foreground">{t("videoDetail.highlightReels")}</h3>
             {reels.length > 0 && (
               <span className="text-xs text-muted-foreground bg-muted/40 px-2 py-0.5 rounded-full">{reels.length}</span>
             )}
           </div>
           {reels.length === 0 ? (
             <div className="glass-card rounded-xl p-6 text-center">
-              <p className="text-sm text-muted-foreground mb-3">No highlight reels yet. Combine your best clips!</p>
+              <p className="text-sm text-muted-foreground mb-3">{t("videoDetail.noHighlightReels")}</p>
               <Button variant="hero-outline" size="sm" onClick={() => navigate(`/dashboard/highlight-reel/new/${video.id}`)}>
-                <Clapperboard className="w-4 h-4 mr-2" /> Create Your First Reel
+                <Clapperboard className="w-4 h-4 mr-2" /> {t("videoDetail.createFirstReel")}
               </Button>
             </div>
           ) : (
@@ -1312,6 +1314,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
 /* ─── Failed State ─── */
 const FailedState = ({ video }: { video: Tables<"videos"> }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleRetry = async () => {
     const { error } = await supabase
@@ -1319,10 +1322,10 @@ const FailedState = ({ video }: { video: Tables<"videos"> }) => {
       .update({ status: "analyzing" } as any)
       .eq("id", video.id);
     if (error) {
-      toast.error("Failed to retry");
+      toast.error(t("videoDetail.failedToRetry"));
       return;
     }
-    toast.success("Retrying analysis...");
+    toast.success(t("videoDetail.retrying"));
     window.location.reload();
   };
 
@@ -1332,21 +1335,21 @@ const FailedState = ({ video }: { video: Tables<"videos"> }) => {
         <XCircle className="w-8 h-8 text-destructive" />
       </div>
       <div>
-        <h2 className="text-xl font-bold text-foreground mb-2">Analysis Failed</h2>
+        <h2 className="text-xl font-bold text-foreground mb-2">{t("videoDetail.analysisFailed")}</h2>
         <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          Something went wrong. Analysis is free — try again!
+          {t("videoDetail.analysisFreeRetry")}
         </p>
       </div>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Button variant="hero" size="lg" onClick={handleRetry}>
-          <RotateCcw className="w-4 h-4 mr-2" /> Try Again
+          <RotateCcw className="w-4 h-4 mr-2" /> {t("videoDetail.tryAgain")}
         </Button>
         <Button variant="outline" size="lg" onClick={() => navigate("/dashboard")}>
-          Back to Dashboard
+          {t("common.backToDashboard")}
         </Button>
       </div>
       <p className="text-xs text-muted-foreground">
-        Still having issues? Email us at{" "}
+        {t("videoDetail.stillHavingIssues")}{" "}
         <a href="mailto:support@hookcut.com" className="text-primary hover:underline">support@hookcut.com</a>
       </p>
     </div>
@@ -1371,6 +1374,7 @@ function getDisplayTitle(video: Tables<"videos">): string {
 /* ─── Main Page ─── */
 const VideoDetail = () => {
   const { id } = useParams();
+  const { t } = useTranslation();
   const [video, setVideo] = useState<Tables<"videos"> | null>(null);
   const [clips, setClips] = useState<Tables<"clips">[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1456,8 +1460,8 @@ const VideoDetail = () => {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground">
         <AlertCircle className="w-10 h-10" />
-        <p>Video not found</p>
-        <Button variant="ghost" asChild><Link to="/dashboard">Back to dashboard</Link></Button>
+        <p>{t("common.videoNotFound")}</p>
+        <Button variant="ghost" asChild><Link to="/dashboard">{t("common.backToDashboard")}</Link></Button>
       </div>
     );
   }
@@ -1472,7 +1476,7 @@ const VideoDetail = () => {
           to="/dashboard"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Back to videos
+          <ArrowLeft className="w-4 h-4" /> {t("common.backToVideos")}
         </Link>
         <div className="flex items-start justify-between gap-3">
           <h1 className="text-2xl font-bold text-foreground line-clamp-2 md:line-clamp-none">{getDisplayTitle(video)}</h1>
@@ -1485,7 +1489,7 @@ const VideoDetail = () => {
                 className="hidden md:flex flex-shrink-0 text-xs text-muted-foreground hover:text-foreground"
                 onClick={() => setReAnalyzeOpen(true)}
               >
-                <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> Re-analyze
+                <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> {t("common.reAnalyze")}
               </Button>
               {/* Mobile: ••• dropdown */}
               <DropdownMenu>
@@ -1496,7 +1500,7 @@ const VideoDetail = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => setReAnalyzeOpen(true)}>
-                    <RotateCcw className="w-3.5 h-3.5 mr-2" /> Re-analyze
+                    <RotateCcw className="w-3.5 h-3.5 mr-2" /> {t("common.reAnalyze")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -1509,7 +1513,7 @@ const VideoDetail = () => {
           )}
           <span className="flex items-center gap-1.5"><HardDrive className="w-3.5 h-3.5" />{formatBytes(video.file_size)}</span>
           <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />{formatDate(video.created_at)}</span>
-          <Badge className={`${badge.class} border text-xs`}>{badge.label}</Badge>
+          <Badge className={`${badge.class} border text-xs`}>{t(badge.labelKey)}</Badge>
         </div>
       </div>
 

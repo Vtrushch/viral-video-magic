@@ -279,7 +279,7 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
     } else if (selectedIds.length < 10) {
       setSelectedIds((prev) => [...prev, id]);
     } else {
-      toast.warning("Maximum 10 clips per reel");
+      toast.warning(t("highlightReel.max10Clips"));
     }
   };
 
@@ -306,7 +306,7 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
 
   const handleSubmit = async () => {
     if (selectedIds.length < 2) {
-      toast.error("Select at least 2 clips");
+      toast.error(t("highlightReel.selectAtLeast2"));
       return;
     }
     setCreating(true);
@@ -342,7 +342,7 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
           .eq("id", editingReel.id);
         if (error) throw error;
         reelId = editingReel.id;
-        toast.success("Reel updated! Re-rendering...");
+        toast.success(t("highlightReel.reelUpdated"));
       } else {
         // Create new reel
         const { data: reel, error } = await supabase
@@ -361,7 +361,7 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
           .single();
         if (error) throw error;
         reelId = (reel as any).id;
-        toast.success("Highlight reel is being created! Check back in a few minutes.");
+        toast.success(t("highlightReel.reelCreated"));
       }
 
       // Fire-and-forget to Modal worker
@@ -376,7 +376,7 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
 
       onClose();
     } catch (err: any) {
-      toast.error(err.message || "Failed to save highlight reel");
+      toast.error(err.message || t("highlightReel.failedToSave"));
     } finally {
       setCreating(false);
     }
@@ -393,7 +393,7 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
             </div>
             <div>
               <h2 className="text-base font-bold text-foreground">
-                {isEditing ? "Edit Highlight Reel" : t("highlightReel.editor")}
+                {isEditing ? t("highlightReel.editReel") : t("highlightReel.editor")}
               </h2>
               <p className="text-xs text-muted-foreground">{t("highlightReel.combineClips")}</p>
             </div>
@@ -433,11 +433,11 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {t("highlightReel.availableClips")} ({availableClips.length})
                 </label>
-                <span className="text-[10px] text-muted-foreground/60">Click to add</span>
+                <span className="text-[10px] text-muted-foreground/60">{t("highlightReel.clickToAdd")}</span>
               </div>
               <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1 scrollbar-thin">
                 {availableClips.length === 0 ? (
-                  <div className="text-center py-8 text-sm text-muted-foreground/50">All clips selected</div>
+                  <div className="text-center py-8 text-sm text-muted-foreground/50">{t("highlightReel.allClipsSelected")}</div>
                 ) : (
                   availableClips.map((clip) => (
                     <button
@@ -490,7 +490,7 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
                 <div className="flex flex-col items-center justify-center h-48 rounded-xl border border-dashed border-border/30 text-muted-foreground/40">
                   <Film className="w-8 h-8 mb-2" />
                   <p className="text-xs">{t("highlightReel.addClipsFromLeft")}</p>
-                  <p className="text-[10px] mt-0.5">Minimum 2, maximum 10</p>
+                  <p className="text-[10px] mt-0.5">{t("highlightReel.minimum2max10")}</p>
                 </div>
               ) : (
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -537,7 +537,7 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
                       : "border-border/30 bg-card/20 text-muted-foreground"
                   }`}
                 >
-                  <span>{addTransitions ? `✓ ${t("highlightReel.crossfade")} (0.5s)` : "No transitions"}</span>
+                  <span>{addTransitions ? `✓ ${t("highlightReel.crossfade")} (0.5s)` : t("highlightReel.noTransitions")}</span>
                   <div className={`w-8 h-4 rounded-full transition-colors relative ${addTransitions ? "bg-accent" : "bg-muted"}`}>
                     <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${addTransitions ? "left-4" : "left-0.5"}`} />
                   </div>
@@ -551,8 +551,8 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
         <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border/40 shrink-0">
           <div className="text-xs text-muted-foreground">
             {selectedIds.length < 2
-              ? `Select at least ${2 - selectedIds.length} more clip${2 - selectedIds.length !== 1 ? "s" : ""}`
-              : `${selectedIds.length} clips · ${formatDur(totalDuration)}`}
+              ? t("highlightReel.selectMore", { count: 2 - selectedIds.length })
+              : t("highlightReel.nClipsDuration", { count: selectedIds.length, duration: formatDur(totalDuration) })}
           </div>
           <div className="flex gap-3">
             <Button variant="ghost" size="sm" onClick={onClose}>{t("upload.cancel")}</Button>
@@ -564,9 +564,9 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
               className="min-w-[180px]"
             >
               {creating ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {isEditing ? "Saving..." : "Creating..."}</>
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {isEditing ? t("highlightReel.saving") : t("highlightReel.creating")}</>
               ) : isEditing ? (
-                <><Sparkles className="w-4 h-4 mr-2" /> Save & Re-render</>
+                <><Sparkles className="w-4 h-4 mr-2" /> {t("highlightReel.saveReRender")}</>
               ) : (
                 <><Sparkles className="w-4 h-4 mr-2" /> {t("highlightReel.createReel")}</>
               )}

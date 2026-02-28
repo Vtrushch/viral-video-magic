@@ -462,15 +462,15 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
       <div className="flex items-start gap-2.5 rounded-xl px-3 py-2.5 bg-muted/40 border border-border/30">
         <Info className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
         <p className="text-xs text-muted-foreground leading-relaxed">
-          For best quality, upload your original video file directly via the
+          {t("upload.qualityTip")}{" "}
           <button
             type="button"
             onClick={() => { setActiveTab("file"); setCopyrightConfirmed(false); contentRef.current?.scrollTo({ top: 0 }); }}
             className="text-primary hover:underline mx-1 font-medium"
           >
-            Upload File
+            {t("upload.qualityTipLink")}
           </button>
-          tab. YouTube re-encodes videos which may reduce quality.
+          {t("upload.qualityTipEnd")}
         </p>
       </div>
 
@@ -490,7 +490,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
           disabled={youtubeImporting}
         />
         <label htmlFor="copyright" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
-          I confirm I have the right to use this video. HookCut is not responsible for copyright violations. Some videos may fail to download due to restrictions set by the uploader.
+          {t("upload.copyrightConfirm")}
         </label>
       </div>
 
