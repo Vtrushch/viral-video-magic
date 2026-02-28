@@ -64,14 +64,9 @@ export default function SubtitleStylePicker({ value, onChange, subtitleY = 0.85,
         Subtitle Style
       </h3>
 
-      {/* Preset strip — single-row horizontal scroll on mobile, 2-row grid on desktop */}
-      <div className="relative">
-        <div className={cn(
-          "overflow-x-auto pb-2 scrollbar-hide snap-x",
-          isMobile
-            ? "flex gap-2"
-            : "grid grid-rows-2 grid-flow-col auto-cols-[110px] gap-2"
-        )}>
+      {/* Mobile: horizontal scroll row */}
+      <div className="relative md:hidden">
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x">
           {SUBTITLE_PRESETS.map((preset) => {
             const isSelected = value.presetId === preset.presetId;
             return (
@@ -79,8 +74,7 @@ export default function SubtitleStylePicker({ value, onChange, subtitleY = 0.85,
                 key={preset.presetId}
                 onClick={() => applyPreset(preset)}
                 className={cn(
-                  "relative snap-start rounded-lg p-2 text-left transition-all duration-200 flex-shrink-0",
-                  isMobile ? "w-[100px]" : "",
+                  "relative snap-start rounded-lg p-2 text-left transition-all duration-200 flex-shrink-0 w-[100px]",
                   isSelected
                     ? "ring-2 ring-purple-500/50 shadow-lg shadow-purple-500/20 bg-purple-500/10"
                     : "ring-1 ring-white/10 hover:ring-white/25 bg-muted/20"
@@ -120,10 +114,57 @@ export default function SubtitleStylePicker({ value, onChange, subtitleY = 0.85,
             );
           })}
         </div>
-        {/* Right fade hint on mobile — signals more presets to scroll */}
-        {isMobile && (
-          <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
-        )}
+        <div className="absolute right-0 top-0 bottom-2 w-10 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+      </div>
+
+      {/* Desktop: 2-row grid */}
+      <div className="hidden md:grid grid-rows-2 grid-flow-col auto-cols-[110px] gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        {SUBTITLE_PRESETS.map((preset) => {
+          const isSelected = value.presetId === preset.presetId;
+          return (
+            <button
+              key={preset.presetId}
+              onClick={() => applyPreset(preset)}
+              className={cn(
+                "relative rounded-lg p-2 text-left transition-all duration-200",
+                isSelected
+                  ? "ring-2 ring-purple-500/50 shadow-lg shadow-purple-500/20 bg-purple-500/10"
+                  : "ring-1 ring-white/10 hover:ring-white/25 bg-muted/20"
+              )}
+            >
+              {isSelected && (
+                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center z-10 shadow-md shadow-purple-500/30">
+                  <Check className="w-3 h-3 text-white" />
+                </div>
+              )}
+              <div
+                className="w-full h-7 rounded mb-1 flex items-center justify-center overflow-hidden"
+                style={{ background: "#111" }}
+              >
+                {fontsReady ? (
+                  <span
+                    style={{
+                      fontFamily: `'${preset.fontFamily}', sans-serif`,
+                      fontWeight: preset.fontWeight,
+                      fontSize: "10px",
+                      color: preset.textColor,
+                      textShadow: preset.strokeWidth > 0
+                        ? `1px 1px 0 ${preset.strokeColor}, -1px -1px 0 ${preset.strokeColor}`
+                        : undefined,
+                      textTransform: preset.textTransform as React.CSSProperties["textTransform"],
+                      letterSpacing: `${preset.letterSpacing * 0.5}px`,
+                    }}
+                  >
+                    <span style={{ color: preset.highlightColor }}>Your</span> text
+                  </span>
+                ) : (
+                  <div className="w-12 h-2.5 rounded bg-white/10 animate-pulse" />
+                )}
+              </div>
+              <div className="text-[10px] font-semibold text-foreground truncate">{preset.name}</div>
+            </button>
+          );
+        })}
       </div>
 
       {/* Caption Layout — position slider with phone preview */}
