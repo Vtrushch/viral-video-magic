@@ -63,7 +63,7 @@ const CreditsBar = ({ used, total }: { used: number; total: number }) => {
         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
           <Zap className="w-4 h-4 text-primary" /> {t("analytics.creditUsage")}
         </h3>
-        <span className="text-xs text-muted-foreground">{used} of {total} used</span>
+        <span className="text-xs text-muted-foreground">{t("analytics.usedOfTotal", { used, total })}</span>
       </div>
 
       <div className="h-4 rounded-full overflow-hidden" style={{ background: "hsl(0,0%,100%,0.06)" }}>
@@ -167,7 +167,7 @@ const Analytics = () => {
           <StatCard icon={Video} label={t("analytics.videosUploaded")} value={stats.totalVideos} color="hsl(349,100%,59%)" />
           <StatCard icon={Film} label={t("analytics.clipsGenerated")} value={stats.totalClips} color="hsl(270,95%,65%)" />
           <StatCard icon={CheckCircle2} label={t("analytics.clipsRendered")} value={stats.rendered} sub={`${stats.totalClips > 0 ? Math.round((stats.rendered / stats.totalClips) * 100) : 0}%`} color="hsl(177,100%,39%)" />
-          <StatCard icon={Star} label={t("analytics.avgViralScore")} value={stats.avgScore} sub="Out of 10" color="hsl(50,100%,60%)" />
+          <StatCard icon={Star} label={t("analytics.avgViralScore")} value={stats.avgScore} sub={t("analytics.outOf10")} color="hsl(50,100%,60%)" />
         </div>
       )}
 

@@ -68,6 +68,7 @@ function SortableClipItem({
   isActive?: boolean;
   isPlaying?: boolean;
 }) {
+  const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: clip.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
   const duration = Math.max(0, timing.endTime - timing.startTime);
@@ -153,21 +154,21 @@ function SortableClipItem({
             {clip.title}
           </p>
           <div className="flex items-center gap-1.5 flex-wrap">
-            {isActive && isPlaying ? (
+      {isActive && isPlaying ? (
               /* Now Playing pill */
               <span
                 className="inline-flex items-center gap-1 text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
                 style={{ background: "hsl(var(--primary)/0.2)", color: "hsl(var(--primary))", border: "1px solid hsl(var(--primary)/0.4)" }}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                Now Playing
+                {t("highlightReel.nowPlaying")}
               </span>
             ) : isActive ? (
               <span
                 className="inline-flex items-center gap-1 text-[9px] font-medium px-1.5 py-0.5 rounded-full"
                 style={{ background: "hsl(var(--primary)/0.12)", color: "hsl(var(--primary)/0.8)", border: "1px solid hsl(var(--primary)/0.25)" }}
               >
-                Previewing
+                {t("highlightReel.previewing")}
               </span>
             ) : null}
             {isAiRecommended && !isActive && (
@@ -181,10 +182,10 @@ function SortableClipItem({
             )}
             {!isActive && (isRendered ? (
               <span className="text-[9px] px-1 rounded" style={{ background: "hsl(var(--accent)/0.15)", color: "hsl(var(--accent))" }}>
-                ✓ rendered
+                ✓ {t("highlightReel.rendered")}
               </span>
             ) : (
-              <span className="text-[9px] text-muted-foreground/50">source</span>
+              <span className="text-[9px] text-muted-foreground/50">{t("highlightReel.source")}</span>
             ))}
           </div>
         </div>
@@ -201,7 +202,7 @@ function SortableClipItem({
       {/* Timing controls (below the clickable row) */}
       <div className="px-3 pb-3 space-y-1" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center gap-1">
-          <span className="text-[9px] text-muted-foreground/60 w-7 shrink-0">Start</span>
+          <span className="text-[9px] text-muted-foreground/60 w-7 shrink-0">{t("highlightReel.start")}</span>
           <button onClick={() => onAdjustStart(clip.id, -1)} className="w-5 h-5 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0">
             <ChevronLeft className="w-3 h-3" />
           </button>
@@ -341,7 +342,7 @@ export default function HighlightReelPage() {
             const top3 = loadedClips.filter((c) => c.viral_score != null).slice(0, 3).map((c) => c.id);
             setSelectedIds(top3);
             setAiRecommendedIds(top3);
-            setTitle(`Best of ${vid.title}`);
+            setTitle(t("highlightReel.bestOf", { title: vid.title }));
           }
         }
       } finally {
@@ -592,7 +593,7 @@ export default function HighlightReelPage() {
   };
 
   const addClip = (id: string) => {
-    if (selectedIds.length >= 10) { toast.warning("Maximum 10 clips per reel"); return; }
+    if (selectedIds.length >= 10) { toast.warning(t("highlightReel.max10Clips")); return; }
     setSelectedIds((prev) => [...prev, id]);
     setShowAddPanel(false);
   };
@@ -610,12 +611,12 @@ export default function HighlightReelPage() {
 
   /* ─── Submit (credit-gated) ─── */
   const handleSaveAndRender = () => {
-    if (selectedIds.length < 2) { toast.error("Select at least 2 clips"); return; }
+    if (selectedIds.length < 2) { toast.error(t("highlightReel.selectAtLeast2")); return; }
     setCreditDialogOpen(true);
   };
 
   const handleSubmit = async () => {
-    if (selectedIds.length < 2) { toast.error("Select at least 2 clips"); return; }
+    if (selectedIds.length < 2) { toast.error(t("highlightReel.selectAtLeast2")); return; }
     setSaving(true);
     setCreditDialogOpen(false);
     try {
@@ -690,11 +691,11 @@ export default function HighlightReelPage() {
 
       const reelMins = Math.round(totalDuration / 60 * 10) / 10;
       const reelEstimate = totalDuration < 60 ? "~2 minutes" : totalDuration < 120 ? "~2–3 minutes" : "~3–5 minutes";
-      toast.success(`Creating highlight reel (${reelEstimate} for ${reelMins < 1 ? Math.round(totalDuration) + "s" : reelMins.toFixed(1) + "m"} total)...`);
+      toast.success(t("highlightReel.reelCreated"));
       posthog.capture('highlight_reel_created', { clip_count: selectedIds.length });
       navigate(`/dashboard/videos/${videoIdForReel}`);
     } catch (err: any) {
-      toast.error(err.message || "Failed to save highlight reel");
+      toast.error(err.message || t("highlightReel.failedToSave"));
     } finally {
       setSaving(false);
     }
@@ -725,9 +726,9 @@ export default function HighlightReelPage() {
 
   // Now-playing label
   const nowPlayingLabel = activeClip
-    ? `Clip ${activeClipIndex + 1} of ${selectedClips.length} — ${activeClip.title}`
+    ? t("highlightReel.clipNofM", { current: activeClipIndex + 1, total: selectedClips.length, title: activeClip.title })
     : playAllIndex !== null
-    ? `Playing ${selectedClips.length} clips`
+    ? t("highlightReel.playingNClips", { count: selectedClips.length })
     : null;
 
   /* ─── Loading state ─── */
@@ -742,7 +743,7 @@ export default function HighlightReelPage() {
   if (!video) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-muted-foreground">Video not found.</p>
+        <p className="text-muted-foreground">{t("highlightReel.videoNotFound")}</p>
       </div>
     );
   }
@@ -752,7 +753,7 @@ export default function HighlightReelPage() {
       {/* ─── Header bar ─── */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50 flex-shrink-0" style={{ background: "hsl(240,15%,9%)" }}>
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground flex-1 min-w-0">
-          <Link to="/dashboard" className="hover:text-foreground transition-colors shrink-0">Videos</Link>
+          <Link to="/dashboard" className="hover:text-foreground transition-colors shrink-0">{t("highlightReel.videos")}</Link>
           <BreadcrumbChevron className="w-3 h-3 shrink-0 opacity-50" />
           <Link to={`/dashboard/videos/${video.id}`} className="hover:text-foreground transition-colors truncate max-w-[120px]">{video.title}</Link>
           <BreadcrumbChevron className="w-3 h-3 shrink-0 opacity-50" />
@@ -768,7 +769,7 @@ export default function HighlightReelPage() {
           </Button>
           <Button variant="hero" size="sm" onClick={handleSaveAndRender} disabled={selectedIds.length < 2 || saving} className="min-w-[140px]">
             {saving ? (
-              <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{isEditing ? "Saving..." : "Creating..."}</>
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{isEditing ? t("highlightReel.saving") : t("highlightReel.creating")}</>
             ) : (
               <><Sparkles className="w-4 h-4 mr-2" />{isEditing ? t("highlightReel.saveAndRender") : t("highlightReel.createReel")}</>
             )}
@@ -790,7 +791,7 @@ export default function HighlightReelPage() {
               <span className="text-xs text-primary/80 truncate">{nowPlayingLabel}</span>
               {showSourceBanner && (
                 <span className="ml-auto shrink-0 text-[10px] text-muted-foreground bg-muted/40 px-2 py-0.5 rounded-full">
-                  Preview — render for final quality
+                  {t("highlightReel.previewRenderQuality")}
                 </span>
               )}
             </div>
@@ -821,17 +822,17 @@ export default function HighlightReelPage() {
                   />
                   <div className="absolute top-2 left-2 text-[9px] font-semibold px-2 py-0.5 rounded-full"
                     style={{ background: "hsl(var(--accent)/0.85)", color: "hsl(var(--accent-foreground))" }}>
-                    ✓ Rendered Reel
+                    {t("highlightReel.renderedReel")}
                   </div>
                 </div>
                 <p className="absolute bottom-14 left-1/2 -translate-x-1/2 text-[10px] text-green-400 text-center whitespace-nowrap">
-                  Showing final rendered version with embedded subtitles
+                  {t("highlightReel.showingFinalRender")}
                 </p>
                 <button
                   onClick={() => setShowRenderedReel(false)}
                   className="absolute bottom-4 right-4 text-[10px] text-muted-foreground hover:text-foreground bg-black/50 px-2.5 py-1.5 rounded-lg backdrop-blur-sm flex items-center gap-1"
                 >
-                  <span>✏️</span> Back to editor
+                  <span>✏️</span> {t("highlightReel.backToEditor")}
                 </button>
               </div>
             ) : null}
@@ -889,7 +890,7 @@ export default function HighlightReelPage() {
                   {/* "Rendered with subtitles" badge */}
                   <div className="absolute top-2 left-2 text-[9px] font-semibold px-2 py-0.5 rounded-full"
                     style={{ background: "hsl(var(--accent)/0.85)", color: "hsl(var(--accent-foreground))" }}>
-                    ✓ Final Quality
+                    {t("highlightReel.finalQuality")}
                   </div>
                 </div>
               </div>
@@ -897,7 +898,7 @@ export default function HighlightReelPage() {
               /* Loading rendered clip */
               <div className="flex flex-col items-center gap-3">
                 <Loader2 className="w-8 h-8 text-muted-foreground/40 animate-spin" />
-                <p className="text-xs text-muted-foreground/50">Loading rendered clip...</p>
+                <p className="text-xs text-muted-foreground/50">{t("highlightReel.loadingRenderedClip")}</p>
               </div>
             ) : null}
 
@@ -914,16 +915,16 @@ export default function HighlightReelPage() {
                       <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                         <MousePointerClick className="w-6 h-6 text-primary/60" />
                       </div>
-                      <p className="text-sm font-medium text-muted-foreground/70">Click a clip to preview</p>
-                      <p className="text-[10px] text-muted-foreground text-center">
-                        Live preview — change caption style to see updates instantly
-                      </p>
+                       <p className="text-sm font-medium text-muted-foreground/70">{t("highlightReel.clickClipToPreview")}</p>
+                       <p className="text-[10px] text-muted-foreground text-center">
+                         {t("highlightReel.livePreviewHint")}
+                       </p>
                       {renderedReelUrl && (
                         <button
                           onClick={() => setShowRenderedReel(true)}
                           className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mt-1 pointer-events-auto"
                         >
-                          <span>👁</span> Preview final render
+                          <span>👁</span> {t("highlightReel.previewFinalRender")}
                         </button>
                       )}
                     </div>
@@ -1130,7 +1131,7 @@ export default function HighlightReelPage() {
                 <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
                   style={{ background: "hsl(var(--primary)/0.08)", border: "1px solid hsl(var(--primary)/0.2)" }}>
                   <Sparkles className="w-3.5 h-3.5 text-primary shrink-0" />
-                  <span className="text-primary/80">✨ {t("highlightReel.aiRecommended")} — top {aiRecommendedIds.length} clips pre-selected</span>
+                  <span className="text-primary/80">✨ {t("highlightReel.aiRecommended")} — {t("highlightReel.topNPreSelected", { count: aiRecommendedIds.length })}</span>
                 </div>
               )}
 
@@ -1151,7 +1152,7 @@ export default function HighlightReelPage() {
                   <div className="flex flex-col items-center justify-center h-32 rounded-xl border border-dashed border-border/30 text-muted-foreground/40">
                     <Film className="w-7 h-7 mb-1.5" />
                     <p className="text-xs">{t("highlightReel.addClipsFromLeft")}</p>
-                    <p className="text-[10px] mt-0.5">Min 2, max 10</p>
+                    <p className="text-[10px] mt-0.5">{t("highlightReel.min2max10")}</p>
                   </div>
                 ) : (
                   <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -1188,7 +1189,7 @@ export default function HighlightReelPage() {
                   className="w-full h-9 text-xs"
                 >
                   <Plus className="w-3.5 h-3.5 mr-1.5" />
-                  {t("highlightReel.addClips")} ({availableClips.length} available)
+                  {t("highlightReel.addClips")} ({availableClips.length} {t("highlightReel.available")})
                 </Button>
 
                 {showAddPanel && availableClips.length > 0 && (
@@ -1215,7 +1216,7 @@ export default function HighlightReelPage() {
                             {clip.duration_seconds && <span className="text-[10px] text-muted-foreground">{clip.duration_seconds}s</span>}
                             {clip.viral_score != null && <span className="text-[10px] text-accent">⚡{clip.viral_score}</span>}
                             {clip.status === "ready" && (
-                              <span className="text-[9px]" style={{ color: "hsl(var(--accent))" }}>✓ rendered</span>
+                              <span className="text-[9px]" style={{ color: "hsl(var(--accent))" }}>✓ {t("highlightReel.rendered")}</span>
                             )}
                           </div>
                         </div>
@@ -1226,7 +1227,7 @@ export default function HighlightReelPage() {
                 )}
 
                 {showAddPanel && availableClips.length === 0 && (
-                  <p className="text-center text-xs text-muted-foreground/50 mt-2 py-4">All clips are already selected</p>
+                  <p className="text-center text-xs text-muted-foreground/50 mt-2 py-4">{t("highlightReel.allClipsAlreadySelected")}</p>
                 )}
               </div>
 
@@ -1240,14 +1241,14 @@ export default function HighlightReelPage() {
 
               {/* Subtitle note */}
               <p className="text-[10px] text-muted-foreground/60 px-1">
-                💬 Subtitle text is auto-generated. Change style above — preview updates live on the video.
+                💬 {t("highlightReel.subtitleAutoNote")}
               </p>
 
               {/* Per-clip subtitle words */}
               {activeClipId && clipTranscriptions[activeClipId] && (
                 <div className="space-y-2">
                   <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Subtitles — Clip {activeClipIndex + 1}: {activeClip?.title}
+                    {t("highlightReel.subtitlesClipN", { n: activeClipIndex + 1, title: activeClip?.title })}
                   </h3>
                   <div className="flex flex-wrap gap-1 p-3 rounded-lg border border-border/50 bg-card/30 max-h-40 overflow-y-auto">
                     {clipTranscriptions[activeClipId].words.map((word: any, i: number) => {
@@ -1291,7 +1292,7 @@ export default function HighlightReelPage() {
                       : "border-border/30 bg-card/20 text-muted-foreground"
                   }`}
                 >
-                  <span>{addTransitions ? `✓ ${t("highlightReel.crossfade")} (0.5s)` : "No transitions"}</span>
+                  <span>{addTransitions ? `✓ ${t("highlightReel.crossfade")} (0.5s)` : t("highlightReel.noTransitions")}</span>
                   <div className={`w-8 h-4 rounded-full transition-colors relative ${addTransitions ? "bg-accent" : "bg-muted"}`}>
                     <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${addTransitions ? "left-4" : "left-0.5"}`} />
                   </div>
@@ -1300,9 +1301,9 @@ export default function HighlightReelPage() {
 
               {/* Summary */}
               <div className="text-xs text-muted-foreground pb-2">
-                {selectedIds.length < 2
-                  ? `Select at least ${2 - selectedIds.length} more clip${2 - selectedIds.length !== 1 ? "s" : ""}`
-                  : `${selectedIds.length} clips · ${formatDur(totalDuration)} total`}
+                 {selectedIds.length < 2
+                   ? t("highlightReel.selectMoreClips", { count: 2 - selectedIds.length })
+                   : t("highlightReel.nClipsTotalDur", { count: selectedIds.length, duration: formatDur(totalDuration) })}
               </div>
             </div>
           </div>
@@ -1316,7 +1317,7 @@ export default function HighlightReelPage() {
               disabled={selectedIds.length < 2 || saving}
             >
               {saving ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{isEditing ? "Saving..." : "Creating..."}</>
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{isEditing ? t("highlightReel.saving") : t("highlightReel.creating")}</>
               ) : (
                 <><Sparkles className="w-4 h-4 mr-2" />
                   {isEditing ? t("highlightReel.saveAndRender") : t("highlightReel.createReel")}
