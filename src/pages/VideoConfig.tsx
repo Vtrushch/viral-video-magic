@@ -9,59 +9,7 @@ import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
 import type { Tables } from "@/integrations/supabase/types";
 import { posthog } from "@/lib/posthog";
-
-const clipCountOptions = [
-  { value: 5, desc: "Quick — Best for testing" },
-  { value: 10, desc: "Recommended" },
-  { value: 15, desc: "Maximum coverage" },
-];
-
-const clipLengthOptions = [
-  { value: "short", label: "Short", time: "15–30s", desc: "Perfect for TikTok" },
-  { value: "medium", label: "Medium", time: "30–60s", desc: "Instagram Reels, YouTube Shorts" },
-  { value: "long", label: "Long", time: "60–90s", desc: "YouTube, LinkedIn" },
-];
-
-const captionStyles = [
-  {
-    value: "hormozi",
-    label: "Hormozi Style",
-    desc: "Yellow highlights, bold, attention-grabbing",
-    sample: (
-      <span className="text-sm font-black tracking-tight text-white">
-        Make More <span className="text-yellow-400 font-black">MONEY</span> Today
-      </span>
-    ),
-  },
-  {
-    value: "mrbeast",
-    label: "MrBeast Style",
-    desc: "All caps, bold, high energy",
-    sample: (
-      <span className="text-sm font-black uppercase tracking-wider text-red-400">
-        I GAVE AWAY $1,000,000
-      </span>
-    ),
-  },
-  {
-    value: "minimal",
-    label: "Minimal",
-    desc: "Clean, simple, elegant",
-    sample: (
-      <span className="text-sm text-white/70 font-light">clean subtitles</span>
-    ),
-  },
-  {
-    value: "custom",
-    label: "Custom Style",
-    desc: "Customize colors in Remix Mode",
-    badge: "Pro",
-    sample: (
-      <span className="text-sm font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">YOUR STYLE</span>
-    ),
-    sampleBg: "linear-gradient(135deg, hsl(349 100% 59% / 0.2), hsl(270 95% 65% / 0.2))",
-  },
-];
+import { useTranslation } from "react-i18next";
 
 function formatBytes(bytes: number | null) {
   if (!bytes) return "—";
@@ -75,6 +23,7 @@ function formatDate(d: string) {
 }
 
 const VideoConfig = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [video, setVideo] = useState<Tables<"videos"> | null>(null);
@@ -85,6 +34,59 @@ const VideoConfig = () => {
   const [captionStyle, setCaptionStyle] = useState("hormozi");
   const [outputFormat, setOutputFormat] = useState("9:16");
   const [reframeMode, setReframeMode] = useState<"smart" | "full" | "center">("smart");
+
+  const clipCountOptions = [
+    { value: 5, desc: t("videoConfig.quickTesting") },
+    { value: 10, desc: t("videoConfig.recommended") },
+    { value: 15, desc: t("videoConfig.maxCoverage") },
+  ];
+
+  const clipLengthOptions = [
+    { value: "short", label: t("videoConfig.short"), time: t("videoConfig.shortTime"), desc: t("videoConfig.shortDesc") },
+    { value: "medium", label: t("videoConfig.medium"), time: t("videoConfig.mediumTime"), desc: t("videoConfig.mediumDesc") },
+    { value: "long", label: t("videoConfig.long"), time: t("videoConfig.longTime"), desc: t("videoConfig.longDesc") },
+  ];
+
+  const captionStyles = [
+    {
+      value: "hormozi",
+      label: t("videoConfig.captionHormozi"),
+      desc: t("videoConfig.captionHormoziDesc"),
+      sample: (
+        <span className="text-sm font-black tracking-tight text-white">
+          Make More <span className="text-yellow-400 font-black">MONEY</span> Today
+        </span>
+      ),
+    },
+    {
+      value: "mrbeast",
+      label: t("videoConfig.captionMrBeast"),
+      desc: t("videoConfig.captionMrBeastDesc"),
+      sample: (
+        <span className="text-sm font-black uppercase tracking-wider text-red-400">
+          I GAVE AWAY $1,000,000
+        </span>
+      ),
+    },
+    {
+      value: "minimal",
+      label: t("videoConfig.captionMinimal"),
+      desc: t("videoConfig.captionMinimalDesc"),
+      sample: (
+        <span className="text-sm text-white/70 font-light">clean subtitles</span>
+      ),
+    },
+    {
+      value: "custom",
+      label: t("videoConfig.captionCustom"),
+      desc: t("videoConfig.captionCustomDesc"),
+      badge: "Pro",
+      sample: (
+        <span className="text-sm font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">YOUR STYLE</span>
+      ),
+      sampleBg: "linear-gradient(135deg, hsl(349 100% 59% / 0.2), hsl(270 95% 65% / 0.2))",
+    },
+  ];
 
   useEffect(() => {
     if (!id) return;
@@ -113,13 +115,13 @@ const VideoConfig = () => {
       .maybeSingle();
 
     if (verifyError) {
-      toast.error("Failed to verify video record");
+      toast.error(t("toasts.failedToVerify"));
       setSubmitting(false);
       return;
     }
 
     if (!verifyData) {
-      toast.error("Video record not found in database. Please re-upload.");
+      toast.error(t("toasts.videoNotFound"));
       setSubmitting(false);
       return;
     }
@@ -130,7 +132,7 @@ const VideoConfig = () => {
       .eq("id", id);
 
     if (error) {
-      toast.error("Failed to start analysis");
+      toast.error(t("toasts.failedToStartAnalysis"));
       setSubmitting(false);
       return;
     }
@@ -153,7 +155,7 @@ const VideoConfig = () => {
       reframe_mode: reframeMode,
     });
 
-    toast.success("AI analysis started! This takes 2-3 minutes.");
+    toast.success(t("toasts.analysisStarted"));
     navigate(`/dashboard/videos/${id}`);
   };
 
@@ -163,13 +165,13 @@ const VideoConfig = () => {
       clipCount, clipLength, captionStyle, outputFormat, reframeMode,
     };
     await supabase.from("videos").update({ settings } as any).eq("id", id);
-    toast.success("Settings saved as draft.");
+    toast.success(t("videoConfig.settingsSaved"));
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full text-muted-foreground">
-        <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading...
+        <Loader2 className="w-6 h-6 animate-spin mr-2" /> {t("common.loading")}
       </div>
     );
   }
@@ -177,8 +179,8 @@ const VideoConfig = () => {
   if (!video) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground">
-        <p>Video not found</p>
-        <Button variant="ghost" asChild><Link to="/dashboard">Back</Link></Button>
+        <p>{t("common.videoNotFound")}</p>
+        <Button variant="ghost" asChild><Link to="/dashboard">{t("common.back")}</Link></Button>
       </div>
     );
   }
@@ -203,13 +205,13 @@ const VideoConfig = () => {
         to="/dashboard"
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" /> Back to videos
+        <ArrowLeft className="w-4 h-4" /> {t("videoConfig.backToVideos")}
       </Link>
 
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground mb-2">Configure Analysis</h1>
+        <h1 className="text-2xl font-bold text-foreground mb-2">{t("videoConfig.configureAnalysis")}</h1>
         <p className="text-muted-foreground text-sm mb-4">
-          Set your preferences for <span className="text-foreground font-medium">{video.title && !video.title.match(/^[0-9a-f-]{36}/) ? video.title : "your video"}</span>
+          {t("videoConfig.setPreferences")} <span className="text-foreground font-medium">{video.title && !video.title.match(/^[0-9a-f-]{36}/) ? video.title : t("videoConfig.yourVideo")}</span>
         </p>
         <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
           {video.duration && (
@@ -224,11 +226,11 @@ const VideoConfig = () => {
         {/* 1. Clip Generation */}
         <section className={sectionCard}>
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            🎬 Clip Generation
+            🎬 {t("videoConfig.clipGeneration")}
           </h2>
 
           <div>
-            <Label className="text-sm font-medium text-foreground/80 mb-3 block">Number of clips to generate</Label>
+            <Label className="text-sm font-medium text-foreground/80 mb-3 block">{t("videoConfig.numberOfClips")}</Label>
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {clipCountOptions.map((opt) => (
                 <button
@@ -245,11 +247,11 @@ const VideoConfig = () => {
                 </button>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground mt-2">AI will find the most viral moments</p>
+            <p className="text-xs text-muted-foreground mt-2">{t("videoConfig.aiFindsMoments")}</p>
           </div>
 
           <div>
-            <Label className="text-sm font-medium text-foreground/80 mb-3 block">Preferred clip length</Label>
+            <Label className="text-sm font-medium text-foreground/80 mb-3 block">{t("videoConfig.clipLength")}</Label>
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {clipLengthOptions.map((opt) => (
                 <button
@@ -273,7 +275,7 @@ const VideoConfig = () => {
         {/* 2. Caption Style */}
         <section className={sectionCard}>
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            🎨 Caption Style
+            🎨 {t("videoConfig.captionStyle")}
           </h2>
           <div className="grid grid-cols-2 gap-3">
             {captionStyles.map((opt) => (
@@ -283,7 +285,7 @@ const VideoConfig = () => {
                 style={{ background: radioCardBg(captionStyle === opt.value) }}
                 onClick={() => {
                   if (opt.value === "custom") {
-                    toast.info("Custom styles available on Pro plan");
+                    toast.info(t("videoConfig.customProToast"));
                     return;
                   }
                   setCaptionStyle(opt.value);
@@ -312,10 +314,10 @@ const VideoConfig = () => {
         <section className={sectionCard}>
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Monitor className="w-5 h-5 text-primary" />
-            Output Format
+            {t("videoConfig.outputFormat")}
           </h2>
           <p className="text-xs text-muted-foreground">
-            Choose the aspect ratio for your clips
+            {t("videoConfig.chooseAspect")}
           </p>
           <div className="grid grid-cols-3 gap-3">
             <button
@@ -361,9 +363,9 @@ const VideoConfig = () => {
         <section className={sectionCard}>
           <div className="flex items-center gap-2">
             <Crop className="w-5 h-5 text-primary" />
-            <h2 className="text-lg font-semibold text-foreground">Reframe Mode</h2>
+            <h2 className="text-lg font-semibold text-foreground">{t("videoConfig.reframeMode")}</h2>
           </div>
-          <p className="text-xs text-muted-foreground">How to crop landscape video to vertical</p>
+          <p className="text-xs text-muted-foreground">{t("videoConfig.reframeDesc")}</p>
           <div className="grid grid-cols-3 gap-3">
             {/* Smart */}
             <button
@@ -381,8 +383,8 @@ const VideoConfig = () => {
                 <ChevronRight className="absolute -right-2 w-3 h-3 text-primary" />
               </div>
               <div className="text-center">
-                <p className="text-sm font-semibold text-foreground">Smart</p>
-                <p className="text-[10px] text-muted-foreground">AI follows face</p>
+                <p className="text-sm font-semibold text-foreground">{t("videoConfig.smart")}</p>
+                <p className="text-[10px] text-muted-foreground">{t("videoConfig.smartDesc")}</p>
               </div>
             </button>
             {/* Full Frame */}
@@ -403,8 +405,8 @@ const VideoConfig = () => {
                 <div className="w-full h-3 bg-current opacity-20 rounded-b-sm" />
               </div>
               <div className="text-center">
-                <p className="text-sm font-semibold text-foreground">Full Frame</p>
-                <p className="text-[10px] text-muted-foreground">Fit with bars</p>
+                <p className="text-sm font-semibold text-foreground">{t("videoConfig.fullFrame")}</p>
+                <p className="text-[10px] text-muted-foreground">{t("videoConfig.fullDesc")}</p>
               </div>
             </button>
             {/* Center */}
@@ -421,8 +423,8 @@ const VideoConfig = () => {
                 <Crosshair className="w-4 h-4" />
               </div>
               <div className="text-center">
-                <p className="text-sm font-semibold text-foreground">Center</p>
-                <p className="text-[10px] text-muted-foreground">Crop middle</p>
+                <p className="text-sm font-semibold text-foreground">{t("videoConfig.center")}</p>
+                <p className="text-[10px] text-muted-foreground">{t("videoConfig.centerDesc")}</p>
               </div>
             </button>
           </div>
@@ -432,7 +434,7 @@ const VideoConfig = () => {
         <div className="space-y-3 pb-8">
           <div className="glass-card rounded-2xl p-5 flex items-center gap-2 text-sm">
             <Info className="w-4 h-4 text-accent flex-shrink-0" />
-            <span className="text-accent font-semibold">Analysis is free — unlimited!</span>
+            <span className="text-accent font-semibold">{t("videoConfig.analysisFreeUnlimited")}</span>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2">
@@ -444,9 +446,9 @@ const VideoConfig = () => {
               disabled={submitting}
             >
               {submitting ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Starting...</>
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t("common.starting")}</>
               ) : (
-                <><Sparkles className="w-5 h-5 mr-2" /> Start AI Analysis</>
+                <><Sparkles className="w-5 h-5 mr-2" /> {t("videoConfig.startAnalysis")}</>
               )}
             </Button>
             <Button
@@ -455,11 +457,11 @@ const VideoConfig = () => {
               className="w-full sm:flex-1"
               onClick={handleSaveDraft}
             >
-              Save as Draft
+              {t("videoConfig.saveDraft")}
             </Button>
           </div>
           <p className="text-xs text-center text-muted-foreground">
-            Free & unlimited — credits are only used when you render a clip
+            {t("videoConfig.freeUnlimitedHint")}
           </p>
         </div>
       </div>

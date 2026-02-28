@@ -5,6 +5,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import LiveSubtitles from "@/components/LiveSubtitles";
 import type { CaptionStyle } from "@/components/LiveSubtitles";
 import { getSignedUrl } from "@/lib/signedUrlCache";
+import { useTranslation } from "react-i18next";
 
 interface ClipPreviewModalProps {
   clip: Tables<"clips"> | null;
@@ -14,6 +15,7 @@ interface ClipPreviewModalProps {
 }
 
 const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps) => {
+  const { t } = useTranslation();
   const desktopVideoRef = useRef<HTMLVideoElement>(null);
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
   const isMobileRef = useRef(false);
@@ -62,7 +64,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
       if (url) {
         setVideoUrl(url);
       } else {
-        setError("Failed to load video");
+        setError(t("clipPreview.failedToLoad"));
         setLoading(false);
       }
     });
@@ -172,7 +174,6 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   const faceX = viralAnalysis?.face_x ?? 0.5;
   const reframeMode = (viralAnalysis as any)?.reframe_mode || "center";
 
-  // Use object-cover + objectPosition for crop simulation
   let cropVideoClass: string;
   let cropVideoStyle: React.CSSProperties = {};
 
@@ -217,7 +218,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
 
         {/* Video player area */}
         <div className="mx-auto lg:mx-0 flex-shrink-0">
-          {/* Mobile: clean video, no phone frame — matches ClipEdit exactly */}
+          {/* Mobile: clean video, no phone frame */}
           <div className="relative w-full max-w-[360px] mx-auto block sm:hidden">
             <div className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-black">
               {loading && (
@@ -251,7 +252,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
               <button
                 onClick={handleReload}
                 className="absolute top-2 right-2 z-20 w-7 h-7 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
-                title="Reload video"
+                title={t("clipPreview.reloadVideo")}
               >
                 <RefreshCw className="w-3 h-3 text-white/70" />
               </button>
@@ -341,16 +342,14 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                   preload="auto"
                 />
               )}
-              {/* Reload button to fix frozen video */}
               <button
                 onClick={handleReload}
                 className="absolute top-2 right-2 z-20 w-7 h-7 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
-                title="Reload video"
+                title={t("clipPreview.reloadVideo")}
               >
                 <RefreshCw className="w-3 h-3 text-white/70" />
               </button>
 
-              {/* Live subtitles */}
               {words.length > 0 && (
                 <LiveSubtitles
                   words={words}
@@ -359,7 +358,6 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                 />
               )}
 
-              {/* Play overlay when paused */}
               {!playing && !loading && !error && (
                 <div
                   className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer transition-opacity"
@@ -371,9 +369,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                 </div>
               )}
 
-              {/* Bottom controls overlay */}
               <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
-                {/* Scrubber */}
                 <input
                   type="range"
                   min={startTime}
@@ -429,7 +425,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                   clip.viral_score >= 8 ? "bg-accent/15 text-accent" : clip.viral_score >= 6 ? "bg-secondary/15 text-secondary" : "bg-muted text-muted-foreground"
                 }`}>
                   <Star className="w-4 h-4" />
-                  Viral Score: {clip.viral_score}/10
+                  {t("clipPreview.viralScore")}: {clip.viral_score}/10
                   {clip.viral_score >= 8 && <Flame className="w-4 h-4" />}
                 </div>
               )}
@@ -444,10 +440,10 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
             {/* Time range */}
             <div className="text-sm text-muted-foreground space-y-1">
               <p>
-                <span className="text-foreground/60">Start:</span>{" "}
+                <span className="text-foreground/60">{t("clipPreview.start")}:</span>{" "}
                 <span className="font-mono">{formatTime(startTime)}</span>
                 <span className="mx-2 text-border">→</span>
-                <span className="text-foreground/60">End:</span>{" "}
+                <span className="text-foreground/60">{t("clipPreview.end")}:</span>{" "}
                 <span className="font-mono">{formatTime(endTime)}</span>
               </p>
             </div>
@@ -456,11 +452,11 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
           {/* AI Analysis */}
           {viralAnalysis?.reason && (
             <div className="glass-card rounded-xl p-5 space-y-3">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">AI Analysis</h3>
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t("clipPreview.aiAnalysis")}</h3>
               <p className="text-sm text-foreground/90 leading-relaxed">{viralAnalysis.reason}</p>
               {viralAnalysis.hook_strength != null && (
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="text-muted-foreground">Hook Strength:</span>
+                  <span className="text-muted-foreground">{t("clipPreview.hookStrength")}:</span>
                   <div className="flex gap-0.5">
                     {Array.from({ length: 10 }).map((_, i) => (
                       <div
@@ -482,7 +478,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
               {viralAnalysis?.hook_variants && viralAnalysis.hook_variants.length > 0 && (
                 <div className="space-y-2 pt-2 border-t border-border/50">
                   <p className="text-[11px] text-yellow-400 font-medium flex items-center gap-1">
-                    <Zap className="w-3 h-3" /> AI Hook Suggestions
+                    <Zap className="w-3 h-3" /> {t("clipPreview.aiHookSuggestions")}
                   </p>
                   {viralAnalysis.hook_variants.map((v, i) => (
                     <p key={i} className="text-[11px] text-muted-foreground">
@@ -497,10 +493,10 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
           {/* Keyboard hints */}
           <div className="flex items-center gap-3 text-xs text-muted-foreground/50">
             <span className="px-2 py-1 rounded-md bg-muted/40 font-mono text-muted-foreground">Space</span>
-            <span>Play/Pause</span>
+            <span>{t("clipPreview.spacePause")}</span>
             <span className="text-border/40">·</span>
             <span className="px-2 py-1 rounded-md bg-muted/40 font-mono text-muted-foreground">Esc</span>
-            <span>Close</span>
+            <span>{t("clipPreview.escClose")}</span>
           </div>
         </div>
       </div>

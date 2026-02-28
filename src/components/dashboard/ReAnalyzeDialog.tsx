@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 import { posthog } from "@/lib/posthog";
+import { useTranslation } from "react-i18next";
 
 interface ReAnalyzeDialogProps {
   open: boolean;
@@ -18,9 +19,9 @@ interface ReAnalyzeDialogProps {
 
 const clipCountOptions = [5, 10, 15];
 const clipLengthOptions = [
-  { value: "short", label: "Short", time: "15–30s" },
-  { value: "medium", label: "Medium", time: "30–60s" },
-  { value: "long", label: "Long", time: "60–90s" },
+  { value: "short", label: "short", time: "15–30s" },
+  { value: "medium", label: "medium", time: "30–60s" },
+  { value: "long", label: "long", time: "60–90s" },
 ];
 const captionStyleOptions = [
   { value: "hormozi", label: "Hormozi" },
@@ -35,6 +36,7 @@ const outputFormatOptions = [
 ];
 
 const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }: ReAnalyzeDialogProps) => {
+  const { t } = useTranslation();
   const settings = video.settings as Record<string, unknown> | null;
 
   const [clipCount, setClipCount] = useState<number>((settings?.clipCount as number) || 10);
@@ -74,12 +76,12 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
         reframe_mode: reframeMode,
       });
 
-      toast.success("Re-analysis started! Your clips will be regenerated.");
+      toast.success(t("reanalyze.reAnalysisStarted"));
       onSuccess();
       onClose();
     } catch (err) {
       console.error(err);
-      toast.error("Failed to start re-analysis");
+      toast.error(t("reanalyze.reAnalysisFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -88,6 +90,13 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
   const btnBase = "px-3 py-2 rounded-xl border text-xs font-medium transition-all cursor-pointer";
   const btnActive = "border-primary/60 bg-primary/15 text-primary";
   const btnInactive = "border-border/40 bg-muted/20 text-muted-foreground hover:border-border";
+
+  const clipLengthLabel = (val: string) => {
+    if (val === "short") return t("videoConfig.short");
+    if (val === "medium") return t("videoConfig.medium");
+    if (val === "long") return t("videoConfig.long");
+    return val;
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
@@ -102,14 +111,14 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
             <RotateCcw className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-foreground">Re-analyze Video</h3>
-            <p className="text-xs text-muted-foreground">Regenerate clips — free, no credit used</p>
+            <h3 className="text-base font-bold text-foreground">{t("reanalyze.reAnalyzeVideo")}</h3>
+            <p className="text-xs text-muted-foreground">{t("reanalyze.reAnalyzeDesc")}</p>
           </div>
         </div>
 
         {/* Clip Count */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Number of clips</label>
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("reanalyze.numberOfClips")}</label>
           <div className="flex gap-2">
             {clipCountOptions.map((n) => (
               <button key={n} onClick={() => setClipCount(n)}
@@ -122,12 +131,12 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
 
         {/* Clip Length */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Clip length</label>
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("reanalyze.clipLength")}</label>
           <div className="flex gap-2">
             {clipLengthOptions.map((opt) => (
               <button key={opt.value} onClick={() => setClipLength(opt.value)}
                 className={`flex-1 flex flex-col items-center ${btnBase} ${clipLength === opt.value ? btnActive : btnInactive}`}>
-                <span>{opt.label}</span>
+                <span>{clipLengthLabel(opt.value)}</span>
                 <span className="text-[10px] opacity-70">{opt.time}</span>
               </button>
             ))}
@@ -136,7 +145,7 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
 
         {/* Caption Style */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Caption style</label>
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("reanalyze.captionStyle")}</label>
           <div className="flex gap-2">
             {captionStyleOptions.map((opt) => (
               <button key={opt.value} onClick={() => setCaptionStyle(opt.value)}
@@ -158,7 +167,7 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
 
         {/* Output Format */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Output format</label>
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("reanalyze.outputFormat")}</label>
           <div className="flex gap-2">
             {outputFormatOptions.map((fmt) => (
               <button
@@ -179,12 +188,12 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
 
         {/* Reframe Mode */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Reframe mode</label>
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("reanalyze.reframeMode")}</label>
           <div className="grid grid-cols-3 gap-1.5">
             {([
-              { value: "smart" as const, label: "Smart", desc: "AI face" },
-              { value: "full" as const, label: "Full", desc: "With bars" },
-              { value: "center" as const, label: "Center", desc: "Crop" },
+              { value: "smart" as const, label: t("videoConfig.smart"), desc: t("videoConfig.smartDesc") },
+              { value: "full" as const, label: t("videoConfig.fullFrame"), desc: t("videoConfig.fullDesc") },
+              { value: "center" as const, label: t("videoConfig.center"), desc: t("videoConfig.centerDesc") },
             ]).map((mode) => (
               <button
                 key={mode.value}
@@ -206,20 +215,20 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
         {/* Info text */}
         {existingClipCount > 0 && (
           <p className="text-[11px] text-muted-foreground text-center">
-            This will replace your current clips with new ones
+            {t("reanalyze.replaceCurrentClips")}
           </p>
         )}
 
         {/* Actions */}
         <div className="flex gap-2 pt-1">
           <Button variant="outline" size="sm" className="flex-1" onClick={onClose} disabled={submitting}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button variant="hero" size="sm" className="flex-1" onClick={handleReAnalyze} disabled={submitting}>
             {submitting ? (
-              <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Starting...</>
+              <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> {t("common.starting")}</>
             ) : (
-              <><Sparkles className="w-3.5 h-3.5 mr-1.5" /> Re-analyze</>
+              <><Sparkles className="w-3.5 h-3.5 mr-1.5" /> {t("reanalyze.reanalyze")}</>
             )}
           </Button>
         </div>

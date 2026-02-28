@@ -4,6 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { downloadClip, clipFilename } from "@/lib/downloadClip";
+import { useTranslation } from "react-i18next";
 
 interface Reel {
   id: string;
@@ -26,18 +27,19 @@ interface HighlightReelCardProps {
   onEdit?: (reel: Reel) => void;
 }
 
-const STATUS_STYLES: Record<string, { label: string; color: string; bg: string; border: string }> = {
-  pending:   { label: "Pending",    color: "text-yellow-400",    bg: "bg-yellow-500/10",    border: "border-yellow-500/20" },
-  rendering: { label: "Rendering",  color: "text-blue-400",      bg: "bg-blue-500/10",      border: "border-blue-500/20" },
-  ready:     { label: "Ready",      color: "text-accent",        bg: "bg-accent/10",        border: "border-accent/20" },
-  failed:    { label: "Failed",     color: "text-destructive",   bg: "bg-destructive/10",   border: "border-destructive/20" },
-};
-
 export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightReelCardProps) {
+  const { t } = useTranslation();
   const [downloading, setDownloading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+
+  const STATUS_STYLES: Record<string, { label: string; color: string; bg: string; border: string }> = {
+    pending:   { label: t("videoCard.pending"),    color: "text-yellow-400",    bg: "bg-yellow-500/10",    border: "border-yellow-500/20" },
+    rendering: { label: t("videoCard.rendering"),  color: "text-blue-400",      bg: "bg-blue-500/10",      border: "border-blue-500/20" },
+    ready:     { label: t("videoCard.ready"),      color: "text-accent",        bg: "bg-accent/10",        border: "border-accent/20" },
+    failed:    { label: t("videoCard.failed"),     color: "text-destructive",   bg: "bg-destructive/10",   border: "border-destructive/20" },
+  };
 
   const status = STATUS_STYLES[reel.status] || STATUS_STYLES.pending;
   const isRendering = reel.status === "rendering" || reel.status === "pending";
@@ -69,10 +71,10 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
         .delete()
         .eq("id", reel.id);
       if (error) throw error;
-      toast.success("Reel deleted");
+      toast.success(t("common.reelDeleted"));
       onDelete(reel.id);
     } catch {
-      toast.error("Failed to delete reel");
+      toast.error(t("common.reelDeleteFailed"));
       setDeleting(false);
     }
   };
@@ -122,14 +124,14 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
           )}
 
           <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-            <span className="flex items-center gap-1"><Layers className="w-3 h-3" />{reel.clip_ids.length} clips</span>
+            <span className="flex items-center gap-1"><Layers className="w-3 h-3" />{reel.clip_ids.length} {t("common.clips")}</span>
             <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatDur(reel.duration_seconds)}</span>
           </div>
 
           {isRendering && (
             <div className="flex items-center gap-1.5">
               <Loader2 className="w-3 h-3 animate-spin text-primary" />
-              <span className="text-[10px] text-primary animate-pulse">Rendering... ~2-5 min</span>
+              <span className="text-[10px] text-primary animate-pulse">{t("common.rendering")} ~2-5 min</span>
             </div>
           )}
 
@@ -156,7 +158,7 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
                 className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors disabled:opacity-50"
               >
                 {downloading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-                Download
+                {t("common.download")}
               </button>
             )}
             {reel.status === "ready" && reel.file_path && (
@@ -165,7 +167,7 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
                 className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-border/50 text-muted-foreground text-xs font-medium hover:text-foreground hover:border-primary/30 transition-colors"
               >
                 <Eye className="w-3.5 h-3.5" />
-                Preview
+                {t("common.preview")}
               </button>
             )}
             {onEdit && (
@@ -174,18 +176,18 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
                 className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-border/50 text-muted-foreground text-xs font-medium hover:text-foreground hover:border-primary/30 transition-colors"
               >
                 <Pencil className="w-3.5 h-3.5" />
-                Edit
+                {t("common.edit")}
               </button>
             )}
             {/* Delete */}
             {showConfirmDelete ? (
               <div className="flex items-center gap-1">
-                <span className="text-[10px] text-destructive font-medium">Delete?</span>
+                <span className="text-[10px] text-destructive font-medium">{t("common.delete")}?</span>
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-[10px] text-destructive hover:bg-destructive/10" onClick={handleDelete} disabled={deleting}>
-                  {deleting ? <Loader2 className="w-3 h-3 animate-spin" /> : "Yes"}
+                  {deleting ? <Loader2 className="w-3 h-3 animate-spin" /> : t("common.yes")}
                 </Button>
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-[10px] text-muted-foreground" onClick={() => setShowConfirmDelete(false)}>
-                  No
+                  {t("common.no")}
                 </Button>
               </div>
             ) : (
@@ -213,7 +215,7 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
             <div className="flex items-center justify-between mb-3">
               <div>
                 <h3 className="text-sm font-semibold text-foreground">{reel.title}</h3>
-                <p className="text-xs text-muted-foreground">{reel.clip_ids.length} clips · {formatDur(reel.duration_seconds)}</p>
+                <p className="text-xs text-muted-foreground">{reel.clip_ids.length} {t("common.clips")} · {formatDur(reel.duration_seconds)}</p>
               </div>
               <button onClick={() => setShowPreview(false)} className="text-muted-foreground hover:text-foreground transition-colors">
                 <X className="w-5 h-5" />
@@ -231,7 +233,7 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
             {reel.status === "ready" && (
               <Button variant="hero" className="w-full mt-3" onClick={handleDownload} disabled={downloading}>
                 {downloading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
-                Download Reel
+                {t("videoDetail.downloadReel")}
               </Button>
             )}
           </div>

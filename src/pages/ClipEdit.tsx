@@ -219,7 +219,7 @@ const ClipEdit = () => {
       if (url) {
         setSignedUrl(url);
       } else {
-        toast.error("Failed to load video");
+        toast.error(t("toasts.failedToLoadVideo"));
         setLoading(false);
       }
     });
@@ -470,9 +470,9 @@ const ClipEdit = () => {
         } as any)
         .eq("id", clip.id);
       if (error) throw error;
-      toast.success("Changes saved!");
+      toast.success(t("toasts.changesSaved"));
     } catch {
-      toast.error("Failed to save changes");
+      toast.error(t("toasts.failedToSave"));
     } finally {
       setSaving(false);
     }
@@ -520,7 +520,7 @@ const ClipEdit = () => {
         await supabase.rpc("increment_used_credits" as any, { _user_id: user.id });
         refetchCredits();
       }
-      toast.success("Clip sent for rendering!");
+      toast.success(t("toasts.renderingStarted"));
       posthog.capture('clip_render_started', {
         caption_style: captionStyle,
         subtitle_size: subtitleSize,
@@ -529,7 +529,7 @@ const ClipEdit = () => {
       });
       navigate(`/dashboard/videos/${video.id}`);
     } catch {
-      toast.error("Failed to start rendering");
+      toast.error(t("toasts.failedToRender"));
     } finally {
       setRendering(false);
       setCreditDialogOpen(false);
