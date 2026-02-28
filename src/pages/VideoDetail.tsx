@@ -5,7 +5,7 @@ import {
   ArrowLeft, Play, Download, Star, Clock, Calendar, Settings2,
   Loader2, AlertCircle, HardDrive, RotateCcw, CheckCircle2, Sparkles,
   Search, Zap, Film, ChevronRight, XCircle, Eye, Pencil, RefreshCw, Clapperboard,
-  Scissors, X
+  Scissors, X, MoreVertical
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +23,9 @@ import RenderCreditDialog from "@/components/dashboard/RenderCreditDialog";
 import ReAnalyzeDialog from "@/components/dashboard/ReAnalyzeDialog";
 import { useCredits } from "@/hooks/useCredits";
 import { posthog } from "@/lib/posthog";
+import {
+  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 const scoreColor = (score: number) => {
   if (score >= 8) return "bg-accent/15 text-accent";
@@ -763,8 +766,8 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                   <Play className="w-6 h-6 text-primary-foreground ml-1" />
                 </div>
               </div>
-              {/* Bottom overlay info */}
-              <div className="absolute bottom-0 left-0 right-0 p-5 pointer-events-none">
+              {/* Bottom overlay info — hidden on mobile to avoid duplicate title */}
+              <div className="absolute bottom-0 left-0 right-0 p-5 pointer-events-none hidden md:block">
                 <div className="flex items-end justify-between">
                   <div>
                     <h2 className="text-lg font-bold text-foreground">{video.title}</h2>
@@ -1469,17 +1472,33 @@ const VideoDetail = () => {
         >
           <ArrowLeft className="w-4 h-4" /> Back to videos
         </Link>
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="text-2xl font-bold text-foreground">{getDisplayTitle(video)}</h1>
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="text-2xl font-bold text-foreground line-clamp-2 md:line-clamp-none">{getDisplayTitle(video)}</h1>
           {video.status === "ready" && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-shrink-0 text-xs text-muted-foreground hover:text-foreground"
-              onClick={() => setReAnalyzeOpen(true)}
-            >
-              <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> Re-analyze
-            </Button>
+            <>
+              {/* Desktop: full button */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="hidden md:flex flex-shrink-0 text-xs text-muted-foreground hover:text-foreground"
+                onClick={() => setReAnalyzeOpen(true)}
+              >
+                <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> Re-analyze
+              </Button>
+              {/* Mobile: ••• dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="md:hidden flex-shrink-0 h-8 w-8 text-muted-foreground">
+                    <MoreVertical className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setReAnalyzeOpen(true)}>
+                    <RotateCcw className="w-3.5 h-3.5 mr-2" /> Re-analyze
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
           )}
         </div>
         <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-muted-foreground">
