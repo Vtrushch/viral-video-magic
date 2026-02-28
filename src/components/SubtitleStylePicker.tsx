@@ -49,9 +49,9 @@ function PresetCard({
     <button
       onClick={onSelect}
       className={cn(
-        "relative rounded-xl p-2.5 text-left transition-all duration-200 group",
+        "relative rounded-xl p-2.5 text-left transition-all duration-200 group my-0.5",
         isSelected
-          ? "ring-2 ring-primary/60 bg-primary/8 shadow-[0_0_20px_-4px_hsl(349,100%,59%,0.2)]"
+          ? "ring-2 ring-primary/60 bg-primary/8 shadow-[0_0_20px_-4px_hsl(349,100%,59%,0.2)] z-10"
           : "ring-1 ring-border/40 hover:ring-border/70 bg-card/30 hover:bg-card/50",
         className
       )}
@@ -135,7 +135,7 @@ export default function SubtitleStylePicker({
       {/* Mobile: horizontal scroll row — all 10 presets */}
       <div className="relative md:hidden -mx-4">
         <div
-          className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-4"
+          className="flex gap-2 overflow-x-auto py-1 pb-2 scrollbar-hide px-4"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
           {SUBTITLE_PRESETS.map((preset) => (
@@ -153,7 +153,7 @@ export default function SubtitleStylePicker({
       </div>
 
       {/* Desktop: 2-row grid */}
-      <div className="hidden md:grid grid-rows-2 grid-flow-col auto-cols-[112px] gap-2 overflow-x-auto pb-1 scrollbar-hide">
+      <div className="hidden md:grid grid-rows-2 grid-flow-col auto-cols-[112px] gap-2 overflow-x-auto py-1 pb-2 scrollbar-hide">
         {SUBTITLE_PRESETS.map((preset) => (
           <PresetCard
             key={preset.presetId}
