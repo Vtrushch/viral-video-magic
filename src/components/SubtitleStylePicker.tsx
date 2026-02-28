@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Check, ChevronDown, RotateCcw, AlignVerticalJustifyStart, AlignVerticalJustifyCenter, AlignVerticalJustifyEnd } from "lucide-react";
+import { Check, ChevronDown, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
@@ -13,8 +13,8 @@ import {
 interface SubtitleStylePickerProps {
   value: SubtitleStyle;
   onChange: (style: SubtitleStyle) => void;
-  subtitleSize?: "small" | "medium" | "large";
-  onSizeChange?: (size: "small" | "medium" | "large") => void;
+  subtitleY?: number;
+  onSubtitleYChange?: (y: number) => void;
 }
 
 const QUICK_COLORS = [
@@ -32,7 +32,7 @@ const ANIMATION_OPTIONS: { value: SubtitleStyle["animation"]; label: string }[] 
   { value: "glow-pulse", label: "Glow" },
 ];
 
-export default function SubtitleStylePicker({ value, onChange, subtitleSize = "medium", onSizeChange }: SubtitleStylePickerProps) {
+export default function SubtitleStylePicker({ value, onChange, subtitleY = 0.85, onSubtitleYChange }: SubtitleStylePickerProps) {
   const isMobile = useIsMobile();
   const [customizeOpen, setCustomizeOpen] = useState(false); // collapsed by default (desktop & mobile)
   const [fontsReady, setFontsReady] = useState(false);
@@ -56,7 +56,7 @@ export default function SubtitleStylePicker({ value, onChange, subtitleSize = "m
   };
 
   const animLabel = value.animation !== "none" ? value.animation.replace("-", " ") : "No anim";
-  const summaryText = `${animLabel} · ${value.fontSize}px · ${value.position}`;
+  const summaryText = `${animLabel} · ${value.fontSize}px`;
 
   return (
     <div className="space-y-3">
@@ -126,6 +126,39 @@ export default function SubtitleStylePicker({ value, onChange, subtitleSize = "m
         )}
       </div>
 
+      {/* Caption Layout — position slider with phone preview */}
+      {onSubtitleYChange && (
+        <div className="space-y-1.5 pt-1">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+            Caption Layout
+          </h3>
+          <div className="flex items-center gap-3">
+            {/* Mini phone preview */}
+            <div className="relative w-8 h-14 rounded-md border border-border/50 bg-muted/30 flex-shrink-0 overflow-hidden">
+              {/* Subtitle position indicator */}
+              <div
+                className="absolute left-1 right-1 h-1.5 rounded-full bg-primary transition-all duration-150"
+                style={{ top: `${subtitleY * 100}%`, transform: "translateY(-50%)" }}
+              />
+            </div>
+            {/* Slider */}
+            <div className="flex-1 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-muted-foreground">Top</span>
+                <span className="text-[10px] text-muted-foreground">Bottom</span>
+              </div>
+              <Slider
+                min={0.05}
+                max={0.95}
+                step={0.01}
+                value={[subtitleY]}
+                onValueChange={([v]) => onSubtitleYChange(v)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Customize toggle with summary */}
       <button
         onClick={() => setCustomizeOpen(!customizeOpen)}
@@ -142,55 +175,6 @@ export default function SubtitleStylePicker({ value, onChange, subtitleSize = "m
 
       {customizeOpen && (
         <div className="space-y-4 pt-1">
-          {/* Position */}
-          <div className="space-y-1.5">
-            <label className="text-[11px] text-muted-foreground">Position</label>
-            <div className="flex gap-1.5">
-              {([
-                { val: "top", Icon: AlignVerticalJustifyStart, label: "Top" },
-                { val: "center", Icon: AlignVerticalJustifyCenter, label: "Center" },
-                { val: "bottom", Icon: AlignVerticalJustifyEnd, label: "Bottom" },
-              ] as const).map(({ val, Icon, label }) => (
-                <button
-                  key={val}
-                  onClick={() => update({ position: val })}
-                  className={cn(
-                    "flex-1 flex items-center justify-center gap-1 py-2 rounded-md text-[11px] font-medium border transition-colors min-h-[44px]",
-                    value.position === val
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border/50 text-muted-foreground hover:border-primary/30"
-                  )}
-                >
-                  <Icon className="w-3 h-3" />
-                  {label}
-                </button>
-              ))}
-            </div>
-            <p className="text-[9px] text-muted-foreground/60 text-center">Optimized for TikTok/Reels</p>
-          </div>
-
-          {/* Size (S / M / L) — merged from Caption Layout */}
-          {onSizeChange && (
-            <div className="space-y-1.5">
-              <label className="text-[11px] text-muted-foreground">Size</label>
-              <div className="flex gap-1.5">
-                {(["small", "medium", "large"] as const).map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => onSizeChange(size)}
-                    className={cn(
-                      "flex-1 py-2 rounded-md text-[11px] font-medium border transition-colors min-h-[44px]",
-                      subtitleSize === size
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border/50 text-muted-foreground hover:border-primary/30"
-                    )}
-                  >
-                    {size === "small" ? "S" : size === "medium" ? "M" : "L"}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Text Color */}
           <div className="space-y-1.5">

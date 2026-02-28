@@ -1235,8 +1235,6 @@ export default function HighlightReelPage() {
                 <SubtitleStylePicker
                   value={subtitleStyle}
                   onChange={setSubtitleStyle}
-                  subtitleSize={subtitleSize}
-                  onSizeChange={setSubtitleSize}
                 />
               </div>
 
