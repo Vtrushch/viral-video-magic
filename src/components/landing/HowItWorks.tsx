@@ -1,36 +1,16 @@
 import { useTranslation } from "react-i18next";
 import { useScrollRevealChildren } from "@/hooks/useScrollReveal";
 
-const steps = [
-  {
-    number: "01",
-    emoji: "📤",
-    title: "Upload or paste link",
-    description: "Drop any video up to 2 hours, or paste a YouTube URL. We handle the rest.",
-  },
-  {
-    number: "02",
-    emoji: "🧠",
-    title: "AI finds viral moments",
-    description: "Gemini AI watches your entire video and picks up to 15 best clips with viral scores. Free and unlimited.",
-  },
-  {
-    number: "03",
-    emoji: "✂️",
-    title: "Edit for free",
-    description: "Change captions, adjust timing, try Remix Mode to swap hooks and styles — all before spending a single credit.",
-  },
-  {
-    number: "04",
-    emoji: "🚀",
-    title: "Render & share",
-    description: "Happy with the result? Render in 1080p for 1 credit. Download or save straight to your camera roll.",
-  },
-];
-
 const HowItWorks = () => {
   const { t } = useTranslation();
   const containerRef = useScrollRevealChildren();
+
+  const steps = [
+    { number: "01", emoji: "📤", title: t("landing.howItWorks.step1Title"), description: t("landing.howItWorks.step1Desc") },
+    { number: "02", emoji: "🧠", title: t("landing.howItWorks.step2Title"), description: t("landing.howItWorks.step2Desc") },
+    { number: "03", emoji: "✂️", title: t("landing.howItWorks.step3Title"), description: t("landing.howItWorks.step3Desc") },
+    { number: "04", emoji: "🚀", title: t("landing.howItWorks.step4Title"), description: t("landing.howItWorks.step4Desc") },
+  ];
 
   return (
     <section id="how-it-works" className="py-24 sm:py-28 relative overflow-hidden gradient-hero-bg">
@@ -39,11 +19,11 @@ const HowItWorks = () => {
       <div className="relative z-10 container mx-auto px-6 sm:px-8" ref={containerRef}>
         <div className="text-center mb-16" data-reveal data-reveal-delay="0">
           <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3 opacity-0 translate-y-8 transition-all duration-700">
-            HOW IT WORKS
+            {t("landing.howItWorks.label")}
           </p>
           <h2 className="text-3xl md:text-5xl font-bold text-foreground opacity-0 translate-y-8 transition-all duration-700" data-reveal data-reveal-delay="100">
-            Four steps.{" "}
-            <span className="font-serif-display italic text-muted-foreground">You only pay at step 4.</span>
+            {t("landing.howItWorks.heading")}{" "}
+            <span className="font-serif-display italic text-muted-foreground">{t("landing.howItWorks.headingAccent")}</span>
           </h2>
         </div>
 
@@ -56,7 +36,7 @@ const HowItWorks = () => {
               data-reveal-delay={String(200 + i * 100)}
             >
               <p className="text-[11px] font-bold text-primary uppercase tracking-widest mb-3">
-                Step {step.number}
+                {t("landing.howItWorks.stepLabel")} {step.number}
               </p>
               <span className="text-3xl mb-4 block">{step.emoji}</span>
               <h3 className="text-lg font-bold text-foreground mb-2">{step.title}</h3>
