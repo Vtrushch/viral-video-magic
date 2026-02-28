@@ -8,6 +8,7 @@ import {
   type SubtitleStyle,
   type SubtitlePreset,
 } from "@/config/subtitlePresets";
+import { useTranslation } from "react-i18next";
 
 interface SubtitleStylePickerProps {
   value: SubtitleStyle;
@@ -19,16 +20,6 @@ interface SubtitleStylePickerProps {
 const QUICK_COLORS = [
   "#FFFFFF", "#000000", "#FFD700", "#FF4500",
   "#3B82F6", "#10B981", "#FF1493", "#FF8C00",
-];
-
-const ANIMATION_OPTIONS: { value: SubtitleStyle["animation"]; label: string }[] = [
-  { value: "none", label: "None" },
-  { value: "fade-in", label: "Fade In" },
-  { value: "pop-up", label: "Pop Up" },
-  { value: "typewriter", label: "Typewriter" },
-  { value: "bounce", label: "Bounce" },
-  { value: "karaoke-highlight", label: "Karaoke" },
-  { value: "glow-pulse", label: "Glow" },
 ];
 
 /* ─── Shared preset card ─── */
@@ -100,6 +91,7 @@ export default function SubtitleStylePicker({
   subtitleY = 0.85,
   onSubtitleYChange,
 }: SubtitleStylePickerProps) {
+  const { t } = useTranslation();
   const [customizeOpen, setCustomizeOpen] = useState(false);
   const [fontsReady, setFontsReady] = useState(false);
 
@@ -121,18 +113,28 @@ export default function SubtitleStylePicker({
     if (preset) applyPreset(preset);
   };
 
+  const ANIMATION_OPTIONS: { value: SubtitleStyle["animation"]; label: string }[] = [
+    { value: "none", label: t("subtitlePicker.none") },
+    { value: "fade-in", label: t("subtitlePicker.fadeIn") },
+    { value: "pop-up", label: t("subtitlePicker.popUp") },
+    { value: "typewriter", label: t("subtitlePicker.typewriter") },
+    { value: "bounce", label: t("subtitlePicker.bounce") },
+    { value: "karaoke-highlight", label: t("subtitlePicker.karaoke") },
+    { value: "glow-pulse", label: t("subtitlePicker.glow") },
+  ];
+
   const animLabel =
-    value.animation !== "none" ? value.animation.replace("-", " ") : "No anim";
+    value.animation !== "none" ? value.animation.replace("-", " ") : t("subtitlePicker.noAnim");
   const summaryText = `${animLabel} · ${value.fontSize}px`;
 
   return (
     <div className="space-y-4">
       {/* ─── Section: Subtitle Style ─── */}
       <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
-        Subtitle Style
+        {t("subtitlePicker.subtitleStyle")}
       </h3>
 
-      {/* Mobile: horizontal scroll row — all 10 presets */}
+      {/* Mobile: horizontal scroll row */}
       <div className="relative md:hidden -mx-4">
         <div
           className="flex gap-2 overflow-x-auto py-1 pb-2 scrollbar-hide px-4"
@@ -169,10 +171,9 @@ export default function SubtitleStylePicker({
       {onSubtitleYChange && (
         <div className="space-y-2 pt-1">
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
-            Caption Layout
+            {t("subtitlePicker.captionLayout")}
           </h3>
           <div className="flex items-center gap-3">
-            {/* Mini phone preview */}
             <div className="relative w-8 h-14 rounded-md border border-border/50 bg-muted/20 flex-shrink-0 overflow-hidden">
               <div
                 className="absolute left-1 right-1 h-1.5 rounded-full bg-primary transition-all duration-150"
@@ -184,10 +185,8 @@ export default function SubtitleStylePicker({
             </div>
             <div className="flex-1 space-y-1">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-muted-foreground">Top</span>
-                <span className="text-[10px] text-muted-foreground">
-                  Bottom
-                </span>
+                <span className="text-[10px] text-muted-foreground">{t("subtitlePicker.top")}</span>
+                <span className="text-[10px] text-muted-foreground">{t("subtitlePicker.bottom")}</span>
               </div>
               <Slider
                 min={0.05}
@@ -209,7 +208,7 @@ export default function SubtitleStylePicker({
           "text-muted-foreground hover:text-foreground"
         )}
       >
-        <span className="font-semibold tracking-wide">Customize</span>
+        <span className="font-semibold tracking-wide">{t("subtitlePicker.customize")}</span>
         <div className="flex items-center gap-2">
           <span className="text-[10px] text-muted-foreground/50">
             {summaryText}
@@ -227,7 +226,7 @@ export default function SubtitleStylePicker({
         <div className="space-y-5 pt-1">
           {/* Text Color */}
           <ColorRow
-            label="Text Color"
+            label={t("subtitlePicker.textColor")}
             colors={QUICK_COLORS}
             selected={value.textColor}
             onSelect={(hex) => update({ textColor: hex })}
@@ -235,7 +234,7 @@ export default function SubtitleStylePicker({
 
           {/* Highlight Color */}
           <ColorRow
-            label="Active Word Color"
+            label={t("subtitlePicker.activeWordColor")}
             colors={QUICK_COLORS}
             selected={value.highlightColor}
             onSelect={(hex) => update({ highlightColor: hex })}
@@ -245,7 +244,7 @@ export default function SubtitleStylePicker({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-[11px] font-medium text-muted-foreground">
-                Font Size
+                {t("subtitlePicker.fontSize")}
               </label>
               <span className="text-[10px] text-muted-foreground/50 tabular-nums">
                 {value.fontSize}px
@@ -264,7 +263,7 @@ export default function SubtitleStylePicker({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-[11px] font-medium text-muted-foreground">
-                Background Box
+                {t("subtitlePicker.backgroundBox")}
               </label>
               <button
                 onClick={() =>
@@ -281,7 +280,7 @@ export default function SubtitleStylePicker({
                     : "border-border/50 text-muted-foreground hover:border-border"
                 )}
               >
-                {value.backgroundOpacity > 0 ? "ON" : "OFF"}
+                {value.backgroundOpacity > 0 ? t("subtitlePicker.on") : t("subtitlePicker.off")}
               </button>
             </div>
             {value.backgroundOpacity > 0 && (
@@ -298,7 +297,7 @@ export default function SubtitleStylePicker({
           {/* Animation */}
           <div className="space-y-2">
             <label className="text-[11px] font-medium text-muted-foreground">
-              Animation
+              {t("subtitlePicker.animation")}
             </label>
             <div className="flex gap-1.5 flex-wrap">
               {ANIMATION_OPTIONS.map((opt) => (
@@ -321,14 +320,14 @@ export default function SubtitleStylePicker({
           {/* Text Transform */}
           <div className="space-y-2">
             <label className="text-[11px] font-medium text-muted-foreground">
-              Text Transform
+              {t("subtitlePicker.textTransform")}
             </label>
             <div className="flex gap-1.5">
               {(
                 [
-                  { val: "none" as const, label: "Normal" },
-                  { val: "uppercase" as const, label: "UPPER" },
-                  { val: "lowercase" as const, label: "lower" },
+                  { val: "none" as const, label: t("subtitlePicker.normal") },
+                  { val: "uppercase" as const, label: t("subtitlePicker.upper") },
+                  { val: "lowercase" as const, label: t("subtitlePicker.lower") },
                 ] as const
               ).map(({ val, label }) => (
                 <button
@@ -355,7 +354,7 @@ export default function SubtitleStylePicker({
             onClick={resetToPreset}
           >
             <RotateCcw className="w-3 h-3" />
-            Reset to preset defaults
+            {t("subtitlePicker.resetDefaults")}
           </Button>
         </div>
       )}

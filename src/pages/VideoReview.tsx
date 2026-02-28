@@ -10,8 +10,10 @@ import { ArrowLeft, Play, Pencil, Eye, Flame } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
 import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
+import { useTranslation } from "react-i18next";
 
 const VideoReview = () => {
+  const { t } = useTranslation();
   const { id: videoId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -60,7 +62,7 @@ const VideoReview = () => {
 
   const generateSelected = async () => {
     if (selectedClips.size === 0) {
-      toast.error("Please select at least one clip");
+      toast.error(t("videoDetail.selectAtLeastOne"));
       return;
     }
     try {
@@ -76,7 +78,6 @@ const VideoReview = () => {
         .eq("id", videoId!);
       if (videoError) throw videoError;
 
-      // Fire render requests to Modal for each selected clip
       if (video) {
         const captionStyle = (video.settings as any)?.captionStyle || "hormozi";
 
@@ -96,18 +97,17 @@ const VideoReview = () => {
           })
         );
 
-        // Fire all in parallel, don't block navigation
         Promise.all(renderPromises).then(() => {
           console.log("All render requests sent to Modal");
         });
       }
 
-      toast.success(`Generating ${selectedClips.size} clips!`);
+      toast.success(t("videoDetail.generatingClips", { count: selectedClips.size }));
       queryClient.invalidateQueries({ queryKey: ["video", videoId] });
       navigate(`/dashboard/videos/${videoId}`);
     } catch (error) {
       console.error("Error:", error);
-      toast.error("Failed to start rendering");
+      toast.error(t("videoDetail.failedRendering"));
     }
   };
 
@@ -141,14 +141,14 @@ const VideoReview = () => {
           className="w-fit"
           onClick={() => navigate("/dashboard")}
         >
-          <ArrowLeft className="w-4 h-4 mr-1" /> Back to Videos
+          <ArrowLeft className="w-4 h-4 mr-1" /> {t("videoConfig.backToVideos")}
         </Button>
         <div>
           <h1 className="text-2xl md:text-3xl font-bold">
-            Review <span className="gradient-text">AI-Generated</span> Clips
+            {t("videoDetail.reviewClips")}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Select which clips you want to render. You'll only be charged for selected clips.
+            {t("videoDetail.reviewDesc")}
           </p>
         </div>
       </div>
@@ -158,7 +158,7 @@ const VideoReview = () => {
         <div className="glass-card rounded-xl p-4 flex flex-wrap items-center gap-4">
           <h3 className="font-semibold">{video.title}</h3>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span>📹 Original Video</span>
+            <span>{t("videoDetail.originalVideo")}</span>
             {video.duration && <span>⏱️ {video.duration}</span>}
             <span>💾 {formatFileSize(video.file_size)}</span>
           </div>
@@ -169,14 +169,14 @@ const VideoReview = () => {
       <div className="glass-card rounded-xl p-6 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <h2 className="text-xl font-semibold">
-            AI Found <span className="gradient-text">{clips.length}</span> Viral Moments
+            {t("videoDetail.aiFound")} <span className="gradient-text">{clips.length}</span> {t("videoDetail.viralMoments")}
           </h2>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={selectAll}>
-              Select All
+              {t("common.selectAll")}
             </Button>
             <Button variant="outline" size="sm" onClick={deselectAll}>
-              Deselect All
+              {t("common.deselectAll")}
             </Button>
           </div>
         </div>
@@ -226,7 +226,7 @@ const VideoReview = () => {
                 <h4 className="font-medium text-sm mb-2 line-clamp-2">{clip.title}</h4>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <div className={`font-semibold ${getScoreColor(clip.viral_score)}`}>
-                    Viral: {clip.viral_score}/10
+                    {t("clips.viralScore")}: {clip.viral_score}/10
                     {(clip.viral_score ?? 0) >= 8 && (
                       <Flame className="inline w-3 h-3 ml-1" />
                     )}
@@ -250,22 +250,24 @@ const VideoReview = () => {
       <div className="sticky bottom-4 glass-card rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="text-sm space-y-1">
           <p className="font-medium">
-            <span className="gradient-text">{selectedClips.size}</span> of {clips.length} clips selected
+            <span className="gradient-text">{selectedClips.size}</span> {t("videoDetail.ofClipsSelected", { total: clips.length })}
           </p>
           <p className="text-muted-foreground">
-            Total: <span className="font-semibold text-foreground">{selectedClips.size} credits</span>
+            {t("videoDetail.totalCredits", { count: selectedClips.size })}
           </p>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => navigate("/dashboard")}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button
             variant="hero"
             disabled={selectedClips.size === 0}
             onClick={generateSelected}
           >
-            Generate {selectedClips.size} Clip{selectedClips.size !== 1 ? "s" : ""} →
+            {selectedClips.size !== 1
+              ? t("videoDetail.generateClipsPlural", { count: selectedClips.size })
+              : t("videoDetail.generateClips", { count: selectedClips.size })} →
           </Button>
         </div>
       </div>

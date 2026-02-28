@@ -22,17 +22,13 @@ import {
 } from "lucide-react";
 import HighlightReelCard from "@/components/dashboard/HighlightReelCard";
 import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
+import { useTranslation } from "react-i18next";
 
 type MainTab = "clips" | "reels";
 type SortBy = "viral_score" | "created_at" | "duration_seconds";
 
-const SORT_OPTIONS: { id: SortBy; label: string }[] = [
-  { id: "viral_score", label: "Viral Score" },
-  { id: "created_at", label: "Date" },
-  { id: "duration_seconds", label: "Duration" },
-];
-
 const ClipsLibrary = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [mainTab, setMainTab] = useState<MainTab>("clips");
@@ -41,6 +37,13 @@ const ClipsLibrary = () => {
   const [downloading, setDownloading] = useState<string | null>(null);
   const [previewClip, setPreviewClip] = useState<Tables<"clips"> | null>(null);
 
+  const SORT_OPTIONS: { id: SortBy; label: string }[] = [
+    { id: "viral_score", label: t("clips.sortViralScore") },
+    { id: "created_at", label: t("clips.sortDate") },
+    { id: "duration_seconds", label: t("clips.sortDuration") },
+  ];
+
+  // Queries for clips, videos, and reels
   const { data: clips = [], isLoading: clipsLoading } = useQuery({
     queryKey: ["all-clips-ready", user?.id],
     queryFn: async () => {
@@ -115,7 +118,7 @@ const ClipsLibrary = () => {
 
   const handleDownload = async (clip: Tables<"clips">) => {
     if (!clip.file_path) {
-      toast.error("No file available for download");
+      toast.error(t("common.noFileAvailable"));
       return;
     }
     setDownloading(clip.id);
@@ -133,7 +136,7 @@ const ClipsLibrary = () => {
       (c) => selectedClips.has(c.id) && c.file_path
     );
     if (selected.length === 0) {
-      toast.error("No clips selected");
+      toast.error(t("common.noClipsSelected"));
       return;
     }
     for (let i = 0; i < selected.length; i++) {
@@ -141,7 +144,7 @@ const ClipsLibrary = () => {
       try {
         await downloadClip(clip.file_path!, clipFilename(clip.title, clip.id));
       } catch {
-        toast.error(`Failed to download ${clip.title}`);
+        toast.error(t("common.failedToDownload", { title: clip.title }));
       }
       if (i < selected.length - 1) {
         await new Promise((resolve) => setTimeout(resolve, 300));
@@ -161,7 +164,7 @@ const ClipsLibrary = () => {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm text-muted-foreground">Loading clips...</span>
+          <span className="text-sm text-muted-foreground">{t("clips.loadingClips")}</span>
         </div>
       </div>
     );
@@ -173,17 +176,19 @@ const ClipsLibrary = () => {
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-foreground tracking-tight mb-1">
-            Your <span className="text-primary">Clips</span>
+            {t("clips.yourClips").split(" ").map((word, i) =>
+              i === 1 ? <span key={i} className="text-primary">{word} </span> : word + " "
+            )}
           </h1>
           <p className="text-sm text-muted-foreground">
-            Your rendered clips ready to download and share
+            {t("clips.yourRenderedClips")}
           </p>
         </div>
 
         {selectedClips.size > 0 && mainTab === "clips" && (
           <Button variant="hero" size="sm" onClick={handleBatchDownload} className="shrink-0">
             <Download className="w-4 h-4 mr-1.5" />
-            Download {selectedClips.size}
+            {t("common.download")} {selectedClips.size}
           </Button>
         )}
       </div>
@@ -199,7 +204,7 @@ const ClipsLibrary = () => {
           }`}
         >
           <Film className="w-4 h-4" />
-          Clips
+          {t("nav.clips")}
           {clips.length > 0 && <span className={`text-xs ${mainTab === "clips" ? "opacity-80" : "opacity-50"}`}>{clips.length}</span>}
         </button>
         <button
@@ -211,7 +216,7 @@ const ClipsLibrary = () => {
           }`}
         >
           <Clapperboard className="w-4 h-4" />
-          Highlight Reels
+          {t("clips.highlightReels")}
           {reels.length > 0 && <span className={`text-xs ${mainTab === "reels" ? "opacity-80" : "opacity-50"}`}>{reels.length}</span>}
         </button>
       </div>
@@ -230,7 +235,7 @@ const ClipsLibrary = () => {
                   className="text-xs min-h-[44px]"
                 >
                   <CheckSquare className="w-3.5 h-3.5 mr-1.5" />
-                  {selectedClips.size > 0 ? "Deselect" : `Select ${clips.length}`}
+                  {selectedClips.size > 0 ? t("common.deselect") : `${t("common.select")} ${clips.length}`}
                 </Button>
               )}
               <div className="flex items-center gap-1.5 px-3 min-h-[44px] rounded-lg bg-card/50 border border-border/50">
@@ -255,12 +260,12 @@ const ClipsLibrary = () => {
               <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
                 <Film className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-lg font-medium text-foreground mb-1">No clips yet</h3>
+              <h3 className="text-lg font-medium text-foreground mb-1">{t("clips.noClipsYet")}</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Upload a video and render your first clip
+                {t("clips.uploadAndRender")}
               </p>
               <Button onClick={() => navigate("/dashboard")} className="bg-primary text-primary-foreground hover:bg-primary/90">
-                Go to Videos
+                {t("common.goToVideos")}
               </Button>
             </div>
           ) : (
@@ -312,7 +317,7 @@ const ClipsLibrary = () => {
                       </div>
                       <div className="absolute top-2 right-2 flex items-center gap-1.5">
                         <span className="text-[10px] bg-accent/20 text-accent px-2 py-0.5 rounded-full border border-accent/30">
-                          Ready
+                          {t("videoCard.ready")}
                         </span>
                         <button
                           onClick={(e) => { e.stopPropagation(); toggleSelect(clip.id); }}
@@ -342,7 +347,7 @@ const ClipsLibrary = () => {
                             {clip.duration_seconds}s
                           </span>
                         )}
-                        <span className="truncate">{videoMap[clip.video_id]?.title || "Unknown video"}</span>
+                        <span className="truncate">{videoMap[clip.video_id]?.title || t("clips.unknownVideo")}</span>
                       </div>
 
                       {/* Action buttons */}
@@ -357,15 +362,15 @@ const ClipsLibrary = () => {
                           ) : (
                             <Download className="w-3.5 h-3.5" />
                           )}
-                          <span className="sm:hidden">Save Video</span>
-                          <span className="hidden sm:inline">Download</span>
+                          <span className="sm:hidden">{t("clips.saveVideo")}</span>
+                          <span className="hidden sm:inline">{t("common.download")}</span>
                         </button>
                         <button
                           onClick={() => navigate(`/dashboard/videos/edit/${clip.id}`)}
                           className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] py-1.5 rounded-lg border border-border/50 text-muted-foreground text-xs font-medium hover:text-foreground hover:border-primary/30 transition-colors"
                         >
                           <Pencil className="w-3.5 h-3.5" />
-                          Re-edit
+                          {t("clips.reEdit")}
                         </button>
                       </div>
                     </div>
@@ -385,9 +390,9 @@ const ClipsLibrary = () => {
               <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-5 bg-gradient-to-br from-primary/15 to-secondary/15 border border-primary/10">
                 <Clapperboard className="w-8 h-8 text-primary/60" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-1.5">No highlight reels yet</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-1.5">{t("clips.noHighlightReels")}</h3>
               <p className="text-sm text-muted-foreground max-w-xs text-center">
-                Open a video, select your best clips, and create a highlight reel!
+                {t("clips.noHighlightReelsDesc")}
               </p>
             </div>
           ) : (
