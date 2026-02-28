@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { X, GripVertical, Sparkles, Clock, Loader2, Plus, Minus, Film, Zap, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import type { Tables } from "@/integrations/supabase/types";
 import ClipVideoThumbnail from "@/components/dashboard/ClipVideoThumbnail";
+import SubtitleStylePicker from "@/components/SubtitleStylePicker";
+import { type SubtitleStyle, getDefaultStyle, getPresetById, loadAllPresetFonts } from "@/config/subtitlePresets";
 import {
   DndContext,
   closestCenter,
@@ -40,18 +42,7 @@ interface HighlightReelEditorProps {
   } | null;
 }
 
-type CaptionStyleId = "hormozi" | "mrbeast" | "minimal" | "neon" | "fire" | "elegant" | "custom";
-
-const CAPTION_STYLES: { id: CaptionStyleId; label: string; color: string }[] = [
-  { id: "hormozi", label: "Hormozi", color: "#FFD600" },
-  { id: "mrbeast", label: "MrBeast", color: "#FF3333" },
-  { id: "minimal", label: "Minimal", color: "#FFFFFF" },
-  { id: "neon", label: "Neon", color: "#00FF00" },
-  { id: "fire", label: "Fire", color: "#FF4500" },
-  { id: "elegant", label: "Elegant", color: "#F0F0F0" },
-];
-
-const CUSTOM_COLORS = ["FF0000", "00BFFF", "FFD600", "FF6B00", "A855F7", "22C55E"];
+/* Old caption style types removed — now using SubtitleStyle from subtitlePresets */
 
 // Clip timing override type
 interface ClipTiming {
@@ -214,10 +205,22 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
   const [selectedIds, setSelectedIds] = useState<string[]>(defaultSelected);
   const aiRecommendedIds = useMemo(() => (isEditing ? [] : defaultSelected), [defaultSelected, isEditing]);
 
-  const [captionStyle, setCaptionStyle] = useState<string>(editingReel?.caption_style || "hormozi");
-  const [customColor, setCustomColor] = useState("");
+  const initStyle = useMemo(() => {
+    if (editingReel?.caption_style) {
+      const preset = getPresetById(editingReel.caption_style);
+      if (preset) {
+        const { name, description, tags, ...style } = preset;
+        return style;
+      }
+    }
+    return getDefaultStyle();
+  }, [editingReel]);
+  const [subtitleStyle, setSubtitleStyle] = useState<SubtitleStyle>(initStyle);
+  const [subtitleSize, setSubtitleSize] = useState<"small" | "medium" | "large">("medium");
   const [addTransitions, setAddTransitions] = useState(editingReel?.add_transitions ?? true);
   const [creating, setCreating] = useState(false);
+
+  useEffect(() => { loadAllPresetFonts(); }, []);
 
   // Per-clip timing overrides: clipId -> { startTime, endTime }
   const [timingOverrides, setTimingOverrides] = useState<Record<string, ClipTiming>>(() => {
@@ -330,7 +333,7 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
             title,
             clip_ids: selectedIds,
             clip_order: selectedIds.map((_, i) => i),
-            caption_style: captionStyle,
+            caption_style: subtitleStyle.presetId,
             add_transitions: addTransitions,
             status: "pending",
             file_path: null,
@@ -350,7 +353,7 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
             title,
             clip_ids: selectedIds,
             clip_order: selectedIds.map((_, i) => i),
-            caption_style: captionStyle,
+            caption_style: subtitleStyle.presetId,
             add_transitions: addTransitions,
             status: "pending",
           })
@@ -366,9 +369,9 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
         reel_id: reelId,
         video_storage_path: video.file_path,
         clips: clipsPayload,
-        caption_style: captionStyle,
+        caption_style: subtitleStyle.presetId,
         add_transitions: addTransitions,
-        custom_color: captionStyle === "custom" ? customColor : undefined,
+        subtitle_style: subtitleStyle,
       }).catch(() => {});
 
       onClose();
@@ -515,55 +518,14 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
           {/* Options */}
           <div className="px-6 pb-5 space-y-4 border-t border-border/30 pt-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Caption style */}
+              {/* Subtitle Style — shared component */}
               <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">{t("videoConfig.captionStyle")}</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {CAPTION_STYLES.map((style) => (
-                    <button
-                      key={style.id}
-                      onClick={() => setCaptionStyle(style.id)}
-                      className={`flex flex-col items-center gap-1 py-2 px-2 rounded-lg text-xs font-medium border transition-all ${
-                        captionStyle === style.id
-                          ? "border-primary/60 bg-primary/15 text-primary"
-                          : "border-border/30 bg-card/20 text-muted-foreground hover:border-border/60"
-                      }`}
-                    >
-                      <span className="w-3 h-3 rounded-full shrink-0" style={{ background: style.color }} />
-                      <span>{style.label}</span>
-                    </button>
-                  ))}
-                </div>
-                {/* Custom color */}
-                <div className="mt-2">
-                  <button
-                    onClick={() => setCaptionStyle("custom")}
-                    className={`w-full flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-medium border transition-all ${
-                      captionStyle === "custom"
-                        ? "border-primary/60 bg-primary/15 text-primary"
-                        : "border-border/30 bg-card/20 text-muted-foreground hover:border-border/60"
-                    }`}
-                  >
-                    🎨 Custom Color
-                  </button>
-                  {captionStyle === "custom" && (
-                    <div className="flex gap-2 mt-2 px-1">
-                      {CUSTOM_COLORS.map((c) => (
-                        <button
-                          key={c}
-                          onClick={() => setCustomColor(c)}
-                          className={`w-6 h-6 rounded-full border-2 transition-all ${
-                            customColor === c ? "border-white scale-110" : "border-transparent"
-                          }`}
-                          style={{ background: `#${c}` }}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <p className="text-[10px] text-muted-foreground/60 mt-2 px-1">
-                  💬 Subtitle text is auto-generated. Change style and re-render.
-                </p>
+                <SubtitleStylePicker
+                  value={subtitleStyle}
+                  onChange={setSubtitleStyle}
+                  subtitleSize={subtitleSize}
+                  onSizeChange={setSubtitleSize}
+                />
               </div>
 
               {/* Transitions toggle */}
