@@ -1201,6 +1201,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                 variant="hero"
                 className="w-full"
                 onClick={async () => {
+                  if (isCreatingReel) return;
                   setIsCreatingReel(true);
                   try {
                     const styleLabels = { narrative: "Narrative", best_moments: "Best Moments", energy: "Energy" };
@@ -1212,18 +1213,23 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                       style: reelStyle,
                       title: `${video.title} — ${styleLabels[reelStyle]} Reel`,
                     });
-                    if (!res.ok) throw new Error("Failed");
-                    toast.success("Smart Reel is being created!", {
-                      description: `AI is selecting and arranging clips (${reelStyle} style, ~${targetDuration}s)`,
+                    if (res.ok) {
+                      toast.success("Smart Reel is being created! This takes 2-5 minutes.", {
+                        description: `AI is selecting and arranging clips (${reelStyle} style, ~${targetDuration}s)`,
+                      });
+                      setShowSmartReel(false);
+                      setTimeout(() => fetchReels(), 2000);
+                      setTimeout(() => fetchReels(), 5000);
+                    } else {
+                      let detail = "Unknown error";
+                      try { const err = await res.json(); detail = err.detail || err.message || detail; } catch {}
+                      toast.error(`Failed to create Smart Reel: ${detail}`);
+                    }
+                  } catch {
+                    toast.info("Request timed out, but your Smart Reel may still be building.", {
+                      description: "Check back in a few minutes.",
                     });
                     setShowSmartReel(false);
-                    // Delay refetch to allow backend to insert the reel
-                    setTimeout(() => fetchReels(), 2000);
-                    setTimeout(() => fetchReels(), 5000);
-                  } catch {
-                    toast.error("Failed to create Smart Reel", {
-                      description: "Please try again or contact support@hookcut.com",
-                    });
                   } finally {
                     setIsCreatingReel(false);
                   }
@@ -1231,7 +1237,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                 disabled={isCreatingReel}
               >
                 {isCreatingReel ? (
-                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> AI is building your reel...</>
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Creating...</>
                 ) : (
                   <><Sparkles className="w-4 h-4 mr-2" /> Create Smart Reel</>
                 )}
