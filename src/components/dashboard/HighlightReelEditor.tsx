@@ -523,8 +523,6 @@ export default function HighlightReelEditor({ video, clips, onClose, initialSele
                 <SubtitleStylePicker
                   value={subtitleStyle}
                   onChange={setSubtitleStyle}
-                  subtitleSize={subtitleSize}
-                  onSizeChange={setSubtitleSize}
                 />
               </div>
 

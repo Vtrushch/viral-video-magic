@@ -908,8 +908,8 @@ const ClipEdit = () => {
               <SubtitleStylePicker
                 value={subtitleStyle}
                 onChange={setSubtitleStyle}
-                subtitleSize={subtitleSize}
-                onSizeChange={setSubtitleSize}
+                subtitleY={subtitleY}
+                onSubtitleYChange={setSubtitleY}
               />
             </div>
 
