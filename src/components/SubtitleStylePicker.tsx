@@ -133,8 +133,11 @@ export default function SubtitleStylePicker({
       </h3>
 
       {/* Mobile: horizontal scroll row — all 10 presets */}
-      <div className="relative md:hidden">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory -mx-1 px-1">
+      <div className="relative md:hidden -mx-4">
+        <div
+          className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-4"
+          style={{ WebkitOverflowScrolling: "touch" }}
+        >
           {SUBTITLE_PRESETS.map((preset) => (
             <PresetCard
               key={preset.presetId}
@@ -142,7 +145,7 @@ export default function SubtitleStylePicker({
               isSelected={value.presetId === preset.presetId}
               onSelect={() => applyPreset(preset)}
               fontsReady={fontsReady}
-              className="flex-shrink-0 w-[105px] snap-start"
+              className="flex-shrink-0 w-[105px]"
             />
           ))}
         </div>
