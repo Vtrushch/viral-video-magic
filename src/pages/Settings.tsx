@@ -45,7 +45,7 @@ const SettingsPage = () => {
     if (!user) return;
     setSavingProfile(true);
     const { error } = await supabase.auth.updateUser({ data: { full_name: name } });
-    if (error) { toast.error("Failed to save profile"); } else { toast.success(t("toasts.changesSaved")); }
+    if (error) { toast.error(t("settings.failedSaveProfile")); } else { toast.success(t("toasts.changesSaved")); }
     setSavingProfile(false);
   };
 
@@ -55,7 +55,7 @@ const SettingsPage = () => {
     const { error } = await supabase.auth.updateUser({
       data: { caption_style: captionStyle, clip_length: clipLength, clip_count: clipCount },
     });
-    if (error) { toast.error("Failed to save preferences"); } else { toast.success(t("toasts.changesSaved")); }
+    if (error) { toast.error(t("settings.failedSavePrefs")); } else { toast.success(t("toasts.changesSaved")); }
     setSavingPrefs(false);
   };
 
@@ -127,7 +127,7 @@ const SettingsPage = () => {
               variant="outline"
               size="sm"
               className="border-destructive/40 text-destructive hover:bg-destructive/10"
-              onClick={() => toast.info("To delete your account, please contact support@hookcut.com")}
+              onClick={() => toast.info(t("settings.deleteAccountMsg"))}
             >
               {t("settings.deleteAccount")}
             </Button>
@@ -137,16 +137,16 @@ const SettingsPage = () => {
         {/* Preferences Tab */}
         <TabsContent value="preferences" className="space-y-6">
           <div className="glass-card rounded-2xl p-6 space-y-6">
-            <h3 className="font-semibold text-foreground text-lg">Default Analysis Settings</h3>
+            <h3 className="font-semibold text-foreground text-lg">{t("settings.defaultAnalysis")}</h3>
 
             <div className="space-y-2">
               <Label className="text-sm text-foreground/80">{t("settings.defaultCaptionStyle")}</Label>
               <Select value={captionStyle} onValueChange={setCaptionStyle}>
                 <SelectTrigger className="bg-muted/20 border-border/40"><SelectValue /></SelectTrigger>
                 <SelectContent className="dark">
-                  <SelectItem value="hormozi">Hormozi — Bold yellow highlights</SelectItem>
-                  <SelectItem value="mrbeast">MrBeast — High energy, all caps</SelectItem>
-                  <SelectItem value="minimal">Minimal — Clean & elegant</SelectItem>
+                  <SelectItem value="hormozi">{t("settings.hormoziDesc")}</SelectItem>
+                  <SelectItem value="mrbeast">{t("settings.mrBeastDesc")}</SelectItem>
+                  <SelectItem value="minimal">{t("settings.minimalDesc")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -168,9 +168,9 @@ const SettingsPage = () => {
               <Select value={clipCount} onValueChange={setClipCount}>
                 <SelectTrigger className="bg-muted/20 border-border/40"><SelectValue /></SelectTrigger>
                 <SelectContent className="dark">
-                  <SelectItem value="5">5 clips</SelectItem>
-                  <SelectItem value="10">10 clips</SelectItem>
-                  <SelectItem value="15">15 clips</SelectItem>
+                  <SelectItem value="5">{t("settings.nClips", { count: 5 })}</SelectItem>
+                  <SelectItem value="10">{t("settings.nClips", { count: 10 })}</SelectItem>
+                  <SelectItem value="15">{t("settings.nClips", { count: 15 })}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -191,7 +191,7 @@ const SettingsPage = () => {
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground">
-              You're on the {credits?.plan || "free"} plan. Upgrade to unlock more credits.
+              {t("settings.planDescription", { plan: credits?.plan || "free" })}
             </p>
             <div className="grid grid-cols-3 gap-4">
               {[
@@ -244,10 +244,10 @@ const SettingsPage = () => {
       <div className="max-w-2xl glass-card rounded-2xl p-6 space-y-3 mt-6">
         <div className="flex items-center gap-2">
           <Mail className="w-4 h-4 text-primary" />
-          <h3 className="font-semibold text-foreground">Support</h3>
+          <h3 className="font-semibold text-foreground">{t("common.support")}</h3>
         </div>
         <p className="text-sm text-muted-foreground">
-          Having issues or need help? We typically respond within a few hours.
+          {t("common.supportDesc")}
         </p>
         <a
           href="mailto:support@hookcut.com"

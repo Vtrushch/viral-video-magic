@@ -95,7 +95,7 @@ const DashboardSidebar = () => {
           <div className="mx-2 mb-2 p-3 rounded-xl" style={{ background: "linear-gradient(135deg, rgba(255,45,85,0.1), rgba(94,92,230,0.1))", border: "1px solid rgba(255,45,85,0.15)" }}>
             <div className="flex items-center gap-2 mb-1">
               <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span className="text-xs font-semibold text-foreground">Render Credits</span>
+              <span className="text-xs font-semibold text-foreground">{t("nav.credits")}</span>
             </div>
             <p className="text-lg font-bold text-foreground">{credits.remaining}</p>
             <p className="text-[10px] text-muted-foreground">{credits.remaining} of {credits.total_credits} remaining</p>
@@ -111,7 +111,7 @@ const DashboardSidebar = () => {
             </div>
             {(credits.remaining <= 5 || credits.plan === "free") && (
               <Link to="/dashboard/upgrade" className="text-[10px] text-primary hover:underline mt-1 block">
-                {credits.remaining === 0 ? "Upgrade for more credits →" : credits.plan === "free" && credits.remaining <= 3 ? "Upgrade your plan →" : "Running low — upgrade →"}
+                {credits.remaining === 0 ? t("upgrade.upgradeLink") : credits.plan === "free" && credits.remaining <= 3 ? t("upgrade.upgradeLink") : t("upgrade.upgradeLink")}
               </Link>
             )}
           </div>
@@ -197,7 +197,7 @@ const DashboardSidebar = () => {
             className="flex items-center gap-2 mx-2 mb-1 px-3 py-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-white/5"
           >
             <HelpCircle className="w-3.5 h-3.5" />
-            Help & Support
+            {t("common.support")}
           </a>
         )}
         {collapsed && (

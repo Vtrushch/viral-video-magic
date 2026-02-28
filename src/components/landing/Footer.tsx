@@ -67,7 +67,7 @@ const Footer = () => {
 
         {/* Support */}
         <div className="mt-8 text-center text-sm text-muted-foreground">
-          Need help?{" "}
+          {t("common.support").split("?")[0]}?{" "}
           <a href="mailto:support@hookcut.com" className="text-primary hover:underline">support@hookcut.com</a>
         </div>
 

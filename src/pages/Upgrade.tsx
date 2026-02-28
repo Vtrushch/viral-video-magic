@@ -31,13 +31,13 @@ const Upgrade = () => {
     const canceled = searchParams.get("canceled");
 
     if (success === "true") {
-      toast.success("🎉 Payment successful! Your plan is now active.", { duration: 5000 });
+      toast.success(t("upgrade.paymentSuccess"), { duration: 5000 });
       refetchCredits();
       setSearchParams({});
     }
 
     if (canceled === "true") {
-      toast.info("Payment was canceled. No charges were made.");
+      toast.info(t("upgrade.paymentCanceled"));
       setSearchParams({});
     }
   }, [searchParams]);
@@ -59,10 +59,10 @@ const Upgrade = () => {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        toast.error("Failed to create checkout session");
+        toast.error(t("upgrade.failedCheckout"));
       }
     } catch (err) {
-      toast.error("Payment error. Please try again.");
+      toast.error(t("upgrade.paymentError"));
       console.error(err);
     } finally {
       setCheckoutLoading(null);
@@ -75,7 +75,7 @@ const Upgrade = () => {
       const data = await res.json();
       if (data.url) window.location.href = data.url;
     } catch {
-      toast.error("Could not open billing portal");
+      toast.error(t("upgrade.failedPortal"));
     }
   };
 
@@ -88,10 +88,10 @@ const Upgrade = () => {
           <h1 className="text-3xl font-bold text-foreground mb-2">{t("upgrade.title")}</h1>
           <p className="text-muted-foreground">
             {loading
-              ? "Loading your credits..."
+              ? t("upgrade.loadingCredits")
               : credits
-              ? `You're on the ${credits.plan} plan with ${credits.remaining} render${credits.remaining === 1 ? '' : 's'} remaining.`
-              : "Choose a plan to get started."}
+              ? t("upgrade.planStatus", { plan: credits.plan, remaining: credits.remaining })
+              : t("upgrade.choosePlan")}
           </p>
         </div>
 
@@ -99,15 +99,15 @@ const Upgrade = () => {
         <div className="mb-8 flex flex-wrap justify-center gap-6 text-sm">
           <div className="flex items-center gap-2 text-muted-foreground">
             <span className="text-lg">🎬</span>
-            <span><span className="text-foreground font-medium">1 credit</span> per rendered clip</span>
+            <span><span className="text-foreground font-medium">{t("upgrade.creditExplainer1")}</span></span>
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
             <span className="text-lg">🔍</span>
-            <span><span className="text-foreground font-medium">Unlimited</span> video analysis</span>
+            <span><span className="text-foreground font-medium">{t("upgrade.creditExplainer2")}</span></span>
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
             <span className="text-lg">✂️</span>
-            <span><span className="text-foreground font-medium">Unlimited</span> editing & remixing</span>
+            <span><span className="text-foreground font-medium">{t("upgrade.creditExplainer3")}</span></span>
           </div>
         </div>
 
@@ -150,7 +150,7 @@ const Upgrade = () => {
                 </div>
 
                 <p className="text-xs text-primary font-semibold mb-5">
-                  {plan.renders} renders/month
+                  {plan.renders} {t("upgrade.creditsPerMonth")}
                 </p>
 
                 <Button
@@ -161,13 +161,13 @@ const Upgrade = () => {
                   onClick={() => handleCheckout(key)}
                 >
                   {checkoutLoading === key ? (
-                    <><Loader2 className="w-4 h-4 animate-spin mr-1" /> Redirecting...</>
+                    <><Loader2 className="w-4 h-4 animate-spin mr-1" /> {t("upgrade.redirecting")}</>
                   ) : isCurrent ? (
                     t("upgrade.currentPlan")
                   ) : key === "free" ? (
                     t("upgrade.currentPlan")
                   ) : (
-                    `Upgrade to ${plan.name}`
+                    t("upgrade.upgradeTo", { name: plan.name })
                   )}
                 </Button>
 
@@ -195,16 +195,16 @@ const Upgrade = () => {
         {credits && credits.plan !== "free" && (
           <div className="mt-6 text-center">
             <Button variant="outline" size="sm" onClick={handleManageSubscription}>
-              Manage Subscription & Billing
+              {t("upgrade.manageSubscription")}
             </Button>
           </div>
         )}
 
         {/* Add-on pack */}
         <div className="mt-8 rounded-2xl p-6 text-center" style={{ background: "hsl(240,15%,10%,0.4)", border: "1px solid hsl(0,0%,100%,0.06)" }}>
-          <p className="text-sm font-semibold text-foreground mb-1">Need more clips?</p>
+          <p className="text-sm font-semibold text-foreground mb-1">{t("upgrade.needMoreClips")}</p>
           <p className="text-muted-foreground text-sm mb-3">
-            +${ADDON_PACK.price} for {ADDON_PACK.renders} extra renders. Available on any paid plan. Max {ADDON_PACK.maxPerMonth} extra/month.
+            {t("upgrade.addonDesc", { price: ADDON_PACK.price, renders: ADDON_PACK.renders, max: ADDON_PACK.maxPerMonth })}
           </p>
           {credits && credits.plan !== "free" ? (
             <Button
@@ -214,21 +214,21 @@ const Upgrade = () => {
               disabled={checkoutLoading === "render_pack"}
             >
               {checkoutLoading === "render_pack" ? (
-                <><Loader2 className="w-4 h-4 animate-spin mr-1" /> Processing...</>
+                <><Loader2 className="w-4 h-4 animate-spin mr-1" /> {t("upgrade.processing")}</>
               ) : (
-                "Buy Render Pack — $9"
+                t("upgrade.buyRenderPack")
               )}
             </Button>
           ) : (
-            <p className="text-xs text-muted-foreground">Upgrade to a paid plan first to buy render packs.</p>
+            <p className="text-xs text-muted-foreground">{t("upgrade.upgradeFirst")}</p>
           )}
         </div>
 
         {/* Contact */}
         <div className="mt-4 rounded-2xl p-6 text-center" style={{ background: "hsl(240,15%,10%,0.4)", border: "1px solid hsl(0,0%,100%,0.06)" }}>
           <p className="text-sm text-muted-foreground">
-            Questions about billing?{" "}
-            <a href="mailto:support@hookcut.com" className="text-primary font-medium hover:underline">Contact us</a>.
+            {t("upgrade.billingQuestions")}{" "}
+            <a href="mailto:support@hookcut.com" className="text-primary font-medium hover:underline">{t("common.contactUs")}</a>.
           </p>
         </div>
       </div>
