@@ -611,7 +611,10 @@ const ClipEdit = () => {
                     ref={mobileVideoRef}
                     src={signedUrl}
                     className={`w-full h-full ${cropObjectFit === 'cover' ? 'object-cover' : 'object-contain'}`}
-                    style={cropObjectPosition ? { objectPosition: cropObjectPosition } : undefined}
+                    style={{
+                      ...(cropObjectPosition ? { objectPosition: cropObjectPosition } : {}),
+                      minHeight: '200px',
+                    }}
                     onLoadedMetadata={handleLoadedMetadata}
                     onTimeUpdate={handleTimeUpdate}
                     onEnded={() => { setPlaying(false); }}
