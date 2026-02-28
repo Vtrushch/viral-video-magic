@@ -1236,10 +1236,6 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                   <><Sparkles className="w-4 h-4 mr-2" /> Create Smart Reel</>
                 )}
               </Button>
-
-              <p className="text-[10px] text-center text-muted-foreground">
-                Smart Reel uses 1 render credit
-              </p>
             </div>
           </div>
         </div>
