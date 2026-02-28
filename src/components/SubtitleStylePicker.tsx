@@ -153,7 +153,7 @@ export default function SubtitleStylePicker({
       </div>
 
       {/* Desktop: 2-row grid */}
-      <div className="hidden md:grid grid-rows-2 grid-flow-col auto-cols-[112px] gap-2 overflow-x-auto py-1 pb-2 scrollbar-hide">
+      <div className="hidden md:grid grid-rows-2 grid-flow-col auto-cols-[112px] gap-2 overflow-x-auto py-1 pb-2 px-0.5 scrollbar-hide">
         {SUBTITLE_PRESETS.map((preset) => (
           <PresetCard
             key={preset.presetId}
