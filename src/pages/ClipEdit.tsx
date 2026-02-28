@@ -82,7 +82,7 @@ const ClipEdit = () => {
   const [subtitleSize, setSubtitleSize] = useState<"small" | "medium" | "large">("medium");
   const [subtitleY, setSubtitleY] = useState(0.85);
   const [subtitleStyle, setSubtitleStyle] = useState<SubtitleStyle>(getDefaultStyle());
-  const [captionLayoutOpen, setCaptionLayoutOpen] = useState(false);
+  // captionLayoutOpen removed — merged into SubtitleStylePicker
   const { credits, refetch: refetchCredits } = useCredits();
 
   const { t } = useTranslation();
@@ -905,86 +905,9 @@ const ClipEdit = () => {
               <SubtitleStylePicker
                 value={subtitleStyle}
                 onChange={setSubtitleStyle}
+                subtitleSize={subtitleSize}
+                onSizeChange={setSubtitleSize}
               />
-            </div>
-
-            {/* Caption Layout — collapsed by default */}
-            <div className="space-y-2 p-3 rounded-lg border border-border/50 bg-card/30">
-              <button
-                onClick={() => setCaptionLayoutOpen(!captionLayoutOpen)}
-                className="w-full flex items-center justify-between"
-              >
-                <label className="text-sm font-medium text-foreground cursor-pointer">Caption Layout</label>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-muted-foreground/60">
-                    {subtitleSize.charAt(0).toUpperCase() + subtitleSize.slice(1)} · {Math.round(subtitleY * 100)}%
-                  </span>
-                  <ChevronDown className={cn("w-3.5 h-3.5 text-muted-foreground transition-transform", captionLayoutOpen && "rotate-180")} />
-                </div>
-              </button>
-
-              {captionLayoutOpen && (
-                <div className="flex gap-4 items-start pt-2">
-                  {/* Phone wireframe diagram */}
-                  <div className="relative w-16 h-28 rounded-lg border-2 border-muted-foreground/30 bg-muted/10 flex-shrink-0 overflow-hidden">
-                    <div className="absolute inset-1 rounded bg-muted/20" />
-                    <div
-                      className="absolute left-1 right-1 h-3 rounded-sm bg-primary/40 border border-primary/60 transition-all duration-200"
-                      style={{ top: `${Math.max(10, Math.min(85, subtitleY * 100))}%` }}
-                    />
-                    <div
-                      className="absolute left-1 right-1 flex items-center justify-center transition-all duration-200"
-                      style={{ top: `${Math.max(10, Math.min(85, subtitleY * 100))}%` }}
-                    >
-                      <span className={cn(
-                        "text-primary font-bold leading-none",
-                        subtitleSize === "small" ? "text-[5px]" : subtitleSize === "medium" ? "text-[6px]" : "text-[8px]"
-                      )}>
-                        Aa
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Controls next to diagram */}
-                  <div className="flex-1 space-y-3">
-                    <div className="space-y-1.5">
-                      <label className="text-[11px] text-muted-foreground">Size</label>
-                      <div className="flex gap-1.5">
-                        {(["small", "medium", "large"] as const).map((size) => (
-                          <button
-                            key={size}
-                            onClick={() => setSubtitleSize(size)}
-                            className={cn(
-                              "flex-1 py-1 rounded text-[11px] font-medium border transition-colors",
-                              subtitleSize === size
-                                ? "border-primary bg-primary/10 text-primary"
-                                : "border-border/50 text-muted-foreground hover:border-primary/30"
-                            )}
-                          >
-                            {size === "small" ? "S" : size === "medium" ? "M" : "L"}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-[11px] text-muted-foreground">Position</label>
-                      <input
-                        type="range"
-                        min={10}
-                        max={95}
-                        value={subtitleY * 100}
-                        onChange={(e) => setSubtitleY(Number(e.target.value) / 100)}
-                        className="w-full h-1 accent-primary"
-                      />
-                      <div className="flex justify-between text-[9px] text-muted-foreground/50">
-                        <span>Top</span>
-                        <span>Bottom</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* 2.5 AI TITLES & HASHTAGS */}

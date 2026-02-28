@@ -3,6 +3,7 @@ import { Check, ChevronDown, RotateCcw, AlignVerticalJustifyStart, AlignVertical
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   SUBTITLE_PRESETS,
   type SubtitleStyle,
@@ -12,6 +13,8 @@ import {
 interface SubtitleStylePickerProps {
   value: SubtitleStyle;
   onChange: (style: SubtitleStyle) => void;
+  subtitleSize?: "small" | "medium" | "large";
+  onSizeChange?: (size: "small" | "medium" | "large") => void;
 }
 
 const QUICK_COLORS = [
@@ -29,8 +32,9 @@ const ANIMATION_OPTIONS: { value: SubtitleStyle["animation"]; label: string }[] 
   { value: "glow-pulse", label: "Glow" },
 ];
 
-export default function SubtitleStylePicker({ value, onChange }: SubtitleStylePickerProps) {
-  const [customizeOpen, setCustomizeOpen] = useState(false); // collapsed by default
+export default function SubtitleStylePicker({ value, onChange, subtitleSize = "medium", onSizeChange }: SubtitleStylePickerProps) {
+  const isMobile = useIsMobile();
+  const [customizeOpen, setCustomizeOpen] = useState(false); // collapsed by default (desktop & mobile)
   const [fontsReady, setFontsReady] = useState(false);
 
   useEffect(() => {
@@ -51,14 +55,22 @@ export default function SubtitleStylePicker({ value, onChange }: SubtitleStylePi
     if (preset) applyPreset(preset);
   };
 
+  const animLabel = value.animation !== "none" ? value.animation.replace("-", " ") : "No anim";
+  const summaryText = `${animLabel} · ${value.fontSize}px · ${value.position}`;
+
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
         Subtitle Style
       </h3>
 
-      {/* Preset strip — 2-row horizontal scroll on desktop, 1-row on mobile */}
-      <div className="grid grid-rows-2 grid-flow-col auto-cols-[100px] md:auto-cols-[110px] gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x">
+      {/* Preset strip — single-row horizontal scroll on mobile, 2-row grid on desktop */}
+      <div className={cn(
+        "overflow-x-auto pb-2 scrollbar-hide snap-x",
+        isMobile
+          ? "flex gap-2"
+          : "grid grid-rows-2 grid-flow-col auto-cols-[110px] gap-2"
+      )}>
         {SUBTITLE_PRESETS.map((preset) => {
           const isSelected = value.presetId === preset.presetId;
           return (
@@ -66,7 +78,8 @@ export default function SubtitleStylePicker({ value, onChange }: SubtitleStylePi
               key={preset.presetId}
               onClick={() => applyPreset(preset)}
               className={cn(
-                "relative snap-start rounded-lg p-2 text-left transition-all duration-200",
+                "relative snap-start rounded-lg p-2 text-left transition-all duration-200 flex-shrink-0",
+                isMobile ? "w-[100px]" : "",
                 isSelected
                   ? "ring-2 ring-purple-500/50 shadow-lg shadow-purple-500/20 bg-purple-500/10"
                   : "ring-1 ring-white/10 hover:ring-white/25 bg-muted/20"
@@ -114,8 +127,8 @@ export default function SubtitleStylePicker({ value, onChange }: SubtitleStylePi
       >
         <span className="font-medium">Customize</span>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-muted-foreground/60 hidden sm:inline">
-            {value.animation !== "none" ? value.animation.replace("-", " ") : "No anim"} · {value.fontSize}px · {value.position}
+          <span className="text-[10px] text-muted-foreground/60">
+            {summaryText}
           </span>
           <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", customizeOpen && "rotate-180")} />
         </div>
@@ -149,6 +162,29 @@ export default function SubtitleStylePicker({ value, onChange }: SubtitleStylePi
             </div>
             <p className="text-[9px] text-muted-foreground/60 text-center">Optimized for TikTok/Reels</p>
           </div>
+
+          {/* Size (S / M / L) — merged from Caption Layout */}
+          {onSizeChange && (
+            <div className="space-y-1.5">
+              <label className="text-[11px] text-muted-foreground">Size</label>
+              <div className="flex gap-1.5">
+                {(["small", "medium", "large"] as const).map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => onSizeChange(size)}
+                    className={cn(
+                      "flex-1 py-2 rounded-md text-[11px] font-medium border transition-colors min-h-[44px]",
+                      subtitleSize === size
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border/50 text-muted-foreground hover:border-primary/30"
+                    )}
+                  >
+                    {size === "small" ? "S" : size === "medium" ? "M" : "L"}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Text Color */}
           <div className="space-y-1.5">
