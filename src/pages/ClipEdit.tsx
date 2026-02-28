@@ -29,6 +29,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type CaptionStyle = "hormozi" | "mrbeast" | "minimal" | "neon" | "fire" | "elegant" | "custom";
 
@@ -83,6 +84,7 @@ const ClipEdit = () => {
   const [subtitleY, setSubtitleY] = useState(0.85);
   const [subtitleStyle, setSubtitleStyle] = useState<SubtitleStyle>(getDefaultStyle());
   // captionLayoutOpen removed — merged into SubtitleStylePicker
+  const isMobile = useIsMobile();
   const { credits, refetch: refetchCredits } = useCredits();
 
   const { t } = useTranslation();
@@ -223,8 +225,11 @@ const ClipEdit = () => {
     });
   }, [video?.file_path]);
 
-  // Helper: get the active video element (desktop or mobile)
-  const getActiveVideoEl = () => videoRef.current || mobileVideoRef.current;
+  // Helper: get the active video element based on viewport
+  const getActiveVideoEl = useCallback(() => {
+    if (isMobile) return mobileVideoRef.current || videoRef.current;
+    return videoRef.current || mobileVideoRef.current;
+  }, [isMobile]);
 
   const handleLoadedMetadata = useCallback(() => {
     const el = getActiveVideoEl();
@@ -232,7 +237,7 @@ const ClipEdit = () => {
     el.pause();
     el.currentTime = clipStart;
     setLoading(false);
-  }, [clipStart]);
+  }, [clipStart, getActiveVideoEl]);
 
   const handleTimeUpdate = useCallback(() => {
     const el = getActiveVideoEl();
@@ -243,7 +248,7 @@ const ClipEdit = () => {
       el.currentTime = clipStart;
       setPlaying(false);
     }
-  }, [clipEnd, clipStart]);
+  }, [clipEnd, clipStart, getActiveVideoEl]);
 
   const handleReload = () => {
     const el = getActiveVideoEl();
@@ -405,20 +410,30 @@ const ClipEdit = () => {
     };
   }, [clipStart, clipEnd]);
 
-  // iOS video render fix — nudge video to render first frame
+  // Ensure signed URL videos are reloaded after src updates
+  useEffect(() => {
+    if (!signedUrl) return;
+    [videoRef.current, mobileVideoRef.current].forEach((el) => {
+      if (!el) return;
+      el.load();
+    });
+  }, [signedUrl]);
+
+  // iOS/mobile first-frame fix — nudge to clip start on canplay
   useEffect(() => {
     const el = mobileVideoRef.current;
     if (!el || !signedUrl) return;
-    
+
     const handleCanPlay = () => {
-      if (el.currentTime === 0) {
-        el.currentTime = 0.001;
+      const targetTime = clipStart > 0 ? clipStart : 0.001;
+      if (Math.abs(el.currentTime - targetTime) > 0.05) {
+        el.currentTime = targetTime;
       }
     };
-    
-    el.addEventListener('canplay', handleCanPlay);
-    return () => el.removeEventListener('canplay', handleCanPlay);
-  }, [signedUrl]);
+
+    el.addEventListener("canplay", handleCanPlay);
+    return () => el.removeEventListener("canplay", handleCanPlay);
+  }, [signedUrl, clipStart]);
 
   // Smooth video seek when clip boundaries change (while paused)
   useEffect(() => {
@@ -427,7 +442,7 @@ const ClipEdit = () => {
     if (el.currentTime < clipStart || el.currentTime > clipEnd) {
       el.currentTime = clipStart;
     }
-  }, [clipStart, clipEnd]);
+  }, [clipStart, clipEnd, playing, getActiveVideoEl]);
 
   // Save changes — persist start_time, end_time, caption_style, and transcription to DB
   const handleSave = async () => {
