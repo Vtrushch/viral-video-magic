@@ -709,7 +709,6 @@ const ClipEdit = () => {
                       onEnded={() => { setPlaying(false); }}
                       muted={muted}
                       playsInline
-                      controls
                       preload="auto"
                     />
                   )}
