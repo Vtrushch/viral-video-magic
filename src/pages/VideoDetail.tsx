@@ -889,14 +889,6 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
             </>
           )}
           <Button
-            variant="hero-outline"
-            size="sm"
-            className="flex-1 sm:flex-none"
-            onClick={() => navigate(`/dashboard/videos/review/${video.id}`)}
-          >
-            <Eye className="w-4 h-4 mr-1.5" /> {t("videoDetail.reviewSelect")}
-          </Button>
-          <Button
             variant="hero"
             size="sm"
             className="flex-1 sm:flex-none"
