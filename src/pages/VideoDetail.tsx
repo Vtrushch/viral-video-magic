@@ -397,7 +397,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
   const [videoSignedUrl, setVideoSignedUrl] = useState<string | null>(null);
   const [playerPlaying, setPlayerPlaying] = useState(false);
   const [reels, setReels] = useState<any[]>([]);
-  const [creditDialog, setCreditDialog] = useState<{ type: "single"; clip: Tables<"clips"> } | { type: "all"; clips: Tables<"clips">[] } | null>(null);
+  const [creditDialog, setCreditDialog] = useState<{ type: "single"; clip: Tables<"clips"> } | { type: "all"; clips: Tables<"clips">[] } | { type: "reel"; reel: any } | null>(null);
   const [creditConfirmLoading, setCreditConfirmLoading] = useState(false);
   const [reAnalyzeOpen, setReAnalyzeOpen] = useState(false);
   const { credits, refetch: refetchCredits } = useCredits();
@@ -580,13 +580,43 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     setCreditDialog({ type: "all", clips: pending });
   };
 
+  const renderReelActual = useCallback(async (reel: any) => {
+    if (!video.file_path) { toast.error(t("videoDetail.videoFileNotFound")); return; }
+    try {
+      // Build clips payload from reel data
+      const reelClips = clips.filter(c => reel.clip_ids.includes(c.id));
+      const clipsPayload = reelClips.map((c) => ({
+        clip_id: c.id,
+        start_time: parseFloat(c.start_time || "0"),
+        end_time: parseFloat(c.end_time || "0"),
+      }));
+
+      await supabase.from("highlight_reels" as any).update({ status: "rendering" }).eq("id", reel.id);
+      setReels(prev => prev.map(r => r.id === reel.id ? { ...r, status: "rendering" } : r));
+
+      await apiFetch("/create-highlight-reel", {
+        reel_id: reel.id,
+        video_storage_path: video.file_path,
+        clips: clipsPayload,
+        caption_style: reel.caption_style || "hormozi",
+        add_transitions: reel.add_transitions ?? true,
+      });
+    } catch {
+      toast.error(t("videoDetail.somethingWentWrong"), {
+        description: t("videoDetail.somethingWentWrongDesc"),
+      });
+    }
+  }, [video, clips]);
+
   const handleCreditConfirm = async () => {
     if (!creditDialog) return;
     setCreditConfirmLoading(true);
     if (creditDialog.type === "single") {
       await deductAndRender([creditDialog.clip]);
-    } else {
+    } else if (creditDialog.type === "all") {
       await deductAndRender(creditDialog.clips);
+    } else if (creditDialog.type === "reel") {
+      await renderReelActual(creditDialog.reel);
     }
     setCreditConfirmLoading(false);
     setCreditDialog(null);
@@ -1346,6 +1376,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                   reel={reel}
                   onDelete={(id) => setReels((prev) => prev.filter((r) => r.id !== id))}
                   onEdit={(r) => navigate(`/dashboard/highlight-reel/edit/${r.id}`)}
+                  onRender={(r) => setCreditDialog({ type: "reel", reel: r })}
                 />
               ))}
             </div>

@@ -1,4 +1,4 @@
-import { Trash2, Download, Loader2, Film, Clock, Layers, Eye, Pencil, Play, X } from "lucide-react";
+import { Trash2, Download, Loader2, Film, Clock, Layers, Eye, Pencil, Play, X, Zap, AlertTriangle, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,9 +25,10 @@ interface HighlightReelCardProps {
   reel: Reel;
   onDelete: (id: string) => void;
   onEdit?: (reel: Reel) => void;
+  onRender?: (reel: Reel) => void;
 }
 
-export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightReelCardProps) {
+export default function HighlightReelCard({ reel, onDelete, onEdit, onRender }: HighlightReelCardProps) {
   const { t } = useTranslation();
   const [downloading, setDownloading] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -36,8 +37,9 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
 
   const statusDot = (status: string) => {
     if (status === "ready") return "bg-accent";
-    if (status === "rendering" || status === "pending") return "bg-secondary animate-pulse";
+    if (status === "rendering") return "bg-secondary animate-pulse";
     if (status === "failed") return "bg-destructive";
+    if (status === "pending") return "bg-muted-foreground/40";
     return "bg-muted-foreground/40";
   };
 
@@ -48,7 +50,10 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
     return m > 0 ? `${m}m ${r}s` : `${r}s`;
   };
 
-  const isRendering = reel.status === "rendering" || reel.status === "pending";
+  const isRendering = reel.status === "rendering";
+  const isReady = reel.status === "ready";
+  const isPending = reel.status === "pending";
+  const isFailed = reel.status === "failed";
 
   const handleDownload = async () => {
     if (!reel.file_path) return;
@@ -86,9 +91,9 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
           <div
             className="w-16 h-28 rounded-lg flex-shrink-0 overflow-hidden relative cursor-pointer"
             style={{ background: "linear-gradient(180deg, hsl(240,15%,14%) 0%, hsl(240,15%,10%) 100%)" }}
-            onClick={() => reel.status === "ready" && reel.file_path && setShowPreview(true)}
+            onClick={() => isReady && reel.file_path && setShowPreview(true)}
           >
-            {reel.status === "ready" && reel.file_path ? (
+            {isReady && reel.file_path ? (
               <video
                 src={reel.file_path}
                 className="w-full h-full object-cover"
@@ -129,9 +134,18 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
               </div>
             )}
 
+            {/* Failed indicator */}
+            {isFailed && (
+              <div className="flex items-center gap-1.5 mt-1">
+                <AlertTriangle className="w-3 h-3 text-destructive" />
+                <span className="text-[10px] text-destructive">{t("videoDetail.renderingFailed")}</span>
+              </div>
+            )}
+
             {/* Action buttons */}
             <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-              {reel.status === "ready" && reel.file_path && (
+              {/* Preview — only when ready */}
+              {isReady && reel.file_path && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -141,7 +155,9 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
                   <Eye className="w-3 h-3 sm:mr-1" /><span className="hidden sm:inline">{t("common.preview")}</span>
                 </Button>
               )}
-              {onEdit && (
+
+              {/* Edit — always available except when rendering */}
+              {onEdit && !isRendering && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -151,7 +167,33 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
                   <Pencil className="w-3 h-3 sm:mr-1" /><span className="hidden sm:inline">{t("common.edit")}</span>
                 </Button>
               )}
-              {reel.status === "ready" && reel.file_path && (
+
+              {/* Render — when pending */}
+              {isPending && onRender && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 min-h-[44px] px-2 text-xs text-primary hover:text-primary hover:bg-primary/10"
+                  onClick={() => onRender(reel)}
+                >
+                  <Zap className="w-3 h-3 sm:mr-1" /><span className="hidden sm:inline">{t("common.render")}</span>
+                </Button>
+              )}
+
+              {/* Try Again — when failed */}
+              {isFailed && onRender && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 min-h-[44px] px-2 text-xs text-primary hover:text-primary hover:bg-primary/10"
+                  onClick={() => onRender(reel)}
+                >
+                  <RotateCcw className="w-3 h-3 sm:mr-1" /><span className="hidden sm:inline">{t("common.tryAgain")}</span>
+                </Button>
+              )}
+
+              {/* Download — only when ready */}
+              {isReady && reel.file_path && (
                 <button
                   className="inline-flex items-center gap-1 h-7 min-h-[44px] px-2 text-xs text-accent hover:text-accent rounded-md hover:bg-accent/10 transition-colors disabled:opacity-50"
                   onClick={handleDownload}
@@ -161,26 +203,29 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
                   <span className="hidden sm:inline">{t("common.download")}</span>
                 </button>
               )}
+
               {/* Delete */}
-              {showConfirmDelete ? (
-                <div className="flex items-center gap-1">
-                  <span className="text-[10px] text-destructive font-medium">{t("common.delete")}?</span>
-                  <Button variant="ghost" size="sm" className="h-7 px-2 text-[10px] text-destructive hover:bg-destructive/10" onClick={handleDelete} disabled={deleting}>
-                    {deleting ? <Loader2 className="w-3 h-3 animate-spin" /> : t("common.yes")}
+              {!isRendering && (
+                showConfirmDelete ? (
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] text-destructive font-medium">{t("common.delete")}?</span>
+                    <Button variant="ghost" size="sm" className="h-7 px-2 text-[10px] text-destructive hover:bg-destructive/10" onClick={handleDelete} disabled={deleting}>
+                      {deleting ? <Loader2 className="w-3 h-3 animate-spin" /> : t("common.yes")}
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-7 px-2 text-[10px] text-muted-foreground" onClick={() => setShowConfirmDelete(false)}>
+                      {t("common.no")}
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 min-h-[44px] px-2 text-xs text-muted-foreground/50 hover:text-destructive"
+                    onClick={() => setShowConfirmDelete(true)}
+                  >
+                    <Trash2 className="w-3 h-3" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-7 px-2 text-[10px] text-muted-foreground" onClick={() => setShowConfirmDelete(false)}>
-                    {t("common.no")}
-                  </Button>
-                </div>
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 min-h-[44px] px-2 text-xs text-muted-foreground/50 hover:text-destructive"
-                  onClick={() => setShowConfirmDelete(true)}
-                >
-                  <Trash2 className="w-3 h-3" />
-                </Button>
+                )
               )}
             </div>
           </div>
@@ -192,7 +237,7 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
         </div>
       </div>
 
-      {/* Preview Modal — kept as-is */}
+      {/* Preview Modal */}
       {showPreview && reel.file_path && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -221,7 +266,7 @@ export default function HighlightReelCard({ reel, onDelete, onEdit }: HighlightR
                 playsInline
               />
             </div>
-            {reel.status === "ready" && (
+            {isReady && (
               <Button variant="hero" className="w-full mt-3" onClick={handleDownload} disabled={downloading}>
                 {downloading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
                 {t("videoDetail.downloadReel")}

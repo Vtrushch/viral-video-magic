@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,9 @@ import type { Tables } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
 import { downloadClip, clipFilename } from "@/lib/downloadClip";
+import { useCredits } from "@/hooks/useCredits";
+import { apiFetch } from "@/lib/api";
+import RenderCreditDialog from "@/components/dashboard/RenderCreditDialog";
 import {
   Download,
   Loader2,
@@ -40,6 +43,9 @@ const ClipsLibrary = () => {
   const [previewClip, setPreviewClip] = useState<Tables<"clips"> | null>(null);
   const [confirmDeleteClipId, setConfirmDeleteClipId] = useState<string | null>(null);
   const [deletingClipId, setDeletingClipId] = useState<string | null>(null);
+  const [reelCreditDialog, setReelCreditDialog] = useState<any | null>(null);
+  const [reelCreditLoading, setReelCreditLoading] = useState(false);
+  const { credits, refetch: refetchCredits } = useCredits();
 
   const SORT_OPTIONS: { id: SortBy; label: string }[] = [
     { id: "viral_score", label: t("clips.sortViralScore") },
@@ -98,6 +104,33 @@ const ClipsLibrary = () => {
     },
     enabled: !!user,
   });
+
+  const handleReelRender = useCallback(async (reel: any) => {
+    // Find video for this reel
+    const video = videos.find((v) => v.id === reel.video_id);
+    if (!video?.file_path) { toast.error("Video file not found"); return; }
+    try {
+      await supabase.from("highlight_reels" as any).update({ status: "rendering" }).eq("id", reel.id);
+      await apiFetch("/create-highlight-reel", {
+        reel_id: reel.id,
+        video_storage_path: video.file_path,
+        clips: reel.clip_ids.map((id: string) => ({ clip_id: id, start_time: 0, end_time: 0 })),
+        caption_style: reel.caption_style || "hormozi",
+        add_transitions: reel.add_transitions ?? true,
+      });
+      refetchReels();
+    } catch {
+      toast.error("Failed to start rendering");
+    }
+  }, [videos, refetchReels]);
+
+  const handleReelCreditConfirm = async () => {
+    if (!reelCreditDialog) return;
+    setReelCreditLoading(true);
+    await handleReelRender(reelCreditDialog);
+    setReelCreditLoading(false);
+    setReelCreditDialog(null);
+  };
 
   const sortedClips = useMemo(() => {
     return [...clips].sort((a, b) => {
@@ -449,6 +482,7 @@ const ClipsLibrary = () => {
                   key={reel.id}
                   reel={reel}
                   onDelete={() => refetchReels()}
+                  onRender={(r) => setReelCreditDialog(r)}
                 />
               ))}
             </div>
@@ -465,6 +499,17 @@ const ClipsLibrary = () => {
           onClose={() => setPreviewClip(null)}
         />
       )}
+
+      {/* Reel Credit Dialog */}
+      <RenderCreditDialog
+        open={!!reelCreditDialog}
+        onClose={() => setReelCreditDialog(null)}
+        onConfirm={handleReelCreditConfirm}
+        creditsRequired={1}
+        creditsRemaining={credits?.remaining ?? 0}
+        loading={reelCreditLoading}
+        plan={credits?.plan}
+      />
     </div>
   );
 };

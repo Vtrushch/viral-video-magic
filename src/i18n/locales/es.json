@@ -46,7 +46,9 @@
     "reAnalyze": "Re-analizar",
     "support": "Soporte",
     "supportDesc": "¿Tienes problemas o necesitas ayuda? Respondemos en pocas horas.",
-    "contactUs": "Contáctanos"
+    "contactUs": "Contáctanos",
+    "render": "Renderizar",
+    "tryAgain": "Reintentar"
   },
   "landing": {
     "nav": {
