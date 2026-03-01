@@ -23,8 +23,9 @@ const Index = () => {
   }, [navigate]);
 
   useEffect(() => {
-    if (location.hash) {
-      const el = document.querySelector(location.hash);
+    // Only handle simple anchor hashes (e.g. #pricing), skip OAuth tokens like #access_token=...
+    if (location.hash && /^#[a-zA-Z][\w-]*$/.test(location.hash)) {
+      const el = document.getElementById(location.hash.substring(1));
       if (el) {
         setTimeout(() => el.scrollIntoView({ behavior: "smooth" }), 100);
       }
