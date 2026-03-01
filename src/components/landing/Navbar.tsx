@@ -28,6 +28,7 @@ const Navbar = () => {
           <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.howItWorks')}</a>
           <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.features')}</a>
           <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.pricing')}</a>
+          <Link to="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">Blog</Link>
         </div>
 
         <div className="hidden md:flex items-center gap-3">
@@ -75,6 +76,7 @@ const Navbar = () => {
           <a href="#how-it-works" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.howItWorks')}</a>
           <a href="#features" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.features')}</a>
           <a href="#pricing" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.pricing')}</a>
+          <Link to="/blog" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>Blog</Link>
           {/* Mobile language switcher */}
           <div className="flex gap-2 pt-1">
             {LANGUAGES.map((lang) => (

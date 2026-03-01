@@ -24,6 +24,8 @@ import NotFound from "./pages/NotFound";
 import HighlightReelPage from "./pages/HighlightReelPage";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import Blog from "./pages/Blog";
+import BlogArticle from "./pages/BlogArticle";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -42,6 +44,8 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogArticle />} />
             <Route
               path="/dashboard"
               element={
