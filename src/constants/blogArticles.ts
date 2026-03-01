@@ -206,7 +206,7 @@ Here's exactly how to do it.
 
 ---
 
-## Why Captions Are Non-Negotiable in 2025
+## Why Captions Are Non-Negotiable in 2026
 
 It used to be a nice-to-have. Now it's table stakes.
 
@@ -388,9 +388,9 @@ Your content is good. Let people actually see it.
   },
   {
     slug: "hookcut-vs-opus-clip",
-    title: "HookCut vs Opus Clip: Which AI Video Clipper Is Right for You? (2025)",
-    metaDescription: "Comparing HookCut and Opus Clip side-by-side in 2025. Features, pricing, caption quality, ease of use, and which one is better for your content workflow.",
-    keywords: ["HookCut vs Opus Clip", "Opus Clip alternative", "best AI video clipper 2025", "AI video clipping tool comparison"],
+    title: "HookCut vs Opus Clip: Which AI Video Clipper Is Right for You? (2026)",
+    metaDescription: "Comparing HookCut and Opus Clip side-by-side in 2026. Features, pricing, caption quality, ease of use, and which one is better for your content workflow.",
+    keywords: ["HookCut vs Opus Clip", "Opus Clip alternative", "best AI video clipper 2026", "AI video clipping tool comparison"],
     date: "2026-02-25",
     readTime: "10 min read",
     category: "Comparison",
@@ -579,7 +579,7 @@ Inside that video, at the 23-minute mark, you said something so good that — if
 
 You'll never know that. Because you never clipped it.
 
-This is the defining mistake of 2024 and 2025's creator economy: **treating long-form video as an endpoint instead of a starting point.**
+This is the defining mistake of 2024 and 2026's creator economy: **treating long-form video as an endpoint instead of a starting point.**
 
 ---
 
