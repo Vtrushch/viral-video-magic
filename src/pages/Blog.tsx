@@ -87,9 +87,6 @@ const Blog = () => {
                     {article.metaDescription}
                   </p>
 
-                  <div className="flex items-center text-sm text-primary font-medium">
-                    {t('landing.blog.readArticle')} <ArrowRight className="w-4 h-4 ml-1" />
-                  </div>
                 </div>
               </div>
             ))}
