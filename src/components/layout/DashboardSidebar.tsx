@@ -111,7 +111,7 @@ const DashboardSidebar = () => {
             </div>
             {(credits.remaining <= 5 || credits.plan === "free") && (
               <Link to="/dashboard/upgrade" className="text-[10px] text-primary hover:underline mt-1 block">
-                {credits.remaining === 0 ? t("upgrade.upgradeLink") : credits.plan === "free" && credits.remaining <= 3 ? t("upgrade.upgradeLink") : t("upgrade.upgradeLink")}
+                {t("dashboard.upgradeLink")}
               </Link>
             )}
           </div>
@@ -136,7 +136,7 @@ const DashboardSidebar = () => {
                   style={{ color: "rgba(255,255,255,0.6)" }}
                 >
                   <Globe className="w-4 h-4 flex-shrink-0" />
-                  <span className="flex-1 text-left">{currentLang.flag} {currentLang.label}</span>
+                  <span className="flex-1 text-left">{currentLang.label}</span>
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-44 p-1" align="start" side="top">
