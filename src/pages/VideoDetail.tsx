@@ -824,7 +824,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
           {clips.some(c => c.status === "rendering" || renderingIds.has(c.id)) && (
             <span className="text-xs text-muted-foreground bg-muted/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
               <Loader2 className="w-3 h-3 animate-spin text-primary" />
-              ✅ {readyCount}/{clips.length} {t("videoDetail.ready")} &nbsp;⏳ {clips.filter(c => c.status === "rendering" || renderingIds.has(c.id)).length} {t("videoDetail.renderingCount", { count: clips.filter(c => c.status === "rendering" || renderingIds.has(c.id)).length })}
+              ✅ {readyCount}/{clips.length} {t("videoDetail.ready")} &nbsp;⏳ {t("videoDetail.renderingCount", { count: clips.filter(c => c.status === "rendering" || renderingIds.has(c.id)).length })}
             </span>
           )}
           {readyCount === clips.length && clips.length > 0 && !clips.some(c => c.status === "rendering" || renderingIds.has(c.id)) && (
