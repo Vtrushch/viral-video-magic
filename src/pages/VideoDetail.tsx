@@ -1309,6 +1309,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
         creditsRequired={creditDialog?.type === "all" ? creditDialog.clips.length : 1}
         creditsRemaining={credits?.remaining ?? 0}
         loading={creditConfirmLoading}
+        plan={credits?.plan}
       />
 
       {/* Re-analyze dialog */}
