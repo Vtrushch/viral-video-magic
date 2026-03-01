@@ -5,6 +5,7 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { BLOG_ARTICLES, BLOG_CATEGORIES } from "@/constants/blogArticles";
 import { BookOpen, Clock, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const CATEGORY_GRADIENTS = [
   "from-primary/30 to-primary/10",
@@ -87,6 +88,9 @@ const Blog = () => {
                     {article.metaDescription}
                   </p>
 
+                  <Link to={`/blog/${article.slug}`} className="flex items-center text-sm text-primary font-medium hover:underline">
+                    {t('landing.blog.readArticle')} <ArrowRight className="w-4 h-4 ml-1" />
+                  </Link>
                 </div>
               </div>
             ))}
