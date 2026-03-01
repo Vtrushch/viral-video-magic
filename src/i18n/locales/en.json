@@ -30,6 +30,8 @@
     "clips": "clips",
     "reelDeleted": "Reel deleted",
     "reelDeleteFailed": "Failed to delete reel",
+    "clipDeleted": "Clip deleted",
+    "clipDeleteFailed": "Failed to delete clip",
     "noFileAvailable": "No file available for download",
     "noClipsSelected": "No clips selected",
     "failedToDownload": "Failed to download {{title}}",

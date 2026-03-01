@@ -5,7 +5,7 @@ import {
   ArrowLeft, Play, Download, Star, Clock, Calendar, Settings2,
   Loader2, AlertCircle, HardDrive, RotateCcw, CheckCircle2, Sparkles,
   Search, Zap, Film, ChevronRight, XCircle, Eye, Pencil, RefreshCw, Clapperboard,
-  Scissors, X, MoreVertical
+  Scissors, X, MoreVertical, Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -415,6 +415,10 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
   const [manualCurrentTime, setManualCurrentTime] = useState(0);
   const [manualVideoDuration, setManualVideoDuration] = useState(100);
 
+  // Delete clip state
+  const [confirmDeleteClipId, setConfirmDeleteClipId] = useState<string | null>(null);
+  const [deletingClipId, setDeletingClipId] = useState<string | null>(null);
+
   // If parent passes new clips (e.g. after realtime fetch), update local state
   useEffect(() => {
     if (initialClips.length > 0) setClips(initialClips);
@@ -709,6 +713,21 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     }
   };
 
+  const handleDeleteClip = async (clipId: string) => {
+    setDeletingClipId(clipId);
+    try {
+      const { error } = await supabase.from("clips").delete().eq("id", clipId);
+      if (error) throw error;
+      toast.success(t("common.clipDeleted"));
+      setClips((prev) => prev.filter((c) => c.id !== clipId));
+    } catch {
+      toast.error(t("common.clipDeleteFailed"));
+    } finally {
+      setDeletingClipId(null);
+      setConfirmDeleteClipId(null);
+    }
+  };
+
   const statusDot = (status: string) => {
     if (status === "ready") return "bg-accent";
     if (status === "rendering") return "bg-secondary animate-pulse";
@@ -982,6 +1001,27 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                           <a href="/dashboard/upgrade" className="text-[10px] text-primary hover:underline">{t("videoDetail.upgradeLink")}</a>
                         </div>
                       )
+                    )}
+                    {/* Delete */}
+                    {confirmDeleteClipId === clip.id ? (
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] text-destructive font-medium">{t("common.delete")}?</span>
+                        <Button variant="ghost" size="sm" className="h-7 px-2 text-[10px] text-destructive hover:bg-destructive/10" onClick={() => handleDeleteClip(clip.id)} disabled={deletingClipId === clip.id}>
+                          {deletingClipId === clip.id ? <Loader2 className="w-3 h-3 animate-spin" /> : t("common.yes")}
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-7 px-2 text-[10px] text-muted-foreground" onClick={() => setConfirmDeleteClipId(null)}>
+                          {t("common.no")}
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 min-h-[44px] px-2 text-xs text-muted-foreground/50 hover:text-destructive"
+                        onClick={() => setConfirmDeleteClipId(clip.id)}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
                     )}
                   </div>
                 </div>

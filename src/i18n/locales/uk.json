@@ -30,6 +30,8 @@
     "clips": "кліпів",
     "reelDeleted": "Підбірку видалено",
     "reelDeleteFailed": "Не вдалося видалити підбірку",
+    "clipDeleted": "Кліп видалено",
+    "clipDeleteFailed": "Не вдалося видалити кліп",
     "noFileAvailable": "Файл недоступний для завантаження",
     "noClipsSelected": "Кліпи не обрано",
     "failedToDownload": "Не вдалося завантажити {{title}}",

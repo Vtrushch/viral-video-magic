@@ -20,6 +20,7 @@ import {
   Clock,
   Play,
   Eye,
+  Trash2,
 } from "lucide-react";
 import HighlightReelCard from "@/components/dashboard/HighlightReelCard";
 import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
@@ -37,6 +38,8 @@ const ClipsLibrary = () => {
   const [selectedClips, setSelectedClips] = useState<Set<string>>(new Set());
   const [downloading, setDownloading] = useState<string | null>(null);
   const [previewClip, setPreviewClip] = useState<Tables<"clips"> | null>(null);
+  const [confirmDeleteClipId, setConfirmDeleteClipId] = useState<string | null>(null);
+  const [deletingClipId, setDeletingClipId] = useState<string | null>(null);
 
   const SORT_OPTIONS: { id: SortBy; label: string }[] = [
     { id: "viral_score", label: t("clips.sortViralScore") },
@@ -45,7 +48,7 @@ const ClipsLibrary = () => {
   ];
 
   // Queries for clips, videos, and reels
-  const { data: clips = [], isLoading: clipsLoading } = useQuery({
+  const { data: clips = [], isLoading: clipsLoading, refetch: refetchClips } = useQuery({
     queryKey: ["all-clips-ready", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -150,6 +153,21 @@ const ClipsLibrary = () => {
       if (i < selected.length - 1) {
         await new Promise((resolve) => setTimeout(resolve, 300));
       }
+    }
+  };
+
+  const handleDeleteClip = async (clipId: string) => {
+    setDeletingClipId(clipId);
+    try {
+      const { error } = await supabase.from("clips").delete().eq("id", clipId);
+      if (error) throw error;
+      toast.success(t("common.clipDeleted"));
+      refetchClips();
+    } catch {
+      toast.error(t("common.clipDeleteFailed"));
+    } finally {
+      setDeletingClipId(null);
+      setConfirmDeleteClipId(null);
     }
   };
 
@@ -361,6 +379,27 @@ const ClipsLibrary = () => {
                             <span className="sm:hidden">{t("clips.saveVideo")}</span>
                             <span className="hidden sm:inline">{t("common.download")}</span>
                           </button>
+                          {/* Delete */}
+                          {confirmDeleteClipId === clip.id ? (
+                            <div className="flex items-center gap-1">
+                              <span className="text-[10px] text-destructive font-medium">{t("common.delete")}?</span>
+                              <Button variant="ghost" size="sm" className="h-7 px-2 text-[10px] text-destructive hover:bg-destructive/10" onClick={() => handleDeleteClip(clip.id)} disabled={deletingClipId === clip.id}>
+                                {deletingClipId === clip.id ? <Loader2 className="w-3 h-3 animate-spin" /> : t("common.yes")}
+                              </Button>
+                              <Button variant="ghost" size="sm" className="h-7 px-2 text-[10px] text-muted-foreground" onClick={() => setConfirmDeleteClipId(null)}>
+                                {t("common.no")}
+                              </Button>
+                            </div>
+                          ) : (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 min-h-[44px] px-2 text-xs text-muted-foreground/50 hover:text-destructive"
+                              onClick={() => setConfirmDeleteClipId(clip.id)}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          )}
                           {/* Select checkbox */}
                           <button
                             onClick={() => toggleSelect(clip.id)}

@@ -30,6 +30,8 @@
     "clips": "clips",
     "reelDeleted": "Compilación eliminada",
     "reelDeleteFailed": "Error al eliminar compilación",
+    "clipDeleted": "Clip eliminado",
+    "clipDeleteFailed": "Error al eliminar clip",
     "noFileAvailable": "No hay archivo disponible para descarga",
     "noClipsSelected": "No hay clips seleccionados",
     "failedToDownload": "Error al descargar {{title}}",
