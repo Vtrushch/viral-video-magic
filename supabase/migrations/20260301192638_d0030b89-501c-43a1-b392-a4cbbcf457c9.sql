@@ -1,0 +1,1 @@
+ALTER TABLE public.videos ADD COLUMN IF NOT EXISTS notify_on_complete boolean NOT NULL DEFAULT false;

@@ -215,7 +215,11 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
     };
   }, [video.id, currentStep]);
 
-  const handleNotify = () => {
+  const handleNotify = async () => {
+    await supabase
+      .from("videos")
+      .update({ notify_on_complete: true } as any)
+      .eq("id", video.id);
     localStorage.setItem(`notify_on_complete_${video.id}`, "true");
     setNotified(true);
     toast.success(t("toasts.notifyWhenDone"));

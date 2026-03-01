@@ -252,6 +252,7 @@ export type Database = {
           file_path: string | null
           file_size: number | null
           id: string
+          notify_on_complete: boolean
           settings: Json | null
           source_url: string | null
           status: string
@@ -271,6 +272,7 @@ export type Database = {
           file_path?: string | null
           file_size?: number | null
           id?: string
+          notify_on_complete?: boolean
           settings?: Json | null
           source_url?: string | null
           status?: string
@@ -290,6 +292,7 @@ export type Database = {
           file_path?: string | null
           file_size?: number | null
           id?: string
+          notify_on_complete?: boolean
           settings?: Json | null
           source_url?: string | null
           status?: string
