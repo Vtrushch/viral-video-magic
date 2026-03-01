@@ -142,7 +142,7 @@ const SettingsPage = () => {
             <div className="space-y-2">
               <Label className="text-sm text-foreground/80">{t("settings.defaultCaptionStyle")}</Label>
               <Select value={captionStyle} onValueChange={setCaptionStyle}>
-                <SelectTrigger className="bg-muted/20 border-border/40"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="bg-muted/20 border-border/40 text-foreground"><SelectValue /></SelectTrigger>
                 <SelectContent className="dark">
                   <SelectItem value="hormozi">{t("settings.hormoziDesc")}</SelectItem>
                   <SelectItem value="mrbeast">{t("settings.mrBeastDesc")}</SelectItem>
@@ -154,7 +154,7 @@ const SettingsPage = () => {
             <div className="space-y-2">
               <Label className="text-sm text-foreground/80">{t("settings.defaultClipLength")}</Label>
               <Select value={clipLength} onValueChange={setClipLength}>
-                <SelectTrigger className="bg-muted/20 border-border/40"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="bg-muted/20 border-border/40 text-foreground"><SelectValue /></SelectTrigger>
                 <SelectContent className="dark">
                   <SelectItem value="short">{t("videoConfig.short")} (15–30s)</SelectItem>
                   <SelectItem value="medium">{t("videoConfig.medium")} (30–60s)</SelectItem>
@@ -166,7 +166,7 @@ const SettingsPage = () => {
             <div className="space-y-2">
               <Label className="text-sm text-foreground/80">{t("settings.defaultClipCount")}</Label>
               <Select value={clipCount} onValueChange={setClipCount}>
-                <SelectTrigger className="bg-muted/20 border-border/40"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="bg-muted/20 border-border/40 text-foreground"><SelectValue /></SelectTrigger>
                 <SelectContent className="dark">
                   <SelectItem value="5">{t("settings.nClips", { count: 5 })}</SelectItem>
                   <SelectItem value="10">{t("settings.nClips", { count: 10 })}</SelectItem>
