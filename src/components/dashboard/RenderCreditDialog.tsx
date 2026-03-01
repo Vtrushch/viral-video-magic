@@ -10,6 +10,7 @@ interface RenderCreditDialogProps {
   creditsRequired: number;
   creditsRemaining: number;
   loading?: boolean;
+  plan?: string;
 }
 
 const RenderCreditDialog = ({
@@ -19,6 +20,7 @@ const RenderCreditDialog = ({
   creditsRequired,
   creditsRemaining,
   loading = false,
+  plan = "free",
 }: RenderCreditDialogProps) => {
   const { t } = useTranslation();
 
@@ -72,7 +74,7 @@ const RenderCreditDialog = ({
           </div>
         )}
 
-        {hasEnough && (
+        {hasEnough && (!plan || plan === "free") && (
           <p className="text-xs text-muted-foreground/70 mt-2">
             {t("renderCredit.watermarkNote")} <Link to="/dashboard/upgrade" className="text-primary hover:underline">{t("renderCredit.upgradeToRemove")}</Link>
           </p>
