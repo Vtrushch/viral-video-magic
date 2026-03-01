@@ -28,7 +28,7 @@ const Navbar = () => {
           <Link to="/#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.howItWorks')}</Link>
           <Link to="/#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.features')}</Link>
           <Link to="/#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.pricing')}</Link>
-          <Link to="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">Blog</Link>
+          <Link to="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.blog')}</Link>
         </div>
 
         <div className="hidden md:flex items-center gap-3">
@@ -76,7 +76,7 @@ const Navbar = () => {
           <Link to="/#how-it-works" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.howItWorks')}</Link>
           <Link to="/#features" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.features')}</Link>
           <Link to="/#pricing" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.pricing')}</Link>
-          <Link to="/blog" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>Blog</Link>
+          <Link to="/blog" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.blog')}</Link>
           {/* Mobile language switcher */}
           <div className="flex gap-2 pt-1">
             {LANGUAGES.map((lang) => (
