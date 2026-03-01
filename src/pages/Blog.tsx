@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { BLOG_ARTICLES, BLOG_CATEGORIES } from "@/constants/blogArticles";
@@ -30,6 +31,16 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <Helmet>
+        <title>Blog — HookCut | Guides & Tips for Content Creators</title>
+        <meta name="description" content="Tips, guides, and strategies for content creators. Learn how to repurpose long videos into viral short clips with AI." />
+        <link rel="canonical" href="https://hookcut.com/blog" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://hookcut.com/blog" />
+        <meta property="og:title" content="HookCut Blog — Guides for Content Creators" />
+        <meta property="og:description" content="Tips, guides, and strategies for content creators using AI video repurposing." />
+        <meta property="og:image" content="https://hookcut.com/og-image.svg" />
+      </Helmet>
       <Navbar />
 
       <main className="pt-28 pb-20">

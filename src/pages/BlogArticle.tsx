@@ -1,6 +1,7 @@
 import { useParams, Link, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet-async";
 import ReactMarkdown from "react-markdown";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
@@ -25,8 +26,62 @@ const BlogArticle = () => {
     return <Navigate to="/blog" replace />;
   }
 
+  const canonicalUrl = `https://hookcut.com/blog/${article.slug}`;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.metaDescription,
+    datePublished: article.date,
+    dateModified: article.date,
+    author: {
+      "@type": "Organization",
+      name: "HookCut",
+      url: "https://hookcut.com",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "HookCut",
+      url: "https://hookcut.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://hookcut.com/og-image.svg",
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonicalUrl,
+    },
+    keywords: article.keywords.join(", "),
+    image: "https://hookcut.com/og-image.svg",
+    url: canonicalUrl,
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <Helmet>
+        <title>{`${article.title} — HookCut Blog`}</title>
+        <meta name="description" content={article.metaDescription} />
+        <meta name="keywords" content={article.keywords.join(", ")} />
+        <link rel="canonical" href={canonicalUrl} />
+
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:title" content={article.title} />
+        <meta property="og:description" content={article.metaDescription} />
+        <meta property="og:image" content="https://hookcut.com/og-image.svg" />
+        <meta property="og:site_name" content="HookCut" />
+        <meta property="article:published_time" content={article.date} />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={article.title} />
+        <meta name="twitter:description" content={article.metaDescription} />
+        <meta name="twitter:image" content="https://hookcut.com/og-image.svg" />
+
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      </Helmet>
+
       <Navbar />
 
       <main className="pt-28 pb-20">
