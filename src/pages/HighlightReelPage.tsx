@@ -266,6 +266,7 @@ export default function HighlightReelPage() {
   const [title, setTitle] = useState("My Highlight Reel");
   const [subtitleStyle, setSubtitleStyle] = useState<SubtitleStyle>(getDefaultStyle());
   const [subtitleSize, setSubtitleSize] = useState<"small" | "medium" | "large">("medium");
+  const [subtitleY, setSubtitleY] = useState(0.85);
   const [addTransitions, setAddTransitions] = useState(true);
   // reframeMode is derived from video settings (set in Configure), not editable here
   const reframeMode = (video?.settings as any)?.reframeMode || "center";
@@ -678,6 +679,7 @@ export default function HighlightReelPage() {
         add_transitions: addTransitions,
         reframe_mode: reframeMode,
         subtitle_size: subtitleSize,
+        subtitle_y: subtitleY,
         subtitle_style: subtitleStyle,
       });
 
@@ -974,6 +976,7 @@ export default function HighlightReelPage() {
                       words={trans.words}
                       relativeTime={relTime}
                       style={subtitleStyle}
+                      positionY={subtitleY}
                       sizeScale={sizeScale}
                     />
                   );
@@ -1236,6 +1239,8 @@ export default function HighlightReelPage() {
                 <SubtitleStylePicker
                   value={subtitleStyle}
                   onChange={setSubtitleStyle}
+                  subtitleY={subtitleY}
+                  onSubtitleYChange={setSubtitleY}
                 />
               </div>
 
