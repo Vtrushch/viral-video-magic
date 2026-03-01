@@ -1294,7 +1294,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
               </Button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {reels.map((reel) => (
                 <HighlightReelCard
                   key={reel.id}
