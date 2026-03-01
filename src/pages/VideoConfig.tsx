@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { SUBTITLE_PRESETS, loadAllPresetFonts } from "@/config/subtitlePresets";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Sparkles, Loader2, Clock, HardDrive, Calendar, Info, Monitor, User, Crop, ChevronLeft, ChevronRight, Maximize2, Crosshair } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,7 +32,7 @@ const VideoConfig = () => {
   const [submitting, setSubmitting] = useState(false);
   const [clipCount, setClipCount] = useState(10);
   const [clipLength, setClipLength] = useState("medium");
-  const [captionStyle, setCaptionStyle] = useState("hormozi");
+  const [captionStyle, setCaptionStyle] = useState("bold-pop");
   const [outputFormat, setOutputFormat] = useState("9:16");
   const [reframeMode, setReframeMode] = useState<"smart" | "full" | "center">("smart");
 
@@ -47,46 +48,9 @@ const VideoConfig = () => {
     { value: "long", label: t("videoConfig.long"), time: t("videoConfig.longTime"), desc: t("videoConfig.longDesc") },
   ];
 
-  const captionStyles = [
-    {
-      value: "hormozi",
-      label: t("videoConfig.captionHormozi"),
-      desc: t("videoConfig.captionHormoziDesc"),
-      sample: (
-        <span className="text-sm font-black tracking-tight text-white">
-          Make More <span className="text-yellow-400 font-black">MONEY</span> Today
-        </span>
-      ),
-    },
-    {
-      value: "mrbeast",
-      label: t("videoConfig.captionMrBeast"),
-      desc: t("videoConfig.captionMrBeastDesc"),
-      sample: (
-        <span className="text-sm font-black uppercase tracking-wider text-red-400">
-          I GAVE AWAY $1,000,000
-        </span>
-      ),
-    },
-    {
-      value: "minimal",
-      label: t("videoConfig.captionMinimal"),
-      desc: t("videoConfig.captionMinimalDesc"),
-      sample: (
-        <span className="text-sm text-white/70 font-light">clean subtitles</span>
-      ),
-    },
-    {
-      value: "custom",
-      label: t("videoConfig.captionCustom"),
-      desc: t("videoConfig.captionCustomDesc"),
-      badge: "Pro",
-      sample: (
-        <span className="text-sm font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">YOUR STYLE</span>
-      ),
-      sampleBg: "linear-gradient(135deg, hsl(349 100% 59% / 0.2), hsl(270 95% 65% / 0.2))",
-    },
-  ];
+  useEffect(() => {
+    loadAllPresetFonts();
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -277,34 +241,40 @@ const VideoConfig = () => {
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             🎨 {t("videoConfig.captionStyle")}
           </h2>
-          <div className="grid grid-cols-2 gap-3">
-            {captionStyles.map((opt) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {SUBTITLE_PRESETS.map((preset) => (
               <button
-                key={opt.value}
-                className={`${radioCard(captionStyle === opt.value)} items-start`}
-                style={{ background: radioCardBg(captionStyle === opt.value) }}
-                onClick={() => {
-                  if (opt.value === "custom") {
-                    toast.info(t("videoConfig.customProToast"));
-                    return;
-                  }
-                  setCaptionStyle(opt.value);
-                }}
+                key={preset.presetId}
+                className={`${radioCard(captionStyle === preset.presetId)} items-center text-center`}
+                style={{ background: radioCardBg(captionStyle === preset.presetId) }}
+                onClick={() => setCaptionStyle(preset.presetId)}
               >
-                <div className="w-full rounded-lg p-3 flex items-center justify-center min-h-[48px]"
-                  style={{ background: (opt as any).sampleBg || "hsl(0,0%,0%,0.4)" }}
+                <div
+                  className="w-full rounded-lg p-3 flex items-center justify-center min-h-[48px]"
+                  style={{
+                    background: preset.backgroundOpacity > 0
+                      ? preset.backgroundColor
+                      : "hsl(0,0%,0%,0.4)",
+                  }}
                 >
-                  {opt.sample}
+                  <span
+                    style={{
+                      fontFamily: preset.fontFamily,
+                      fontWeight: preset.fontWeight,
+                      fontSize: "14px",
+                      color: preset.textColor,
+                      textTransform: preset.textTransform as any,
+                      letterSpacing: `${preset.letterSpacing}px`,
+                      WebkitTextStroke: preset.strokeWidth > 0 ? `${Math.min(preset.strokeWidth, 1.5)}px ${preset.strokeColor}` : undefined,
+                      textShadow: preset.shadow.enabled
+                        ? `${preset.shadow.offsetX}px ${preset.shadow.offsetY}px ${preset.shadow.blur}px ${preset.shadow.color}`
+                        : undefined,
+                    }}
+                  >
+                    Sample <span style={{ color: preset.highlightColor }}>Text</span>
+                  </span>
                 </div>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="font-semibold text-foreground text-sm">{opt.label}</span>
-                  {opt.badge && (
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full gradient-bg text-primary-foreground">
-                      {opt.badge}
-                    </span>
-                  )}
-                </div>
-                <span className="text-xs text-muted-foreground">{opt.desc}</span>
+                <span className="font-semibold text-foreground text-xs mt-1">{preset.name}</span>
               </button>
             ))}
           </div>
