@@ -218,7 +218,21 @@
     "signUpLink": "Sign up",
     "checkEmail": "Check your email",
     "confirmationSent": "We sent you a confirmation link to verify your account.",
-    "error": "Error"
+    "error": "Error",
+    "forgotPassword": "Forgot password?",
+    "resetPassword": "Reset your password",
+    "resetSubtitle": "Enter your email and we'll send you a reset link",
+    "sendResetLink": "Send Reset Link",
+    "backToSignIn": "← Back to Sign In",
+    "setNewPassword": "Set new password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "updatePassword": "Update Password",
+    "passwordUpdated": "Password updated!",
+    "passwordUpdatedDesc": "You can now sign in with your new password.",
+    "checkEmailReset": "Check your email",
+    "resetLinkSent": "We sent you a password reset link.",
+    "passwordsMismatch": "Passwords do not match"
   },
   "dashboard": {
     "yourVideos": "Your Videos",
