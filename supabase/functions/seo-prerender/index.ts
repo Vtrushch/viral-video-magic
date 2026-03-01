@@ -9,42 +9,42 @@ const corsHeaders = {
 // Static blog article data for pre-rendering
 const BLOG_ARTICLES: Record<string, { title: string; description: string; keywords: string; date: string; readTime: string; category: string }> = {
   "turn-long-video-into-clips": {
-    title: "How to Turn a 1-Hour YouTube Video into 10 Viral Clips in 15 Minutes",
-    description: "Stop letting your best content collect dust. Learn how to use AI to extract 10 viral clips from any long YouTube video in under 15 minutes — no editing skills needed.",
+    title: "How to Turn a Long Video into Viral Clips | HookCut",
+    description: "Learn how to turn any long video into 10 viral short clips in 15 minutes using AI. Step-by-step guide for YouTube, TikTok, and Instagram Reels.",
     keywords: "turn long videos into clips, YouTube to short clips, AI video clipper, viral clips from long video",
-    date: "2026-02-15",
+    date: "2025-03-01",
     readTime: "8 min read",
     category: "How-To Guide",
   },
   "auto-captions-for-videos": {
-    title: "How to Add Captions to Videos Automatically (Without Spending Hours Editing)",
-    description: "Learn how to add professional auto-captions to your videos in minutes using AI. No manual syncing, no SRT files, no editing software — just great captions that boost views.",
+    title: "How to Add Captions to Videos Automatically | HookCut",
+    description: "Add professional captions to any video in minutes. 6 caption styles including Hormozi, MrBeast, Minimal. 85% of videos watched without sound.",
     keywords: "add captions to videos automatically, auto captions video, AI subtitles generator, automatic subtitles for videos",
-    date: "2026-02-20",
+    date: "2025-03-01",
     readTime: "9 min read",
     category: "How-To Guide",
   },
   "hookcut-vs-opus-clip": {
-    title: "HookCut vs Opus Clip: Which AI Video Clipper Is Right for You? (2026)",
-    description: "Comparing HookCut and Opus Clip side-by-side in 2026. Features, pricing, caption quality, ease of use, and which one is better for your content workflow.",
-    keywords: "HookCut vs Opus Clip, Opus Clip alternative, best AI video clipper 2026, AI video clipping tool comparison",
-    date: "2026-02-25",
+    title: "HookCut vs Opus Clip: Full Comparison 2025 | HookCut",
+    description: "Detailed comparison of HookCut and Opus Clip. Features, pricing, caption quality, and which tool is right for your content.",
+    keywords: "HookCut vs Opus Clip, Opus Clip alternative, best AI video clipper 2025, AI video clipping tool comparison",
+    date: "2025-03-01",
     readTime: "10 min read",
     category: "Comparison",
   },
   "creators-waste-best-moments": {
-    title: "Why 90% of Creators Waste Their Best Moments (And How to Stop)",
-    description: "Most creators record hours of content but only publish a fraction. Learn why repurposing is the highest-ROI content strategy and how AI makes it effortless.",
+    title: "Why Creators Waste Their Best Video Moments | HookCut",
+    description: "90% of creators never repurpose their best content. Learn how to extract viral moments from long videos automatically.",
     keywords: "content repurposing strategy, creator productivity, repurpose video content, best moments from long video",
-    date: "2026-03-01",
+    date: "2025-03-01",
     readTime: "7 min read",
     category: "Strategy",
   },
   "youtube-shorts-from-long-form": {
-    title: "How to Make YouTube Shorts from Long-Form Videos (Step-by-Step Guide)",
-    description: "Learn the exact workflow to turn your existing YouTube videos into Shorts that grow your channel. AI-powered clipping, formatting, and caption tips included.",
+    title: "How to Make YouTube Shorts from Long Videos | HookCut",
+    description: "Turn long YouTube videos into Shorts automatically. AI finds the best moments, adds captions, exports in 9:16 format.",
     keywords: "YouTube Shorts from long videos, make YouTube Shorts, repurpose for YouTube Shorts, long video to Shorts",
-    date: "2026-03-05",
+    date: "2025-03-01",
     readTime: "9 min read",
     category: "How-To Guide",
   },
@@ -62,7 +62,7 @@ function renderBlogArticleHtml(slug: string): string | null {
     description: article.description,
     datePublished: article.date,
     dateModified: article.date,
-    author: { "@type": "Organization", name: "HookCut", url: "https://hookcut.com" },
+    author: { "@type": "Organization", name: "HookCut Team", url: "https://hookcut.com" },
     publisher: {
       "@type": "Organization",
       name: "HookCut",
@@ -80,7 +80,7 @@ function renderBlogArticleHtml(slug: string): string | null {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${article.title} — HookCut Blog</title>
+  <title>${article.title}</title>
   <meta name="description" content="${article.description}" />
   <meta name="keywords" content="${article.keywords}" />
   <link rel="canonical" href="${url}" />
