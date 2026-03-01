@@ -25,9 +25,9 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.howItWorks')}</a>
-          <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.features')}</a>
-          <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.pricing')}</a>
+          <Link to="/#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.howItWorks')}</Link>
+          <Link to="/#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.features')}</Link>
+          <Link to="/#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">{t('landing.nav.pricing')}</Link>
           <Link to="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">Blog</Link>
         </div>
 
@@ -73,9 +73,9 @@ const Navbar = () => {
 
       {mobileOpen && (
         <div className="md:hidden border-t border-border/40 bg-background/95 backdrop-blur-2xl px-6 py-4 space-y-3 animate-fade-in">
-          <a href="#how-it-works" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.howItWorks')}</a>
-          <a href="#features" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.features')}</a>
-          <a href="#pricing" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.pricing')}</a>
+          <Link to="/#how-it-works" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.howItWorks')}</Link>
+          <Link to="/#features" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.features')}</Link>
+          <Link to="/#pricing" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>{t('landing.nav.pricing')}</Link>
           <Link to="/blog" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>Blog</Link>
           {/* Mobile language switcher */}
           <div className="flex gap-2 pt-1">
