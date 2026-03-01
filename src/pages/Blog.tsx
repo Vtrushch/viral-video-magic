@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { BLOG_ARTICLES, BLOG_CATEGORIES } from "@/constants/blogArticles";
@@ -15,6 +15,7 @@ const CATEGORY_GRADIENTS = [
 ];
 
 const Blog = () => {
+  const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState<string>("All");
 
   useEffect(() => {
@@ -34,9 +35,9 @@ const Blog = () => {
         <div className="container mx-auto px-6">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Blog</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">{t('landing.blog.title')}</h1>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Guides, strategies, and tips for content creators who want to grow faster with AI.
+              {t('landing.blog.subtitle')}
             </p>
           </div>
 
@@ -60,10 +61,9 @@ const Blog = () => {
           {/* Article Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {filtered.map((article, i) => (
-              <Link
+              <div
                 key={article.slug}
-                to={`/blog/${article.slug}`}
-                className="group rounded-xl border border-border bg-card overflow-hidden hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
+                className="group rounded-xl border border-border bg-card overflow-hidden transition-all duration-300"
               >
                 {/* Gradient Thumbnail */}
                 <div className={`h-40 bg-gradient-to-br ${CATEGORY_GRADIENTS[i % CATEGORY_GRADIENTS.length]} flex items-center justify-center`}>
@@ -79,7 +79,7 @@ const Blog = () => {
                     <span>{article.readTime}</span>
                   </div>
 
-                  <h2 className="text-lg font-semibold leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                  <h2 className="text-lg font-semibold leading-snug mb-2 transition-colors line-clamp-2">
                     {article.title}
                   </h2>
 
@@ -88,10 +88,10 @@ const Blog = () => {
                   </p>
 
                   <div className="flex items-center text-sm text-primary font-medium">
-                    Read article <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    {t('landing.blog.readArticle')} <ArrowRight className="w-4 h-4 ml-1" />
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </div>
