@@ -39,7 +39,7 @@ const VideoCard = ({ id, title, duration, uploadDate, status, thumbnail, filePat
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!window.confirm("This will remove the video and all its clips. Your monthly upload count won't reset. Continue?")) return;
+    if (!window.confirm(t("videoCard.deleteConfirm"))) return;
     // Optimistic remove — UI updates immediately
     onDelete?.(id);
     const { error } = await supabase.from("videos").update({ deleted_at: new Date().toISOString() }).eq("id", id);
