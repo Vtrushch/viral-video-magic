@@ -56,7 +56,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useTranslation();
-  const { canUpload, uploadsRemaining, uploadLimit, storageRemaining, storageLimit, activeVideos, plan, loading: limitLoading } = useVideoLimit();
+  const { canUpload, storageRemaining, storageLimit, activeVideos, plan, loading: limitLoading } = useVideoLimit();
 
   const MAX_FILE_SIZE_BYTES = 5120 * 1024 * 1024; // 5GB
 
@@ -264,12 +264,10 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
         <CloudUpload className="w-7 h-7 text-destructive" />
       </div>
       <p className="text-sm font-medium text-foreground">
-        {uploadsRemaining <= 0 ? t("upload.limitReachedTitle") : t("upload.storageFull")}
+        {t("upload.limitReachedTitle")}
       </p>
       <p className="text-xs text-muted-foreground">
-        {uploadsRemaining <= 0
-          ? `Your ${plan} plan allows ${uploadLimit === -1 ? t("upload.unlimited") : uploadLimit} upload${uploadLimit !== 1 ? "s" : ""}/month.`
-          : `You have ${activeVideos}/${storageLimit === -1 ? "∞" : storageLimit} videos stored. Delete old videos or upgrade.`}
+        {t("upload.limitReachedDesc", { plan, limit: storageLimit === -1 ? t("upload.unlimited") : storageLimit, count: activeVideos })}
       </p>
       <a href="/dashboard/upgrade" className="text-xs text-primary hover:underline inline-block">
         {t("upload.upgradeForMore")}
@@ -420,7 +418,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
           />
         </div>
         <p className="text-xs text-muted-foreground text-center mt-2">
-          {uploadsRemaining === Infinity ? t("upload.unlimited") : uploadsRemaining} {t("upload.uploadsRemainingLabel")} · {activeVideos}/{storageLimit === -1 ? "∞" : storageLimit} {t("upload.storedLabel")}
+          {activeVideos}/{storageLimit === -1 ? "∞" : storageLimit} {t("upload.activeVideosLabel")}
         </p>
       </div>
     );
@@ -515,7 +513,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
 
       {/* Remaining uploads */}
       <p className="text-xs text-muted-foreground text-center">
-        {uploadsRemaining === Infinity ? t("upload.unlimited") : uploadsRemaining} {t("upload.uploadsRemainingLabel")}
+        {activeVideos}/{storageLimit === -1 ? "∞" : storageLimit} {t("upload.activeVideosLabel")}
       </p>
     </div>
   );

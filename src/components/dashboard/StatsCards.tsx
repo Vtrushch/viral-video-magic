@@ -16,17 +16,14 @@ const StatsCards = ({ videos }: StatsCardsProps) => {
   const { t } = useTranslation();
   const totalVideos = videos.length;
   const totalClips = 0;
-  const now = new Date();
-  const thisMonth = videos.filter((v) => {
-    const d = new Date(v.created_at);
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-  }).length;
+  
+  const activeCount = videos.filter((v) => v.status !== "failed").length;
   const totalStorage = videos.reduce((acc, v) => acc + (v.file_size || 0), 0);
 
   const stats = [
     { icon: Video, label: t("stats.totalVideos"), value: String(totalVideos) },
     { icon: Film, label: t("stats.totalClips"), value: String(totalClips) },
-    { icon: Calendar, label: t("stats.thisMonth"), value: String(thisMonth) },
+    { icon: Calendar, label: t("stats.activeVideos"), value: String(activeCount) },
     { icon: HardDrive, label: t("stats.storageUsed"), value: totalStorage > 0 ? formatStorage(totalStorage) : "0 MB" },
   ];
 

@@ -245,7 +245,7 @@
   "stats": {
     "totalVideos": "Total de Videos",
     "totalClips": "Total de Clips",
-    "thisMonth": "Este Mes",
+    "activeVideos": "Videos Activos",
     "storageUsed": "Almacenamiento"
   },
   "videoCard": {
@@ -256,7 +256,7 @@
     "failed": "Fallido",
     "pending": "Pendiente",
     "uploading": "Subiendo",
-    "deleteConfirm": "Esto eliminará el video y todos sus clips. Tu límite mensual no se restablecerá. ¿Continuar?"
+    "deleteConfirm": "Esto eliminará el video y todos sus clips. Podrás subir uno nuevo después. ¿Continuar?"
   },
   "videoConfig": {
     "configureAnalysis": "Configurar Análisis",
@@ -638,11 +638,10 @@
     "youtubeImportFailed": "Error al importar de YouTube. Inténtalo de nuevo.",
     "uploadAndAnalyze": "Subir y Analizar",
     "afterUploadHint": "Después de subir, la IA analizará tu video y encontrará los momentos más virales — suele tardar 1–3 minutos.",
-    "uploadsRemainingLabel": "subidas restantes este mes",
-    "storedLabel": "almacenados",
+    "activeVideosLabel": "videos activos",
     "unlimited": "Ilimitado",
-    "limitReachedTitle": "Límite de subidas alcanzado este mes",
-    "storageFull": "Almacenamiento lleno",
+    "limitReachedTitle": "Límite de videos alcanzado",
+    "limitReachedDesc": "Tu plan {{plan}} permite {{limit}} video(s) activo(s). Elimina un video existente o mejora tu plan.",
     "upgradeForMore": "Mejora para más →",
     "copyrightConfirm": "Confirmo que tengo derecho a usar este video. HookCut no es responsable de violaciones de derechos de autor. Algunos videos pueden fallar por restricciones del uploader.",
     "qualityTip": "Para mejor calidad, sube tu archivo original directamente en la pestaña",
