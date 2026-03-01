@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Scissors, Twitter, Linkedin } from "lucide-react";
+import { Scissors } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 const Footer = () => {
@@ -45,25 +45,6 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Social */}
-          <div className="flex gap-3">
-            <a
-              href="https://twitter.com/hookcut"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-9 h-9 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all"
-            >
-              <Twitter className="w-4 h-4" />
-            </a>
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-9 h-9 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all"
-            >
-              <Linkedin className="w-4 h-4" />
-            </a>
-          </div>
         </div>
 
         {/* Support */}
