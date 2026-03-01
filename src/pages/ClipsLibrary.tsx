@@ -19,6 +19,7 @@ import {
   Pencil,
   Clock,
   Play,
+  Eye,
 } from "lucide-react";
 import HighlightReelCard from "@/components/dashboard/HighlightReelCard";
 import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
@@ -269,7 +270,7 @@ const ClipsLibrary = () => {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {sortedClips.map((clip) => {
                 const scoreStyle = getScoreStyle(clip.viral_score);
                 const isSelected = selectedClips.has(clip.id);
@@ -277,102 +278,109 @@ const ClipsLibrary = () => {
                 return (
                   <div
                     key={clip.id}
-                    className={`rounded-xl border overflow-hidden group transition-all duration-200 ${
-                      isSelected
-                        ? "border-primary ring-1 ring-primary"
-                        : "border-border/50 hover:border-border"
+                    className={`glass-card-hover rounded-xl p-4 space-y-3 transition-all duration-200 ${
+                      isSelected ? "ring-1 ring-primary" : ""
                     }`}
-                    style={{ background: "hsl(240, 15%, 10%)" }}
                   >
-                    {/* Thumbnail preview */}
-                    <div
-                      className="relative w-full aspect-video bg-black rounded-t-xl overflow-hidden cursor-pointer"
-                      onClick={() => setPreviewClip(clip)}
-                    >
-                      {clip.thumbnail_url ? (
-                        <img
-                          src={clip.thumbnail_url}
-                          alt={clip.title}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      ) : clip.file_path ? (
-                        <video
-                          src={`${clip.file_path}#t=0.5`}
-                          className="w-full h-full object-contain"
-                          preload="metadata"
-                          muted
-                          playsInline
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-muted/20">
-                          <Film className="w-8 h-8 text-muted-foreground/30" />
-                        </div>
-                      )}
-                      {/* Play overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="w-12 h-12 rounded-full bg-primary/90 flex items-center justify-center shadow-lg">
-                          <Play className="w-5 h-5 text-primary-foreground ml-0.5" />
-                        </div>
-                      </div>
-                      <div className="absolute top-2 right-2 flex items-center gap-1.5">
-                        <span className="text-[10px] bg-accent/20 text-accent px-2 py-0.5 rounded-full border border-accent/30">
-                          {t("videoCard.ready")}
-                        </span>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); toggleSelect(clip.id); }}
-                          className={`w-7 h-7 min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center transition-all duration-200 ${
-                            isSelected
-                              ? "bg-primary border-2 border-primary"
-                              : "border-2 border-white/30 bg-black/30 backdrop-blur-sm hover:border-white/60"
-                          }`}
-                        >
-                          {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-primary-foreground" />}
-                        </button>
-                      </div>
-                      {clip.viral_score != null && (
-                        <div className={`absolute bottom-2 right-2 w-8 h-8 rounded-full ring-2 ${scoreStyle.ring} ${scoreStyle.glow} bg-black/60 backdrop-blur-md flex flex-col items-center justify-center`}>
-                          <span className={`text-xs font-black leading-none ${scoreStyle.text}`}>{clip.viral_score}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Info */}
-                    <div className="p-3 space-y-2">
-                      <h3 className="text-sm font-medium text-foreground line-clamp-1">{clip.title}</h3>
-                      <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-                        {clip.duration_seconds && (
-                          <span className="inline-flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {clip.duration_seconds}s
-                          </span>
+                    <div className="flex gap-3">
+                      {/* 9:16 thumbnail */}
+                      <div
+                        className="w-16 h-28 rounded-lg flex-shrink-0 overflow-hidden relative cursor-pointer"
+                        style={{ background: "linear-gradient(180deg, hsl(240,15%,14%) 0%, hsl(240,15%,10%) 100%)" }}
+                        onClick={() => setPreviewClip(clip)}
+                      >
+                        {clip.thumbnail_url ? (
+                          <img
+                            src={clip.thumbnail_url}
+                            alt={clip.title}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        ) : clip.file_path ? (
+                          <video
+                            src={`${clip.file_path}#t=0.5`}
+                            className="w-full h-full object-cover"
+                            preload="metadata"
+                            muted
+                            playsInline
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Film className="w-6 h-6 text-muted-foreground/30" />
+                          </div>
                         )}
-                        <span className="truncate">{videoMap[clip.video_id]?.title || t("clips.unknownVideo")}</span>
+                        <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
                       </div>
 
-                      {/* Action buttons */}
-                      <div className="flex gap-2 pt-1">
-                        <button
-                          onClick={() => handleDownload(clip)}
-                          disabled={downloading === clip.id}
-                          className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors disabled:opacity-50"
-                        >
-                          {downloading === clip.id ? (
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          ) : (
-                            <Download className="w-3.5 h-3.5" />
-                          )}
-                          <span className="sm:hidden">{t("clips.saveVideo")}</span>
-                          <span className="hidden sm:inline">{t("common.download")}</span>
-                        </button>
-                        <button
-                          onClick={() => navigate(`/dashboard/videos/edit/${clip.id}`)}
-                          className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] py-1.5 rounded-lg border border-border/50 text-muted-foreground text-xs font-medium hover:text-foreground hover:border-primary/30 transition-colors"
-                        >
-                          <Pencil className="w-3.5 h-3.5" />
-                          {t("clips.reEdit")}
-                        </button>
+                      {/* Info */}
+                      <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-2 h-2 rounded-full flex-shrink-0 bg-accent" />
+                            <h4 className="text-sm font-semibold text-foreground truncate">{clip.title}</h4>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
+                            {clip.duration_seconds && (
+                              <span className="inline-flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {clip.duration_seconds}s
+                              </span>
+                            )}
+                            <span className="truncate">{videoMap[clip.video_id]?.title || t("clips.unknownVideo")}</span>
+                          </div>
+                        </div>
+
+                        {/* Action buttons */}
+                        <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 min-h-[44px] px-2 text-xs text-muted-foreground hover:text-foreground"
+                            onClick={() => setPreviewClip(clip)}
+                          >
+                            <Eye className="w-3 h-3 sm:mr-1" /><span className="hidden sm:inline">{t("common.preview")}</span>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 min-h-[44px] px-2 text-xs text-muted-foreground hover:text-foreground"
+                            onClick={() => navigate(`/dashboard/videos/edit/${clip.id}`)}
+                          >
+                            <Pencil className="w-3 h-3 sm:mr-1" /><span className="hidden sm:inline">{t("clips.reEdit")}</span>
+                          </Button>
+                          <button
+                            className="inline-flex items-center gap-1 h-7 min-h-[44px] px-2 text-xs text-accent hover:text-accent rounded-md hover:bg-accent/10 transition-colors disabled:opacity-50"
+                            onClick={() => handleDownload(clip)}
+                            disabled={downloading === clip.id}
+                          >
+                            {downloading === clip.id ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <Download className="w-3 h-3 sm:mr-0.5" />
+                            )}
+                            <span className="sm:hidden">{t("clips.saveVideo")}</span>
+                            <span className="hidden sm:inline">{t("common.download")}</span>
+                          </button>
+                          {/* Select checkbox */}
+                          <button
+                            onClick={() => toggleSelect(clip.id)}
+                            className={`ml-auto w-7 h-7 min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center transition-all duration-200 ${
+                              isSelected
+                                ? "bg-primary border-2 border-primary"
+                                : "border-2 border-border/50 hover:border-primary/30"
+                            }`}
+                          >
+                            {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-primary-foreground" />}
+                          </button>
+                        </div>
                       </div>
+
+                      {/* Viral score circle */}
+                      {clip.viral_score != null && (
+                        <div className={`w-10 h-10 rounded-full ring-2 ${scoreStyle.ring} ${scoreStyle.glow} bg-card/60 flex items-center justify-center flex-shrink-0 self-start`}>
+                          <span className={`text-sm font-bold ${scoreStyle.text}`}>{clip.viral_score}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -396,7 +404,7 @@ const ClipsLibrary = () => {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {reels.map((reel) => (
                 <HighlightReelCard
                   key={reel.id}
