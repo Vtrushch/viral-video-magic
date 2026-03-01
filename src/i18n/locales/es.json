@@ -218,7 +218,21 @@
     "signUpLink": "Registrarse",
     "checkEmail": "Revisa tu correo",
     "confirmationSent": "Te enviamos un enlace de confirmación para verificar tu cuenta.",
-    "error": "Error"
+    "error": "Error",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "resetPassword": "Restablecer contraseña",
+    "resetSubtitle": "Ingresa tu correo y te enviaremos un enlace para restablecer",
+    "sendResetLink": "Enviar enlace",
+    "backToSignIn": "← Volver a Iniciar Sesión",
+    "setNewPassword": "Establecer nueva contraseña",
+    "newPassword": "Nueva contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "updatePassword": "Actualizar Contraseña",
+    "passwordUpdated": "¡Contraseña actualizada!",
+    "passwordUpdatedDesc": "Ya puedes iniciar sesión con tu nueva contraseña.",
+    "checkEmailReset": "Revisa tu correo",
+    "resetLinkSent": "Te enviamos un enlace para restablecer tu contraseña.",
+    "passwordsMismatch": "Las contraseñas no coinciden"
   },
   "dashboard": {
     "yourVideos": "Tus Videos",

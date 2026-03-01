@@ -218,7 +218,21 @@
     "signUpLink": "Зареєструватись",
     "checkEmail": "Перевірте пошту",
     "confirmationSent": "Ми надіслали вам посилання для підтвердження акаунту.",
-    "error": "Помилка"
+    "error": "Помилка",
+    "forgotPassword": "Забули пароль?",
+    "resetPassword": "Скинути пароль",
+    "resetSubtitle": "Введіть email і ми надішлемо посилання для скидання",
+    "sendResetLink": "Надіслати посилання",
+    "backToSignIn": "← Назад до входу",
+    "setNewPassword": "Встановити новий пароль",
+    "newPassword": "Новий пароль",
+    "confirmPassword": "Підтвердити пароль",
+    "updatePassword": "Оновити пароль",
+    "passwordUpdated": "Пароль оновлено!",
+    "passwordUpdatedDesc": "Тепер ви можете увійти з новим паролем.",
+    "checkEmailReset": "Перевірте пошту",
+    "resetLinkSent": "Ми надіслали вам посилання для скидання пароля.",
+    "passwordsMismatch": "Паролі не збігаються"
   },
   "dashboard": {
     "yourVideos": "Ваші Відео",
