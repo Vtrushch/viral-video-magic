@@ -173,6 +173,16 @@
       "hook99": "99",
       "hook10to30": "10–30"
     },
+    "blog": {
+      "title": "Blog",
+      "subtitle": "Guides, strategies, and tips for content creators who want to grow faster with AI.",
+      "readArticle": "Read article",
+      "backToBlog": "Back to Blog",
+      "relatedArticles": "Related Articles",
+      "readyToStart": "Ready to start clipping?",
+      "readyCta": "Turn your long videos into viral short clips in minutes — free.",
+      "tryFree": "Try HookCut Free"
+    },
     "footer": {
       "tagline": "AI-powered video repurposing. Turn long videos into viral short clips automatically.",
       "product": "Product",
