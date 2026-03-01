@@ -363,7 +363,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
             <Button variant="outline" onClick={handleCancel} className="w-full sm:flex-1 min-h-[44px]" disabled={uploading}>
               {t("upload.cancel")}
             </Button>
-            <Button variant="hero" onClick={handleUpload} className="w-full sm:flex-1 min-h-[44px]" disabled={uploading}>
+            <Button variant="hero" onClick={handleUpload} className="w-full sm:flex-1 min-h-[44px] hover:!scale-100" disabled={uploading}>
               {uploading ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t("upload.uploading")}</>
               ) : (
@@ -500,7 +500,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
         <Button
           variant="hero"
           onClick={handleYoutubeImport}
-          className="w-full sm:flex-1 min-h-[44px]"
+          className="w-full sm:flex-1 min-h-[44px] hover:!scale-100"
           disabled={youtubeImporting || !youtubeUrl.trim() || !isValidYouTubeUrl(youtubeUrl.trim()) || !copyrightConfirmed}
         >
           {youtubeImporting ? (
