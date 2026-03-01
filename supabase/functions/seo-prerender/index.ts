@@ -142,18 +142,6 @@ serve(async (req: Request) => {
     const url = new URL(req.url);
     const path = url.searchParams.get("path") || "";
 
-    // Check if requester is a crawler
-    const ua = req.headers.get("user-agent") || "";
-    const isCrawler = /googlebot|bingbot|yandex|baiduspider|facebookexternalhit|twitterbot|rogerbot|linkedinbot|embedly|showyoubot|outbrain|pinterest|slackbot|vkShare|W3C_Validator|whatsapp|telegram/i.test(ua);
-
-    // If not a crawler, redirect to the real SPA
-    if (!isCrawler) {
-      return new Response(null, {
-        status: 302,
-        headers: { ...corsHeaders, Location: `https://hookcut.com${path}` },
-      });
-    }
-
     let html: string | null = null;
 
     if (path === "/blog" || path === "/blog/") {
