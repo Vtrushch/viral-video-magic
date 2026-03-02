@@ -206,15 +206,14 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
         className="relative z-10 flex flex-col lg:flex-row gap-6 max-w-4xl w-full animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute -top-12 right-0 lg:right-auto lg:-right-12 lg:top-0 text-muted-foreground hover:text-foreground z-20"
+        {/* Close button — always visible */}
+        <button
           onClick={onClose}
+          className="absolute top-3 right-3 z-30 w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center hover:bg-black/80 transition-colors"
+          aria-label="Close preview"
         >
-          <X className="w-5 h-5" />
-        </Button>
+          <X className="w-4 h-4 text-white" />
+        </button>
 
         {/* Video player area */}
         <div className="mx-auto lg:mx-0 flex-shrink-0">
