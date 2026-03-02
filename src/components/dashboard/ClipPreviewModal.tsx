@@ -261,10 +261,10 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
               )}
               <button
                 onClick={handleReload}
-                className="absolute top-2 right-2 z-20 w-7 h-7 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
+                className="absolute top-2 left-2 z-20 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
                 title={t("clipPreview.reloadVideo")}
               >
-                <RefreshCw className="w-3 h-3 text-white/70" />
+                <RefreshCw className="w-3.5 h-3.5 text-white/80" />
               </button>
               {words.length > 0 && (
                 <LiveSubtitles
@@ -354,10 +354,10 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
               )}
               <button
                 onClick={handleReload}
-                className="absolute top-2 right-2 z-20 w-7 h-7 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
+                className="absolute top-2 left-2 z-20 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
                 title={t("clipPreview.reloadVideo")}
               >
-                <RefreshCw className="w-3 h-3 text-white/70" />
+                <RefreshCw className="w-3.5 h-3.5 text-white/80" />
               </button>
 
               {words.length > 0 && (
