@@ -38,8 +38,9 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const startTime = parseFloat(clip?.start_time || "0");
-  const endTime = parseFloat(clip?.end_time || "0");
+  const isRenderedClip = clip?.status === "ready" && !!clip?.file_path;
+  const startTime = isRenderedClip ? 0 : parseFloat(clip?.start_time || "0");
+  const endTime = isRenderedClip ? (clip?.duration_seconds ?? 0) : parseFloat(clip?.end_time || "0");
   const clipDuration = endTime - startTime;
 
   const words = useMemo(() => {
@@ -51,29 +52,39 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
 
   const relativeTime = currentTime - startTime;
 
-  // Get signed URL on open — uses cache for instant replay
+  // Get video URL — rendered clips use public bucket, unrendered use signed URL
   useEffect(() => {
-    if (!open || !video?.file_path) return;
+    if (!open) return;
     setLoading(true);
     setError(null);
     setVideoUrl(null);
     setPlaying(false);
     setCurrentTime(0);
 
-    getSignedUrl("raw-videos", video.file_path).then((url) => {
-      if (url) {
-        setVideoUrl(url);
-      } else {
-        setError(t("clipPreview.failedToLoad"));
-        setLoading(false);
-      }
-    });
+    if (isRenderedClip && clip?.file_path) {
+      // Rendered clips are in the public rendered-clips bucket
+      const publicUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/rendered-clips/${clip.file_path}`;
+      setVideoUrl(publicUrl);
+    } else if (video?.file_path) {
+      // Unrendered clips: get signed URL from raw-videos bucket
+      getSignedUrl("raw-videos", video.file_path).then((url) => {
+        if (url) {
+          setVideoUrl(url);
+        } else {
+          setError(t("clipPreview.failedToLoad"));
+          setLoading(false);
+        }
+      });
+    } else {
+      setError(t("clipPreview.failedToLoad"));
+      setLoading(false);
+    }
 
     return () => {
       setPlaying(false);
       setVideoUrl(null);
     };
-  }, [open, video?.file_path]);
+  }, [open, video?.file_path, clip?.file_path, isRenderedClip]);
 
   // Seek to start when video loads — pause first, seek, wait for seeked
   const handleLoadedMetadata = useCallback(() => {
@@ -170,7 +181,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   const viralAnalysis = clip.viral_analysis as { reason?: string; hook_strength?: number; face_x?: number; hook_variants?: { type: string; label: string; text: string }[] } | null;
 
   // --- 9:16 crop simulation from 16:9 source ---
-  const isRendered = clip.status === "ready" && !!clip.file_path;
+  const isRendered = isRenderedClip;
   const faceX = viralAnalysis?.face_x ?? 0.5;
   const reframeMode = (viralAnalysis as any)?.reframe_mode || "center";
 
