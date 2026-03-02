@@ -753,27 +753,42 @@ export default function HighlightReelPage() {
   return (
     <div className="flex flex-col min-h-full pb-24 sm:pb-0" style={{ background: "hsl(240,15%,7%)" }}>
       {/* ─── Header bar ─── */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50 flex-shrink-0" style={{ background: "hsl(240,15%,9%)" }}>
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground flex-1 min-w-0">
-          <Link to="/dashboard" className="hover:text-foreground transition-colors shrink-0">{t("highlightReel.videos")}</Link>
-          <BreadcrumbChevron className="w-3 h-3 shrink-0 opacity-50" />
-          <Link to={`/dashboard/videos/${video.id}`} className="hover:text-foreground transition-colors truncate max-w-[120px]">{video.title}</Link>
-          <BreadcrumbChevron className="w-3 h-3 shrink-0 opacity-50" />
-          <span className="text-foreground font-medium shrink-0">
-            {isEditing ? t("highlightReel.editor") : t("highlightReel.create")}
-          </span>
+      <div className="flex items-center gap-2 p-3 sm:px-4 sm:py-3 border-b border-border/50 flex-shrink-0" style={{ background: "hsl(240,15%,9%)" }}>
+        {/* Mobile: back arrow */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate(`/dashboard/videos/${video.id}`)}
+          className="shrink-0 text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="w-4 h-4 sm:mr-1" />
+          <span className="hidden sm:inline">{t("upload.cancel")}</span>
+        </Button>
+
+        {/* Mobile: compact title | Desktop: breadcrumb */}
+        <div className="flex-1 min-w-0">
+          {/* Mobile compact title */}
+          <h1 className="sm:hidden text-sm font-semibold truncate text-foreground">
+            Reel <span className="text-muted-foreground font-normal">— {title || video.title}</span>
+          </h1>
+          {/* Desktop breadcrumb */}
+          <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Link to="/dashboard" className="hover:text-foreground transition-colors shrink-0">{t("highlightReel.videos")}</Link>
+            <BreadcrumbChevron className="w-3 h-3 shrink-0 opacity-50" />
+            <Link to={`/dashboard/videos/${video.id}`} className="hover:text-foreground transition-colors truncate max-w-[120px]">{video.title}</Link>
+            <BreadcrumbChevron className="w-3 h-3 shrink-0 opacity-50" />
+            <span className="text-foreground font-medium shrink-0">
+              {isEditing ? t("highlightReel.editor") : t("highlightReel.create")}
+            </span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/videos/${video.id}`)} className="text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="w-4 h-4 sm:mr-1" />
-            <span className="hidden sm:inline">{t("upload.cancel")}</span>
-          </Button>
-          <Button variant="hero" size="sm" onClick={handleSaveAndRender} disabled={selectedIds.length < 2 || saving} className="min-w-[140px]">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <Button variant="hero" size="sm" onClick={handleSaveAndRender} disabled={selectedIds.length < 2 || saving} className="min-w-0 sm:min-w-[140px] min-h-[36px]">
             {saving ? (
-              <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{isEditing ? t("highlightReel.saving") : t("highlightReel.creating")}</>
+              <><Loader2 className="w-4 h-4 sm:mr-2 animate-spin" /><span className="hidden sm:inline">{isEditing ? t("highlightReel.saving") : t("highlightReel.creating")}</span></>
             ) : (
-              <><Sparkles className="w-4 h-4 mr-2" />{isEditing ? t("highlightReel.saveAndRender") : t("highlightReel.createReel")}</>
+              <><Sparkles className="w-4 h-4 sm:mr-2" /><span className="hidden sm:inline">{isEditing ? t("highlightReel.saveAndRender") : t("highlightReel.createReel")}</span></>
             )}
           </Button>
         </div>
