@@ -248,14 +248,19 @@ export default function HighlightReelCard({ reel, onDelete, onEdit, onRender }: 
             className="relative max-w-sm w-full"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-3">
+            {/* Close button — always visible */}
+            <button
+              onClick={() => setShowPreview(false)}
+              className="absolute -top-1 -right-1 z-30 w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center hover:bg-black/80 transition-colors"
+              aria-label="Close preview"
+            >
+              <X className="w-4 h-4 text-white" />
+            </button>
+            <div className="flex items-center justify-between mb-3 pr-10">
               <div>
                 <h3 className="text-sm font-semibold text-foreground">{reel.title}</h3>
                 <p className="text-xs text-muted-foreground">{reel.clip_ids.length} {t("common.clips")} · {formatDur(reel.duration_seconds)}</p>
               </div>
-              <button onClick={() => setShowPreview(false)} className="text-muted-foreground hover:text-foreground transition-colors">
-                <X className="w-5 h-5" />
-              </button>
             </div>
             <div className="rounded-xl overflow-hidden aspect-[9/16] bg-black">
               <video
