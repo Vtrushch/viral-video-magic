@@ -56,6 +56,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "make-instagram-reels-from-long-videos": {
+    title: "How to Make Instagram Reels from Long Videos Automatically (2026) | HookCut",
+    description: "Turn any long video into Instagram Reels automatically using AI. Step-by-step guide for creators and marketers. Best clip length, caption tips, and posting times for Reels in 2026.",
+    keywords: "make instagram reels from long video, long video to reels, instagram reels from youtube, repurpose video for instagram",
+    date: "2026-03-01",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 function renderBlogArticleHtml(slug: string): string | null {
