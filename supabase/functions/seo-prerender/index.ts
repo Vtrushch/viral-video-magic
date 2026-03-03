@@ -48,6 +48,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "9 min read",
     category: "How-To Guide",
   },
+  "repurpose-podcast-into-clips": {
+    title: "How to Repurpose Podcast Episodes into Short Clips (2026 Guide) | HookCut",
+    description: "Turn any podcast episode into 10 viral short clips in minutes. Step-by-step guide for podcasters to grow on TikTok, Reels, and YouTube Shorts using AI in 2026.",
+    keywords: "repurpose podcast clips, podcast to short clips, podcast repurposing tool, podcast clips for social media",
+    date: "2026-03-01",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 function renderBlogArticleHtml(slug: string): string | null {
