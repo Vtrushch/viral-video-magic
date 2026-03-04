@@ -64,6 +64,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "best-caption-styles-for-tiktok": {
+    title: "Best Caption Styles for TikTok in 2026 (With Examples and Data) | HookCut",
+    description: "The best caption styles for TikTok in 2026 ranked by engagement. Hormozi style, MrBeast style, animated captions, and more — with real data on which performs best.",
+    keywords: "best caption styles tiktok, tiktok caption styles 2026, animated captions tiktok, tiktok subtitle styles, best subtitles for short videos",
+    date: "2026-03-01",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 function renderBlogArticleHtml(slug: string): string | null {
