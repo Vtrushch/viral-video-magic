@@ -555,31 +555,6 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     setCreditDialog({ type: "single", clip });
   }, []);
 
-  // Show loading if clips haven't arrived yet
-  if (clips.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 gap-3">
-        <Loader2 className="w-6 h-6 animate-spin text-primary" />
-        <p className="text-sm text-muted-foreground">{t("videoDetail.loadingClips")}</p>
-      </div>
-    );
-  }
-
-  const toggleMainPlayer = () => {
-    const el = mainVideoRef.current;
-    if (!el) return;
-    if (playerPlaying) { el.pause(); setPlayerPlaying(false); }
-    else { el.play().catch(() => {}); setPlayerPlaying(true); }
-  };
-
-
-  // Credit-gated render all
-  const renderAll = () => {
-    const pending = clips.filter(c => c.status === "pending");
-    if (pending.length === 0) { toast.info(t("videoDetail.noPendingClips")); return; }
-    setCreditDialog({ type: "all", clips: pending });
-  };
-
   const renderReelActual = useCallback(async (reel: any) => {
     if (!video.file_path) { toast.error(t("videoDetail.videoFileNotFound")); return; }
     try {
@@ -607,6 +582,30 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
       });
     }
   }, [video, clips]);
+
+  // Show loading if clips haven't arrived yet
+  if (clips.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 gap-3">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground">{t("videoDetail.loadingClips")}</p>
+      </div>
+    );
+  }
+
+  const toggleMainPlayer = () => {
+    const el = mainVideoRef.current;
+    if (!el) return;
+    if (playerPlaying) { el.pause(); setPlayerPlaying(false); }
+    else { el.play().catch(() => {}); setPlayerPlaying(true); }
+  };
+
+  // Credit-gated render all
+  const renderAll = () => {
+    const pending = clips.filter(c => c.status === "pending");
+    if (pending.length === 0) { toast.info(t("videoDetail.noPendingClips")); return; }
+    setCreditDialog({ type: "all", clips: pending });
+  };
 
   const handleCreditConfirm = async () => {
     if (!creditDialog) return;
