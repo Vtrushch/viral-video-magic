@@ -164,9 +164,10 @@ function getAnalysisTimeEstimateKey(fileSizeBytes: number | null): string {
 const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [progress, setProgress] = useState(15);
+  const [progress, setProgress] = useState(2);
   const [currentStep, setCurrentStep] = useState(1);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [isReady, setIsReady] = useState(false);
   const [notified, setNotified] = useState(() =>
     localStorage.getItem(`notify_on_complete_${video.id}`) === "true"
   );
@@ -179,41 +180,78 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
 
   // Time-based phase label
   const phaseLabel = (() => {
+    if (isReady) return t("analyzing.almostDone");
     if (elapsedSeconds < 30) return t("analyzing.uploadingPhase");
     if (elapsedSeconds < 120) return t("analyzing.watchingPhase");
     if (elapsedSeconds < 240) return t("analyzing.findingPhase");
     return t("analyzing.almostDone");
   })();
 
+  // Realtime subscription — detect when video becomes "ready"
   useEffect(() => {
     const channel = supabase
-      .channel(`video-${video.id}`)
+      .channel(`video-analyzing-${video.id}`)
       .on("postgres_changes", {
         event: "UPDATE",
         schema: "public",
         table: "videos",
         filter: `id=eq.${video.id}`,
       }, (payload: any) => {
-        // Let parent VideoDetail handle state transition via its own subscription
-        // No window.location.reload() — React will unmount AnalyzingState naturally
+        if (payload.new?.status === "ready" || payload.new?.status === "failed") {
+          setIsReady(true);
+        }
       })
       .subscribe();
 
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + Math.random() * 4 + 1;
-        if (next > 30 && currentStep < 2) setCurrentStep(2);
-        if (next > 60 && currentStep < 3) setCurrentStep(3);
-        if (next > 85 && currentStep < 4) setCurrentStep(4);
-        return Math.min(next, 95);
-      });
-    }, 2500);
+    return () => { supabase.removeChannel(channel); };
+  }, [video.id]);
 
-    return () => {
-      clearInterval(interval);
-      supabase.removeChannel(channel);
-    };
-  }, [video.id, currentStep]);
+  // Slow progress bar: 0-30% in 60s, 30-60% in 120s, 60-80% in 120s, then hold at 80
+  // Jump to 95% on ready, then animate to 100%
+  useEffect(() => {
+    if (isReady) {
+      // Animate to 95 immediately, then 100 after a short delay
+      setProgress(95);
+      setCurrentStep(4); // Mark "Generating clips" as active (will be checked by isReady)
+      const timer = setTimeout(() => setProgress(100), 800);
+      return () => clearTimeout(timer);
+    }
+
+    const interval = setInterval(() => {
+      setElapsedSeconds((s) => {
+        const elapsed = s; // current value before increment
+        setProgress((prev) => {
+          // 0-30% over 0-60s
+          if (elapsed < 60) {
+            const target = (elapsed / 60) * 30;
+            return Math.min(Math.max(prev, target), 30);
+          }
+          // 30-60% over 60-180s
+          if (elapsed < 180) {
+            const target = 30 + ((elapsed - 60) / 120) * 30;
+            return Math.min(Math.max(prev, target), 60);
+          }
+          // 60-80% over 180-300s
+          if (elapsed < 300) {
+            const target = 60 + ((elapsed - 180) / 120) * 20;
+            return Math.min(Math.max(prev, target), 80);
+          }
+          // Hold at 80%
+          return Math.min(prev, 80);
+        });
+        return s; // don't double-increment, the other timer handles it
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isReady]);
+
+  // Time-based step progression (steps 1-3 only; step 4 is realtime-gated)
+  useEffect(() => {
+    if (elapsedSeconds >= 30 && currentStep < 2) setCurrentStep(2);
+    if (elapsedSeconds >= 120 && currentStep < 3) setCurrentStep(3);
+    // Step 4 is only set when isReady becomes true (handled above)
+  }, [elapsedSeconds, currentStep]);
 
   const handleNotify = async () => {
     await supabase
@@ -229,8 +267,10 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
     { icon: CheckCircle2, label: t("analyzing.videoUploaded"), done: true },
     { icon: Search, label: t("analyzing.analyzingContent"), done: currentStep > 1 },
     { icon: Zap, label: t("analyzing.findingMoments"), done: currentStep > 2 },
-    { icon: Film, label: t("analyzing.generatingClips"), done: currentStep > 3 },
+    { icon: Film, label: t("analyzing.generatingClips"), done: isReady },
   ];
+
+  const showLongWait = elapsedSeconds >= 300 && !isReady;
 
   const timeEstimate = t(getAnalysisTimeEstimateKey(video.file_size));
 
@@ -258,8 +298,9 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
       {/* Steps */}
       <div className="max-w-xs mx-auto space-y-3 text-left">
         {steps.map((step, i) => {
-          const active = i === currentStep;
-          const done = step.done || i < currentStep;
+          const isStep4 = i === 3;
+          const active = isStep4 ? (currentStep >= 3 && !isReady) : i === currentStep;
+          const done = step.done;
           const Icon = step.icon;
           return (
             <div key={i} className={`flex items-center gap-3 text-sm transition-all duration-500 ${
@@ -277,6 +318,13 @@ const AnalyzingState = ({ video }: { video: Tables<"videos"> }) => {
           );
         })}
       </div>
+
+      {/* Long wait message */}
+      {showLongWait && (
+        <p className="text-xs text-muted-foreground/70 max-w-xs mx-auto">
+          Taking a bit longer than usual… We're still working on it.
+        </p>
+      )}
 
       {/* Tip */}
       <div className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs"
