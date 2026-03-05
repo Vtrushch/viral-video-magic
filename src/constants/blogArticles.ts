@@ -1849,4 +1849,203 @@ HookCut exports every clip in the correct format for all three platforms automat
 
 **[Try HookCut free — no credit card required](/)**`
   },
+  {
+    slug: "ai-video-repurposing-for-agencies",
+    title: "How Social Media Agencies Can Scale Video Content with AI in 2026",
+    metaDescription: "Complete guide for social media agencies to scale short video production using AI in 2026. Workflows, tools, pricing, and how to deliver 10x more content without hiring.",
+    keywords: ["ai video repurposing for agencies", "social media agency video tools", "scale video content production", "agency video workflow 2026", "video repurposing at scale"],
+    date: "2026-03-01",
+    readTime: "11 min read",
+    category: "Strategy",
+    content: `## How Social Media Agencies Can Scale Video Content with AI in 2026
+
+The demand for short-form video content has outpaced what most agencies can deliver. Clients expect TikToks, Reels, and Shorts every week — ideally every day. But producing 30 quality clips per month per client with a human team means enormous cost, time, and coordination.
+
+The agencies growing fastest in 2026 have cracked this problem with AI-powered video repurposing. They're delivering 3–5x more content per client without adding headcount.
+
+This guide shows you exactly how.
+
+---
+
+### The Agency Video Problem in 2026
+
+The math is brutal for traditional agency video production:
+
+A client with a weekly podcast (4 episodes/month) wants 5 clips per episode = 20 clips per month. Each clip requires: finding the moment, cutting, reframing, captioning, reviewing, exporting. That's 30–45 minutes per clip manually = 10–15 hours per client per month.
+
+At 10 clients, that's 100–150 hours of video production monthly. That's 2–3 full-time employees just for clipping — before strategy, posting, reporting, or client calls.
+
+No wonder agencies either cap their content output or charge $5,000+ per month for video-heavy packages.
+
+AI changes this equation entirely.
+
+---
+
+### What AI Video Repurposing Looks Like at Agency Scale
+
+With an AI-powered workflow, the same 20 clips per client per month takes 2–3 hours instead of 15. Here's what changes:
+
+**Finding moments:** AI analyzes the full episode and flags the 8–12 best moments automatically. No human needs to watch the entire video.
+
+**Cutting:** AI identifies exact start and end points. Human reviews and approves or adjusts in seconds, not minutes.
+
+**Reframing:** AI face tracking automatically converts landscape to 9:16. No manual keyframing.
+
+**Captioning:** AI transcribes and styles captions automatically in the agency's chosen style.
+
+**Review:** Human spends 5 minutes reviewing 10 clips rather than 5 hours creating them.
+
+The human role shifts from production to quality control and strategy. That's where agency value actually lies.
+
+---
+
+### Building an AI Video Workflow for Your Agency
+
+Here's a production workflow that scales:
+
+**Step 1: Client onboarding and content intake**
+Set up a standard intake system. Each client submits their weekly long-form content (podcast, YouTube video, webinar recording) via a shared folder (Google Drive, Dropbox). Create a brief with their brand guidelines: preferred caption style, colors, any specific phrases to avoid.
+
+**Step 2: AI processing**
+Upload each video to HookCut. The AI analyzes the content and suggests 8–15 clips per video. This takes 5–10 minutes of setup — then AI runs automatically.
+
+**Step 3: Junior editor review**
+A junior team member (or the client) reviews AI suggestions and approves or rejects clips. This takes 15–20 minutes per video. They're not editing — just approving.
+
+**Step 4: Caption and brand styling**
+Apply the client's preferred caption style. HookCut's 6 style options plus custom colors mean you can set a consistent look per client and apply it in one click.
+
+**Step 5: Export and delivery**
+Export approved clips. Organize by platform (TikTok pack, Reels pack, Shorts pack) and deliver to client or post directly.
+
+**Total per client per month:** 3–4 hours for 20 clips, down from 15+ hours.
+
+---
+
+### How to Price Video Repurposing Services in 2026
+
+AI changes the economics — which means you can either pass savings to clients with lower prices (and win more clients) or maintain pricing while dramatically improving margins.
+
+**Common agency pricing models for AI-assisted video repurposing:**
+
+**Per clip:** $15–30 per clip. At $20/clip × 20 clips = $400/month. Low barrier but cap your upside.
+
+**Monthly retainer:** $500–$1,500/month for 15–30 clips. Most common model. Predictable revenue.
+
+**Bundled content package:** $2,000–$5,000/month for full social media management including video clips, captions, scheduling, and reporting. Highest margin when AI handles production.
+
+**With AI at $3–5 in tool costs per client per month** (HookCut starter plan covers multiple videos), your margins on a $1,000 retainer are dramatically higher than traditional production.
+
+---
+
+### Which Clients Benefit Most from Video Repurposing?
+
+Not all clients are equal for video repurposing services. The best clients for this offer:
+
+**Podcasters and show hosts**
+They create 1–4 hours of long-form content weekly. That content is gold for clipping. They understand content marketing and see clips as a natural extension. Easiest sell, highest volume.
+
+**B2B SaaS companies**
+Weekly webinars, product demos, thought leadership interviews. Often have large marketing budgets and need LinkedIn and YouTube Shorts specifically. High lifetime value clients.
+
+**Course creators and coaches**
+Frequent live sessions, Q&As, training content. Clips work well for lead generation. Often willing to pay premium for professional output.
+
+**Real estate agents and mortgage brokers**
+Increasing use of educational video content. TikTok and Instagram specifically. Smaller budgets but high volume market.
+
+**E-commerce brands with video content**
+Product reviews, unboxings, tutorials. Strong demand for Reels and TikToks. Often have existing YouTube channels with years of repurposable content.
+
+**Who to avoid:** Clients who only have 30-second video already — there's nothing to repurpose. Or clients who want to micromanage every cut — AI-assisted production requires some trust in the process.
+
+---
+
+### Setting Up White-Label Video Repurposing
+
+Many agencies want to offer video repurposing without revealing which tools they use. Here's how to position it:
+
+**Brand the output, not the process**
+Your deliverables should have the client's branding, colors, and style — not HookCut's branding. Export watermark-free clips and add client's logo overlay if needed.
+
+**Create a proprietary process name**
+Call it your "Content Amplification System" or "Video Multiplication Method." The AI tool is just infrastructure — your curation, quality control, and strategy is the service.
+
+**Build in strategy value**
+AI handles production. You handle which clips to approve, which platform each clip is best for, optimal posting times, hashtag strategy, and performance analysis. That strategy layer is what clients are actually paying for.
+
+---
+
+### How to Pitch Video Repurposing to Existing Clients
+
+Most agency clients don't know this service exists. Here's how to introduce it:
+
+**The ROI framing:**
+"You spent $5,000 recording that webinar. We can turn it into 15 clips that will drive traffic for the next 6 months. The content is already created — we're just maximizing its reach."
+
+**The time framing:**
+"Your podcast episode reaches your existing subscribers. We can get it in front of 10,000 new people per month through short clips — without you recording anything new."
+
+**The competitive framing:**
+"Your competitors are posting clips from their content daily. You're leaving that distribution channel empty."
+
+Most clients who haven't thought about repurposing will say yes immediately when framed as maximizing existing investment.
+
+---
+
+### Common Agency Mistakes with AI Video Repurposing
+
+**Mistake 1: Letting AI make all the decisions**
+AI is excellent at finding high-energy moments. It's less good at knowing which moments represent the client's brand best. Always have a human review clips for brand alignment before delivery.
+
+**Mistake 2: Using the same caption style for all clients**
+Different clients have different audiences and content types. A law firm needs Minimal captions. A fitness influencer needs Hormozi or Fire. Set up per-client style presets.
+
+**Mistake 3: Not educating clients on what to expect**
+AI clips aren't perfect. Sometimes a clip that scores high on viral potential doesn't fit the client's brand. Set expectations upfront that you'll deliver 10 clips for review and they approve the final 8.
+
+**Mistake 4: Ignoring platform-specific optimization**
+A clip that works on TikTok might need a different hook for LinkedIn. Build platform-specific clip sets into your workflow, not one-size-fits-all.
+
+**Mistake 5: Not tracking performance data**
+The best agencies use clip performance data to improve AI selection over time. Which clips get the most views? What topics resonate? Feed this back into your content recommendations for clients.
+
+---
+
+### Tools Stack for Agency Video Repurposing in 2026
+
+| Tool | Purpose | Cost |
+|------|---------|------|
+| HookCut | AI clip detection, captioning, export | From $9/mo |
+| Google Drive | Client content intake | Free / $12 per workspace |
+| Notion | Project management and client briefs | Free / $8 per user |
+| Later or Buffer | Social scheduling | $18–40/mo |
+| Loom | Client review and feedback | Free / $8/mo |
+
+Total tool cost per agency: $50–100/month. Revenue potential: $5,000–50,000/month depending on client count.
+
+---
+
+### Scaling from 5 to 50 Clients
+
+The bottleneck for most agencies scaling video repurposing is review, not production. AI handles production. Humans handle review and strategy.
+
+**At 5 clients:** One person can manage everything. 15–20 hours/month.
+
+**At 15 clients:** One dedicated video coordinator handles intake, AI processing, and delivery. One strategist handles client communication and performance review.
+
+**At 30–50 clients:** Two-tier system. Junior coordinators handle processing and delivery. Senior strategists own client relationships and performance strategy.
+
+The key to scaling: standardize everything. Standard intake forms, standard AI settings per client, standard review checklist, standard delivery format. Standardization is what lets you go from 5 to 50 clients without chaos.
+
+---
+
+### Start Your Agency's AI Video Operation Today
+
+The agencies that build AI video repurposing into their core service offering in 2026 will have a significant competitive advantage. The tools are affordable, the demand is there, and most agencies haven't made the shift yet.
+
+The window to be early is still open — but not for long.
+
+**[Try HookCut for your agency — no credit card required](/)**`
+  },
 ];

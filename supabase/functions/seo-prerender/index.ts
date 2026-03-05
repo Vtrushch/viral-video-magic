@@ -80,6 +80,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "ai-video-repurposing-for-agencies": {
+    title: "How Social Media Agencies Can Scale Video Content with AI in 2026 | HookCut",
+    description: "Complete guide for social media agencies to scale short video production using AI in 2026. Workflows, tools, pricing, and how to deliver 10x more content without hiring.",
+    keywords: "ai video repurposing for agencies, social media agency video tools, scale video content production, agency video workflow 2026, video repurposing at scale",
+    date: "2026-03-01",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
 };
 
 function renderBlogArticleHtml(slug: string): string | null {
