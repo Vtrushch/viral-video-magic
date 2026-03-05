@@ -1642,4 +1642,211 @@ HookCut lets you choose from all 6 styles — Hormozi, MrBeast, Minimal, Neon, F
 
 **[Try HookCut free — no credit card required](/)**`
   },
+  {
+    slug: "resize-video-for-tiktok-reels-shorts",
+    title: "How to Resize Videos for TikTok, Reels, and YouTube Shorts in 2026 (9:16 Guide)",
+    metaDescription: "Complete guide to resizing videos for TikTok, Instagram Reels, and YouTube Shorts in 2026. Correct dimensions, aspect ratios, file sizes, and the fastest tools to reframe automatically.",
+    keywords: ["resize video for tiktok reels shorts", "9:16 video format", "vertical video dimensions 2026", "reframe video for tiktok", "video aspect ratio tiktok instagram"],
+    date: "2026-03-01",
+    readTime: "10 min read",
+    category: "How-To Guide",
+    content: `## How to Resize Videos for TikTok, Reels, and YouTube Shorts in 2026 (9:16 Guide)
+
+Creating content for multiple short-form platforms means dealing with one frustrating reality: every platform has slightly different technical requirements, and getting them wrong can tank your performance.
+
+A landscape video posted to TikTok without proper resizing shows up tiny with black bars — and gets buried by the algorithm. An oversized file takes forever to upload. The wrong resolution looks pixelated on modern phone screens.
+
+This guide gives you every dimension, ratio, and file spec you need — plus the fastest way to resize automatically without touching a single video editor.
+
+---
+
+### The Universal Rule: 9:16 Vertical Video
+
+Before getting into platform-specific details, the one rule that applies everywhere: **film and export vertical (9:16 portrait) format** for all short-form platforms in 2026.
+
+9:16 means for every 9 units of width, there are 16 units of height. On a standard 1080p screen, that's **1080 pixels wide × 1920 pixels tall**.
+
+This fills the entire phone screen when viewed in portrait mode — which is how 94% of TikTok, Reels, and Shorts content is consumed.
+
+---
+
+### Platform Specifications in 2026
+
+#### TikTok Video Specs
+
+| Spec | Requirement |
+|------|------------|
+| Aspect ratio | 9:16 (vertical), 1:1 (square), 16:9 (landscape) |
+| Recommended resolution | 1080 × 1920 px |
+| Minimum resolution | 720 × 1280 px |
+| Maximum file size | 287.6 MB (iOS), 72 MB (Android) |
+| Supported formats | MP4, MOV |
+| Maximum length | 10 minutes |
+| Recommended length for clips | 15–60 seconds |
+| Frame rate | 24–60 fps |
+
+**Important:** TikTok compresses videos heavily during upload. Always export at the highest quality available. The platform will compress it — if you start with low quality, the result looks terrible.
+
+#### Instagram Reels Specs
+
+| Spec | Requirement |
+|------|------------|
+| Aspect ratio | 9:16 (vertical) recommended |
+| Recommended resolution | 1080 × 1920 px |
+| Minimum resolution | 500 × 888 px |
+| Maximum file size | 4 GB |
+| Supported formats | MP4, MOV |
+| Maximum length | 90 seconds |
+| Recommended length | 15–60 seconds |
+| Frame rate | 23–60 fps |
+
+**Important:** Instagram crops the Reel preview in the feed to a 4:5 ratio. Make sure your key visual elements (face, text, product) are in the center of frame and not too close to the top or bottom edges.
+
+#### YouTube Shorts Specs
+
+| Spec | Requirement |
+|------|------------|
+| Aspect ratio | 9:16 required |
+| Recommended resolution | 1080 × 1920 px |
+| Maximum file size | 256 GB or 12 hours |
+| Supported formats | MP4, MOV, AVI, WMV, FLV, WebM |
+| Maximum length | 60 seconds |
+| Recommended length | 30–60 seconds |
+| Frame rate | 24–60 fps |
+
+**Important:** YouTube Shorts must be under 60 seconds OR have an aspect ratio of 9:16 to be classified as a Short. Videos over 60 seconds in 9:16 will be uploaded as regular videos, not Shorts.
+
+---
+
+### What Happens When You Post the Wrong Format
+
+Understanding why format matters helps you prioritize getting it right.
+
+**16:9 landscape video on TikTok:**
+Displays with large black bars on top and bottom. Takes up only 56% of the screen. Algorithm treats it as lower-quality content and reduces distribution. Viewers skip it because it looks like a YouTube video accidentally posted to TikTok.
+
+**4:3 video (old phone format) on Reels:**
+Black bars on the sides. Feels amateur. Loses significant screen real estate where viewers' eyes naturally go.
+
+**Wrong resolution (too low):**
+Pixelated, blurry appearance especially on high-DPI phone screens. YouTube and Instagram compress further on upload, making it worse.
+
+**Correct 9:16 at 1080×1920:**
+Fills the entire screen. Looks professional. Gets full algorithmic distribution. Viewers stay and watch.
+
+---
+
+### How to Reframe Landscape Video Without Losing Quality
+
+The most common scenario: you have 16:9 horizontal footage (from a camera, screen recording, or YouTube video) and need to convert it to 9:16.
+
+There are three approaches:
+
+**Option 1: Simple crop (fastest, loses content)**
+Crop the sides of the video to create 9:16. You lose the left and right portions of frame. Works when the subject is centered and the edges don't contain important information.
+
+**Option 2: Blur background (no content loss)**
+Place the original landscape video in the center of a 9:16 frame. Fill the top and bottom with a blurred version of the same video. Looks professional and wastes no content. Popular with podcasters and interviews.
+
+**Option 3: AI face tracking (best for talking-head content)**
+AI detects the speaker's face and automatically pans/zooms to keep them centered in a 9:16 frame. As they move, the frame moves with them. No manual keyframing required.
+
+HookCut uses AI face tracking as the default reframing method. The result looks like it was filmed vertically, even when the original was landscape.
+
+---
+
+### Step-by-Step: Resizing Videos Automatically with HookCut
+
+**Step 1:** Upload your landscape video (any format)
+
+**Step 2:** HookCut detects the speaker using face tracking AI
+
+**Step 3:** The video is automatically reframed to 9:16 with the speaker always centered
+
+**Step 4:** Export at 1080×1920 — ready for TikTok, Reels, and Shorts simultaneously
+
+**Total time:** The reframing happens automatically during processing. No manual work.
+
+---
+
+### Manual Resizing Options (If You Prefer Full Control)
+
+If you want to resize manually, here are the main options:
+
+**CapCut (Free)**
+Easy-to-use mobile and desktop app. Select 9:16 canvas, drag your video in, crop or add blur background. Good for one-off clips. Becomes tedious at scale.
+
+**Adobe Premiere Pro**
+Sequence settings → Frame size → 1080×1920. Use the Reframe effect for automatic face tracking. Powerful but expensive ($55/mo) and complex.
+
+**DaVinci Resolve (Free)**
+Project settings → Timeline resolution → 1080×1920. Manual crop or use Resolve's stabilization tools for pseudo-reframing. Free but steep learning curve.
+
+**Canva (Free/Pro)**
+Create a new design at 1080×1920. Upload your video. Manually position. No automatic reframing. Good for adding graphics but tedious for video.
+
+**HandBrake (Free)**
+Great for compressing video file sizes without quality loss. Not designed for aspect ratio changes.
+
+---
+
+### File Size Optimization: How to Keep Quality High While Reducing File Size
+
+Large file sizes slow uploads and can reduce quality after platform compression. Here's how to optimize:
+
+**Use H.264 or H.265 codec**
+H.264 is universally supported. H.265 (HEVC) produces smaller files at the same quality. Both are accepted by all three platforms.
+
+**Export at the correct bitrate**
+- For 1080p at 30fps: 8–12 Mbps is ideal
+- For 1080p at 60fps: 12–16 Mbps
+- Higher isn't always better — platforms compress anyway
+
+**Use MP4 format**
+Universal support, good compression. MOV works too but files are larger. Avoid AVI or WMV — they're larger with no quality benefit.
+
+**Don't export above 1080p for short-form**
+4K video gets compressed to 1080p by all short-form platforms anyway. You just create larger files with no benefit.
+
+---
+
+### Common Resizing Mistakes in 2026
+
+**Mistake 1: Stretching instead of cropping**
+Stretching landscape video to fill 9:16 makes everyone look tall and distorted. Always crop or reframe — never stretch.
+
+**Mistake 2: Exporting at 720p to save time**
+Modern phones have high-DPI screens. 720p looks soft and unprofessional. Always export at 1080p minimum.
+
+**Mistake 3: Not accounting for safe zones**
+TikTok and Instagram overlay UI elements at the bottom (username, description) and right side (like/comment buttons). Keep important visual content away from these areas — roughly the bottom 20% and right 15% of frame.
+
+**Mistake 4: Inconsistent frame rates**
+If your original video is 30fps, export at 30fps. Mixing frame rates creates stuttering. If you want 60fps smoothness, your source should also be 60fps.
+
+**Mistake 5: Resizing after adding captions in the wrong position**
+Always reframe first, then add captions. If you add captions to a landscape video then resize, your captions end up in the wrong position.
+
+---
+
+### Quick Reference: Video Specs Cheat Sheet
+
+| Platform | Resolution | Aspect Ratio | Max Length | Max File Size | Format |
+|----------|-----------|--------------|-----------|---------------|--------|
+| TikTok | 1080×1920 | 9:16 | 10 min | 287.6 MB | MP4/MOV |
+| Instagram Reels | 1080×1920 | 9:16 | 90 sec | 4 GB | MP4/MOV |
+| YouTube Shorts | 1080×1920 | 9:16 | 60 sec | 256 GB | MP4/MOV |
+| Facebook Reels | 1080×1920 | 9:16 | 90 sec | 4 GB | MP4/MOV |
+| Snapchat Spotlight | 1080×1920 | 9:16 | 60 sec | 32 MB | MP4/MOV |
+
+---
+
+### Reframe Once, Post Everywhere
+
+The smartest approach in 2026: reframe once to 9:16 at 1080×1920, then post the same file to TikTok, Reels, and Shorts simultaneously. One video. Three platforms. Maximum reach with zero extra work.
+
+HookCut exports every clip in the correct format for all three platforms automatically. No manual resizing. No format headaches.
+
+**[Try HookCut free — no credit card required](/)**`
+  },
 ];
