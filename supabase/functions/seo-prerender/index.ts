@@ -72,6 +72,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "resize-video-for-tiktok-reels-shorts": {
+    title: "How to Resize Videos for TikTok, Reels, and YouTube Shorts in 2026 (9:16 Guide) | HookCut",
+    description: "Complete guide to resizing videos for TikTok, Instagram Reels, and YouTube Shorts in 2026. Correct dimensions, aspect ratios, file sizes, and the fastest tools to reframe automatically.",
+    keywords: "resize video for tiktok reels shorts, 9:16 video format, vertical video dimensions 2026, reframe video for tiktok, video aspect ratio tiktok instagram",
+    date: "2026-03-01",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 function renderBlogArticleHtml(slug: string): string | null {
