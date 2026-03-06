@@ -242,7 +242,8 @@
     "uploadVideo": "Завантажити Відео",
     "noVideosYet": "Поки немає відео",
     "uploadFirst": "Завантажте перше відео для початку!",
-    "uploadAVideo": "Завантажити відео"
+    "uploadAVideo": "Завантажити відео",
+    "upgradeLink": "Покращити →"
   },
   "stats": {
     "totalVideos": "Всього Відео",
