@@ -88,6 +88,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Strategy",
   },
+  "es/convertir-video-largo-en-clips-virales": {
+    title: "Cómo Convertir un Vídeo Largo en Clips Virales con IA (2026) | HookCut",
+    description: "Aprende a convertir cualquier vídeo largo en 10 clips virales en 15 minutos usando IA. Guía paso a paso para YouTube, TikTok e Instagram Reels en 2026.",
+    keywords: "convertir video largo en clips, clips virales de vídeos largos, recortar vídeos con IA, convertir YouTube en shorts, herramienta de clips con IA",
+    date: "2026-03-01",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 function renderBlogArticleHtml(slug: string): string | null {

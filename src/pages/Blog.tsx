@@ -92,6 +92,7 @@ const Blog = () => {
                   </div>
 
                   <h2 className="text-lg font-semibold leading-snug mb-2 transition-colors line-clamp-2">
+                    {article.lang && <span className="text-xs font-medium text-primary mr-1.5 uppercase">[{article.lang}]</span>}
                     {article.title}
                   </h2>
 
