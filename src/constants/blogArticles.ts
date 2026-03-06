@@ -1,3 +1,8 @@
+export interface HreflangLink {
+  lang: string;
+  href: string;
+}
+
 export interface BlogArticle {
   slug: string;
   title: string;
@@ -7,6 +12,8 @@ export interface BlogArticle {
   readTime: string;
   category: string;
   content: string;
+  lang?: string;
+  hreflang?: HreflangLink[];
 }
 
 export const BLOG_CATEGORIES = ["All", "How-To Guide", "Comparison", "Strategy"] as const;
@@ -20,6 +27,11 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     date: "2026-02-15",
     readTime: "8 min read",
     category: "How-To Guide",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/turn-long-video-into-clips" },
+      { lang: "es", href: "https://hookcut.com/blog/es/convertir-video-largo-en-clips-virales" },
+      { lang: "x-default", href: "https://hookcut.com/blog/turn-long-video-into-clips" },
+    ],
     content: `Most creators spend 3–5 hours recording a video, then let it sit on YouTube getting 400 views.
 
 Meanwhile, a single great clip from that same video — 30 seconds, punchy, with bold captions — could reach 200,000 people on TikTok by Thursday.
@@ -2047,5 +2059,236 @@ The agencies that build AI video repurposing into their core service offering in
 The window to be early is still open — but not for long.
 
 **[Try HookCut for your agency — no credit card required](/)**`
+  },
+  {
+    slug: "es/convertir-video-largo-en-clips-virales",
+    title: "Cómo Convertir un Vídeo Largo en Clips Virales con IA (2026)",
+    metaDescription: "Aprende a convertir cualquier vídeo largo en 10 clips virales en 15 minutos usando IA. Guía paso a paso para YouTube, TikTok e Instagram Reels en 2026.",
+    keywords: ["convertir video largo en clips", "clips virales de vídeos largos", "recortar vídeos con IA", "convertir YouTube en shorts", "herramienta de clips con IA"],
+    date: "2026-03-01",
+    readTime: "10 min read",
+    category: "How-To Guide",
+    lang: "es",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/turn-long-video-into-clips" },
+      { lang: "es", href: "https://hookcut.com/blog/es/convertir-video-largo-en-clips-virales" },
+      { lang: "x-default", href: "https://hookcut.com/blog/turn-long-video-into-clips" },
+    ],
+    content: `## Cómo Convertir un Vídeo Largo en Clips Virales con IA (2026)
+
+Tienes una hora de contenido grabado: una entrevista, un podcast, un webinar o una clase online. Lo subes a YouTube y... eso es todo. La mayoría del contenido nunca llega a más personas.
+
+El problema no es la calidad del contenido. El problema es el formato.
+
+En 2026, el contenido de vídeo corto domina todas las plataformas. TikTok, Instagram Reels y YouTube Shorts acumulan más de **5.000 millones de visualizaciones diarias** combinadas. Los creadores que convierten su contenido largo en clips cortos consiguen entre 3 y 10 veces más alcance que los que solo publican vídeos largos.
+
+Esta guía te muestra exactamente cómo hacerlo — de forma manual o con IA — paso a paso.
+
+---
+
+### Por Qué los Vídeos Cortos Dominan en 2026
+
+Los algoritmos de TikTok, Instagram y YouTube priorizan el contenido corto porque genera más tiempo de sesión. Un usuario que ve 10 clips de 30 segundos genera 5 minutos de engagement — más que un vídeo de 5 minutos que se abandona a los 2.
+
+Los datos son claros:
+
+- Los clips de 15–60 segundos tienen un **68% más de tasa de finalización** que los vídeos de más de 5 minutos
+- El contenido corto se comparte **3 veces más** que el contenido largo
+- Los creadores que publican clips diarios crecen su audiencia **4x más rápido** que los que solo publican vídeos largos semanales
+- El **73% de los usuarios** prefiere descubrir nuevos creadores a través de vídeos cortos antes de comprometerse con contenido largo
+
+La conclusión es simple: si tienes contenido largo y no estás creando clips cortos, estás dejando el 80% del alcance potencial sin aprovechar.
+
+---
+
+### Qué Hace que un Clip Sea Viral
+
+Antes de empezar a recortar, necesitas entender qué busca el algoritmo — y qué buscan los espectadores.
+
+**Los mejores clips comparten estas características:**
+
+**1. Un gancho en los primeros 3 segundos**
+El espectador decide en menos de 3 segundos si sigue viendo. El clip debe empezar con una declaración sorprendente, una pregunta provocadora o una promesa clara de valor. "En este clip te explico por qué el 90% de los creadores pierde su mejor contenido" funciona. "Bueno, hoy vamos a hablar de..." no funciona.
+
+**2. Una idea central clara**
+Los mejores clips tienen una sola idea. No tres consejos, no una lista de diez puntos — una idea desarrollada con claridad. El espectador debe poder resumir el clip en una frase.
+
+**3. Un final satisfactorio**
+El clip debe terminar, no cortarse. Un remate, una conclusión, un dato sorprendente al final. Los clips que se cortan en mitad de una frase tienen tasas de rebote altísimas.
+
+**4. Valor inmediato**
+El espectador no tiene tiempo para contexto. El clip debe aportar valor sin necesidad de haber visto el vídeo completo. Si alguien necesita saber quién eres o qué es tu canal para entender el clip, has fallado.
+
+**5. Duración óptima: 30–75 segundos**
+Este es el punto óptimo en 2026 para las tres plataformas principales. Suficientemente largo para aportar valor, suficientemente corto para mantener la atención.
+
+---
+
+### Método 1: Recortar Manualmente (Gratis, Lento)
+
+Si empiezas desde cero y no quieres invertir en herramientas todavía, puedes hacerlo manualmente.
+
+**Paso 1: Ve el vídeo a 1.5x o 2x de velocidad**
+Escucha buscando momentos de alta energía, declaraciones sorprendentes, historias con inicio y final claro, datos concretos o cambios de ritmo. Anota los timestamps.
+
+**Paso 2: Evalúa cada momento candidato**
+Para cada timestamp que hayas anotado, pregúntate: ¿Tiene un gancho claro en los primeros 3 segundos? ¿Se entiende sin contexto previo? ¿Termina en un punto natural? ¿Dura entre 30 y 90 segundos?
+
+**Paso 3: Edita en CapCut o DaVinci Resolve**
+Importa el vídeo, recorta el clip, añade subtítulos, reformatea a 9:16 vertical para móvil. Este proceso lleva entre 30 y 60 minutos por clip.
+
+**El problema del método manual:**
+Funciona, pero escala fatal. Para convertir una hora de vídeo en 10 clips de calidad necesitas entre 3 y 5 horas de trabajo. Muy pocos creadores mantienen ese ritmo más de dos semanas.
+
+---
+
+### Método 2: Recorte con IA (Rápido, Escalable)
+
+Las herramientas de recorte con IA analizan tu vídeo completo, detectan los mejores momentos automáticamente y exportan clips listos para publicar. Lo que tardabas 4 horas ahora tarda 15 minutos.
+
+**El flujo de trabajo con HookCut:**
+
+**Paso 1: Sube tu vídeo**
+HookCut acepta archivos de vídeo directamente o URLs de YouTube. Cualquier formato funciona: grabaciones de Zoom, vídeos de cámara, capturas de pantalla, streams.
+
+**Paso 2: La IA analiza el contenido**
+El sistema escanea el vídeo completo buscando momentos de alta energía, cambios de tema, declaraciones con gancho fuerte y puntos naturales de inicio y fin. Cada momento recibe una puntuación de potencial viral basada en miles de clips analizados.
+
+**Paso 3: Revisa las sugerencias**
+Recibes 8–12 clips sugeridos con sus timestamps y puntuaciones. Previsualizas cada uno y seleccionas los que mejor representan tu contenido. Tú eres el editor — la IA solo hace el trabajo pesado.
+
+**Paso 4: Elige el estilo de subtítulos**
+HookCut ofrece 6 estilos de subtítulos: Hormozi (texto en negrita, muy popular en contenido educativo), MrBeast (colorido, para entretenimiento), Minimal, Neon, Fire y Elegant. También puedes personalizar colores para mantener la identidad de marca.
+
+**Paso 5: Exporta y publica**
+Cada clip se exporta en formato 9:16, listo para TikTok, Instagram Reels y YouTube Shorts. Sin edición adicional.
+
+**Tiempo total: 15–20 minutos** para 8–12 clips de una hora de vídeo.
+
+---
+
+### Qué Tipo de Contenido Largo Funciona Mejor
+
+No todo el contenido largo produce clips igualmente buenos. Estos son los formatos que mejor funcionan:
+
+| Formato | Potencial de clip | Mejores momentos |
+|---------|------------------|-----------------|
+| Entrevista / Podcast | ⭐⭐⭐⭐⭐ | Opiniones fuertes, historias, desacuerdos |
+| Tutorial / How-to | ⭐⭐⭐⭐ | El paso más sorprendente, el error más común |
+| Webinar / Presentación | ⭐⭐⭐⭐ | El dato más impactante, la conclusión principal |
+| Comentario / Opinión | ⭐⭐⭐⭐ | La tesis central, el argumento más provocador |
+| Documental / Historia | ⭐⭐⭐ | El giro, el momento emocional más alto |
+| Gaming / Stream | ⭐⭐⭐ | La jugada épica, la reacción más extrema |
+
+Las entrevistas y podcasts son los más fáciles de recortar porque los invitados naturalmente dicen cosas inesperadas y citables.
+
+---
+
+### Cuántos Clips Puedes Extraer de un Vídeo
+
+La cantidad depende de la duración y densidad del vídeo original:
+
+| Duración del vídeo | Clips esperados | Tiempo con IA |
+|--------------------|----------------|--------------|
+| 10–20 minutos | 3–5 clips | 8 minutos |
+| 20–45 minutos | 5–10 clips | 12 minutos |
+| 45–90 minutos | 10–15 clips | 18 minutos |
+| 90+ minutos | 15–25 clips | 25 minutos |
+
+Un podcast de una hora puede convertirse en un mes de contenido diario en redes sociales.
+
+---
+
+### Subtítulos: Por Qué Son Obligatorios en 2026
+
+El **85% de los vídeos en redes sociales se ven sin sonido** — en el trabajo, en el transporte público, en situaciones donde el audio no es posible. Sin subtítulos, pierdes a la mayoría de tus espectadores potenciales antes de que empiecen a escucharte.
+
+Los subtítulos no son solo accesibilidad — son rendimiento. Los vídeos con subtítulos animados tienen un **40% más de tiempo de visualización** que los mismos vídeos sin subtítulos.
+
+**Qué hace un buen subtítulo:**
+- Tamaño legible en pantalla de móvil sin hacer zoom (mínimo 60pt)
+- Alto contraste (texto blanco con borde negro funciona en cualquier fondo)
+- Sincronización perfecta con el habla
+- Palabras clave resaltadas para guiar la atención
+
+---
+
+### Estrategia de Publicación: Cómo y Cuándo Publicar
+
+Tener clips no es suficiente — la estrategia de publicación importa tanto como el contenido.
+
+**Frecuencia recomendada:**
+- TikTok: 1–2 clips diarios (el algoritmo premia la consistencia)
+- Instagram Reels: 4–5 veces por semana
+- YouTube Shorts: 1 vez al día
+
+**No publiques todos los clips a la vez**
+Si obtienes 12 clips de un vídeo, distribúyelos durante 3–4 semanas. Los algoritmos penalizan los picos de publicación seguidos de silencio.
+
+**Mejores horarios en 2026:**
+- Mañana: 7–9h (usuarios antes del trabajo)
+- Mediodía: 12–14h (pausa del almuerzo)
+- Noche: 19–22h (tiempo de ocio)
+
+**Adapta el caption por plataforma**
+El mismo clip puede publicarse en TikTok, Reels y Shorts, pero el texto del caption debe adaptarse. TikTok funciona bien con humor y lenguaje directo. Instagram prefiere algo más pulido. YouTube Shorts valora títulos con keywords.
+
+---
+
+### Errores Más Comunes al Convertir Vídeos Largos en Clips
+
+**Error 1: Empezar el clip con contexto en lugar de gancho**
+"En este vídeo hablamos sobre estrategias de contenido y hoy quiero compartir..." es un intro de YouTube, no un gancho de TikTok. Empieza donde empieza el valor.
+
+**Error 2: Clips demasiado largos**
+La tentación es incluir más contexto. Resiste. Un clip de 45 segundos que se ve completo vale más que uno de 3 minutos que se abandona al minuto.
+
+**Error 3: No recortar el vídeo a 9:16**
+Un vídeo horizontal publicado en TikTok o Reels aparece pequeño con barras negras. Siempre reformatea a vertical. Las herramientas con seguimiento facial hacen esto automáticamente.
+
+**Error 4: Ignorar el primer frame**
+La miniatura del clip — el primer frame — determina si el usuario hace click. Si tu primer frame es alguien mirando hacia otro lado o una pantalla en negro, el clip no se ve.
+
+**Error 5: Publicar sin revisar**
+La IA encuentra los mejores momentos técnicamente, pero tú conoces tu audiencia. Siempre revisa los clips sugeridos antes de publicar para asegurarte de que representan tu marca correctamente.
+
+---
+
+### Resultados Realistas: Qué Esperar
+
+Los creadores que convierten su contenido consistentemente reportan:
+
+- **Mes 1:** 500–3.000 visualizaciones adicionales por clip (construyendo momentum)
+- **Mes 3:** 3.000–15.000 visualizaciones por clip a medida que el algoritmo aprende
+- **Mes 6:** Los clips se convierten en la primera fuente de nuevos seguidores
+- **Año 1:** El canal original crece un 40–120% gracias al tráfico de los clips
+
+Estos resultados no son inmediatos. Son el resultado de la consistencia. Un clip publicado hoy puede seguir generando visualizaciones dentro de 12 meses.
+
+---
+
+### Comparativa de Herramientas de Recorte con IA en 2026
+
+| Herramienta | Precio | Detección automática | Estilos de subtítulos | Mejor para |
+|-------------|--------|---------------------|----------------------|-----------|
+| HookCut | Desde $9/mes | ✅ Sí | 6 estilos + personalizado | Creadores que buscan rapidez |
+| Opus Clip | Desde $15/mes | ✅ Sí | Limitado | Creadores generales |
+| Descript | Desde $24/mes | ❌ Manual | Básico | Edición completa de podcasts |
+| Klap | $29/mes | ✅ Sí | Básico | Contenido de TikTok |
+| CapCut | Gratis | ❌ Manual | Plantillas | Creadores con presupuesto limitado |
+
+Para creadores que quieren publicar clips consistentemente sin dedicar horas a la edición, HookCut ofrece la detección automática más rápida al precio más bajo del mercado.
+
+---
+
+### Empieza Hoy: Tu Primer Clip en 15 Minutos
+
+No necesitas crear contenido nuevo. Tienes vídeos publicados ahora mismo que contienen clips virales sin explotar.
+
+Elige tu vídeo con más vistas. Súbelo a HookCut. En 15 minutos tendrás 8–10 clips listos para publicar.
+
+Ese es tu primer paso hacia una estrategia de contenido que trabaja mientras tú duermes.
+
+**[Prueba HookCut gratis — sin tarjeta de crédito](/)**`
   },
 ];

@@ -1,4 +1,4 @@
-import { useParams, Link, Navigate } from "react-router-dom";
+import { useParams, useLocation, Link, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
@@ -10,8 +10,14 @@ import { ArrowLeft, Clock } from "lucide-react";
 
 const BlogArticle = () => {
   const { slug } = useParams<{ slug: string }>();
+  const location = useLocation();
   const { t } = useTranslation();
-  const article = BLOG_ARTICLES.find((a) => a.slug === slug);
+
+  // Construct the full slug including es/ prefix if on /blog/es/ route
+  const isEsRoute = location.pathname.startsWith("/blog/es/");
+  const fullSlug = isEsRoute ? `es/${slug}` : slug;
+
+  const article = BLOG_ARTICLES.find((a) => a.slug === fullSlug);
 
   useEffect(() => {
     if (article) {
@@ -27,6 +33,7 @@ const BlogArticle = () => {
   }
 
   const canonicalUrl = `https://hookcut.com/blog/${article.slug}`;
+  const articleLang = article.lang || "en";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -35,9 +42,10 @@ const BlogArticle = () => {
     description: article.metaDescription,
     datePublished: article.date,
     dateModified: article.date,
+    inLanguage: articleLang,
     author: {
       "@type": "Organization",
-      name: "HookCut",
+      name: "HookCut Team",
       url: "https://hookcut.com",
     },
     publisher: {
@@ -61,10 +69,15 @@ const BlogArticle = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Helmet>
+        <html lang={articleLang} />
         <title>{`${article.title} — HookCut Blog`}</title>
         <meta name="description" content={article.metaDescription} />
         <meta name="keywords" content={article.keywords.join(", ")} />
         <link rel="canonical" href={canonicalUrl} />
+
+        {article.hreflang?.map((hl) => (
+          <link key={hl.lang} rel="alternate" hrefLang={hl.lang} href={hl.href} />
+        ))}
 
         <meta property="og:type" content="article" />
         <meta property="og:url" content={canonicalUrl} />
@@ -96,6 +109,12 @@ const BlogArticle = () => {
 
           <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
             <span className="px-2 py-0.5 rounded-full bg-muted font-medium">{article.category}</span>
+            {article.lang && (
+              <>
+                <span>·</span>
+                <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium uppercase text-xs">{article.lang}</span>
+              </>
+            )}
             <span>·</span>
             <Clock className="w-3.5 h-3.5" />
             <span>{article.readTime}</span>
