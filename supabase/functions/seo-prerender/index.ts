@@ -96,6 +96,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "es/subtitulos-automaticos-para-videos": {
+    title: "Cómo Añadir Subtítulos Automáticos a tus Vídeos en 2026 (Guía Completa) | HookCut",
+    description: "Añade subtítulos profesionales a cualquier vídeo en minutos. 6 estilos de subtítulos con IA: Hormozi, MrBeast, Minimal y más. El 85% de los vídeos se ven sin sonido.",
+    keywords: "subtítulos automáticos para vídeos, añadir subtítulos a vídeo, generador de subtítulos con IA, subtítulos para TikTok, subtítulos animados 2026",
+    date: "2026-03-01",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 function renderBlogArticleHtml(slug: string): string | null {
