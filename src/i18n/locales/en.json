@@ -242,7 +242,8 @@
     "uploadVideo": "Upload Video",
     "noVideosYet": "No videos yet",
     "uploadFirst": "Upload your first video to get started!",
-    "uploadAVideo": "Upload a video"
+    "uploadAVideo": "Upload a video",
+    "upgradeLink": "Upgrade →"
   },
   "stats": {
     "totalVideos": "Total Videos",
