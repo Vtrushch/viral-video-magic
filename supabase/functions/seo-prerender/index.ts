@@ -104,6 +104,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "es/hookcut-vs-opus-clip": {
+    title: "HookCut vs Opus Clip 2026: Comparativa Completa para Creadores | HookCut",
+    description: "Comparativa detallada de HookCut y Opus Clip en 2026. Precios, estilos de subtítulos, calidad de clips y cuál es mejor para tu tipo de contenido.",
+    keywords: "hookcut vs opus clip, alternativa a opus clip, opus clip precio 2026, mejor herramienta de clips con IA, comparativa herramientas vídeo corto",
+    date: "2026-03-01",
+    readTime: "10 min read",
+    category: "Comparison",
+  },
 };
 
 function renderBlogArticleHtml(slug: string): string | null {
