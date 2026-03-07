@@ -752,6 +752,11 @@ The content is already there. Go find it.
     date: "2026-03-01",
     readTime: "10 min read",
     category: "How-To Guide",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/youtube-shorts-from-long-form" },
+      { lang: "es", href: "https://hookcut.com/blog/es/crear-youtube-shorts-de-videos-largos" },
+      { lang: "x-default", href: "https://hookcut.com/blog/youtube-shorts-from-long-form" },
+    ],
     content: `YouTube Shorts crossed 70 billion daily views in 2024. The platform is actively pushing Shorts to new audiences, and — unlike TikTok — a viral Short can send viewers directly to your long-form content on the same channel.
 
 The opportunity is real. Most creators aren't fully using it.
