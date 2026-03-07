@@ -593,6 +593,11 @@ Upload your first video at [HookCut](/) — no credit card required. 10 free cli
     date: "2026-02-28",
     readTime: "7 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/creators-waste-best-moments" },
+      { lang: "es", href: "https://hookcut.com/blog/es/creadores-desperdician-sus-mejores-momentos" },
+      { lang: "x-default", href: "https://hookcut.com/blog/creators-waste-best-moments" },
+    ],
     content: `You spent 6 hours on that video.
 
 Research, scripting, filming, basic editing, thumbnail, title, description, SEO. You hit publish. You got 600 views in a week. You moved on to the next one.
