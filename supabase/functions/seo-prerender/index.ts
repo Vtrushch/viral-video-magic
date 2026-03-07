@@ -120,6 +120,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "es/crear-youtube-shorts-de-videos-largos": {
+    title: "Cómo Crear YouTube Shorts a partir de Vídeos Largos Automáticamente (2026) | HookCut",
+    description: "Convierte tus vídeos largos de YouTube en Shorts automáticamente con IA. Guía completa sobre formato, algoritmo, monetización y las mejores herramientas en 2026.",
+    keywords: "crear youtube shorts de videos largos, youtube shorts automático, convertir youtube a shorts, herramienta youtube shorts IA, shorts desde vídeos largos 2026",
+    date: "2026-03-01",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 function renderBlogArticleHtml(slug: string): string | null {

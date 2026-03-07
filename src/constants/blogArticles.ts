@@ -2933,4 +2933,241 @@ La pregunta no es si tienes tiempo. La pregunta es si puedes permitirte no hacer
 
 **[Prueba HookCut gratis — empieza con tu primer vídeo hoy](/)**`
   },
+  {
+    slug: "es/crear-youtube-shorts-de-videos-largos",
+    title: "Cómo Crear YouTube Shorts a partir de Vídeos Largos Automáticamente (2026)",
+    metaDescription: "Convierte tus vídeos largos de YouTube en Shorts automáticamente con IA. Guía completa sobre formato, algoritmo, monetización y las mejores herramientas en 2026.",
+    keywords: ["crear youtube shorts de videos largos", "youtube shorts automático", "convertir youtube a shorts", "herramienta youtube shorts IA", "shorts desde vídeos largos 2026"],
+    date: "2026-03-01",
+    readTime: "10 min read",
+    category: "How-To Guide",
+    lang: "es",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/youtube-shorts-from-long-form" },
+      { lang: "es", href: "https://hookcut.com/blog/es/crear-youtube-shorts-de-videos-largos" },
+      { lang: "x-default", href: "https://hookcut.com/blog/youtube-shorts-from-long-form" },
+    ],
+    content: `## Cómo Crear YouTube Shorts a partir de Vídeos Largos Automáticamente (2026)
+
+YouTube Shorts se ha convertido en la plataforma de vídeo corto de mayor crecimiento en 2025–2026, superando los **70.000 millones de visualizaciones diarias**. Y tiene una ventaja crucial que TikTok e Instagram Reels no pueden ofrecer: el mismo canal de YouTube que ya tienes.
+
+Cuando un Short tuyo llega a una audiencia nueva, esa audiencia puede hacer clic directamente en tu canal y descubrir todos tus vídeos largos. El funnel de descubrimiento es directo, y la audiencia llega precalificada.
+
+Pero crear Shorts manualmente es lento. Esta guía te muestra cómo automatizar el proceso — desde la detección de momentos hasta la exportación final — para tener Shorts diarios sin dedicar horas a la edición.
+
+---
+
+### Por Qué YouTube Shorts es la Plataforma Más Valiosa para Creadores con Canal
+
+Antes de hablar de herramientas, es importante entender por qué Shorts es especialmente valioso si ya tienes un canal de YouTube.
+
+**1. El audience crossover es directo**
+En TikTok o Instagram, si a alguien le gusta tu clip, puede seguirte en esa plataforma. En YouTube, puede hacer clic en tu nombre y ver directamente todos tus vídeos largos — y suscribirse al canal que ya tienes. El journey del espectador es más corto y el valor de cada nuevo suscriptor desde Shorts es mayor.
+
+**2. El algoritmo de YouTube favorece la actividad en Shorts**
+Según múltiples tests documentados por creadores en 2025, los canales que publican Shorts regularmente ven un aumento del 15–25% en el alcance de sus vídeos largos. El algoritmo interpreta la actividad en Shorts como una señal de canal activo y saludable.
+
+**3. Monetización dual**
+YouTube es la única plataforma que monetiza tanto el contenido largo como el corto en el mismo canal. Los Shorts generan ingresos por el YouTube Partner Program (distribución del fondo de creadores) mientras los vídeos largos siguen generando AdSense. Dos flujos de ingresos, un solo canal.
+
+**4. Búsqueda integrada**
+YouTube es el segundo motor de búsqueda más grande del mundo. Los Shorts aparecen en resultados de búsqueda y en la pestaña de Shorts. Los títulos optimizados para búsqueda en Shorts capturan tráfico orgánico que TikTok no puede.
+
+---
+
+### Especificaciones Técnicas de YouTube Shorts en 2026
+
+Antes de crear Shorts, necesitas conocer los requisitos técnicos exactos:
+
+| Especificación | Requisito |
+|---------------|-----------|
+| Duración máxima | 60 segundos |
+| Relación de aspecto | 9:16 (vertical) obligatorio |
+| Resolución recomendada | 1080 × 1920 píxeles |
+| Formato de archivo | MP4, MOV, AVI, WMV, FLV, WebM |
+| Tamaño máximo | 256 GB |
+| Frame rate | 24–60 fps |
+| Requisito de Short | Menos de 60 segundos O relación 9:16 |
+
+**Regla crítica:** Un vídeo de más de 60 segundos en formato 9:16 se sube como vídeo regular, no como Short. Si quieres que se clasifique como Short, debe ser de 60 segundos o menos.
+
+**Otra regla importante:** Los Shorts no monetizan de la misma forma que los vídeos largos. Los ingresos por Short provienen del fondo de creadores de YouTube, que se distribuye basándose en visualizaciones totales del pool, no en tus visualizaciones individuales. Los CPMs de Shorts son significativamente más bajos que los de vídeos largos.
+
+---
+
+### El Algoritmo de YouTube Shorts en 2026: Qué Favorece
+
+Para que tus Shorts lleguen lejos, necesitas entender qué señales prioriza el algoritmo de YouTube:
+
+**Tasa de retención (la más importante)**
+YouTube mide qué porcentaje de espectadores ven el Short completo. Un Short de 45 segundos con 85% de retención supera a uno de 30 segundos con 60% de retención. El objetivo es crear Shorts tan buenos que la gente los vea repetidamente.
+
+**Tiempo hasta la primera visualización completa (Velocity)**
+Las primeras 24–48 horas son críticas. Si tu Short acumula visualizaciones completas rápidamente después de publicarse, el algoritmo lo amplifica. Por eso la hora de publicación importa — publica cuando tu audiencia está activa.
+
+**Engagement en bucle**
+YouTube mide cuántos espectadores ven el Short más de una vez. Los Shorts que la gente ve en bucle (por humor, por información densa, por entretenimiento) reciben distribución adicional.
+
+**CTR en el feed de Shorts**
+Cuántas personas hacen click en tu Short cuando aparece en el feed. El thumbnail no aplica en Shorts (es el primer frame), pero el título sí aparece y afecta al CTR.
+
+**Señales de canal**
+Los canales con alta frecuencia de publicación, buen ratio subscriber/view y baja tasa de abandono de canal reciben distribución preferente.
+
+---
+
+### Paso a Paso: Crear Shorts desde Vídeos Largos con IA
+
+**Paso 1: Identifica tu contenido fuente**
+
+Los mejores vídeos de YouTube para extraer Shorts:
+- Tutoriales donde cada paso es autónomo
+- Entrevistas con múltiples preguntas y respuestas concretas
+- Listas ("5 errores que...", "3 formas de...")
+- Debates o discusiones con momentos de alta energía
+- Reacciones con picos de emoción claros
+
+**Paso 2: Sube a HookCut**
+
+Puedes subir el archivo directamente o pegar el URL de YouTube. HookCut importa el vídeo sin que necesites descargarlo primero.
+
+**Paso 3: La IA detecta momentos para Shorts**
+
+El sistema analiza:
+- Energía del habla y cambios de ritmo
+- Estructura narrativa (setup → desarrollo → conclusión)
+- Densidad de información
+- Momentos con gancho fuerte en los primeros 3 segundos
+- Duración natural de cada idea (prioriza segmentos de 30–60 segundos)
+
+**Paso 4: Revisa y selecciona**
+
+Para Shorts específicamente, prioriza clips que:
+- Sean de 30–58 segundos (margen de seguridad antes de los 60 segundos)
+- Empiecen con una declaración que funcione sin contexto previo
+- Tengan un final claro — no se cortan en mitad de un pensamiento
+- Contengan al menos un dato concreto, una historia o una técnica aplicable
+
+**Paso 5: Reformateo automático a 9:16**
+
+El seguimiento facial de IA detecta al hablante y ajusta el encuadre automáticamente. Si hay múltiples personas en pantalla, el sistema sigue a quien está hablando. El resultado es un vídeo vertical que parece grabado verticalmente.
+
+**Paso 6: Subtítulos**
+
+Para Shorts educativos, el estilo Hormozi (negrita, alto contraste) tiene mejor rendimiento. Para entretenimiento, MrBeast o Fire. Selecciona y aplica en un click.
+
+**Paso 7: Exporta y sube a YouTube**
+
+YouTube acepta los mismos formatos que cualquier vídeo. Al subir, YouTube detecta automáticamente que es un Short si cumple los requisitos (menos de 60 segundos o 9:16). No necesitas hacer nada especial.
+
+---
+
+### Optimización del Título para YouTube Shorts
+
+A diferencia de TikTok donde el título tiene poco peso, en YouTube Shorts el título afecta directamente al CTR y a la búsqueda.
+
+**Fórmulas de títulos que funcionan:**
+
+Para tutoriales:
+- "Cómo [resultado] en [tiempo]"
+- "El error que comete el 90% al [acción]"
+- "[Número] trucos de [tema] que nadie te cuenta"
+
+Para entretenimiento:
+- "[Situación] y lo que pasó después"
+- "Cuando [evento inesperado] 😱"
+- "Nadie habla de esto sobre [tema]"
+
+Para motivación/negocios:
+- "Por qué [creencia común] está mal"
+- "Lo que aprendí después de [experiencia]"
+- "[Dato concreto] sobre [tema]"
+
+**Longitud óptima del título:** 40–60 caracteres. Suficiente para incluir la keyword principal y el gancho. Demasiado largo se corta en el feed.
+
+---
+
+### Cuándo Publicar Shorts: Timing en 2026
+
+El timing es más crítico en Shorts que en vídeos largos porque el algoritmo distribuye el contenido en las primeras horas de forma más intensa.
+
+**Mejores horarios generales:**
+- Mañana: 8–10h
+- Tarde: 15–17h
+- Noche: 20–22h
+
+**Frecuencia recomendada:**
+- 1 Short diario es el estándar para canales en crecimiento
+- Mínimo 3–4 Shorts semanales para mantener momentum algorítmico
+- No publicar más de 2 Shorts en el mismo día — el algoritmo prioriza uno a la vez
+
+**Días con más tráfico en YouTube:**
+Martes, miércoles y jueves consistentemente muestran mayor engagement en la mayoría de nichos. Los lunes y fines de semana varían más por audiencia.
+
+---
+
+### Monetización de YouTube Shorts en 2026
+
+La monetización de Shorts cambió significativamente cuando YouTube eliminó el fondo de Shorts original y lo integró en el YouTube Partner Program standard.
+
+**Requisitos para monetizar Shorts:**
+- 1.000 suscriptores
+- 10 millones de visualizaciones de Shorts en los últimos 90 días (o 4.000 horas de vídeo largo)
+- Canal en buen estado según las políticas de YouTube
+
+**Cuánto genera un Short:**
+Los CPMs de Shorts son significativamente más bajos que los de vídeos largos — típicamente entre $0.03 y $0.08 por 1.000 visualizaciones, comparado con $1–$10 por 1.000 visualizaciones en vídeos largos.
+
+**La estrategia inteligente:**
+No uses Shorts como fuente principal de ingresos — úsalos como canal de descubrimiento. El valor real no está en los ingresos directos del Short, sino en los nuevos suscriptores que llegan al canal y consumen tus vídeos largos, donde los CPMs son 10–100 veces más altos.
+
+---
+
+### Errores Más Comunes con YouTube Shorts
+
+**Error 1: Subir el vídeo sin revisar si es Short**
+Si subes un vídeo de 65 segundos en 9:16, no aparece como Short. Revisa siempre la duración antes de subir.
+
+**Error 2: Reutilizar Shorts de otras plataformas con marcas de agua**
+YouTube penaliza los Shorts que muestran marcas de agua de TikTok o Instagram Reels. Usa siempre la exportación limpia desde HookCut.
+
+**Error 3: Ignorar los primeros 3 segundos**
+El primer frame del Short es la miniatura. Y los primeros 3 segundos determinan si el espectador sigue viendo. Si el Short empieza con tu logo o un intro genérico, estás perdiendo a la mayoría de los espectadores antes de que empiece el contenido.
+
+**Error 4: Shorts sin conexión al canal**
+Muchos creadores publican Shorts sin mencionarlos en sus vídeos largos ni añadir cards o pantallas finales. Crea una conexión bidireccional: el Short lleva al vídeo largo, el vídeo largo menciona el Short como extra.
+
+**Error 5: Abandonar demasiado pronto**
+Los Shorts pueden tardar semanas en encontrar su audiencia. Un Short que parece no funcionar en la primera semana puede acumular millones de visualizaciones tres meses después cuando el algoritmo lo encuentra en la búsqueda. La consistencia supera al rendimiento individual.
+
+---
+
+### Resultados Típicos: Qué Esperar en Cada Etapa
+
+**Mes 1–2 (arranque):**
+100–1.000 visualizaciones por Short. El algoritmo está aprendiendo tu contenido. Tasa de retención baja (40–60% típico al principio). Foco: mantener la frecuencia de publicación.
+
+**Mes 3–4 (momentum):**
+1.000–10.000 visualizaciones por Short. Algunos Shorts empiezan a distribuirse más ampliamente. Comienzas a ver un aumento en suscriptores del canal. Tasa de retención mejorando (60–75%).
+
+**Mes 6+ (escala):**
+10.000–100.000+ visualizaciones en Shorts con buen rendimiento. El canal ve un crecimiento mensual consistente. Los mejores Shorts pueden alcanzar millones de visualizaciones.
+
+**El caso típico:** Un canal con 5.000 suscriptores que empieza a publicar Shorts diarios pasa a 15.000–25.000 suscriptores en 6 meses, con picos de Shorts virales que pueden llevar el crecimiento a 50.000+ en menos tiempo.
+
+---
+
+### Tu Back-Catalog: El Activo Ignorado
+
+Si llevas tiempo creando contenido en YouTube, tienes un archivo de vídeos largos lleno de potenciales Shorts. Cada vídeo que publicaste contiene momentos que no han llegado al formato correcto para el descubrimiento en 2026.
+
+Con HookCut puedes procesar tu back-catalog sistemáticamente:
+- Selecciona tus 20 vídeos con más visualizaciones
+- Extrae 5–8 Shorts de cada uno
+- Programa publicaciones durante los próximos 3–4 meses
+
+Eso es 100–160 Shorts de contenido que ya tienes grabado. Tres a cuatro meses de publicación diaria sin grabar nada nuevo.
+
+**[Prueba HookCut gratis — sin tarjeta de crédito](/)**`
+  },
 ];
