@@ -112,6 +112,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Comparison",
   },
+  "es/creadores-desperdician-sus-mejores-momentos": {
+    title: "Por Qué los Creadores Desperdician sus Mejores Momentos de Vídeo (y Cómo Evitarlo) | HookCut",
+    description: "El 90% de los creadores nunca reutiliza su mejor contenido. Aprende cómo extraer los momentos virales de tus vídeos largos automáticamente y multiplicar tu alcance.",
+    keywords: "reutilizar contenido de vídeo, repurposing de contenido, aprovechar vídeos largos, momentos virales de vídeo, estrategia de contenido 2026",
+    date: "2026-03-01",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 function renderBlogArticleHtml(slug: string): string | null {
