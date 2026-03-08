@@ -272,6 +272,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "video-content-strategy-coaches-course-creators": {
+    title: "Video Content Strategy for Coaches and Course Creators in 2026 (Complete Guide) | HookCut",
+    description: "The complete video content strategy for coaches and course creators in 2026. How to repurpose your expertise into short-form clips that attract clients, build authority, and grow your audience on autopilot.",
+    keywords: "video content strategy coaches course creators, content strategy for coaches 2026, video marketing for course creators, short form content for coaches, coach content repurposing",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
