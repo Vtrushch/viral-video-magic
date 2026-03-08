@@ -5166,6 +5166,11 @@ With AI face tracking, the conversion is automatic, the results look professiona
     date: "2026-03-08",
     readTime: "11 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/content-repurposing-system-autopilot" },
+      { lang: "es", href: "https://hookcut.com/blog/es/sistema-reutilizacion-contenido-automatico" },
+      { lang: "x-default", href: "https://hookcut.com/blog/content-repurposing-system-autopilot" },
+    ],
     content: `## How to Build a Content Repurposing System That Runs on Autopilot (2026)
 
 Most content creators know they should repurpose their content. Almost none of them do it consistently.
