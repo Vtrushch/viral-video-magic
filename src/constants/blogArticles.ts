@@ -6767,6 +6767,11 @@ Post consistently. Check your analytics monthly. Adjust based on your data. That
     date: "2026-03-08",
     readTime: "10 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/grow-youtube-channel-with-short-form-content" },
+      { lang: "es", href: "https://hookcut.com/blog/es/crecer-canal-youtube-con-contenido-corto" },
+      { lang: "x-default", href: "https://hookcut.com/blog/grow-youtube-channel-with-short-form-content" },
+    ],
     content: `## How to Grow a YouTube Channel with Short-Form Content in 2026
 
 YouTube Shorts has become the single most effective discovery channel for growing a YouTube audience in 2026 — but most creators are using it wrong.
