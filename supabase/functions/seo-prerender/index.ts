@@ -448,6 +448,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "es/crear-contenido-en-lote-produccion-video": {
+    title: "Cómo Crear Contenido en Lote: La Guía del Creador para Producción Masiva de Vídeo (2026) | HookCut",
+    description: "La creación de contenido en lote te permite producir semanas de vídeo en una sola sesión. Guía completa de producción masiva de vídeo para creadores en 2026.",
+    keywords: "crear contenido en lote producción vídeo, creación de contenido en lote 2026, producción masiva de vídeo creador, estrategia de batching de contenido",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
