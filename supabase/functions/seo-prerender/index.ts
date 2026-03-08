@@ -304,6 +304,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Strategy",
   },
+  "es/crecer-canal-youtube-con-contenido-corto": {
+    title: "Cómo Hacer Crecer tu Canal de YouTube con Contenido de Formato Corto en 2026 | HookCut",
+    description: "Usa YouTube Shorts para hacer crecer tu canal principal de YouTube en 2026. Estrategia probada para convertir espectadores de Shorts en suscriptores de contenido largo — con selección de clips, optimización de títulos y tácticas de promoción cruzada.",
+    keywords: "crecer canal youtube contenido corto, estrategia de crecimiento youtube shorts 2026, crecer youtube con shorts, youtube shorts a contenido largo, crecimiento canal shorts 2026",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
