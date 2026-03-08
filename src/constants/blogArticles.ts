@@ -10746,6 +10746,11 @@ That's your LinkedIn video experiment. Do it for 8 weeks before evaluating resul
     readTime: "11 min read",
     keywords: ["tiktok vs reels vs shorts 2026", "tiktok vs instagram reels 2026", "best short form video platform 2026", "youtube shorts vs tiktok", "which platform to focus on creator"],
     category: "Comparison",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/tiktok-vs-reels-vs-shorts-2026" },
+      { lang: "es", href: "https://hookcut.com/blog/es/tiktok-vs-reels-vs-shorts-2026" },
+      { lang: "x-default", href: "https://hookcut.com/blog/tiktok-vs-reels-vs-shorts-2026" },
+    ],
     content: `## TikTok vs Instagram Reels vs YouTube Shorts: Which Platform to Focus On in 2026
 
 Every creator faces the same question: with limited time and energy, which platform do you actually focus on?
