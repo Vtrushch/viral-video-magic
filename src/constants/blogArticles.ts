@@ -8312,6 +8312,11 @@ Ese es el punto de entrada. Todo lo demás se construye desde ahí.
     date: "2026-03-08",
     readTime: "10 min read",
     category: "How-To Guide",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/add-subtitles-to-videos-automatically" },
+      { lang: "es", href: "https://hookcut.com/blog/es/agregar-subtitulos-a-videos-automaticamente" },
+      { lang: "x-default", href: "https://hookcut.com/blog/add-subtitles-to-videos-automatically" },
+    ],
     content: `## How to Add Subtitles to Videos Automatically in 2026 (Complete Guide)
 
 If you're publishing video content without subtitles in 2026, you're leaving most of your potential audience behind.
