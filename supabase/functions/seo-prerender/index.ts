@@ -128,6 +128,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "es/reutilizar-episodios-de-podcast-en-clips": {
+    title: "Cómo Reutilizar Episodios de Podcast en Clips Cortos (Guía 2026) | HookCut",
+    description: "Convierte cualquier episodio de podcast en 10 clips virales en minutos. Guía paso a paso para podcasters que quieren crecer en TikTok, Reels y YouTube Shorts en 2026.",
+    keywords: "reutilizar episodios de podcast en clips, podcast a clips cortos, clips de podcast para redes sociales, herramienta clips podcast, convertir podcast en vídeo corto",
+    date: "2026-03-06",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 function renderBlogArticleHtml(slug: string): string | null {
