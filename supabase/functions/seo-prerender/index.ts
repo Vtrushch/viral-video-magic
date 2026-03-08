@@ -440,6 +440,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Comparison",
   },
+  "repurpose-online-course-content-social-media": {
+    title: "How to Repurpose Online Course Content into Social Media Clips (2026 Guide) | HookCut",
+    description: "Turn your online course into weeks of social media content. Complete guide to repurposing course lessons, modules, and Q&As into TikTok clips, YouTube Shorts, and Instagram Reels that drive enrollments in 2026.",
+    keywords: "repurpose online course content social media, online course content repurposing 2026, course to social media clips, repurpose course modules tiktok, course creator content strategy",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
