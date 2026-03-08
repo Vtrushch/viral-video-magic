@@ -240,6 +240,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "es/sistema-reutilizacion-contenido-automatico": {
+    title: "Cómo Construir un Sistema de Reutilización de Contenido que Funcione Solo (2026) | HookCut",
+    description: "Construye un sistema de reutilización de contenido que convierte automáticamente tu contenido largo en clips cortos cada semana — con mínimo trabajo manual. Framework completo 2026 para creadores y equipos.",
+    keywords: "sistema reutilizacion contenido automatico, automatizar reutilización de contenido, flujo de trabajo reutilización contenido, reutilizar contenido a escala, sistema de contenido para creadores 2026",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
