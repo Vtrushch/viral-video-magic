@@ -344,6 +344,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Strategy",
   },
+  "repurpose-youtube-videos-multiple-formats": {
+    title: "How to Repurpose YouTube Videos into Multiple Content Formats in 2026 | HookCut",
+    description: "Turn one YouTube video into 10+ pieces of content across every platform. Complete 2026 guide to repurposing YouTube videos into clips, blog posts, newsletters, carousels, and more.",
+    keywords: "repurpose youtube videos multiple formats, repurpose youtube video 2026, youtube video to multiple content, content repurposing youtube, turn youtube video into blog post",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
