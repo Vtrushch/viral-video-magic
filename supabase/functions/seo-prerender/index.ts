@@ -528,6 +528,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "es/reutilizar-episodios-podcast-video-formato-corto": {
+    title: "Cómo Reutilizar Episodios de Podcast en Vídeo de Formato Corto en 2026 (Guía Completa) | HookCut",
+    description: "Convierte cada episodio de podcast en 8–12 clips de vídeo de formato corto para TikTok, Reels y YouTube Shorts. Guía completa 2026 para reutilizar podcasts en vídeo — herramientas, flujo de trabajo y qué consigue visualizaciones.",
+    keywords: "reutilizar episodios podcast video formato corto, podcast a vídeo formato corto 2026, clips de podcast tiktok, reutilización de vídeo de podcast, convertir podcast en youtube shorts",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
