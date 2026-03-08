@@ -120,6 +120,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "content-repurposing-system-autopilot": {
+    title: "How to Build a Content Repurposing System That Runs on Autopilot (2026) | HookCut",
+    description: "Build a content repurposing system that automatically turns your long-form content into short clips every week — with minimal manual work. Complete 2026 framework for creators and teams.",
+    keywords: "content repurposing system, automate content repurposing, content repurposing workflow, repurpose content at scale, content system for creators 2026",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
   "es/convertir-video-largo-en-clips-virales": {
     title: "Cómo Convertir un Vídeo Largo en Clips Virales con IA (2026) | HookCut",
     description: "Aprende a convertir cualquier vídeo largo en 10 clips virales en 15 minutos usando IA. Guía paso a paso para YouTube, TikTok e Instagram Reels en 2026.",
