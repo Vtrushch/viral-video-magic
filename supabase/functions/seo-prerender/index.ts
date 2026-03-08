@@ -520,6 +520,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "repurpose-conference-talk-keynote-content": {
+    title: "How to Turn a Conference Talk or Keynote into 30 Days of Content (2026 Guide) | HookCut",
+    description: "One conference talk or keynote contains weeks of content. Complete 2026 guide to repurposing your presentation into clips, blog posts, social content, and lead magnets — including the exact workflow used by professional speakers.",
+    keywords: "repurpose conference talk keynote content, repurpose keynote presentation content, conference talk to social media clips, speaking content repurposing 2026, turn presentation into content",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
