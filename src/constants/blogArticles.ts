@@ -7177,6 +7177,11 @@ That's the complete setup. Everything else can be added as you grow.
     date: "2026-03-08",
     readTime: "10 min read",
     category: "How-To Guide",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/turn-live-stream-into-viral-clips" },
+      { lang: "es", href: "https://hookcut.com/blog/es/convertir-stream-en-directo-en-clips-virales" },
+      { lang: "x-default", href: "https://hookcut.com/blog/turn-live-stream-into-viral-clips" },
+    ],
     content: `## How to Turn a Live Stream into Viral Clips (2026 Complete Guide)
 
 Live streaming is one of the most content-rich formats in existence — and one of the most underutilized for content repurposing.
