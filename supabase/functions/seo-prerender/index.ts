@@ -352,6 +352,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Strategy",
   },
+  "viral-score-ai-video": {
+    title: "Viral Score: What It Is and How AI Predicts Viral Video Content (2026) | HookCut",
+    description: "What is a viral score for video? How AI tools analyze your clips and predict which moments will go viral in 2026. Includes what signals matter, how accurate predictions are, and how to use viral scoring in your workflow.",
+    keywords: "viral score ai video, viral score video, ai viral prediction, how to predict viral content, viral video ai tool 2026",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
