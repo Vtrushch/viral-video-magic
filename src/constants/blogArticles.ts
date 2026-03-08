@@ -12578,6 +12578,11 @@ Master one tool, integrate it into your workflow, then add the next.
     date: "2026-03-08",
     readTime: "10 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/short-form-video-fitness-coaches" },
+      { lang: "es", href: "https://hookcut.com/blog/es/video-formato-corto-entrenadores-fitness" },
+      { lang: "x-default", href: "https://hookcut.com/blog/short-form-video-fitness-coaches" },
+    ],
     content: `## Short-Form Video for Fitness Coaches: Get More Clients with Clips in 2026
 
 The fitness coaching industry has a visibility problem. There are more qualified coaches than ever — and most of them are invisible online.
