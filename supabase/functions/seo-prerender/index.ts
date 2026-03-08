@@ -280,6 +280,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Strategy",
   },
+  "turn-live-stream-into-viral-clips": {
+    title: "How to Turn a Live Stream into Viral Clips (2026 Complete Guide) | HookCut",
+    description: "Turn any live stream recording into viral TikTok, Reels, and YouTube Shorts clips in 2026. Step-by-step guide for Twitch streamers, YouTube Live creators, and Instagram Live hosts.",
+    keywords: "turn live stream into clips, live stream to clips 2026, repurpose twitch stream, clip live stream for tiktok, livestream highlight clips",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
