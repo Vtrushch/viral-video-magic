@@ -6366,6 +6366,11 @@ Eso es todo. Un sistema funcional de reutilización de contenido en una semana, 
     date: "2026-03-08",
     readTime: "10 min read",
     category: "How-To Guide",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/create-highlight-reel-from-long-video" },
+      { lang: "es", href: "https://hookcut.com/blog/es/crear-highlight-reel-de-videos-largos" },
+      { lang: "x-default", href: "https://hookcut.com/blog/create-highlight-reel-from-long-video" },
+    ],
     content: `## How to Create a Highlight Reel from Long Videos (2026 Guide)
 
 A highlight reel is the single most powerful piece of content you can create from a long video. Instead of asking someone to watch 60 minutes to understand your value, a 60–90 second highlight reel does the job in under two minutes — and it does it better.
