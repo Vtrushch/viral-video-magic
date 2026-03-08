@@ -88,6 +88,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Strategy",
   },
+  "go-viral-on-tiktok-with-long-form-content": {
+    title: "How to Go Viral on TikTok with Long-Form Content (2026 Strategy) | HookCut",
+    description: "Turn your long-form videos into TikTok clips that actually go viral. Proven 2026 strategy for YouTubers, podcasters, and course creators to grow on TikTok fast.",
+    keywords: "go viral on tiktok with long form content, tiktok growth strategy 2026, tiktok for content creators, repurpose content for tiktok",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
   "es/convertir-video-largo-en-clips-virales": {
     title: "Cómo Convertir un Vídeo Largo en Clips Virales con IA (2026) | HookCut",
     description: "Aprende a convertir cualquier vídeo largo en 10 clips virales en 15 minutos usando IA. Guía paso a paso para YouTube, TikTok e Instagram Reels en 2026.",
