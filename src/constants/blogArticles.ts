@@ -6971,6 +6971,11 @@ That's the complete strategy — and it costs you 20 minutes of setup.
     date: "2026-03-08",
     readTime: "11 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/video-content-strategy-coaches-course-creators" },
+      { lang: "es", href: "https://hookcut.com/blog/es/estrategia-contenido-video-coaches-creadores-cursos" },
+      { lang: "x-default", href: "https://hookcut.com/blog/video-content-strategy-coaches-course-creators" },
+    ],
     content: `## Video Content Strategy for Coaches and Course Creators in 2026 (Complete Guide)
 
 Coaches and course creators face a unique content challenge: you have deep, valuable expertise — but the formats that showcase that expertise best (long coaching sessions, detailed course modules, live Q&As) are the formats that reach the fewest new people.
