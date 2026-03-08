@@ -424,6 +424,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "grow-on-linkedin-with-video-content": {
+    title: "How to Grow on LinkedIn with Video Content in 2026 (Complete Strategy) | HookCut",
+    description: "LinkedIn video is the highest-organic-reach format on the platform in 2026. Complete strategy for growing your LinkedIn presence with native video, short clips, and repurposed long-form content.",
+    keywords: "grow on linkedin with video content, linkedin video strategy 2026, linkedin native video, linkedin short form video, linkedin content strategy video",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
