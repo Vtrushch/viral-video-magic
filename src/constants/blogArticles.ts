@@ -4741,6 +4741,11 @@ Match the tool to the specific job you need done. Most solo creators in 2026 nee
     date: "2026-03-08",
     readTime: "11 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/repurpose-webinar-into-social-media-clips" },
+      { lang: "es", href: "https://hookcut.com/blog/es/reutilizar-webinar-en-contenido-redes-sociales" },
+      { lang: "x-default", href: "https://hookcut.com/blog/repurpose-webinar-into-social-media-clips" },
+    ],
     content: `## How to Repurpose Webinars into Social Media Content (2026 Complete Guide)
 
 Your company just hosted a 60-minute webinar. 200 people attended live. You spent weeks preparing the content, building the slides, and promoting the event.
