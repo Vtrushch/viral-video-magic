@@ -296,6 +296,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "es/mejor-hora-publicar-tiktok-reels-shorts-2026": {
+    title: "La Mejor Hora para Publicar en TikTok, Reels y YouTube Shorts en 2026 (Guía con Datos) | HookCut",
+    description: "Las mejores horas para publicar en TikTok, Instagram Reels y YouTube Shorts en 2026 — basadas en datos de las plataformas. Incluye desglose día a día, consejos de zona horaria y cómo encontrar tus propios horarios óptimos.",
+    keywords: "mejor hora publicar tiktok reels shorts 2026, mejor hora publicar tiktok 2026, cuándo publicar instagram reels, mejor hora publicar youtube shorts, horario óptimo redes sociales 2026",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
