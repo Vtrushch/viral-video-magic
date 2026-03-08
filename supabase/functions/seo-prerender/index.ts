@@ -416,6 +416,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "content-repurposing-real-estate-agents": {
+    title: "Content Repurposing for Real Estate Agents: The Complete 2026 Guide | HookCut",
+    description: "Real estate agents are leaving massive reach on the table. Learn how to repurpose property tours, market updates, and client Q&As into TikTok, Reels, and YouTube Shorts that generate leads in 2026.",
+    keywords: "content repurposing real estate agents, real estate video content 2026, realtor tiktok strategy, real estate short form video, real estate social media content",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
