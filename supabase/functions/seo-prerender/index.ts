@@ -384,6 +384,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Strategy",
   },
+  "es/reutilizar-videos-youtube-multiples-formatos": {
+    title: "Cómo Reutilizar Vídeos de YouTube en Múltiples Formatos de Contenido en 2026 | HookCut",
+    description: "Convierte un vídeo de YouTube en 10+ piezas de contenido en todas las plataformas. Guía completa 2026 para reutilizar vídeos de YouTube en clips, posts de blog, newsletters, carruseles y más.",
+    keywords: "reutilizar videos youtube multiples formatos, reutilizar vídeo de youtube 2026, youtube vídeo a múltiple contenido, reutilización de contenido youtube, convertir vídeo de youtube en post de blog",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
