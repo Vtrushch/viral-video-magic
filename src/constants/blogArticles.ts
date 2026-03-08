@@ -4947,4 +4947,195 @@ That's a 33x increase in content reach for an additional 45 minutes of work.
 
 **[Try HookCut free — start repurposing your webinars today](/auth)**`
   },
+  {
+    slug: "face-tracking-vertical-video",
+    title: "Face Tracking for Vertical Video: Why It Matters and How It Works (2026)",
+    metaDescription: "Face tracking automatically keeps speakers centered in vertical 9:16 video. Learn how AI face tracking works, why it's essential for short-form content, and which tools do it best in 2026.",
+    keywords: ["face tracking vertical video", "ai face tracking video", "auto reframe video", "vertical video face tracking", "9:16 reframe ai"],
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "How-To Guide",
+    content: `## Face Tracking for Vertical Video: Why It Matters and How It Works (2026)
+
+You recorded a great interview in landscape format. The guest is on the left side of the frame, you're on the right. When you convert that video to 9:16 vertical format for TikTok, one of you gets cut off — or you end up with awkward black bars on the sides.
+
+This is the horizontal-to-vertical conversion problem that every content creator faces in 2026. And AI face tracking is the solution.
+
+---
+
+### What Is Face Tracking for Video?
+
+Face tracking (also called auto-reframe or AI reframe) is a technology that detects human faces in video and automatically adjusts the crop to keep them centered in frame as they move.
+
+For vertical video specifically, it solves this problem: you have a 16:9 landscape video, but you need a 9:16 vertical version. Simply cropping the center of the frame loses the sides — which often contain the speaker. Face tracking instead follows wherever the speaker is and adjusts the crop dynamically.
+
+The result: a video that looks like it was filmed vertically, even when the original was landscape. The speaker stays perfectly centered regardless of how they move.
+
+---
+
+### Why Face Tracking Matters More Than Ever in 2026
+
+Three trends have made face tracking essential in 2026:
+
+**1. The multi-platform reality**
+Most content creators publish on at least 3 platforms: YouTube (16:9), TikTok (9:16), Instagram Reels (9:16), LinkedIn (1:1 or 9:16). Creating separate recordings for each platform isn't practical. Face tracking allows one recording to serve all formats.
+
+**2. The short-form boom**
+Short-form content has gone from a nice-to-have to a core distribution channel. Creators who aren't publishing vertical content are invisible to billions of daily TikTok, Reels, and Shorts users. Face tracking removes the friction of converting existing content.
+
+**3. Remote recording limitations**
+Remote interview tools like Riverside, Zoom, and Squadcast typically record in 16:9. As remote podcasting and interview content has exploded, so has the need to convert that landscape footage to vertical without manual keyframing.
+
+---
+
+### How AI Face Tracking Works
+
+Modern AI face tracking follows a multi-step process:
+
+**Step 1: Face detection**
+The AI scans each frame of the video and identifies all human faces using computer vision models. It maps facial landmarks — eyes, nose, mouth, chin — to determine the precise location and size of each face.
+
+**Step 2: Subject identification**
+When multiple faces are present, the AI determines which face is the primary subject. Typically this is the largest face, the most centered face, or — in speaking scenarios — the face that's currently talking (determined by lip movement analysis).
+
+**Step 3: Frame composition**
+The AI calculates the optimal crop for a 9:16 frame that keeps the primary subject centered with appropriate headroom (space above the head) and chin room (space below the chin).
+
+**Step 4: Smooth tracking**
+As the subject moves, the crop adjusts. Good face tracking systems use motion smoothing to prevent jarring, abrupt movements in the crop. The result should feel like a camera operator naturally following the subject — not a jerky automated zoom.
+
+**Step 5: Scene change handling**
+When the subject disappears from frame (for B-roll, slide content, or cutaways), the AI maintains the last known position or defaults to a center crop until a face reappears.
+
+---
+
+### Types of Face Tracking: Single Subject vs Multi-Subject
+
+**Single subject tracking**
+Most common use case: one speaker, one camera. The AI locks onto one face and follows it throughout the video. Very accurate and produces smooth results even with significant movement.
+
+**Multi-subject tracking**
+More complex: two or more speakers in frame (podcast hosts, interview format). The AI must determine which speaker is active at any moment and prioritize accordingly.
+
+Two approaches:
+- **Dominant speaker tracking:** Follows whoever is speaking at any given moment (detected via lip movement or audio levels). Best for interview content.
+- **Ensemble tracking:** Tries to frame both speakers simultaneously, zooming out when needed to include both, zooming in when one person is clearly the focus. More complex and can produce inconsistent results.
+
+HookCut uses dominant speaker tracking for interview content, which produces the most natural-feeling vertical clips.
+
+---
+
+### Face Tracking vs Manual Reframing: What's the Difference?
+
+**Manual reframing** means a human editor watches the video and manually sets crop keyframes at each moment the speaker moves significantly. Accurate but time-consuming — 30–60 minutes per clip for an experienced editor.
+
+**Basic auto-crop** means cutting a static 9:16 crop from a fixed position (usually center frame). Fast but loses content whenever the speaker isn't centered in the original.
+
+**AI face tracking** means the crop follows the speaker dynamically with no manual input. Accurate to within 10–20 pixels in most scenarios and takes seconds rather than minutes.
+
+For creators producing 10+ clips per week, the time savings from face tracking are enormous. At 30 minutes of manual reframing per clip, 10 clips per week = 5 hours per week just on reframing. Face tracking reduces this to near zero.
+
+---
+
+### Common Face Tracking Scenarios
+
+**Scenario 1: Solo speaker, stationary**
+The easiest case. Speaker sits relatively still in frame. Face tracking maintains consistent center crop with minimal adjustments. Results: excellent.
+
+**Scenario 2: Solo speaker, moving**
+Speaker walks, gestures broadly, or moves around frame. Face tracking follows dynamically. Results: very good, with occasional slight delay on fast movements.
+
+**Scenario 3: Two speakers, side by side**
+Both faces visible simultaneously. AI prioritizes active speaker. Results: good for interviews, occasional awkward transitions when speakers overlap in speech.
+
+**Scenario 4: Speaker with slides/screen share**
+Speaker alternates between facing camera and looking at slides. AI maintains last known face position during slide sections. Results: good for clips focused on the speaker, challenging for clips where slides are central.
+
+**Scenario 5: Multiple speakers, sequential**
+Speaker A talks, then Speaker B, then back to A. AI switches between subjects based on lip movement. Results: varies — works well when speakers are clearly separated in time, struggles with rapid back-and-forth.
+
+---
+
+### What Good Face Tracking Looks Like
+
+Signs of high-quality face tracking:
+- Speaker stays centered in frame with consistent headroom
+- Camera movement feels natural, not mechanical
+- No abrupt jumps when speaker moves slightly
+- Smooth transition when switching between speakers
+- Maintains composition quality during gestures and head movements
+
+Signs of poor face tracking:
+- Speaker drifts toward edges of frame
+- Jerky, abrupt crop adjustments
+- Confusion when hands or objects pass in front of face
+- Over-correcting — constant micro-adjustments that feel unstable
+- Completely losing track of speaker during quick movements
+
+---
+
+### Face Tracking in HookCut
+
+HookCut's face tracking system uses a two-stage detection model:
+- Short-range model: High accuracy for faces within 1–2 meters of camera
+- Full-range model: Handles wider shots and moving speakers
+
+The system processes 8 frames per second of analysis to ensure smooth tracking without over-processing. Motion smoothing prevents the crop from following micro-movements — only significant repositioning triggers an adjustment.
+
+For multi-speaker content, HookCut identifies the active speaker via lip movement analysis and switches tracking subject within 0.5–1 second of a speaker change.
+
+---
+
+### Tools with Face Tracking for Vertical Video in 2026
+
+| Tool | Face tracking | Multi-speaker | Quality | Price |
+|------|--------------|---------------|---------|-------|
+| HookCut | ✅ Yes | ✅ Yes | ⭐⭐⭐⭐⭐ | From $9/mo |
+| Opus Clip | ✅ Yes | ✅ Yes | ⭐⭐⭐⭐ | From $15/mo |
+| Adobe Premiere | ✅ Yes (manual trigger) | ✅ Yes | ⭐⭐⭐⭐⭐ | $55/mo |
+| CapCut | ✅ Basic | ❌ Limited | ⭐⭐⭐ | Free |
+| Submagic | ❌ No | ❌ No | N/A | From $30/mo |
+| Descript | ❌ No | ❌ No | N/A | From $24/mo |
+
+---
+
+### When Face Tracking Isn't Enough
+
+Face tracking solves the reframing problem but doesn't solve everything. You still need to handle:
+
+**Audio quality**
+Face tracking improves the visual experience of repurposed content, but poor audio — background noise, echo, low recording level — still produces a bad clip regardless of how good the reframing is.
+
+**Lighting**
+If the original recording has poor lighting, the face tracking may struggle to consistently detect and track faces. Good lighting also simply makes the clips look better.
+
+**Content quality**
+The best face tracking in the world won't save a clip that starts mid-sentence without a hook or ends before the thought is complete. Face tracking is one part of a good clip — the content still has to be good.
+
+---
+
+### Practical Tips for Better Face Tracking Results
+
+**Record with the speaker centered**
+Face tracking works best when the speaker starts near center frame. Extreme off-center positioning requires more aggressive crop adjustment.
+
+**Use good lighting on the face**
+Adequate front lighting helps the face detection model maintain consistent tracking. Backlit subjects (window behind the speaker) are the hardest for face tracking to handle reliably.
+
+**Avoid rapid background motion**
+Fast movement in the background can occasionally confuse face detection models. Static backgrounds produce the most reliable tracking.
+
+**Keep speakers in consistent positions**
+For two-speaker content, having both speakers in fixed positions (rather than moving around) produces cleaner switching between subjects.
+
+---
+
+### The Bottom Line
+
+Face tracking is no longer a nice-to-have feature — it's a requirement for professional short-form content production in 2026. Without it, converting landscape recordings to vertical format either requires hours of manual editing or produces crops that cut off your speakers.
+
+With AI face tracking, the conversion is automatic, the results look professional, and the process takes seconds instead of hours.
+
+**[Try HookCut free — automatic face tracking included](/auth)**`
+  },
 ];
