@@ -256,6 +256,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "best-time-to-post-on-tiktok-reels-shorts-2026": {
+    title: "Best Time to Post on TikTok, Reels and YouTube Shorts in 2026 (Data-Backed Guide) | HookCut",
+    description: "The best times to post on TikTok, Instagram Reels, and YouTube Shorts in 2026 — backed by platform data. Includes day-by-day breakdown, timezone tips, and how to find your own optimal posting times.",
+    keywords: "best time to post on tiktok reels shorts 2026, best time post tiktok 2026, when to post instagram reels, best posting time youtube shorts, optimal posting schedule social media 2026",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
