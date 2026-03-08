@@ -528,6 +528,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "es/video-formato-corto-entrenadores-fitness": {
+    title: "Vídeo de Formato Corto para Entrenadores de Fitness: Consigue Más Clientes con Clips en 2026 | HookCut",
+    description: "Los entrenadores de fitness que publican vídeo de formato corto consistentemente reciben 3–5x más consultas de clientes entrantes. Guía completa 2026 de estrategia de TikTok, Reels y YouTube Shorts para entrenadores personales y coaches de fitness.",
+    keywords: "vídeo formato corto entrenadores fitness, estrategia tiktok entrenador fitness 2026, contenido de vídeo entrenador personal, instagram reels entrenador fitness, reutilización de contenido fitness",
+    date: "2026-03-08",
+    readTime: "9 min read",
+    category: "Strategy",
+  },
   "repurpose-conference-talk-keynote-content": {
     title: "How to Turn a Conference Talk or Keynote into 30 Days of Content (2026 Guide) | HookCut",
     description: "One conference talk or keynote contains weeks of content. Complete 2026 guide to repurposing your presentation into clips, blog posts, social content, and lead magnets — including the exact workflow used by professional speakers.",
