@@ -4970,6 +4970,11 @@ That's a 33x increase in content reach for an additional 45 minutes of work.
     date: "2026-03-08",
     readTime: "10 min read",
     category: "How-To Guide",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/face-tracking-vertical-video" },
+      { lang: "es", href: "https://hookcut.com/blog/es/seguimiento-facial-video-vertical" },
+      { lang: "x-default", href: "https://hookcut.com/blog/face-tracking-vertical-video" },
+    ],
     content: `## Face Tracking for Vertical Video: Why It Matters and How It Works (2026)
 
 You recorded a great interview in landscape format. The guest is on the left side of the frame, you're on the right. When you convert that video to 9:16 vertical format for TikTok, one of you gets cut off — or you end up with awkward black bars on the sides.
