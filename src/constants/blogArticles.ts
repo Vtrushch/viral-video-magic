@@ -1697,6 +1697,11 @@ HookCut lets you choose from all 6 styles — Hormozi, MrBeast, Minimal, Neon, F
     date: "2026-03-01",
     readTime: "10 min read",
     category: "How-To Guide",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/resize-video-for-tiktok-reels-shorts" },
+      { lang: "es", href: "https://hookcut.com/blog/es/redimensionar-video-para-tiktok-reels-shorts" },
+      { lang: "x-default", href: "https://hookcut.com/blog/resize-video-for-tiktok-reels-shorts" },
+    ],
     content: `## How to Resize Videos for TikTok, Reels, and YouTube Shorts in 2026 (9:16 Guide)
 
 Creating content for multiple short-form platforms means dealing with one frustrating reality: every platform has slightly different technical requirements, and getting them wrong can tank your performance.
@@ -3850,6 +3855,217 @@ El proceso más rápido para añadir subtítulos a tu contenido de TikTok:
 4. **Exporta** — los subtítulos quedan grabados en el vídeo, listos para publicar
 
 Tiempo total: menos de 2 minutos por clip.
+
+**[Prueba HookCut gratis — sin tarjeta de crédito](/)**`
+  },
+  {
+    slug: "es/redimensionar-video-para-tiktok-reels-shorts",
+    title: "Cómo Redimensionar Vídeos para TikTok, Reels y YouTube Shorts en 2026 (Guía 9:16)",
+    metaDescription: "Guía completa para redimensionar vídeos para TikTok, Instagram Reels y YouTube Shorts en 2026. Dimensiones correctas, relaciones de aspecto, tamaños de archivo y herramientas automáticas.",
+    keywords: ["redimensionar video para TikTok Reels Shorts", "formato de vídeo 9:16", "dimensiones vídeo vertical 2026", "reformatear vídeo para TikTok", "relación de aspecto vídeo TikTok Instagram"],
+    date: "2026-03-06",
+    readTime: "10 min read",
+    category: "How-To Guide",
+    lang: "es",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/resize-video-for-tiktok-reels-shorts" },
+      { lang: "es", href: "https://hookcut.com/blog/es/redimensionar-video-para-tiktok-reels-shorts" },
+      { lang: "x-default", href: "https://hookcut.com/blog/resize-video-for-tiktok-reels-shorts" },
+    ],
+    content: `## Cómo Redimensionar Vídeos para TikTok, Reels y YouTube Shorts en 2026 (Guía 9:16)
+
+Crear contenido para múltiples plataformas de vídeo corto significa enfrentarse a una realidad frustrante: cada plataforma tiene requisitos técnicos ligeramente diferentes, y equivocarse puede hundir tu rendimiento.
+
+Un vídeo horizontal publicado en TikTok sin reformatear aparece pequeño con barras negras — y el algoritmo lo entierra. Un archivo demasiado grande tarda una eternidad en subir. La resolución incorrecta se ve pixelada en las pantallas modernas de móvil.
+
+Esta guía te da cada dimensión, ratio y especificación de archivo que necesitas — más la forma más rápida de redimensionar automáticamente sin tocar ningún editor de vídeo.
+
+---
+
+### La Regla Universal: Vídeo Vertical 9:16
+
+Antes de entrar en los detalles por plataforma, la regla que aplica en todas partes: **graba y exporta en formato vertical (9:16 portrait)** para todas las plataformas de vídeo corto en 2026.
+
+9:16 significa que por cada 9 unidades de ancho hay 16 unidades de alto. En una pantalla estándar de 1080p, eso es **1080 píxeles de ancho × 1920 píxeles de alto**.
+
+Esto llena la pantalla completa del móvil cuando se ve en modo vertical — que es como se consume el 94% del contenido de TikTok, Reels y Shorts.
+
+---
+
+### Especificaciones por Plataforma en 2026
+
+#### Especificaciones de TikTok
+
+| Especificación | Requisito |
+|---------------|-----------|
+| Relación de aspecto | 9:16 (vertical), 1:1 (cuadrado), 16:9 (horizontal) |
+| Resolución recomendada | 1080 × 1920 px |
+| Resolución mínima | 720 × 1280 px |
+| Tamaño máximo de archivo | 287.6 MB (iOS), 72 MB (Android) |
+| Formatos soportados | MP4, MOV |
+| Duración máxima | 10 minutos |
+| Duración recomendada para clips | 15–60 segundos |
+| Frame rate | 24–60 fps |
+
+**Importante:** TikTok comprime los vídeos significativamente durante la subida. Exporta siempre a la máxima calidad disponible. La plataforma lo comprimirá — si empiezas con baja calidad, el resultado es terrible.
+
+---
+
+#### Especificaciones de Instagram Reels
+
+| Especificación | Requisito |
+|---------------|-----------|
+| Relación de aspecto | 9:16 (vertical) recomendado |
+| Resolución recomendada | 1080 × 1920 px |
+| Resolución mínima | 500 × 888 px |
+| Tamaño máximo de archivo | 4 GB |
+| Formatos soportados | MP4, MOV |
+| Duración máxima | 90 segundos |
+| Duración recomendada | 15–60 segundos |
+| Frame rate | 23–60 fps |
+
+**Importante:** Instagram recorta la vista previa del Reel en el feed a una proporción 4:5. Asegúrate de que los elementos visuales clave (cara, texto, producto) estén en el centro del frame y no demasiado cerca de los bordes superior o inferior.
+
+---
+
+#### Especificaciones de YouTube Shorts
+
+| Especificación | Requisito |
+|---------------|-----------|
+| Relación de aspecto | 9:16 obligatorio |
+| Resolución recomendada | 1080 × 1920 px |
+| Tamaño máximo de archivo | 256 GB |
+| Formatos soportados | MP4, MOV, AVI, WMV, FLV, WebM |
+| Duración máxima | 60 segundos |
+| Duración recomendada | 30–60 segundos |
+| Frame rate | 24–60 fps |
+
+**Importante:** Un vídeo de más de 60 segundos en formato 9:16 se sube como vídeo regular, no como Short. Si quieres que se clasifique como Short, debe ser de 60 segundos o menos.
+
+---
+
+### Qué Pasa Cuando Publicas en el Formato Incorrecto
+
+**Vídeo 16:9 horizontal en TikTok:**
+Aparece con barras negras grandes arriba y abajo. Ocupa solo el 56% de la pantalla. El algoritmo lo trata como contenido de menor calidad y reduce su distribución. Los espectadores lo saltan porque parece un vídeo de YouTube publicado por error en TikTok.
+
+**Vídeo 4:3 (formato de móvil antiguo) en Reels:**
+Barras negras en los lados. Sensación de amateur. Pierde la mayor parte del espacio de pantalla donde van los ojos de los espectadores.
+
+**Resolución incorrecta (demasiado baja):**
+Aspecto pixelado, borroso especialmente en pantallas de alta resolución de móviles modernos. YouTube e Instagram comprimen aún más durante la subida, empeorando el resultado.
+
+**9:16 correcto a 1080×1920:**
+Llena la pantalla completa. Aspecto profesional. Distribución algorítmica completa. Los espectadores se quedan y ven.
+
+---
+
+### Cómo Reformatear Vídeo Horizontal sin Perder Calidad
+
+El escenario más común: tienes footage horizontal 16:9 (de una cámara, grabación de pantalla o vídeo de YouTube) y necesitas convertirlo a 9:16.
+
+Hay tres enfoques:
+
+**Opción 1: Recorte simple (más rápido, pierde contenido)**
+Recorta los lados del vídeo para crear 9:16. Pierdes las partes izquierda y derecha del encuadre. Funciona cuando el sujeto está centrado y los bordes no contienen información importante.
+
+**Opción 2: Fondo difuminado (sin pérdida de contenido)**
+Coloca el vídeo horizontal original en el centro de un frame 9:16. Rellena la parte superior e inferior con una versión difuminada del mismo vídeo. Tiene aspecto profesional y no desperdicia contenido. Popular entre podcasters y entrevistadores.
+
+**Opción 3: Seguimiento facial con IA (mejor para contenido de talking-head)**
+La IA detecta la cara del hablante y encuadra automáticamente para mantenerlo centrado en un frame 9:16. A medida que se mueve, el encuadre se mueve con él. Sin keyframing manual.
+
+HookCut usa el seguimiento facial con IA como método de reformateo por defecto. El resultado parece grabado verticalmente aunque el original fuera horizontal.
+
+---
+
+### Paso a Paso: Redimensionar Vídeos Automáticamente con HookCut
+
+**Paso 1:** Sube tu vídeo horizontal (cualquier formato)
+
+**Paso 2:** HookCut detecta al hablante usando IA de seguimiento facial
+
+**Paso 3:** El vídeo se reformatea automáticamente a 9:16 con el hablante siempre centrado
+
+**Paso 4:** Exporta a 1080×1920 — listo para TikTok, Reels y Shorts simultáneamente
+
+**Tiempo total:** El reformateo ocurre automáticamente durante el procesamiento. Sin trabajo manual.
+
+---
+
+### Opciones de Redimensionado Manual
+
+Si prefieres control total, estas son las principales opciones:
+
+**CapCut (Gratis)**
+App fácil de usar para móvil y escritorio. Selecciona canvas 9:16, arrastra tu vídeo, recorta o añade fondo difuminado. Bien para clips esporádicos. Se vuelve tedioso a escala.
+
+**Adobe Premiere Pro**
+Configuración de secuencia → Tamaño de frame → 1080×1920. Usa el efecto Reframe para seguimiento facial automático. Potente pero caro ($55/mes) y complejo.
+
+**DaVinci Resolve (Gratis)**
+Configuración del proyecto → Resolución de timeline → 1080×1920. Recorte manual o herramientas de estabilización para pseudo-reformateo. Gratuito pero curva de aprendizaje pronunciada.
+
+**CapCut vs HookCut:**
+CapCut es gratuito y funciona bien para uno o dos clips ocasionales. Para producción consistente de 10–20 clips por semana, el reformateo automático con seguimiento facial de HookCut ahorra horas.
+
+---
+
+### Optimización del Tamaño de Archivo: Calidad Alta, Archivo Pequeño
+
+Los archivos grandes ralentizan las subidas y pueden reducir la calidad después de la compresión de la plataforma.
+
+**Usa codec H.264 o H.265**
+H.264 tiene soporte universal. H.265 (HEVC) produce archivos más pequeños a la misma calidad. Ambos son aceptados por todas las plataformas.
+
+**Exporta al bitrate correcto**
+- Para 1080p a 30fps: 8–12 Mbps es ideal
+- Para 1080p a 60fps: 12–16 Mbps
+
+**Usa formato MP4**
+Soporte universal, buena compresión. MOV también funciona pero los archivos son más grandes.
+
+**No exportes por encima de 1080p para formato corto**
+Los vídeos 4K se comprimen a 1080p por todas las plataformas de formato corto de todas formas. Solo creas archivos más grandes sin beneficio.
+
+---
+
+### Errores Comunes al Redimensionar en 2026
+
+**Error 1: Estirar en lugar de recortar**
+Estirar vídeo horizontal para llenar 9:16 hace que todo el mundo parezca demasiado alto y distorsionado. Siempre recorta o reformatea — nunca estires.
+
+**Error 2: Exportar a 720p para ahorrar tiempo**
+Los móviles modernos tienen pantallas de alta resolución. 720p se ve suave y poco profesional. Exporta siempre a 1080p como mínimo.
+
+**Error 3: No respetar las zonas seguras**
+TikTok e Instagram superponen elementos de interfaz en la parte inferior (nombre de usuario, descripción) y lado derecho (botones de like/comentarios). Mantén el contenido visual importante alejado de estas áreas — aproximadamente el 20% inferior y el 15% derecho del frame.
+
+**Error 4: Frame rates inconsistentes**
+Si tu vídeo original es a 30fps, exporta a 30fps. Mezclar frame rates crea tartamudeo.
+
+**Error 5: Redimensionar después de añadir subtítulos en la posición incorrecta**
+Siempre reformatea primero, luego añade subtítulos. Si añades subtítulos a un vídeo horizontal y luego redimensionas, los subtítulos acaban en la posición incorrecta.
+
+---
+
+### Referencia Rápida: Especificaciones de Vídeo
+
+| Plataforma | Resolución | Relación | Duración máx. | Tamaño máx. | Formato |
+|-----------|-----------|----------|--------------|-------------|---------|
+| TikTok | 1080×1920 | 9:16 | 10 min | 287.6 MB | MP4/MOV |
+| Instagram Reels | 1080×1920 | 9:16 | 90 seg | 4 GB | MP4/MOV |
+| YouTube Shorts | 1080×1920 | 9:16 | 60 seg | 256 GB | MP4/MOV |
+| Facebook Reels | 1080×1920 | 9:16 | 90 seg | 4 GB | MP4/MOV |
+| Snapchat Spotlight | 1080×1920 | 9:16 | 60 seg | 32 MB | MP4/MOV |
+
+---
+
+### Reformatea Una Vez, Publica en Todas Partes
+
+La estrategia más inteligente en 2026: reformatea una vez a 9:16 a 1080×1920, luego publica el mismo archivo en TikTok, Reels y Shorts simultáneamente. Un vídeo. Tres plataformas. Máximo alcance sin trabajo extra.
+
+HookCut exporta cada clip en el formato correcto para las tres plataformas automáticamente. Sin redimensionado manual. Sin complicaciones de formato.
 
 **[Prueba HookCut gratis — sin tarjeta de crédito](/)**`
   },

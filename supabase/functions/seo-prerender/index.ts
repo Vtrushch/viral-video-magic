@@ -152,6 +152,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "es/redimensionar-video-para-tiktok-reels-shorts": {
+    title: "Cómo Redimensionar Vídeos para TikTok, Reels y YouTube Shorts en 2026 (Guía 9:16) | HookCut",
+    description: "Guía completa para redimensionar vídeos para TikTok, Instagram Reels y YouTube Shorts en 2026. Dimensiones correctas, relaciones de aspecto, tamaños de archivo y herramientas automáticas.",
+    keywords: "redimensionar video para TikTok Reels Shorts, formato de vídeo 9:16, dimensiones vídeo vertical 2026, reformatear vídeo para TikTok, relación de aspecto vídeo TikTok Instagram",
+    date: "2026-03-06",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 function renderBlogArticleHtml(slug: string): string | null {
