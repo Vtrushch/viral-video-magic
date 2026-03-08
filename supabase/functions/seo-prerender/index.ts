@@ -400,6 +400,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "es/videos-formato-corto-sin-mostrar-cara": {
+    title: "Cómo Crear Contenido de Vídeo de Formato Corto Sin Mostrar tu Cara (Guía 2026) | HookCut",
+    description: "Construye una presencia exitosa de vídeo de formato corto en TikTok, Reels y YouTube Shorts sin mostrar tu cara. 10 formatos probados, herramientas y estrategias para creadores faceless en 2026.",
+    keywords: "videos formato corto sin mostrar cara, canal de youtube faceless 2026, tiktok sin mostrar la cara, vídeo de formato corto sin cara, estrategia de creador anónimo",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
