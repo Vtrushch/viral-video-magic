@@ -10554,6 +10554,11 @@ That's your real estate content system — started in one afternoon.
     readTime: "10 min read",
     keywords: ["grow on linkedin with video content", "linkedin video strategy 2026", "linkedin native video", "linkedin short form video", "linkedin content strategy video"],
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/grow-on-linkedin-with-video-content" },
+      { lang: "es", href: "https://hookcut.com/blog/es/crecer-en-linkedin-con-contenido-de-video" },
+      { lang: "x-default", href: "https://hookcut.com/blog/grow-on-linkedin-with-video-content" },
+    ],
     content: `## How to Grow on LinkedIn with Video Content in 2026 (Complete Strategy)
 
 LinkedIn is going through the most significant algorithmic shift in its history in 2026. For the past decade, text posts — the "carousel post" era — dominated reach. In 2026, video is the highest-reach format on the platform by a significant margin.
