@@ -6556,6 +6556,11 @@ HookCut's Highlight Reel feature is the fastest way to go from raw long-form vid
     date: "2026-03-08",
     readTime: "11 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/best-time-to-post-on-tiktok-reels-shorts-2026" },
+      { lang: "es", href: "https://hookcut.com/blog/es/mejor-hora-publicar-tiktok-reels-shorts-2026" },
+      { lang: "x-default", href: "https://hookcut.com/blog/best-time-to-post-on-tiktok-reels-shorts-2026" },
+    ],
     content: `## Best Time to Post on TikTok, Reels and YouTube Shorts in 2026 (Data-Backed Guide)
 
 Timing matters on every short-form platform — but not in the way most creators think.
