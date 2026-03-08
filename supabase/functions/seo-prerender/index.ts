@@ -336,6 +336,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "short-form-video-marketing-saas": {
+    title: "Short-Form Video Marketing Strategy for SaaS Companies in 2026 | HookCut",
+    description: "How SaaS companies use short-form video to drive trials, reduce churn, and build brand authority in 2026. Complete strategy for B2B SaaS marketing teams and solo founders.",
+    keywords: "short form video marketing saas, saas video marketing 2026, b2b short form video, saas content strategy video, tiktok for saas companies",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
