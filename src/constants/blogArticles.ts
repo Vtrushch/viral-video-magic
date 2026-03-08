@@ -10927,6 +10927,11 @@ The optimal workflow: create content optimized for TikTok first. Cross-post to S
     readTime: "10 min read",
     keywords: ["repurpose online course content social media", "online course content repurposing 2026", "course to social media clips", "repurpose course modules tiktok", "course creator content strategy"],
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/repurpose-online-course-content-social-media" },
+      { lang: "es", href: "https://hookcut.com/blog/es/reutilizar-contenido-curso-online-redes-sociales" },
+      { lang: "x-default", href: "https://hookcut.com/blog/repurpose-online-course-content-social-media" },
+    ],
     content: `## How to Repurpose Online Course Content into Social Media Clips (2026 Guide)
 
 Your online course might be the most underutilized content asset you own.
