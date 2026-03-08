@@ -328,6 +328,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "add-subtitles-to-videos-automatically": {
+    title: "How to Add Subtitles to Videos Automatically in 2026 (Complete Guide) | HookCut",
+    description: "Add subtitles to any video automatically in 2026 using AI. Covers accuracy, caption styles, positioning, burned-in vs soft subs, and the best tools for TikTok, Reels, and YouTube Shorts.",
+    keywords: "add subtitles to videos automatically, automatic subtitles video 2026, ai captions video, auto caption generator, burned in subtitles video",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
