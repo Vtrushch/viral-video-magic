@@ -8304,4 +8304,202 @@ Ese es el punto de entrada. Todo lo demás se construye desde ahí.
 
 **[Prueba HookCut gratis — sin tarjeta de crédito](/auth)**`
   },
+  {
+    slug: "add-subtitles-to-videos-automatically",
+    title: "How to Add Subtitles to Videos Automatically in 2026 (Complete Guide)",
+    metaDescription: "Add subtitles to any video automatically in 2026 using AI. Covers accuracy, caption styles, positioning, burned-in vs soft subs, and the best tools for TikTok, Reels, and YouTube Shorts.",
+    keywords: ["add subtitles to videos automatically", "automatic subtitles video 2026", "ai captions video", "auto caption generator", "burned in subtitles video"],
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "How-To Guide",
+    content: `## How to Add Subtitles to Videos Automatically in 2026 (Complete Guide)
+
+If you're publishing video content without subtitles in 2026, you're leaving most of your potential audience behind.
+
+The numbers are stark: 85% of social media videos are watched without sound. On TikTok specifically, 69% of users watch with sound off in public settings. On LinkedIn, the figure is even higher. Without subtitles, the majority of your viewers see moving images and nothing else.
+
+Subtitles are no longer an accessibility feature — they're a core component of effective video content. This guide covers everything you need to know about adding them automatically in 2026.
+
+---
+
+### Types of Subtitles: What's the Difference?
+
+Before choosing a tool, understand the two main types of subtitles:
+
+**Burned-in subtitles (hardcoded)**
+The subtitle text is permanently embedded into the video file. You can't remove them, resize them, or turn them off — they're part of the video itself.
+
+Best for: social media content (TikTok, Reels, Shorts) where you want guaranteed display across all devices and apps, and where you want to control the exact visual style.
+
+**Soft subtitles (SRT/VTT files)**
+Separate text files that are attached to the video but not embedded. Viewers can turn them on and off. Platforms like YouTube, Netflix, and Vimeo support soft subtitles.
+
+Best for: YouTube long-form videos, courses, and any platform that supports subtitle tracks natively.
+
+For short-form social media content in 2026, burned-in subtitles are the standard. They're what every major creator uses on TikTok, Reels, and Shorts.
+
+---
+
+### Why Automatic Subtitles Are Accurate Enough in 2026
+
+Three years ago, automatic subtitle accuracy was a legitimate concern. AI transcription made enough errors that manual review was essential for every video.
+
+In 2026, the accuracy landscape has changed significantly. Modern AI transcription models achieve 95–98% word-level accuracy on clear audio — which means on a 60-second clip, you might see 1–3 word errors that need manual correction.
+
+**Factors that affect accuracy:**
+- **Audio clarity:** The single biggest factor. A good USB microphone in a quiet room produces near-perfect transcription. A laptop microphone in a noisy coffee shop produces much lower accuracy.
+- **Accent and dialect:** Modern models handle most major English accents well. Unusual accents, strong regional dialects, or non-standard speech patterns may reduce accuracy.
+- **Technical vocabulary:** Industry jargon, brand names, and technical terms are more likely to be misrecognized.
+- **Multiple speakers:** Transcription accuracy drops slightly when multiple people are speaking, especially simultaneously.
+
+For most creators recording in reasonable conditions, automatic subtitles require minimal correction. The 5–10 minutes of review time is far less than the 30–60 minutes of manual subtitle creation.
+
+---
+
+### Step-by-Step: Adding Automatic Subtitles with HookCut
+
+**Step 1: Upload your video**
+HookCut accepts MP4, MOV, and most common video formats. Upload directly from your computer or paste a YouTube URL.
+
+**Step 2: Transcription happens automatically**
+HookCut's AI transcribes your audio in the background while you review the clip suggestions. No separate transcription step required.
+
+**Step 3: Choose your caption style**
+HookCut offers 6 built-in caption styles:
+- **Hormozi** — Bold white text, black outline. The most widely used style for educational and opinion content. High readability on any background.
+- **MrBeast** — Colorful, animated. Words appear with bouncing or dynamic effects. Best for entertainment content.
+- **Minimal** — Clean sans-serif, subtle. Best for lifestyle, fashion, and premium brand content.
+- **Neon** — Glowing text effect. Best for gaming, music, and high-energy content.
+- **Fire** — Word-by-word animation with flame or flash effects. Best for viral hook content.
+- **Elegant** — Script or serif font. Best for lifestyle, food, and travel content.
+
+**Step 4: Customize if needed**
+Adjust font color, background color, position (top, center, or bottom of frame), and size. HookCut applies your settings consistently across all clips in a session.
+
+**Step 5: Review and correct errors**
+HookCut shows you a subtitle preview. Correct any transcription errors by clicking on the text and editing directly. For 95%+ accurate transcription, this typically takes 2–3 minutes per clip.
+
+**Step 6: Export**
+Subtitles are burned into the exported video file. The result is a subtitle-embedded video ready to upload to any platform.
+
+---
+
+### Caption Positioning: Where to Place Subtitles
+
+Caption position is one of the most common mistakes in short-form content. Platform interfaces overlay elements on your video — if your subtitles sit in the same space, they'll be unreadable.
+
+**TikTok:**
+- Bottom 20% of the frame: Covered by username, description, and hashtags
+- Right side: Covered by like/comment/share buttons
+- **Best position:** Center of frame, slightly above the midpoint
+
+**Instagram Reels:**
+- Bottom 25% of frame: Covered by caption, music info, and action buttons
+- **Best position:** Center frame or upper center
+
+**YouTube Shorts:**
+- Bottom 15%: Covered by description
+- **Best position:** Center frame
+
+HookCut's default caption position is center frame — optimized for all three platforms simultaneously.
+
+---
+
+### Font Size: Bigger Than You Think
+
+A consistent mistake among new creators: subtitles that are too small to read comfortably on a mobile screen.
+
+Test this: open one of your own videos on your phone and hold it at arm's length. Can you read the subtitles without squinting? If not, they're too small.
+
+**Recommended font sizes for 1080×1920 video:**
+- Short words (1–4 characters): 85–100pt
+- Medium words (5–8 characters): 70–85pt
+- Long words (9+ characters): 55–70pt
+
+HookCut automatically adjusts font size based on word length to maintain readability without words overflowing the frame.
+
+---
+
+### The One-Word-at-a-Time vs. Full Phrase Debate
+
+Two dominant approaches to subtitle display timing:
+
+**Word by word (or 2–3 words at a time)**
+Each word or small group of words appears as it's spoken. Creates a reading rhythm that keeps viewers' eyes on the screen. Feels more dynamic and modern. Associated with the Hormozi style.
+
+Higher completion rate. Viewers subconsciously read along, which keeps attention on the video. Best for fast-paced, punchy content.
+
+**Full phrases or sentences**
+The complete sentence appears at once and stays on screen until the next one. Easier to read for complex or technical content. Feels more like traditional subtitles.
+
+Better for slower speech, educational content with complex ideas, and content where the viewer needs time to process what's being said.
+
+**HookCut's default:** 2–3 words at a time for the Hormozi, MrBeast, Neon, and Fire styles. Full phrases for the Minimal and Elegant styles. You can override this in settings.
+
+---
+
+### Subtitle Accuracy: How to Fix Errors Fast
+
+Even at 97% accuracy, a 60-second clip at 150 words per minute has roughly 5 words that might be misrecognized. Here's how to review efficiently:
+
+**Listen and read simultaneously**
+Play the video and watch the subtitle text. Your eye will catch mismatches between what you hear and what appears on screen much faster than reading the transcript alone.
+
+**Focus on key terms first**
+Proper nouns (names, brand names, product names), technical terms, and numbers are the most common error points. Search these first.
+
+**One pass is enough**
+Don't review the same clip three times looking for perfection. One careful pass catches 90% of errors. The remaining 1–2 errors that slip through are rarely noticed by viewers.
+
+---
+
+### Multi-Language Subtitles
+
+For creators with global audiences, automatic subtitle translation is a major opportunity in 2026.
+
+The workflow:
+1. Generate accurate English subtitles
+2. Use an AI translation tool (DeepL, Google Translate, or built-in platform tools) to generate subtitle files in target languages
+3. Review translation for accuracy (native speaker review is ideal)
+4. Export separate videos with burned-in subtitles for each language
+
+For Spanish content specifically, this approach allows one English video to become both an English and Spanish asset with roughly 30 minutes of additional work.
+
+---
+
+### Platform-Native Subtitle Tools vs. Dedicated Tools
+
+Every major platform now offers some form of automatic captions. Here's how they compare:
+
+| Tool | Accuracy | Styles | Burned-in | Price |
+|------|----------|--------|-----------|-------|
+| HookCut | ⭐⭐⭐⭐⭐ | 6 styles + custom | ✅ Yes | From $9/mo |
+| CapCut | ⭐⭐⭐⭐ | Templates | ✅ Yes | Free |
+| TikTok native | ⭐⭐⭐ | 1 basic style | ❌ Soft only | Free |
+| Instagram native | ⭐⭐⭐ | 1 basic style | ❌ Soft only | Free |
+| YouTube native | ⭐⭐⭐⭐ | Basic | ❌ Soft only | Free |
+| Submagic | ⭐⭐⭐⭐⭐ | 10+ styles | ✅ Yes | From $30/mo |
+| Descript | ⭐⭐⭐⭐ | Basic | ✅ Yes | From $24/mo |
+
+**For social media creators:** HookCut or CapCut offer the best combination of accuracy, style options, and burned-in output at accessible price points.
+
+**For long-form YouTube:** YouTube's native auto-captions are accurate enough and create searchable transcripts automatically — no additional tool needed.
+
+---
+
+### The ROI of Adding Subtitles
+
+If you're not adding subtitles to your short-form content, this is the impact:
+
+- **+40% average view duration** (viewers who can read while watching stay longer)
+- **+26% completion rate** vs. videos without subtitles
+- **+80% reach** (content reaches viewers who can't use audio in their current context)
+- **Accessibility:** An estimated 430 million people globally have disabling hearing loss — subtitles make your content accessible to an audience most creators ignore entirely
+
+The time cost: 5–10 minutes of subtitle review per clip using AI-generated captions. The return: significantly higher performance on every clip you publish.
+
+Adding subtitles is the highest ROI improvement most creators can make to their short-form content workflow.
+
+**[Try HookCut free — automatic subtitles included on every clip](/auth)**`
+  },
 ];
