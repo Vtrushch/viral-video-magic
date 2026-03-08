@@ -232,6 +232,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Strategy",
   },
+  "es/seguimiento-facial-video-vertical": {
+    title: "Seguimiento Facial para Vídeo Vertical: Por Qué Importa y Cómo Funciona (2026) | HookCut",
+    description: "El seguimiento facial mantiene automáticamente a los hablantes centrados en vídeo vertical 9:16. Aprende cómo funciona el seguimiento facial con IA, por qué es esencial para el contenido de formato corto y qué herramientas lo hacen mejor en 2026.",
+    keywords: "seguimiento facial video vertical, seguimiento facial ia vídeo, reencuadre automático vídeo, seguimiento facial vídeo vertical, reencuadre 9:16 ia",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {

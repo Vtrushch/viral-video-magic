@@ -4970,6 +4970,11 @@ That's a 33x increase in content reach for an additional 45 minutes of work.
     date: "2026-03-08",
     readTime: "10 min read",
     category: "How-To Guide",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/face-tracking-vertical-video" },
+      { lang: "es", href: "https://hookcut.com/blog/es/seguimiento-facial-video-vertical" },
+      { lang: "x-default", href: "https://hookcut.com/blog/face-tracking-vertical-video" },
+    ],
     content: `## Face Tracking for Vertical Video: Why It Matters and How It Works (2026)
 
 You recorded a great interview in landscape format. The guest is on the left side of the frame, you're on the right. When you convert that video to 9:16 vertical format for TikTok, one of you gets cut off — or you end up with awkward black bars on the sides.
@@ -5946,5 +5951,163 @@ Con reutilización: 500 visualizaciones de la grabación + 8 clips × 2.000 visu
 Eso es un aumento de 33x en el alcance del contenido por 45 minutos adicionales de trabajo.
 
 **[Prueba HookCut gratis — empieza a reutilizar tus webinars hoy](/auth)**`
+  },
+  {
+    slug: "es/seguimiento-facial-video-vertical",
+    title: "Seguimiento Facial para Vídeo Vertical: Por Qué Importa y Cómo Funciona (2026)",
+    metaDescription: "El seguimiento facial mantiene automáticamente a los hablantes centrados en vídeo vertical 9:16. Aprende cómo funciona con IA y qué herramientas lo hacen mejor en 2026.",
+    keywords: ["seguimiento facial video vertical", "seguimiento facial ia vídeo", "reencuadre automático vídeo", "seguimiento facial vídeo vertical", "reencuadre 9:16 ia"],
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "How-To Guide",
+    lang: "es",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/face-tracking-vertical-video" },
+      { lang: "es", href: "https://hookcut.com/blog/es/seguimiento-facial-video-vertical" },
+      { lang: "x-default", href: "https://hookcut.com/blog/face-tracking-vertical-video" },
+    ],
+    content: `## Seguimiento Facial para Vídeo Vertical: Por Qué Importa y Cómo Funciona (2026)
+
+Grabaste una gran entrevista en formato horizontal. El invitado está en el lado izquierdo del encuadre, tú estás a la derecha. Cuando conviertes ese vídeo al formato vertical 9:16 para TikTok, uno de los dos queda cortado — o terminas con barras negras incómodas en los lados.
+
+Este es el problema de conversión horizontal a vertical que enfrenta todo creador de contenido en 2026. Y el seguimiento facial con IA es la solución.
+
+---
+
+### ¿Qué Es el Seguimiento Facial para Vídeo?
+
+El seguimiento facial (también llamado reencuadre automático o reencuadre con IA) es una tecnología que detecta rostros humanos en vídeo y ajusta automáticamente el recorte para mantenerlos centrados en el encuadre mientras se mueven.
+
+Para el vídeo vertical específicamente, resuelve este problema: tienes un vídeo horizontal 16:9, pero necesitas una versión vertical 9:16. Simplemente recortar el centro del encuadre pierde los lados — que a menudo contienen al hablante. El seguimiento facial, en cambio, sigue dónde está el hablante y ajusta el recorte dinámicamente.
+
+El resultado: un vídeo que parece grabado verticalmente, incluso cuando el original era horizontal. El hablante permanece perfectamente centrado independientemente de cómo se mueva.
+
+---
+
+### Por Qué el Seguimiento Facial Importa Más que Nunca en 2026
+
+**1. La realidad multiplataforma**
+La mayoría de creadores de contenido publican en al menos 3 plataformas: YouTube (16:9), TikTok (9:16), Instagram Reels (9:16), LinkedIn (1:1 o 9:16). Crear grabaciones separadas para cada plataforma no es práctico. El seguimiento facial permite que una grabación sirva para todos los formatos.
+
+**2. El boom del formato corto**
+El contenido de formato corto ha pasado de ser algo opcional a ser un canal de distribución principal. Los creadores que no publican contenido vertical son invisibles para miles de millones de usuarios diarios de TikTok, Reels y Shorts.
+
+**3. Limitaciones de la grabación remota**
+Las herramientas de grabación remota como Riverside, Zoom y Squadcast típicamente graban en 16:9. A medida que el podcasting y las entrevistas remotas han explotado, también lo ha hecho la necesidad de convertir ese metraje horizontal a vertical sin keyframing manual.
+
+---
+
+### Cómo Funciona el Seguimiento Facial con IA
+
+**Paso 1: Detección de rostros**
+La IA escanea cada fotograma del vídeo e identifica todos los rostros humanos usando modelos de visión por computador. Mapea puntos de referencia faciales — ojos, nariz, boca, mentón — para determinar la ubicación precisa y el tamaño de cada rostro.
+
+**Paso 2: Identificación del sujeto**
+Cuando hay múltiples rostros presentes, la IA determina cuál es el sujeto principal. Típicamente es el rostro más grande, el más centrado, o — en escenarios de habla — el rostro que está hablando actualmente (determinado por análisis del movimiento de los labios).
+
+**Paso 3: Composición del encuadre**
+La IA calcula el recorte óptimo para un encuadre 9:16 que mantiene al sujeto principal centrado con el espacio de cabeza apropiado.
+
+**Paso 4: Seguimiento suavizado**
+A medida que el sujeto se mueve, el recorte se ajusta. Los buenos sistemas de seguimiento facial usan suavizado de movimiento para evitar movimientos abruptos y bruscos en el recorte. El resultado debe sentirse como un operador de cámara siguiendo naturalmente al sujeto.
+
+**Paso 5: Manejo de cambios de escena**
+Cuando el sujeto desaparece del encuadre (por B-roll, contenido de diapositivas o cortes), la IA mantiene la última posición conocida o vuelve a un recorte centrado hasta que un rostro reaparezca.
+
+---
+
+### Tipos de Seguimiento Facial: Sujeto Único vs Múltiples Sujetos
+
+**Seguimiento de sujeto único**
+Caso de uso más común: un hablante, una cámara. La IA se bloquea en un rostro y lo sigue durante todo el vídeo. Muy preciso y produce resultados suaves incluso con movimiento significativo.
+
+**Seguimiento de múltiples sujetos**
+Más complejo: dos o más hablantes en el encuadre (presentadores de podcast, formato de entrevista). La IA debe determinar qué hablante está activo en cada momento y priorizar en consecuencia.
+
+Dos enfoques:
+- **Seguimiento del hablante dominante:** Sigue a quien esté hablando en cualquier momento (detectado mediante movimiento de labios o niveles de audio). Mejor para contenido de entrevistas.
+- **Seguimiento de conjunto:** Intenta encuadrar a ambos hablantes simultáneamente. Más complejo y puede producir resultados inconsistentes.
+
+HookCut usa seguimiento del hablante dominante para contenido de entrevistas, lo que produce los clips verticales que se sienten más naturales.
+
+---
+
+### Seguimiento Facial vs Reencuadre Manual: ¿Cuál es la Diferencia?
+
+**Reencuadre manual** significa que un editor humano ve el vídeo y establece manualmente keyframes de recorte en cada momento en que el hablante se mueve significativamente. Preciso pero requiere mucho tiempo — 30–60 minutos por clip para un editor experimentado.
+
+**Recorte automático básico** significa cortar un recorte 9:16 estático desde una posición fija (generalmente el centro del encuadre). Rápido pero pierde contenido siempre que el hablante no esté centrado en el original.
+
+**Seguimiento facial con IA** significa que el recorte sigue al hablante dinámicamente sin ninguna entrada manual. Preciso dentro de 10–20 píxeles en la mayoría de escenarios y tarda segundos en lugar de minutos.
+
+Para creadores que producen 10+ clips por semana, el ahorro de tiempo del seguimiento facial es enorme. A 30 minutos de reencuadre manual por clip, 10 clips por semana = 5 horas por semana solo en reencuadre. El seguimiento facial reduce esto a casi cero.
+
+---
+
+### Escenarios Comunes de Seguimiento Facial
+
+| Escenario | Resultado esperado |
+|-----------|-------------------|
+| Hablante individual, estático | Excelente — recorte centrado consistente |
+| Hablante individual, en movimiento | Muy bueno — seguimiento dinámico suave |
+| Dos hablantes, lado a lado | Bueno — prioriza al hablante activo |
+| Hablante con diapositivas | Bueno para clips enfocados en el hablante |
+| Múltiples hablantes, secuencial | Variable — funciona bien con hablantes claramente separados |
+
+---
+
+### Señales de Seguimiento Facial de Alta Calidad
+
+**Buenas señales:**
+- El hablante permanece centrado en el encuadre con espacio de cabeza consistente
+- El movimiento de la cámara se siente natural, no mecánico
+- Sin saltos bruscos cuando el hablante se mueve ligeramente
+- Transición suave al cambiar entre hablantes
+- Mantiene la calidad de composición durante gestos y movimientos de cabeza
+
+**Señales de seguimiento deficiente:**
+- El hablante se desplaza hacia los bordes del encuadre
+- Ajustes de recorte bruscos y abruptos
+- Confusión cuando las manos u objetos pasan frente al rostro
+- Sobre-corrección — micro-ajustes constantes que se sienten inestables
+
+---
+
+### Herramientas con Seguimiento Facial para Vídeo Vertical en 2026
+
+| Herramienta | Seguimiento facial | Múltiples hablantes | Calidad | Precio |
+|-------------|-------------------|--------------------|---------|----|
+| HookCut | ✅ Sí | ✅ Sí | ⭐⭐⭐⭐⭐ | Desde $9/mes |
+| Opus Clip | ✅ Sí | ✅ Sí | ⭐⭐⭐⭐ | Desde $15/mes |
+| Adobe Premiere | ✅ Sí (manual) | ✅ Sí | ⭐⭐⭐⭐⭐ | $55/mes |
+| CapCut | ✅ Básico | ❌ Limitado | ⭐⭐⭐ | Gratis |
+| Submagic | ❌ No | ❌ No | N/A | Desde $30/mes |
+| Descript | ❌ No | ❌ No | N/A | Desde $24/mes |
+
+---
+
+### Consejos Prácticos para Mejores Resultados de Seguimiento Facial
+
+**Graba con el hablante centrado**
+El seguimiento facial funciona mejor cuando el hablante empieza cerca del centro del encuadre. El posicionamiento extremamente descentrado requiere ajustes de recorte más agresivos.
+
+**Usa buena iluminación en el rostro**
+La iluminación frontal adecuada ayuda al modelo de detección de rostros a mantener un seguimiento consistente. Los sujetos con contraluz (ventana detrás del hablante) son los más difíciles de manejar de forma fiable.
+
+**Evita movimiento de fondo rápido**
+El movimiento rápido en el fondo puede ocasionalmente confundir los modelos de detección de rostros. Los fondos estáticos producen el seguimiento más fiable.
+
+**Mantén a los hablantes en posiciones consistentes**
+Para contenido con dos hablantes, tener a ambos en posiciones fijas produce una conmutación más limpia entre sujetos.
+
+---
+
+### La Conclusión
+
+El seguimiento facial ya no es una característica opcional — es un requisito para la producción profesional de contenido de formato corto en 2026. Sin él, convertir grabaciones horizontales a formato vertical requiere horas de edición manual o produce recortes que cortan a tus hablantes.
+
+Con el seguimiento facial con IA, la conversión es automática, los resultados parecen profesionales y el proceso tarda segundos en lugar de horas.
+
+**[Prueba HookCut gratis — seguimiento facial automático incluido](/auth)**`
   },
 ];
