@@ -536,6 +536,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "es/estrategia-contenido-video-creadores-finanzas-personales": {
+    title: "Estrategia de Contenido de Vídeo para Creadores de Finanzas Personales en 2026 | HookCut",
+    description: "Las finanzas personales son uno de los nichos con mejor rendimiento en vídeo de formato corto en 2026. Estrategia completa de vídeo para creadores de finanzas — qué formatos funcionan, prioridades de plataforma, consejos de cumplimiento y cómo reutilizar eficientemente.",
+    keywords: "estrategia contenido video creadores finanzas personales, youtube shorts finanzas personales 2026, estrategia contenido tiktok finanzas, creador de fintech estrategia vídeo, creador de contenido de dinero 2026",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
