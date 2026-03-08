@@ -504,6 +504,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "use-ai-to-create-content-faster": {
+    title: "How to Use AI to Create Content Faster in 2026 (Complete Workflow) | HookCut",
+    description: "The complete AI content creation workflow for 2026. How to use AI tools for ideation, scripting, video editing, subtitles, repurposing, and scheduling — and cut your content production time in half.",
+    keywords: "use ai to create content faster, ai content creation workflow 2026, ai tools for content creators, ai video content creation, speed up content creation ai",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "How-To Guide",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
