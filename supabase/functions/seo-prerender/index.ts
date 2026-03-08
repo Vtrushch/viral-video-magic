@@ -472,6 +472,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "es/tiktok-vs-reels-vs-shorts-2026": {
+    title: "TikTok vs Instagram Reels vs YouTube Shorts: En Qué Plataforma Enfocarte en 2026 | HookCut",
+    description: "TikTok vs Reels vs YouTube Shorts en 2026 — una comparación completa y honesta de alcance, potencial de crecimiento, monetización y calidad de audiencia. Incluye un framework de decisión para elegir por dónde empezar.",
+    keywords: "tiktok vs reels vs shorts 2026, tiktok vs instagram reels 2026, mejor plataforma vídeo corto 2026, youtube shorts vs tiktok, en qué plataforma enfocarse creador",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Comparison",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
