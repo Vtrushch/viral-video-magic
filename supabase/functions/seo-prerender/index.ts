@@ -144,6 +144,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "es/mejores-estilos-de-subtitulos-para-tiktok": {
+    title: "Los Mejores Estilos de Subtítulos para TikTok en 2026 (Con Datos y Ejemplos) | HookCut",
+    description: "Los mejores estilos de subtítulos para TikTok en 2026 ordenados por engagement. Estilo Hormozi, MrBeast, Minimal, Neon y más — con datos reales sobre cuál rinde mejor.",
+    keywords: "mejores estilos de subtítulos para TikTok, estilos de subtítulos TikTok 2026, subtítulos animados TikTok, tipos de subtítulos vídeo corto, subtítulos para videos virales",
+    date: "2026-03-06",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 function renderBlogArticleHtml(slug: string): string | null {
