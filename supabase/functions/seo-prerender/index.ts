@@ -208,6 +208,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Strategy",
   },
+  "es/como-hacerse-viral-en-tiktok-con-contenido-largo": {
+    title: "Cómo Hacerse Viral en TikTok con Contenido Largo (Estrategia 2026) | HookCut",
+    description: "Convierte tus vídeos largos en clips de TikTok que realmente se vuelven virales. Estrategia probada 2026 para YouTubers, podcasters y creadores de cursos que quieren crecer en TikTok.",
+    keywords: "hacerse viral en tiktok con contenido largo, estrategia tiktok 2026, tiktok para creadores, reutilizar contenido para tiktok, algoritmo tiktok 2026",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
