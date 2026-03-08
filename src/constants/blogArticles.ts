@@ -6948,4 +6948,205 @@ That's the complete strategy — and it costs you 20 minutes of setup.
 
 **[Try HookCut free — no credit card required](/auth)**`
   },
+  {
+    slug: "video-content-strategy-coaches-course-creators",
+    title: "Video Content Strategy for Coaches and Course Creators in 2026 (Complete Guide)",
+    metaDescription: "The complete video content strategy for coaches and course creators in 2026. How to repurpose your expertise into short-form clips that attract clients, build authority, and grow your audience on autopilot.",
+    keywords: ["video content strategy coaches course creators", "content strategy for coaches 2026", "video marketing for course creators", "short form content for coaches", "coach content repurposing"],
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+    content: `## Video Content Strategy for Coaches and Course Creators in 2026 (Complete Guide)
+
+Coaches and course creators face a unique content challenge: you have deep, valuable expertise — but the formats that showcase that expertise best (long coaching sessions, detailed course modules, live Q&As) are the formats that reach the fewest new people.
+
+A 2-hour coaching session posted to YouTube might get 500 views. The same content broken into 10 clips distributed across TikTok, Reels, and Shorts might reach 50,000 people — 100x more, from the same content you already created.
+
+This guide shows you the complete video content strategy for coaches and course creators in 2026: what to create, how to repurpose it, and how to use clips to build the kind of authority that converts viewers into paying clients.
+
+---
+
+### Why Video Is Non-Negotiable for Coaches in 2026
+
+Three things have fundamentally changed how clients choose coaches and courses in 2026:
+
+**1. Trust requires video**
+Clients making $1,000–$10,000 decisions want to know who they're hiring. Written testimonials and photos aren't enough. Video lets prospects see how you think, how you explain things, and whether your style matches what they need. A client who has watched 20 of your clips already trusts you before they ever send the first email.
+
+**2. Discovery happens on short-form platforms**
+Most new clients in 2026 first discover coaches on TikTok, Instagram, or YouTube Shorts — not on Google or LinkedIn. If you're not visible on at least one short-form platform, you're invisible to the largest pool of potential clients.
+
+**3. Long-form content alone doesn't scale**
+Creating entirely new content for every platform isn't sustainable for solo coaches and course creators. The only scalable approach is creating one piece of in-depth content and distributing it across multiple platforms in multiple formats.
+
+---
+
+### The Core Content Framework for Coaches
+
+The most effective video content strategy for coaches builds on three content types:
+
+**Tier 1: Long-form anchor content (weekly)**
+This is your primary content — where your deepest expertise lives. Examples:
+- Live coaching sessions (with client permission or anonymized)
+- Course modules or lesson previews
+- Q&A sessions and office hours
+- Workshop recordings
+- Detailed tutorials on your core methodology
+
+These run 20–90 minutes. They don't get many views. They're not supposed to — they're your credibility foundation and your content source for everything else.
+
+**Tier 2: Short-form clips (daily)**
+Extracted from your Tier 1 content using HookCut. These are the 45–75 second moments that work as standalone insights on TikTok, Reels, and Shorts. They reach new audiences. They build awareness. They drive people to your Tier 1 content.
+
+**Tier 3: Lead magnets (monthly)**
+Your best-performing short clips get compiled into a highlight reel. Your most-watched long-form content gets turned into a free guide or email sequence. These convert attention into leads.
+
+---
+
+### What Type of Coach Content Goes Viral
+
+Not all coaching content performs equally on short-form platforms. These formats consistently outperform:
+
+**The Reframe**
+Taking a belief your audience holds and flipping it. "You don't need more motivation — you need a better system." Or "The reason you're not booking clients has nothing to do with your offer." Reframes generate saves and shares because they change how people see their situation.
+
+**The Myth Bust**
+Identifying and debunking a common misconception in your niche. "Everyone says you need 10,000 followers to make money coaching. Here's why that's completely wrong." Myth-bust clips get high comment rates from people who believed the myth.
+
+**The Micro-Framework**
+A complete, actionable process in under 60 seconds. "The 3-question framework I use with every new coaching client." Frameworks get saved at very high rates because viewers want to reference them later.
+
+**The Client Result Story**
+Share a client transformation (anonymized if needed). "My client went from $2k to $15k months in 90 days. Here's exactly what changed." Results build credibility faster than any other content type.
+
+**The Vulnerable Moment**
+Something real from your own journey — a failure, a pivot, a moment of doubt. "I almost quit coaching in year 2. Here's what happened." Vulnerability builds the emotional connection that converts followers into buyers.
+
+---
+
+### How to Extract Coaching Clips with AI
+
+The most common objection from coaches: "I can't share my actual coaching sessions — it's confidential."
+
+Solutions:
+
+**Option 1: Anonymized session clips**
+Get written permission from clients to share clips with their name, face, or identifying details removed. Many clients are happy to help — it's recognition of their progress.
+
+**Option 2: Teaching moments from group sessions**
+Group coaching, masterminds, and workshops are easier to get permission for. Position clips as "education from our community" rather than private sessions.
+
+**Option 3: Demonstration sessions**
+Record yourself coaching a "demo" scenario — either with a willing volunteer or by roleplaying both sides. The content and insights are just as valuable.
+
+**Option 4: Q&A content**
+Record yourself answering the most common questions your coaching clients ask. No confidentiality issues — these are questions, not private conversations.
+
+Once you have recordable content, the HookCut workflow takes 20 minutes:
+1. Upload the recording
+2. AI identifies the 8–12 best moments
+3. Select the clips that best represent your methodology
+4. Apply subtitles (Hormozi or Minimal style for coaching content)
+5. Export and schedule
+
+---
+
+### Platform Strategy for Coaches in 2026
+
+Different platforms serve different roles in a coach's content strategy:
+
+**TikTok — Discovery**
+Reach new audiences who don't know you exist. Best for: reframes, myth-busts, strong opinions. Post your most accessible, jargon-free content here. These are strangers — make it easy to understand without context.
+
+**Instagram Reels — Relationship building**
+Your Instagram followers are warmer than TikTok viewers. Use Reels to deepen relationships with people who already follow you. Best for: more specific methodology, client stories, behind-the-scenes.
+
+**YouTube Shorts → YouTube — Authority library**
+YouTube Shorts drive viewers to your main channel, which hosts your deep-dive content. This is where serious prospects spend 1–2 hours watching before they reach out. Treat YouTube as your credibility library.
+
+**LinkedIn — B2B coaching and corporate clients**
+If you coach executives, team leaders, or professionals, LinkedIn is essential. Post the same clips as other platforms but with more professional captions and context.
+
+---
+
+### Building a Client Conversion Path from Short-Form Content
+
+Short-form content builds awareness. But awareness doesn't pay your mortgage — conversions do. Here's how to build a path from a 45-second TikTok clip to a paying coaching client:
+
+**Step 1: TikTok/Reels clip → Profile bio link**
+Your bio link goes to a landing page, not your website homepage.
+
+**Step 2: Landing page → Lead magnet**
+Offer something genuinely valuable for free: a 3-step framework PDF, a 5-day email course, a free training video. This captures their email and continues the relationship.
+
+**Step 3: Email sequence → Application call**
+A 5–7 email sequence that delivers more value and builds trust. The final email invites them to book a free discovery call.
+
+**Step 4: Discovery call → Paid coaching**
+The discovery call closes the sale.
+
+Each step exists to do one thing: move the prospect one step closer to working with you. Your short-form clips are the top of this funnel — they need to attract the right people and create enough curiosity to click through.
+
+---
+
+### The Content Calendar for Coaches
+
+A realistic, sustainable content schedule for a solo coach:
+
+**Weekly commitment: 3–4 hours**
+
+| Activity | Time required | Frequency |
+|----------|--------------|-----------|
+| Record long-form content (Q&A, lesson, coaching demo) | 60–90 min | Weekly |
+| Process with HookCut, select and export clips | 20–30 min | Weekly |
+| Write captions and schedule clips | 20–30 min | Weekly |
+| Respond to comments | 15 min/day | Daily |
+
+Output: 1 long-form video + 5–8 short-form clips per week. Presence on 3 platforms. Less than 4 hours of total content work.
+
+---
+
+### Course Creator-Specific Strategy
+
+Course creators have a slightly different situation than coaches: you have extensive recorded course content that most people will never discover.
+
+**Turn course modules into clips**
+A 10-lesson course contains 30–50 potential short-form clips. These clips serve two purposes: they demonstrate the depth of what's in the course (social proof), and they give prospects a taste that makes them want more.
+
+**The "best free lesson" strategy**
+Identify your single most valuable lesson — the one that would make someone say "I can't believe this is free." Post it as a free YouTube video. Create 5 Shorts from it. Use these to drive people to your course page.
+
+**Course launch content**
+The week before a course launch, post one clip per day from inside the course. Each clip shows a different valuable insight from a different module. By launch day, your audience has seen 7 samples and is ready to buy.
+
+---
+
+### The Authority Compounding Effect
+
+The most important thing to understand about short-form video strategy for coaches: the benefits compound over time.
+
+Month 1: You post consistently but see minimal results. The algorithm is learning your content.
+
+Month 3: A clip hits 50k views. You gain 500 new followers. Your email list grows by 100 people.
+
+Month 6: You have 200 clips live across three platforms. They continue generating views and driving traffic to your funnel every single day — from content you created months ago.
+
+Month 12: Inbound client inquiries have replaced cold outreach. Prospects come to discovery calls having already watched 30 of your clips. They already trust you. Close rates are dramatically higher.
+
+This is the compounding effect of consistent short-form content. Each clip is an asset that works for you indefinitely. A clip you post today might bring you a client 18 months from now.
+
+---
+
+### Start This Week
+
+You don't need a production studio, a video editor, or a large team. You need:
+1. A recording of one coaching session, Q&A, or lesson
+2. A HookCut account (free to start)
+3. 20 minutes to process and export clips
+4. A consistent posting schedule
+
+That's the complete setup. Everything else can be added as you grow.
+
+**[Try HookCut free — start building your coaching content engine today](/auth)**`
+  },
 ];
