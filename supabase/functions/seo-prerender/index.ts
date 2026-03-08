@@ -456,6 +456,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "es/reutilizacion-contenido-agentes-inmobiliarios": {
+    title: "Reutilización de Contenido para Agentes Inmobiliarios: La Guía Completa 2026 | HookCut",
+    description: "Los agentes inmobiliarios están dejando un alcance masivo sobre la mesa. Aprende a reutilizar tours de propiedades, actualizaciones de mercado y Q&As de clientes en TikTok, Reels y YouTube Shorts que generan leads en 2026.",
+    keywords: "reutilización contenido agentes inmobiliarios, contenido de vídeo inmobiliario 2026, estrategia tiktok para agentes, vídeo de formato corto inmobiliario",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
