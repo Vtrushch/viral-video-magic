@@ -216,6 +216,21 @@ const COMPARISON_PAGES: Record<string, { title: string; description: string; key
     description: "HookCut vs Klap 2026. HookCut works for TikTok, Reels AND Shorts. $20 cheaper. No cancellation issues.",
     keywords: "hookcut vs klap, klap alternative, ai video clipper all platforms 2026",
   },
+  "recast-studio": {
+    title: "HookCut vs Recast Studio 2026: Beyond Podcasts | HookCut",
+    description: "HookCut vs Recast Studio 2026. Works for any video type, not just podcasts. AI finds your best moments automatically.",
+    keywords: "hookcut vs recast studio, recast studio alternative, ai video clipper vs podcast tool 2026",
+  },
+  capcut: {
+    title: "HookCut vs CapCut 2026: Automatic vs Manual Clipping | HookCut",
+    description: "HookCut vs CapCut 2026. HookCut finds your viral moments automatically. CapCut requires manual editing. 10x faster.",
+    keywords: "hookcut vs capcut, capcut alternative, ai clip detection vs manual editing 2026",
+  },
+  canva: {
+    title: "HookCut vs Canva Video 2026: AI Clips vs Design Tool | HookCut",
+    description: "HookCut vs Canva 2026. HookCut uses AI to find viral moments from long videos. Canva is a design tool, not a clip finder.",
+    keywords: "hookcut vs canva video, canva alternative for clips, ai video clipper vs design tool 2026",
+  },
 };
 
 function renderComparisonHtml(slug: string): string | null {
