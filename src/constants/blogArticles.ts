@@ -12169,6 +12169,11 @@ Your podcast has moments that deserve an audience beyond your current listeners.
     date: "2026-03-08",
     readTime: "10 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/video-content-strategy-personal-finance-creators" },
+      { lang: "es", href: "https://hookcut.com/blog/es/estrategia-contenido-video-creadores-finanzas-personales" },
+      { lang: "x-default", href: "https://hookcut.com/blog/video-content-strategy-personal-finance-creators" },
+    ],
     content: `## Video Content Strategy for Personal Finance Creators in 2026
 
 Personal finance is consistently one of the top-performing niches on short-form video. The reason is simple: money is universally relevant, perpetually confusing, and carries real emotional weight. A clip that helps someone understand something about money that's been confusing or stressful gets saved, shared, and returned to.
