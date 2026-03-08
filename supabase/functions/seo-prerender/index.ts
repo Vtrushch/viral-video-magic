@@ -480,6 +480,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Comparison",
   },
+  "es/reutilizar-contenido-curso-online-redes-sociales": {
+    title: "Cómo Reutilizar Contenido de Cursos Online en Clips para Redes Sociales (Guía 2026) | HookCut",
+    description: "Convierte tu curso online en semanas de contenido para redes sociales. Guía completa para reutilizar lecciones, módulos y Q&As de cursos en clips de TikTok, YouTube Shorts e Instagram Reels que impulsan matriculaciones en 2026.",
+    keywords: "reutilizar contenido curso online redes sociales, reutilización contenido curso online 2026, curso a clips redes sociales, reutilizar módulos curso tiktok, estrategia de contenido creador de cursos",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
