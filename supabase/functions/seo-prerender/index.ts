@@ -512,6 +512,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "How-To Guide",
   },
+  "short-form-video-fitness-coaches": {
+    title: "Short-Form Video for Fitness Coaches: Get More Clients with Clips in 2026 | HookCut",
+    description: "Fitness coaches who post short-form video consistently get 3–5x more inbound client inquiries than those who don't. Complete 2026 guide to TikTok, Reels, and YouTube Shorts strategy for personal trainers and fitness coaches.",
+    keywords: "short form video fitness coaches, fitness coach tiktok strategy 2026, personal trainer video content, fitness coach instagram reels, fitness content repurposing",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
