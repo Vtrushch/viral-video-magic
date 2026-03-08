@@ -512,6 +512,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "How-To Guide",
   },
+  "es/usar-ia-para-crear-contenido-mas-rapido": {
+    title: "Cómo Usar la IA para Crear Contenido Más Rápido en 2026 (Flujo de Trabajo Completo) | HookCut",
+    description: "El flujo de trabajo completo de creación de contenido con IA para 2026. Cómo usar herramientas de IA para ideación, guiones, edición de vídeo, subtítulos, reutilización y programación — y reducir tu tiempo de producción a la mitad.",
+    keywords: "usar ia para crear contenido más rápido, flujo de trabajo de creación de contenido con ia 2026, herramientas de ia para creadores de contenido, creación de contenido de vídeo con ia",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
   "short-form-video-fitness-coaches": {
     title: "Short-Form Video for Fitness Coaches: Get More Clients with Clips in 2026 | HookCut",
     description: "Fitness coaches who post short-form video consistently get 3–5x more inbound client inquiries than those who don't. Complete 2026 guide to TikTok, Reels, and YouTube Shorts strategy for personal trainers and fitness coaches.",
