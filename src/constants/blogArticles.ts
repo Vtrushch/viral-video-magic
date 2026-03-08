@@ -10554,6 +10554,11 @@ That's your real estate content system — started in one afternoon.
     readTime: "10 min read",
     keywords: ["grow on linkedin with video content", "linkedin video strategy 2026", "linkedin native video", "linkedin short form video", "linkedin content strategy video"],
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/grow-on-linkedin-with-video-content" },
+      { lang: "es", href: "https://hookcut.com/blog/es/crecer-en-linkedin-con-contenido-de-video" },
+      { lang: "x-default", href: "https://hookcut.com/blog/grow-on-linkedin-with-video-content" },
+    ],
     content: `## How to Grow on LinkedIn with Video Content in 2026 (Complete Strategy)
 
 LinkedIn is going through the most significant algorithmic shift in its history in 2026. For the past decade, text posts — the "carousel post" era — dominated reach. In 2026, video is the highest-reach format on the platform by a significant margin.
@@ -11434,5 +11439,164 @@ No necesitas equipo caro ni un videógrafo. Empieza con tu teléfono:
 5. Publica un clip al día esta semana con un título específico de ubicación
 
 **[Prueba HookCut gratis — convierte tus tours de propiedades en contenido del día del listado en minutos](/auth)**`
+  },
+  {
+    slug: "es/crecer-en-linkedin-con-contenido-de-video",
+    title: "Cómo Crecer en LinkedIn con Contenido de Vídeo en 2026 (Estrategia Completa)",
+    metaDescription: "El vídeo en LinkedIn es el formato con mayor alcance orgánico en la plataforma en 2026. Estrategia completa para hacer crecer tu presencia en LinkedIn con vídeo nativo, clips cortos y contenido largo reutilizado.",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    keywords: ["crecer en linkedin con contenido de vídeo", "estrategia de vídeo linkedin 2026", "vídeo nativo linkedin", "vídeo de formato corto linkedin", "estrategia de contenido linkedin vídeo"],
+    category: "Strategy",
+    lang: "es",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/grow-on-linkedin-with-video-content" },
+      { lang: "es", href: "https://hookcut.com/blog/es/crecer-en-linkedin-con-contenido-de-video" },
+      { lang: "x-default", href: "https://hookcut.com/blog/grow-on-linkedin-with-video-content" },
+    ],
+    content: `## Cómo Crecer en LinkedIn con Contenido de Vídeo en 2026 (Estrategia Completa)
+
+LinkedIn está atravesando el cambio algorítmico más significativo de su historia en 2026. Durante la última década, los posts de texto — la era de los "posts de carrusel" — dominaron el alcance. En 2026, el vídeo es el formato con mayor alcance en la plataforma por un margen significativo.
+
+La ventana para establecer autoridad de vídeo en LinkedIn está abierta ahora mismo. La mayoría de profesionales aún no está creando vídeo nativo. La competencia es menor de lo que será nunca más. El alcance orgánico es mayor de lo que probablemente será en 12–18 meses cuando más creadores se den cuenta.
+
+Esta guía te da la estrategia completa de vídeo en LinkedIn para 2026.
+
+---
+
+### Por Qué el Vídeo en LinkedIn Es Excepcionalmente Potente Ahora Mismo
+
+**El vídeo nativo obtiene 5–10x más alcance que los posts de texto**
+El algoritmo de LinkedIn favoriza dramáticamente el vídeo nativo (subido directamente a LinkedIn) sobre posts de texto, posts con enlace o imágenes. Un vídeo nativo que obtendría 5.000 impresiones como post de texto rutinariamente obtiene 25.000–50.000 impresiones en la misma cuenta.
+
+**La audiencia es únicamente valiosa**
+La audiencia de LinkedIn no es solo grande — tiene alta intención. Las personas que ven tus vídeos de LinkedIn son profesionales con autoridad de decisión, presupuesto y problemas profesionales específicos que intentan resolver. Para B2B, consultoría, coaching y servicios profesionales, la calidad de la audiencia de LinkedIn no tiene rival.
+
+**Baja competencia en la mayoría de nichos**
+A pesar de que LinkedIn tiene más de 1.000 millones de miembros, publicar vídeo nativo sigue siendo poco común en la mayoría de nichos profesionales. En muchas industrias, si publicas 3–4 vídeos nativos por semana durante 3 meses, te conviertes en uno de los creadores de vídeo más visibles en tu nicho en la plataforma.
+
+**Alto tiempo de permanencia**
+Los usuarios de LinkedIn se desplazan más despacio y leen con más atención que los usuarios de TikTok. Esto significa que tu vídeo tiene más tiempo para enganchar a un espectador. Los espectadores darán a un vídeo 5–10 segundos antes de decidir si continuar o seguir scrolling.
+
+---
+
+### Qué Tipo de Contenido de Vídeo Funciona en LinkedIn en 2026
+
+**Funciona excepcionalmente bien:**
+
+**Clips de insight de la industria**
+"Tres cosas que estoy viendo en [industria] ahora mismo que la mayoría de la gente se está perdiendo." Posicionado como observación experta, no como consejo genérico. Alta tasa de compartición entre profesionales.
+
+**Opiniones profesionales contrarias**
+"Todo el mundo en [industria] dice X. Aquí está por qué creo que eso está equivocado — y lo que realmente funciona." Los usuarios de LinkedIn son profesionales con opiniones fuertes. El desacuerdo respetuoso genera alto engagement en comentarios.
+
+**La revelación del proceso**
+"Así es exactamente como [logro resultado profesional específico]." Los frameworks y procesos paso a paso son el tipo de contenido más guardado en LinkedIn. Los espectadores marcan estos para referencia posterior.
+
+**Datos e insights de investigación**
+"Analizamos [X puntos de datos] y encontramos algo sorprendente." Los insights respaldados por datos te posicionan como un pensador riguroso. Estos se comparten frecuentemente porque proporcionan munición para conversaciones profesionales.
+
+**Historias del fundador y líder**
+Historias personales sobre fracasos profesionales, pivotes, decisiones no convencionales y lecciones aprendidas. LinkedIn es inusualmente receptivo a la vulnerabilidad de los profesionales.
+
+**No funciona bien en LinkedIn:**
+- Contenido solo de entretenimiento sin relevancia profesional
+- Contenido muy casual o basado en memes
+- Contenido muy promocional de productos sin insight genuino
+
+---
+
+### Requisitos de Formato de Vídeo en LinkedIn 2026
+
+**Relación de aspecto:** LinkedIn soporta múltiples relaciones de aspecto. 16:9 (horizontal) es tradicional. 1:1 (cuadrado) obtiene consistentemente más espacio en pantalla en el feed. 9:16 (vertical) ahora está soportado y funciona bien en móvil — que representa más del 70% del uso de LinkedIn.
+
+**Duración:** Óptima es 45–90 segundos para vídeos del feed. Para LinkedIn Video (la pestaña de descubrimiento de formato corto), menos de 60 segundos es óptimo.
+
+**Subtítulos:** Obligatorios. Los usuarios de LinkedIn frecuentemente navegan en entornos profesionales donde el audio está desactivado. Los estilos Minimal u Hormozi de HookCut funcionan bien.
+
+---
+
+### Reutilizando tu Contenido Existente para LinkedIn
+
+No necesitas crear contenido nuevo específicamente para LinkedIn.
+
+**De podcasts o entrevistas:**
+Extrae los momentos donde declaras una opinión profesional fuerte, compartes un insight contraintuitivo o describes una experiencia profesional.
+
+**De webinars o presentaciones:**
+Las revelaciones de datos, las presentaciones de frameworks, las respuestas a preguntas — todo esto es oro para LinkedIn. Procesa tus últimos 3 webinars con HookCut y tendrás 15–20 clips listos para LinkedIn.
+
+**De vídeos de YouTube:**
+Cualquier vídeo educativo de YouTube que hayas hecho es una fuente para clips de LinkedIn. Sube a HookCut, extrae 5–8 clips por vídeo, aplica estilo de subtítulos Minimal u Hormozi, programa para LinkedIn.
+
+---
+
+### La Estrategia de Caption en LinkedIn
+
+En LinkedIn, el caption (texto debajo del vídeo) es tan importante como el vídeo mismo. Las primeras 2–3 líneas de tu caption aparecen antes del pliegue "ver más". Esas primeras líneas determinan si los espectadores interactúan.
+
+**Fórmula de caption para vídeo en LinkedIn:**
+
+**Líneas 1–2 (Gancho):** Una declaración audaz, pregunta o número que crea curiosidad.
+
+**Líneas 3–6 (Contexto):** 2–4 frases añadiendo contexto.
+
+**Líneas 7–10 (Valor):** El insight clave o el punto accionable.
+
+**Línea 11 (CTA):** Una pregunta específica para impulsar comentarios.
+
+**Ejemplo:**
+"La mayoría de demos de SaaS están vendiendo lo equivocado.
+
+Después de ver 200+ demos el último año, noté un patrón consistente: las demos que convierten no empiezan con características. Empiezan con el problema específico que el prospecto mencionó en la llamada de descubrimiento.
+
+Este es el framework de 3 partes que ahora usamos para cada demo, y por qué ha duplicado nuestra tasa de cierre:
+
+¿Has visto demos que empiezan con el problema en lugar del producto? ¿Qué fue diferente en esa experiencia?"
+
+---
+
+### Estrategia de Hashtags para Vídeo en LinkedIn en 2026
+
+**Mejor práctica en 2026:**
+- 3–5 hashtags máximo
+- Mezcla amplio (#marketing, #emprendimiento) con nicho (#marketingdigital, #reutilizaciondecontenido)
+- No uses más de 5 — el algoritmo de LinkedIn ahora ligeramente desprioriza los posts saturados de hashtags
+
+---
+
+### Haciendo Crecer tu Seguimiento en LinkedIn con Vídeo
+
+**Fase 1 (Mes 1–2):** Publica 3–5 vídeos por semana consistentemente. El alcance es impulsado por tus conexiones de primer grado.
+
+**Fase 2 (Mes 2–4):** El primer vídeo se propaga más allá de tu red de primer grado. La distribución algorítmica se activa cuando la velocidad de engagement es alta.
+
+**Fase 3 (Mes 4–6):** Se establece una "voz" consistente. Tus temas recurrentes se vuelven reconocibles. Comienzan solicitudes de conexión entrantes de tu contenido.
+
+**Fase 4 (Mes 6–12):** El algoritmo aprende tu audiencia en profundidad. El contenido alcanza a extraños calificados consistentemente. Aumentan los leads entrantes y las conversaciones de asociación.
+
+---
+
+### Midiendo el Rendimiento del Vídeo en LinkedIn
+
+**Métricas clave:**
+- **Impresiones:** Cuántas veces apareció tu vídeo en feeds
+- **Visualizaciones:** Cuántas personas vieron al menos 2 segundos
+- **Tiempo de visualización:** Total de minutos vistos — la señal de engagement de más alta calidad
+- **Comentarios:** La señal de engagement más valiosa en LinkedIn
+- **Republicaciones:** Tu contenido siendo compartido por otros
+
+**Para qué optimizar:**
+El tiempo de visualización y los comentarios son tus objetivos de optimización principales. Un post con 100 comentarios y 5.000 visualizaciones a menudo obtendrá más distribución algorítmica que un post con 5 comentarios y 20.000 visualizaciones.
+
+---
+
+### Empieza Esta Semana
+
+Elige tu único insight más fuerte del último mes de trabajo profesional. Graba un clip de 60 segundos explicándolo. Sube a HookCut, agrega subtítulos estilo Minimal, exporta. Publica nativamente en LinkedIn con un caption que empiece con una declaración audaz.
+
+Ese es tu experimento de vídeo en LinkedIn. Hazlo durante 8 semanas antes de evaluar los resultados.
+
+**[Prueba HookCut gratis — reutiliza tu mejor contenido profesional en clips listos para LinkedIn hoy](/auth)**`
   },
 ];

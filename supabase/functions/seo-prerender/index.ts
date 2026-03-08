@@ -464,6 +464,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "es/crecer-en-linkedin-con-contenido-de-video": {
+    title: "Cómo Crecer en LinkedIn con Contenido de Vídeo en 2026 (Estrategia Completa) | HookCut",
+    description: "El vídeo en LinkedIn es el formato con mayor alcance orgánico en la plataforma en 2026. Estrategia completa para hacer crecer tu presencia en LinkedIn con vídeo nativo, clips cortos y contenido largo reutilizado.",
+    keywords: "crecer en linkedin con contenido de vídeo, estrategia de vídeo linkedin 2026, vídeo nativo linkedin, vídeo de formato corto linkedin",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
