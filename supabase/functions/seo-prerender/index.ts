@@ -186,6 +186,21 @@ const COMPARISON_PAGES: Record<string, { title: string; description: string; key
     description: "HookCut vs Descript 2026. HookCut finds your best moments automatically. Descript requires manual selection.",
     keywords: "hookcut vs descript, descript alternative, ai clip detection vs manual editing",
   },
+  kapwing: {
+    title: "HookCut vs Kapwing 2026: AI Auto-Clips vs Manual Editing",
+    description: "HookCut vs Kapwing 2026. HookCut finds your best moments automatically. Kapwing requires manual work. 10x faster.",
+    keywords: "hookcut vs kapwing, kapwing alternative, ai video clipper vs manual editor 2026",
+  },
+  munch: {
+    title: "HookCut vs Munch 2026: Creator Tool vs Marketing Platform",
+    description: "HookCut vs Munch 2026. Same AI clip quality, 60% cheaper. HookCut is built for creators, Munch for marketing teams.",
+    keywords: "hookcut vs munch, munch alternative, ai clip tool for creators 2026",
+  },
+  submagic: {
+    title: "HookCut vs Submagic 2026: Full Workflow vs Captions Only",
+    description: "HookCut vs Submagic 2026. HookCut finds clips AND adds captions for $9. Submagic only does captions for $30.",
+    keywords: "hookcut vs submagic, submagic alternative, ai captions vs full clip workflow 2026",
+  },
 };
 
 function renderComparisonHtml(slug: string): string | null {
