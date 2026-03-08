@@ -12720,4 +12720,191 @@ The tools are all available. The differentiator is consistency and specificity.
 
 **[Try HookCut free — turn your next training session into a week of fitness clips](/auth)**`
   },
+  {
+    slug: "repurpose-conference-talk-keynote-content",
+    title: "How to Turn a Conference Talk or Keynote into 30 Days of Content (2026 Guide)",
+    metaDescription: "One conference talk or keynote contains weeks of content. Complete 2026 guide to repurposing your presentation into clips, blog posts, social content, and lead magnets — including the exact workflow used by professional speakers.",
+    keywords: ["repurpose conference talk keynote content", "repurpose keynote presentation content", "conference talk to social media clips", "speaking content repurposing 2026", "turn presentation into content"],
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+    content: `## How to Turn a Conference Talk or Keynote into 30 Days of Content (2026 Guide)
+
+A conference talk represents some of the highest-quality content you'll ever produce.
+
+You spent weeks or months developing the ideas. You refined them through research, conversations, and iteration. You delivered them to a live audience who paid to be in the room. The feedback loop of a live audience pushes your thinking to its sharpest form.
+
+And then the conference ends, the recording sits on a hard drive or a conference YouTube channel, and you move on.
+
+This is a massive missed opportunity. One 30-minute keynote — fully repurposed — can generate 30+ days of content across every major platform. This guide shows you exactly how.
+
+---
+
+### Why Conference Talks Are Exceptional Repurposing Source Material
+
+**Highest-density thinking**
+A conference talk distills your best thinking on a topic into a highly compressed, structured format. Every minute has been refined. The ideas have been stress-tested by a live audience. This is your thinking at its sharpest — far sharper than a casual podcast conversation or a weekly blog post.
+
+**Pre-validated audience relevance**
+The conference organizers invited you because your topic is relevant to their audience. The audience showed up because the topic interests them. Their reactions during the talk — the moments where attention spikes, where people lean forward, where the room gets quiet — tell you exactly which moments are the most resonant. These moments are your best clips.
+
+**Authority signal**
+"From my keynote at [conference name]" is an instant authority signal in your content. It signals that a credible third party validated your expertise by putting you on their stage.
+
+**Structured narrative**
+Good keynotes have a narrative arc: setup, tension, resolution, takeaway. This structure makes them naturally cuttable into self-contained clips — each section has a beginning and end that works independently.
+
+---
+
+### The Complete Repurposing Map: 30 Days from One Talk
+
+**Short-Form Video Clips (8–15 clips)**
+The highest-value repurposing output. Upload the recording to HookCut. The AI identifies the moments with the strongest vocal energy, clearest hooks, and most complete thought structures — exactly the qualities that make conference talks clip-friendly.
+
+The best clips from a 30-minute keynote:
+- The opening hook that established the problem (usually the strongest 60-second clip)
+- The "here's the insight nobody is talking about" moment
+- The most surprising data point or counterintuitive finding
+- The story that illustrated the central point
+- The framework reveal moment
+- The "here's what this means for you" practical application section
+- The closing call-to-action or memorable final statement
+
+Post one clip per day across TikTok, YouTube Shorts, Instagram Reels, and LinkedIn for 8–15 days.
+
+**Full-Length YouTube Video (1 asset)**
+Upload the full recording to YouTube with an optimized title and description. This becomes a permanent searchable asset. A well-titled talk on a searchable topic ("Why [industry] is broken — and how to fix it") can accumulate views for years.
+
+**Blog Post (1–3 articles)**
+The transcript of your talk, cleaned up and expanded, becomes a blog post. A 30-minute talk generates approximately 4,000–5,000 words of transcript — enough for one strong long-form article or two medium-length articles.
+
+Extract the most frameworks-heavy sections as standalone posts. The "3 reasons why [your thesis]" section becomes its own SEO-optimized article. The practical framework section becomes a "how to implement [your approach]" article.
+
+**LinkedIn Article (1 article)**
+A more opinionated, condensed version of your central argument. 800–1,200 words. Positioned as a thought leadership piece, not a tutorial. LinkedIn articles get distributed to your connections and appear in LinkedIn search.
+
+**Email Newsletter (2–3 editions)**
+Week 1: "I just gave a talk at [conference] and wanted to share the core insight with you..."
+Week 2: "The most common question I got after my talk was X. Here's my full answer..."
+Week 3: "One thing I didn't have time to cover in my conference talk..."
+
+Your email audience is your warmest audience — give them exclusive extensions of the talk content.
+
+**Twitter/X Thread (1–2 threads)**
+The key frameworks and insights from your talk, formatted as a thread. "I just gave a keynote at [conference] on [topic]. Here are the 8 things I told the room that I wish someone had told me 5 years ago: [thread]"
+
+**Slide Deck (shared via LinkedIn/SlideShare)**
+If your talk had slides, share the deck with a "key insights" summary. Slide decks get significant organic distribution on LinkedIn.
+
+**Quote Graphics (5–10 graphics)**
+Pull the 5–10 most quotable one-liners from your talk. Design them as branded graphics. One per day fills out your "lighter" posting days.
+
+---
+
+### The Talk Recording: What to Do Before and After
+
+**Before the conference:**
+- Confirm with organizers that you'll receive the recording. Most conferences record talks — get this in writing in your speaker agreement.
+- Record your own backup video. Set your phone on a tripod at the back of the room or ask someone to record on their phone. Conference recordings sometimes have audio quality issues; your backup gives you an alternative.
+- Note the moments during your talk where the audience reacted most strongly. These are your best clip candidates.
+
+**Immediately after the talk:**
+- Write down 5–7 moments from the talk that generated the strongest audience reaction
+- Note any questions from the Q&A that revealed what the audience found most interesting
+- Ask for slides and any photos taken during the presentation
+
+**When you receive the recording:**
+- Upload to HookCut immediately — don't wait weeks until you "have time"
+- Process all clips in one session
+- Draft your blog post from the transcript while the ideas are fresh
+
+---
+
+### Clip Optimization for Conference Talk Content
+
+Conference talks have specific characteristics that affect how you approach clip extraction:
+
+**Stage presence vs. studio delivery**
+Conference recordings often have more ambient noise, less controlled lighting, and more movement than studio content. This can affect clip quality. Prioritize clips where you're stationary and close to the microphone.
+
+**The applause problem**
+Conference talks often end sentences with audience applause, which interrupts the audio flow. Look for the moments between applause breaks — these tend to be the cleanest standalone audio moments.
+
+**Speaker notes in frame**
+If you're visible at a lectern or with a clicker, the production context is clear. If you're walking the stage, some clips may have framing issues. HookCut's face tracking handles most stage movement scenarios, but review clips from highly mobile sections carefully.
+
+**Multiple camera angles**
+Many conference recordings switch between wide shot and close-up. HookCut processes single video files — export the recording in a consistent camera angle (preferably the close-up) before uploading if you have editing control.
+
+---
+
+### Turning Your Framework into a Lead Magnet
+
+The framework you presented at the conference has natural lead magnet potential.
+
+**PDF one-pager:** A visual summary of your framework — the core model, the key steps, the essential questions. "Download the framework I presented at [conference]."
+
+**Assessment or self-evaluation:** "Use this checklist to see where you stand on [the problem your talk addressed]." Interactive and highly useful for your specific audience.
+
+**Implementation guide:** The practical "how to apply this" companion to the conceptual talk. Your talk gave them the why; the guide gives them the how.
+
+Each of these lead magnets is directly supported by your clip content — your clips demonstrate the value, the lead magnet delivers the depth.
+
+---
+
+### The Speaker Repurposing Workflow
+
+**Week 1 (talk week):**
+- Day of talk: Note best moments during delivery
+- Day after: Upload recording to HookCut, extract all clips, draft blog post outline
+
+**Week 2:**
+- Monday: Publish blog post #1 (talk overview and framework)
+- Tuesday–Friday: Post one clip per day to all platforms
+- Thursday: Send email newsletter #1
+
+**Week 3:**
+- Continue daily clip posting (you have 8–15 clips)
+- Publish LinkedIn article
+- Publish blog post #2 (specific framework implementation)
+- Send email newsletter #2 (most common question from the talk)
+
+**Week 4:**
+- Final clips if not yet used
+- Twitter/X thread
+- Share slide deck on LinkedIn
+- Send email newsletter #3 (what I didn't have time to cover)
+
+**Total time investment: ~5–6 hours spread over 4 weeks. Total content output: 15+ clips, 2 blog posts, 1 LinkedIn article, 3 newsletters, 1 thread, quote graphics.**
+
+---
+
+### If You Don't Have a Conference Recording
+
+Not every talk gets professionally recorded. If you don't have a conference recording, you have alternatives:
+
+**Re-record the talk as a solo video:** Set up a camera, deliver the talk to the camera rather than a live audience. You'll naturally condense and improve it. A 30-minute conference talk becomes a tighter 15–20 minute YouTube video.
+
+**Record a "breakdown" video:** "I recently gave a talk about [topic] at [conference]. Here are the 5 most important points I made." This works well as a standalone video even without the original recording.
+
+**Use your slides as the source:** Record a screen capture walkthrough of your slides with voiceover. The same repurposing map applies to this content.
+
+---
+
+### Making Every Future Talk More Repurposable
+
+If you speak regularly, design your talks with repurposability in mind:
+
+**Start with a standalone hook:** Your opening 60–90 seconds should work as a complete clip with no additional context. This is your single best clip candidate.
+
+**Include at least one "quotable" framework:** A named model, a memorable matrix, a specific step-by-step system. Frameworks are highly shareable and become the anchor for your content library.
+
+**Tell at least one complete story:** Stories make the best clips. A well-told 2–3 minute story with a beginning, middle, and end is your highest-value clip candidate.
+
+**End with a single, clear takeaway:** "If you remember one thing from this talk, remember X." This becomes your most repurposable one-liner.
+
+A talk designed for repurposing generates 50% more high-quality clips than a talk designed only for the live audience.
+
+**[Try HookCut free — upload your conference recording and extract 10+ clips in 20 minutes](/auth)**`
+  },
 ];
