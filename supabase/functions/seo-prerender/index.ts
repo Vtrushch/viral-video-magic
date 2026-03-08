@@ -96,6 +96,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "best-ai-video-editing-tools-2026": {
+    title: "Best AI Video Editing Tools for Content Creators in 2026 (Honest Review) | HookCut",
+    description: "The best AI video editing tools for content creators in 2026 — ranked by use case, price, and actual performance. From clip finders to caption generators to full editors.",
+    keywords: "best ai video editing tools 2026, ai video editor 2026, best video editing software creators, ai clip generator, automatic video editor",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Comparison",
+  },
   "es/convertir-video-largo-en-clips-virales": {
     title: "Cómo Convertir un Vídeo Largo en Clips Virales con IA (2026) | HookCut",
     description: "Aprende a convertir cualquier vídeo largo en 10 clips virales en 15 minutos usando IA. Guía paso a paso para YouTube, TikTok e Instagram Reels en 2026.",
