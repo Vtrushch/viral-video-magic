@@ -4741,6 +4741,11 @@ Match the tool to the specific job you need done. Most solo creators in 2026 nee
     date: "2026-03-08",
     readTime: "11 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/repurpose-webinar-into-social-media-clips" },
+      { lang: "es", href: "https://hookcut.com/blog/es/reutilizar-webinar-en-contenido-redes-sociales" },
+      { lang: "x-default", href: "https://hookcut.com/blog/repurpose-webinar-into-social-media-clips" },
+    ],
     content: `## How to Repurpose Webinars into Social Media Content (2026 Complete Guide)
 
 Your company just hosted a 60-minute webinar. 200 people attended live. You spent weeks preparing the content, building the slides, and promoting the event.
@@ -5764,5 +5769,182 @@ El error más caro en herramientas de vídeo es usar un editor completo (Premier
 Adapta la herramienta al trabajo específico que necesitas hacer. La mayoría de creadores individuales en 2026 necesitan exactamente tres cosas: encontrar clips automáticamente, reencuadrar a 9:16, añadir subtítulos. HookCut hace las tres.
 
 **[Prueba HookCut gratis — sin tarjeta de crédito](/auth)**`
+  },
+  {
+    slug: "es/reutilizar-webinar-en-contenido-redes-sociales",
+    title: "Cómo Reutilizar Webinars en Contenido para Redes Sociales (Guía Completa 2026)",
+    metaDescription: "Convierte cualquier grabación de webinar en semanas de contenido para redes sociales. Guía paso a paso para marketers y creadores B2B.",
+    keywords: ["reutilizar webinar en contenido redes sociales", "reutilización de webinar 2026", "webinar a redes sociales", "convertir webinar en clips", "estrategia de contenido webinar"],
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+    lang: "es",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/repurpose-webinar-into-social-media-clips" },
+      { lang: "es", href: "https://hookcut.com/blog/es/reutilizar-webinar-en-contenido-redes-sociales" },
+      { lang: "x-default", href: "https://hookcut.com/blog/repurpose-webinar-into-social-media-clips" },
+    ],
+    content: `## Cómo Reutilizar Webinars en Contenido para Redes Sociales (Guía Completa 2026)
+
+Tu empresa acaba de organizar un webinar de 60 minutos. 200 personas asistieron en directo. Pasaste semanas preparando el contenido, construyendo las diapositivas y promocionando el evento.
+
+Y luego subes la grabación a tu web, envías un email de seguimiento con el enlace y sigues adelante.
+
+Esa grabación — que costó tiempo y recursos significativos producir — será vista por aproximadamente el 15–20% de los registrados y luego olvidada.
+
+Esta es la trampa del contenido de webinar. Y en 2026, los marketers y creadores más eficientes han descubierto cómo escapar de ella.
+
+---
+
+### Las Matemáticas Detrás de la Reutilización de Webinars
+
+Un webinar de 60 minutos típicamente contiene:
+- 8–15 momentos citables que valen la pena convertir en clips
+- 3–5 frameworks clave que funcionan como posts de carrusel o infografías
+- 10–15 datos específicos que valen la pena compartir como posts sociales independientes
+- 1–2 micro-tutoriales completos que funcionan como YouTube Shorts o TikToks
+- Suficiente contenido de transcripción para 3–5 posts de blog o artículos de LinkedIn
+
+Si solo publicas el enlace a la grabación, estás obteniendo aproximadamente el 5% del valor del contenido. La reutilización extrae el otro 95%.
+
+---
+
+### El Framework de Reutilización de Webinars: 7 Tipos de Contenido
+
+De un solo webinar de 60 minutos, puedes extraer estos siete tipos de contenido:
+
+**1. Clips de Vídeo Corto (TikTok, Reels, Shorts)**
+Los 8–15 momentos de mayor energía de la presentación. Mejores clips: el momento en que revelas un dato sorprendente, el momento en que compartes un framework, el resultado de caso de estudio más convincente.
+
+**2. Posts de Vídeo en LinkedIn**
+Clips de 30–45 segundos específicamente optimizados para LinkedIn. LinkedIn recompensa el vídeo nativo — no solo enlaces a YouTube.
+
+**3. YouTube Shorts**
+Menos de 60 segundos, formato vertical. Mejor para: momentos de how-to, insights contraintuitivos y frameworks paso a paso de tu webinar.
+
+**4. Gráficos de Citas**
+Extrae las 5–10 líneas más citables de tu transcripción. Conviértelas en gráficos de citas diseñados para Instagram y LinkedIn.
+
+**5. Post de Blog (SEO)**
+La transcripción del webinar, limpiada y reestructurada, se convierte en un post de blog completo. Un webinar de 60 minutos típicamente se convierte en un post de 2.000–3.000 palabras.
+
+**6. Secuencia de Email**
+Divide el contenido del webinar en una secuencia de 3–5 emails para suscriptores que no pudieron asistir.
+
+**7. Artículo de LinkedIn / Newsletter**
+Una versión escrita más pulida del framework principal o insight del webinar.
+
+---
+
+### Paso a Paso: Extraer Clips de Vídeo de Webinars
+
+**Paso 1: Consigue una grabación limpia**
+La mayoría de plataformas de webinar (Zoom, Riverside, StreamYard) exportan en 1080p. Si tu grabación es 720p o inferior, la calidad sufrirá.
+
+**Paso 2: Sube a HookCut**
+Sube la grabación del webinar. La IA de HookCut analiza el vídeo completo e identifica momentos con el mayor potencial de engagement basándose en la energía del habla, la estructura del contenido y los límites naturales de los clips.
+
+**Paso 3: Revisa las sugerencias de la IA con el contexto del webinar**
+La IA encontrará clips técnicamente fuertes, pero necesitas aplicar tu conocimiento de la audiencia. Prioriza:
+- Momentos que abordan los puntos de dolor más comunes de tu audiencia
+- Tus hallazgos más contraintuitivos o sorprendentes
+- Cualquier momento en que revelaste un resultado o número específico
+
+**Paso 4: Elige el estilo de subtítulos según la plataforma**
+Para LinkedIn y plataformas profesionales: estilo Minimal u Hormozi.
+Para TikTok y Reels: Hormozi o MrBeast según el nivel de energía.
+Para YouTube Shorts: Hormozi funciona para la mayoría de temas.
+
+**Paso 5: Exporta y organiza por plataforma**
+Crea carpetas separadas para clips de LinkedIn, clips de TikTok/Reels y YouTube Shorts.
+
+---
+
+### Estrategia por Plataforma para Clips de Webinar
+
+**LinkedIn (Prioridad #1 para Webinars B2B)**
+El vídeo nativo de LinkedIn supera consistentemente a los posts con enlace en 3–5x. Publica clips de 30–45 segundos con captions detallados que proporcionen contexto.
+
+Tipos de clips con mejor rendimiento en LinkedIn:
+- Revelaciones de datos ("Analizamos 500 webinars y encontramos...")
+- Presentaciones de frameworks ("El proceso de 3 pasos que usamos para...")
+- Opiniones contraintuitivas ("La mayoría de empresas aborda esto al revés...")
+
+**YouTube Shorts (Prioridad #2)**
+YouTube es el segundo motor de búsqueda más grande. Los clips de webinar con títulos optimizados por palabras clave capturan tráfico de búsqueda que TikTok y LinkedIn no capturan.
+
+**TikTok e Instagram Reels (Prioridad #3 para B2B)**
+Selecciona tus clips más accesibles y sin jerga para estas plataformas.
+
+---
+
+### Contenido de Webinar que Mejor Rinde por Plataforma
+
+| Tipo de contenido | LinkedIn | YouTube Shorts | TikTok/Reels |
+|-------------------|----------|----------------|--------------|
+| Revelaciones de datos | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
+| Presentación de framework | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
+| Resultado de caso de estudio | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
+| Opinión fuerte | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| How-to paso a paso | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| Historia personal | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+
+---
+
+### Construyendo un Calendario de Contenido Post-Webinar
+
+El objetivo es convertir un webinar en 3–4 semanas de contenido consistente:
+
+**Semana 1 (semana del webinar):**
+- Día 1: Promociona el registro con clip teaser
+- Día 3 (después del webinar): Publica el mejor clip destacado + enlace a la grabación
+- Día 5: Publica artículo de LinkedIn resumiendo los insights clave
+
+**Semana 2:**
+- 2–3 clips cortos del webinar
+- 1 gráfico de cita
+- Email #1 en secuencia de nurturing
+
+**Semana 3:**
+- 2–3 clips más (momentos diferentes)
+- Post de blog publicado (SEO)
+- Email #2 en secuencia de nurturing
+
+**Semana 4:**
+- Clips restantes
+- Artículo nativo de LinkedIn
+- Email #3 en secuencia de nurturing
+
+Output total de un webinar: 8–12 clips de vídeo + 1 post de blog + 1 artículo de LinkedIn + 3–5 gráficos de citas + secuencia de 3 emails. Eso son aproximadamente 20–25 piezas de contenido de una sola grabación de 60 minutos.
+
+---
+
+### Errores Comunes en la Reutilización de Webinars
+
+**Error 1: Reutilizar la sección de Q&A**
+Las preguntas son a menudo largas, específicas del contexto y difíciles de entender sin el webinar completo. Omite el Q&A al seleccionar clips.
+
+**Error 2: Incluir diapositivas sin adaptar para móvil**
+Una diapositiva con 8 viñetas se ve bien en escritorio. En un teléfono en formato 9:16, es ilegible. Solo usa momentos de diapositivas donde el elemento visual clave sea lo suficientemente simple para leer en móvil.
+
+**Error 3: Publicar el mismo clip en todas partes sin adaptación**
+Como mínimo, adapta el caption y los hashtags para cada plataforma.
+
+**Error 4: Esperar demasiado para reutilizar**
+El mejor momento para reutilizar es en la semana posterior al webinar, cuando el contenido es fresco y relevante.
+
+---
+
+### El ROI de la Reutilización de Webinars
+
+Las matemáticas son sencillas. Un webinar de 60 minutos cuesta $500–$5.000 producir.
+
+Sin reutilización: 200 asistentes en directo + ~300 visualizaciones de la grabación = ~500 visualizaciones totales.
+
+Con reutilización: 500 visualizaciones de la grabación + 8 clips × 2.000 visualizaciones promedio = ~16.500 engagements de contenido totales del mismo evento.
+
+Eso es un aumento de 33x en el alcance del contenido por 45 minutos adicionales de trabajo.
+
+**[Prueba HookCut gratis — empieza a reutilizar tus webinars hoy](/auth)**`
   },
 ];
