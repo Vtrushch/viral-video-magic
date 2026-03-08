@@ -312,6 +312,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "es/estrategia-contenido-video-coaches-creadores-cursos": {
+    title: "Estrategia de Contenido de Vídeo para Coaches y Creadores de Cursos en 2026 (Guía Completa) | HookCut",
+    description: "La estrategia completa de contenido de vídeo para coaches y creadores de cursos en 2026. Cómo reutilizar tu experiencia en clips de formato corto que atraen clientes, construyen autoridad y hacen crecer tu audiencia en piloto automático.",
+    keywords: "estrategia contenido video coaches creadores cursos, estrategia de contenido para coaches 2026, marketing de vídeo para creadores de cursos, contenido de formato corto para coaches, reutilización de contenido para coaches",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
