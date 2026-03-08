@@ -12748,6 +12748,11 @@ The tools are all available. The differentiator is consistency and specificity.
     date: "2026-03-08",
     readTime: "10 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/repurpose-conference-talk-keynote-content" },
+      { lang: "es", href: "https://hookcut.com/blog/es/reutilizar-charla-conferencia-keynote-contenido" },
+      { lang: "x-default", href: "https://hookcut.com/blog/repurpose-conference-talk-keynote-content" },
+    ],
     content: `## How to Turn a Conference Talk or Keynote into 30 Days of Content (2026 Guide)
 
 A conference talk represents some of the highest-quality content you'll ever produce.
