@@ -10183,6 +10183,11 @@ El espacio de creadores faceless está menos saturado que el espacio de marcas p
     readTime: "10 min read",
     keywords: ["batch create content video", "batch content creation 2026", "bulk video production creator", "content batching strategy", "how to batch record videos"],
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/batch-create-content-video" },
+      { lang: "es", href: "https://hookcut.com/blog/es/crear-contenido-en-lote-produccion-video" },
+      { lang: "x-default", href: "https://hookcut.com/blog/batch-create-content-video" },
+    ],
     content: `## How to Batch Create Content: The Creator's Guide to Bulk Video Production (2026)
 
 The creator who posts daily isn't recording a new video every morning. They're batching.
