@@ -376,6 +376,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "es/marketing-video-formato-corto-saas": {
+    title: "Estrategia de Marketing con Vídeo de Formato Corto para Empresas SaaS en 2026 | HookCut",
+    description: "Cómo las empresas SaaS usan el vídeo de formato corto para impulsar pruebas, reducir la rotación y construir autoridad de marca en 2026. Estrategia completa para equipos de marketing B2B SaaS y fundadores en solitario.",
+    keywords: "marketing video formato corto saas, marketing de vídeo saas 2026, vídeo de formato corto b2b, estrategia de contenido saas vídeo, tiktok para empresas saas",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
