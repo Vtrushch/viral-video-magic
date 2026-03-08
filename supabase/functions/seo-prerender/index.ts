@@ -104,6 +104,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Comparison",
   },
+  "repurpose-webinar-into-social-media-clips": {
+    title: "How to Repurpose Webinars into Social Media Content (2026 Complete Guide) | HookCut",
+    description: "Turn any webinar recording into weeks of social media content. Step-by-step guide for marketers and B2B creators to repurpose webinars into clips, posts, and Shorts in 2026.",
+    keywords: "repurpose webinar into social media clips, webinar repurposing 2026, webinar to social media, convert webinar to clips, webinar content strategy",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
   "es/convertir-video-largo-en-clips-virales": {
     title: "Cómo Convertir un Vídeo Largo en Clips Virales con IA (2026) | HookCut",
     description: "Aprende a convertir cualquier vídeo largo en 10 clips virales en 15 minutos usando IA. Guía paso a paso para YouTube, TikTok e Instagram Reels en 2026.",
