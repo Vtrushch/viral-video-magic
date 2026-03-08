@@ -224,6 +224,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Comparison",
   },
+  "es/reutilizar-webinar-en-contenido-redes-sociales": {
+    title: "Cómo Reutilizar Webinars en Contenido para Redes Sociales (Guía Completa 2026) | HookCut",
+    description: "Convierte cualquier grabación de webinar en semanas de contenido para redes sociales. Guía paso a paso para marketers y creadores B2B para reutilizar webinars en clips, posts y Shorts en 2026.",
+    keywords: "reutilizar webinar en contenido redes sociales, reutilización de webinar 2026, webinar a redes sociales, convertir webinar en clips, estrategia de contenido webinar",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
