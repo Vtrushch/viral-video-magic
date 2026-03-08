@@ -496,6 +496,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "video-content-strategy-personal-finance-creators": {
+    title: "Video Content Strategy for Personal Finance Creators in 2026 | HookCut",
+    description: "Personal finance is one of the highest-performing niches on short-form video in 2026. Complete video strategy for finance creators — what formats work, platform priorities, compliance tips, and how to repurpose content efficiently.",
+    keywords: "video content strategy personal finance creators, personal finance youtube shorts 2026, finance tiktok content strategy, fintech creator video strategy, money content creator 2026",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
