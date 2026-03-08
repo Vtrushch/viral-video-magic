@@ -6366,6 +6366,11 @@ Eso es todo. Un sistema funcional de reutilización de contenido en una semana, 
     date: "2026-03-08",
     readTime: "10 min read",
     category: "How-To Guide",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/create-highlight-reel-from-long-video" },
+      { lang: "es", href: "https://hookcut.com/blog/es/crear-highlight-reel-de-videos-largos" },
+      { lang: "x-default", href: "https://hookcut.com/blog/create-highlight-reel-from-long-video" },
+    ],
     content: `## How to Create a Highlight Reel from Long Videos (2026 Guide)
 
 A highlight reel is the single most powerful piece of content you can create from a long video. Instead of asking someone to watch 60 minutes to understand your value, a 60–90 second highlight reel does the job in under two minutes — and it does it better.
@@ -7344,5 +7349,193 @@ After your next stream, try this: identify the 30-minute window where the energy
 That's the entry point. Everything else builds from there.
 
 **[Try HookCut free — no credit card required](/auth)**`
+  },
+  {
+    slug: "es/crear-highlight-reel-de-videos-largos",
+    title: "Cómo Crear un Highlight Reel a partir de Vídeos Largos (Guía 2026)",
+    metaDescription: "Crea un highlight reel profesional a partir de cualquier vídeo largo en minutos usando IA. Guía paso a paso para podcasters, YouTubers y creadores de eventos — con consejos sobre música, ritmo y distribución en 2026.",
+    keywords: ["crear highlight reel de videos largos", "generador de highlight reel 2026", "compilación mejores momentos", "highlight reel con ia", "generador de highlights de vídeo"],
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "How-To Guide",
+    lang: "es",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/create-highlight-reel-from-long-video" },
+      { lang: "es", href: "https://hookcut.com/blog/es/crear-highlight-reel-de-videos-largos" },
+      { lang: "x-default", href: "https://hookcut.com/blog/create-highlight-reel-from-long-video" },
+    ],
+    content: `## Cómo Crear un Highlight Reel a partir de Vídeos Largos (Guía 2026)
+
+Un highlight reel es la pieza de contenido más poderosa que puedes crear a partir de un vídeo largo. En lugar de pedirle a alguien que vea 60 minutos para entender tu valor, un highlight reel de 60–90 segundos hace el trabajo en menos de dos minutos — y lo hace mejor.
+
+Los ponentes de conferencias usan highlight reels para conseguir más charlas. Los podcasters los usan para atraer patrocinadores. Los YouTubers los usan como trailers del canal. Los coaches los usan para convertir nuevos clientes. Los atletas los usan para ser reclutados.
+
+En 2026, la IA hace que crear highlight reels sea más rápido que nunca. Esta guía cubre todos los enfoques — desde completamente manual hasta completamente automático.
+
+---
+
+### Qué Hace un Gran Highlight Reel
+
+Antes de entrar en el cómo, entiende qué separa un gran highlight reel de uno mediocre.
+
+**Cuenta una historia**
+Un highlight reel no es solo una colección de buenos momentos — tiene un principio, un desarrollo y un final. La apertura capta la atención, el desarrollo construye valor y credibilidad, el final crea deseo o llama a la acción.
+
+**Se mueve rápido**
+Los highlight reels deben sentirse como si fueran ligeramente demasiado rápidos. Cada clip debe cortarse en su punto álgido — justo antes de que la energía baje — no mantenido hasta que concluya completamente. Cuando los espectadores sienten que se están perdiendo algo, lo vuelven a ver.
+
+**Es selectivo, no exhaustivo**
+Menos es más. Un highlight reel con 5 momentos excepcionales es más poderoso que uno con 15 buenos momentos. Cada clip incluido debe ser genuinamente impresionante — no solo "bastante bueno."
+
+**Coincide con el caso de uso**
+Un highlight reel para un showreel de ponente tiene requisitos diferentes que uno para un trailer de canal de YouTube. Define el propósito antes de empezar a seleccionar clips.
+
+---
+
+### Los 4 Casos de Uso Más Comunes para Highlight Reels
+
+**1. Showreel de Ponente**
+Objetivo: demostrar presencia en el escenario, engagement de la audiencia y calidad del contenido a los organizadores de eventos.
+Duración ideal: 60–90 segundos.
+Elementos clave: reacciones del público, aplausos, primeros planos de tu cara en momentos clave, una o dos risas o sorpresas de la audiencia.
+
+**2. Trailer de Podcast / Compilación de lo Mejor**
+Objetivo: mostrar a nuevos oyentes de qué trata tu show y engancharlos para que se suscriban.
+Duración ideal: 60–120 segundos.
+Elementos clave: tus frases más citables, momentos sorprendentes de invitados, opiniones fuertes, personalidad del show.
+
+**3. Trailer de Canal de YouTube**
+Objetivo: convertir a los visitantes por primera vez en suscriptores.
+Duración ideal: 60–90 segundos.
+Elementos clave: para quién es el canal, qué aprenderán o experimentarán, tus momentos más impactantes visualmente o emocionalmente.
+
+**4. Clip de Promoción en Redes Sociales**
+Objetivo: generar tráfico, engagement o seguidores en TikTok, Reels o Shorts.
+Duración ideal: 30–60 segundos.
+Elementos clave: gancho en los primeros 3 segundos, alta energía en todo el clip, declaración o visual de cierre fuerte.
+
+---
+
+### Método 1: Highlight Reel Manual (Control Total)
+
+Para creadores que quieren control editorial completo sobre cada corte.
+
+**Paso 1: Ve y anota timestamps**
+Reproduce tu contenido fuente a 1.5x de velocidad. Anota el timestamp de cada momento que sea visualmente impactante, emocionalmente resonante, sorprendentemente gracioso o genuinamente impresionante.
+
+**Paso 2: Reduce a tus 8–12 mejores momentos**
+Revisa tus timestamps. Elimina cualquier cosa que requiera contexto para apreciarse. Conserva los momentos que funcionan completamente solos.
+
+**Paso 3: Ordena en orden narrativo**
+Este es el paso creativo. Empieza con tu gancho de apertura más fuerte. Construye hacia un clímax. Termina con algo memorable — una declaración fuerte, una risa, una revelación.
+
+**Paso 4: Edita en CapCut o Premiere**
+Corta cada clip en su punto álgido, justo antes de que la energía se desvanezca. Añade transiciones (cortes simples o disolvencias rápidas). Añade música (instrumental, libre de derechos, que coincida con la energía de tu contenido). Exporta.
+
+**Tiempo requerido:** 3–6 horas para un highlight reel de 90 segundos bien elaborado.
+
+---
+
+### Método 2: Highlight Reel con IA usando HookCut
+
+La función Highlight Reel de HookCut automatiza las partes más lentas del proceso.
+
+**Paso 1: Sube tu vídeo largo**
+HookCut acepta archivos de vídeo directamente o URLs de YouTube. Procesar un vídeo de 60 minutos lleva aproximadamente 5–10 minutos.
+
+**Paso 2: La IA identifica los mejores momentos**
+La IA analiza tu vídeo completo y puntúa cada momento por potencial viral, nivel de energía y calidad del clip. Identifica 8–15 candidatos para tu highlight reel.
+
+**Paso 3: Revisa y selecciona tus highlights**
+Previsualizas cada momento sugerido y seleccionas cuáles incluir. Esta es tu capa de juicio editorial — la IA encuentra opciones, tú tomas las decisiones.
+
+**Paso 4: El Highlight Reel se ensambla automáticamente**
+HookCut ensambla los momentos seleccionados en un highlight reel compilado, aplica transiciones y formatea el output. Los subtítulos se añaden automáticamente en tu estilo elegido.
+
+**Paso 5: Exporta y distribuye**
+El highlight reel terminado se exporta en 9:16 para redes sociales o 16:9 para plataformas tradicionales según tu caso de uso.
+
+**Tiempo requerido:** 20–30 minutos desde la subida hasta el highlight reel terminado.
+
+---
+
+### Música para Highlight Reels: Qué Funciona en 2026
+
+La música es la diferencia entre un highlight reel que se siente profesional y uno que parece un pase de diapositivas.
+
+**Fuentes de música libre de derechos:**
+- Epidemic Sound ($15/mes) — mejor calidad, catálogo extenso
+- Artlist ($199/año) — pistas de calidad cinematográfica
+- YouTube Audio Library (gratis) — limitado pero utilizable
+- Pixabay (gratis) — selección decente
+
+**Principios de selección musical:**
+
+**Adapta la energía a tu contenido**
+Contenido educativo o inspiracional: instrumentales melódicos y edificantes. Comedia o entretenimiento: pistas animadas y enérgicas. Deportes o fitness: ritmos intensos y dinámicos.
+
+**Usa la música como puntuación**
+Los highlight reels más sofisticados sincronizan los cortes de edición con los beats musicales. Cuando la música golpea un beat de batería o un cambio de acorde, ahí es donde cortas al siguiente clip.
+
+**Balance de volumen**
+La música debe estar al 20–30% del volumen de tu voz. Los espectadores deben escuchar claramente lo que se dice. La música es atmósfera, no el protagonista.
+
+---
+
+### Ritmo: El Elemento Más Infravalorado de los Highlight Reels
+
+El ritmo es la cadencia a la que se mueve tu highlight reel. Es el factor más importante que separa los highlight reels profesionales de los amateurs.
+
+**La regla de los rendimientos decrecientes**
+Cada clip que añades reduce el impacto promedio. El primer clip de un highlight reel obtiene la atención completa del espectador. El quinto clip obtiene aproximadamente el 60%. El décimo clip obtiene tal vez el 30%. Por eso los highlight reels más cortos y selectivos casi siempre superan a los más largos y exhaustivos.
+
+**Corta en el punto álgido, no al final**
+Cuando un ponente dice algo genial, corta antes de que los aplausos se extingan completamente. Cuando un invitado dice algo sorprendente, corta justo en el momento de la sorpresa — antes de que terminen de explicarlo. Los momentos incompletos crean curiosidad.
+
+**Varía la duración de los clips**
+Alternar entre clips cortos (3–5 segundos) y clips más largos (10–15 segundos) crea un ritmo que mantiene a los espectadores involucrados.
+
+**El final importa más**
+Los espectadores recuerdan lo último que ven. Termina con tu momento más poderoso — tu logro más impresionante, tu línea más divertida, tu declaración más convincente.
+
+---
+
+### Distribución: Dónde Compartir tu Highlight Reel
+
+**Como trailer del canal de YouTube**
+Ve a YouTube Studio → Personalización → Diseño → Añadir un trailer del canal. Esto se muestra a los no suscriptores cuando visitan tu canal. Un buen highlight reel aquí puede aumentar la tasa de suscripción en un 20–40%.
+
+**Como post fijado en TikTok/Reels**
+Fija tu highlight reel en la parte superior de tu perfil. Se convierte en lo primero que ven los nuevos visitantes — tu mejor primera impresión.
+
+**Como portfolio de ponente/servicio**
+Súbelo a tu web. Inclúyelo en tu página de sobre mí o de servicios. Enlázalo en formularios de solicitud de ponentes y materiales de prensa.
+
+**En pitches por email**
+Incluir un enlace a un highlight reel en un email en frío para charlas, patrocinios o colaboraciones aumenta dramáticamente las tasas de respuesta.
+
+---
+
+### Errores Comunes en Highlight Reels
+
+**Incluir demasiados clips**
+Un highlight reel de 4 minutos no es un highlight reel — es un vídeo largo. Si no puedes reducirlo a menos de 2 minutos, necesitas ser más selectivo.
+
+**Apertura débil**
+La mayoría de creadores empiezan su highlight reel con una intro o tarjeta de título. Esto desperdicia los primeros 5–10 segundos cuando la atención del espectador es más alta. Empieza inmediatamente con tu clip más impactante.
+
+**Sin música o mala música**
+El silencio hace que los highlight reels se sientan vacíos. La música que no coincide con el contenido resulta discordante.
+
+**Sin propósito claro**
+Un highlight reel que intenta ser todo para todos termina siendo nada para nadie. Define tu audiencia y propósito antes de empezar.
+
+---
+
+### Prueba la Función Highlight Reel de HookCut
+
+La función Highlight Reel de HookCut es la forma más rápida de pasar de un vídeo largo sin procesar a un highlight reel pulido y listo para compartir. Sube tu vídeo, revisa los momentos seleccionados por la IA y exporta en menos de 30 minutos.
+
+**[Prueba HookCut gratis — sin tarjeta de crédito](/auth)**`
   },
 ];
