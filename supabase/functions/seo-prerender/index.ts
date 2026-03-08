@@ -368,6 +368,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Strategy",
   },
+  "es/agregar-subtitulos-a-videos-automaticamente": {
+    title: "Cómo Agregar Subtítulos a Vídeos Automáticamente en 2026 (Guía Completa) | HookCut",
+    description: "Agrega subtítulos a cualquier vídeo automáticamente en 2026 usando IA. Cubre precisión, estilos de subtítulos, posicionamiento, subs quemados vs suaves y las mejores herramientas para TikTok, Reels y YouTube Shorts.",
+    keywords: "agregar subtítulos a videos automáticamente, subtítulos automáticos vídeo 2026, subtítulos ia vídeo, generador de subtítulos automático, subtítulos quemados en vídeo",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
