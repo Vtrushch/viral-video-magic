@@ -973,6 +973,11 @@ Your next Short is already recorded. You just haven't extracted it yet.
     date: "2026-03-01",
     readTime: "10 min read",
     category: "How-To Guide",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/repurpose-podcast-into-clips" },
+      { lang: "es", href: "https://hookcut.com/blog/es/reutilizar-episodios-de-podcast-en-clips" },
+      { lang: "x-default", href: "https://hookcut.com/blog/repurpose-podcast-into-clips" },
+    ],
     content: `## How to Repurpose Podcast Episodes into Short Clips (2026 Guide)
 
 You recorded a great podcast episode. 45 minutes of gold — compelling stories, sharp insights, quotable moments. And then... you post it on Spotify and move on.
