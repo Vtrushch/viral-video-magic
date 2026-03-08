@@ -10181,7 +10181,7 @@ El espacio de creadores faceless está menos saturado que el espacio de marcas p
     metaDescription: "Batch content creation lets you produce weeks of video in a single session. Complete guide to bulk video production for creators in 2026 — including schedules, tools, and the exact workflow used by full-time creators.",
     date: "2026-03-08",
     readTime: "10 min read",
-    keywords: "batch create content video, batch content creation 2026, bulk video production creator, content batching strategy, how to batch record videos",
+    keywords: ["batch create content video", "batch content creation 2026", "bulk video production creator", "content batching strategy", "how to batch record videos"],
     category: "Strategy",
     content: `## How to Batch Create Content: The Creator's Guide to Bulk Video Production (2026)
 
