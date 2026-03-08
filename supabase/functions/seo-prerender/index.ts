@@ -320,6 +320,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Strategy",
   },
+  "es/convertir-stream-en-directo-en-clips-virales": {
+    title: "Cómo Convertir un Stream en Directo en Clips Virales (Guía Completa 2026) | HookCut",
+    description: "Convierte cualquier grabación de stream en directo en clips virales para TikTok, Reels y YouTube Shorts en 2026. Guía paso a paso para streamers de Twitch, YouTube Live e Instagram Live.",
+    keywords: "convertir stream en directo en clips virales, clips de stream 2026, reutilizar stream de twitch, clips de directo para tiktok, highlights de livestream",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
