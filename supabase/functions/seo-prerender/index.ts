@@ -248,6 +248,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Strategy",
   },
+  "create-highlight-reel-from-long-video": {
+    title: "How to Create a Highlight Reel from Long Videos (2026 Guide) | HookCut",
+    description: "Create a professional highlight reel from any long video in minutes using AI. Step-by-step guide for podcasters, YouTubers, and event creators — with tips on music, pacing, and distribution in 2026.",
+    keywords: "create highlight reel from long video, highlight reel maker 2026, best moments compilation, ai highlight reel, video highlight generator",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
