@@ -10376,6 +10376,11 @@ The creators who reach 100k, 500k, and 1M followers aren't necessarily more tale
     readTime: "10 min read",
     keywords: ["content repurposing real estate agents", "real estate video content 2026", "realtor tiktok strategy", "real estate short form video", "real estate social media content"],
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/content-repurposing-real-estate-agents" },
+      { lang: "es", href: "https://hookcut.com/blog/es/reutilizacion-contenido-agentes-inmobiliarios" },
+      { lang: "x-default", href: "https://hookcut.com/blog/content-repurposing-real-estate-agents" },
+    ],
     content: `## Content Repurposing for Real Estate Agents: The Complete 2026 Guide
 
 Real estate agents are some of the most naturally content-rich professionals in the world — and some of the worst at distributing that content.
