@@ -8700,6 +8700,11 @@ This is the content engine that's driving growth for bootstrapped SaaS companies
     date: "2026-03-08",
     readTime: "11 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/repurpose-youtube-videos-multiple-formats" },
+      { lang: "es", href: "https://hookcut.com/blog/es/reutilizar-videos-youtube-multiples-formatos" },
+      { lang: "x-default", href: "https://hookcut.com/blog/repurpose-youtube-videos-multiple-formats" },
+    ],
     content: `## How to Repurpose YouTube Videos into Multiple Content Formats in 2026
 
 A YouTube video you spent 6 hours creating will be watched by a fraction of your potential audience. Most of those viewers found it through search or your existing subscriber base — not through discovery.
