@@ -11967,4 +11967,193 @@ Súbela a HookCut. Obtén 5–8 clips en 20 minutos. Publica uno por día esta s
 
 **[Prueba HookCut gratis — empieza a convertir tu contenido de curso en clips para redes sociales hoy](/auth)**`
   },
+  {
+    slug: "repurpose-podcast-episodes-short-form-video",
+    title: "How to Repurpose Podcast Episodes into Short-Form Video in 2026 (Complete Guide)",
+    metaDescription: "Turn every podcast episode into 8–12 short-form video clips for TikTok, Reels, and YouTube Shorts. Complete 2026 guide to podcast video repurposing — tools, workflow, and what actually gets views.",
+    keywords: ["repurpose podcast episodes short form video", "podcast to short form video 2026", "podcast clips tiktok", "podcast video repurposing", "turn podcast into youtube shorts"],
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+    content: `## How to Repurpose Podcast Episodes into Short-Form Video in 2026 (Complete Guide)
+
+Podcasters are sitting on one of the most underutilized content libraries in the creator economy.
+
+Every episode you've ever recorded contains moments — a punchline, a revelation, a counterintuitive take, a raw honest admission — that could stop someone mid-scroll. But because those moments are buried inside an audio file, most of your potential audience never finds them.
+
+Short-form video is how podcasters break out of the "find my podcast first" trap. Instead of hoping listeners discover your show through search or word-of-mouth, you take the best moments to them — on the platforms where they already spend hours every day.
+
+In 2026, the fastest-growing podcasts are driven not by traditional podcast directories but by short-form video clips that introduce the show to new audiences daily.
+
+---
+
+### Why Short-Form Video Is the Best Podcast Growth Channel in 2026
+
+**The discovery problem**
+Apple Podcasts, Spotify, and other directories are not discovery engines — they're consumption engines. People use them to listen to shows they already know. Finding new shows through podcast directories is rare. Finding new shows through a viral clip on TikTok or a YouTube Short that appears in search? That happens millions of times a day.
+
+**Audio-only limits your reach**
+There are 5 billion social media users globally. There are roughly 400–500 million podcast listeners. The gap between those numbers is your untapped potential audience — people who might love your content but will never hear it because they don't listen to podcasts. Short-form video reaches them.
+
+**The compounding clip library**
+Every episode you repurpose into clips adds to a library of clips that keep working for you. A clip from episode 47 might find its audience 18 months after you posted it via YouTube search. Your podcast back catalog becomes a perpetual audience acquisition machine.
+
+---
+
+### What Makes a Good Podcast Clip
+
+Not every moment in a podcast works as a short-form video clip. The moments that work share specific characteristics:
+
+**Self-contained thought**
+The clip must make complete sense to someone who has never heard your podcast before. If it requires context ("so as I was saying in part 1..."), it fails as a standalone clip.
+
+**Strong opening hook**
+The first 3 seconds must earn the viewer's attention. Podcast moments that work best as clips tend to start with a bold statement, a surprising fact, a direct question, or an emotional admission — not with context-setting.
+
+**Conversational energy**
+The moment where the guest leans forward, the host gets more animated, the story reaches its payoff — these are the energy spikes that make audio compelling and translate directly to video engagement.
+
+**Clear value or entertainment**
+The viewer must either learn something specific, laugh, feel something, or be provoked to think differently. Clips that are just "two people talking about a topic" without a clear payoff don't hold attention.
+
+**Natural endpoints**
+A good clip has a beginning and an end that feel complete. The best podcast clips often end on a punchline, a strong conclusion, or a thought-provoking statement.
+
+---
+
+### How to Extract Clips from Podcast Episodes with HookCut
+
+**Option 1: Video podcast recordings**
+If you record your podcast on video (Riverside, Squadcast, Zoom), you have the ideal source material. Upload the video recording to HookCut. The AI analyzes both audio energy and visual engagement, identifies the top 8–15 clip candidates, adds subtitles in your chosen style, and reframes to 9:16. Total time: 20–30 minutes per episode.
+
+**Option 2: Audio-only podcasts**
+If you record audio only, you have two approaches:
+- **Convert audio to video:** Use a waveform visualizer (Headliner, Wavve, or Canva) to create a simple audio visualization video. Upload this to HookCut for clip extraction and subtitles.
+- **Record a dedicated video session:** Once per month, sit in front of a camera and re-record your 5 best moments from recent episodes as standalone video clips. These tend to be higher energy than the original podcast recording.
+
+For long-term growth, recording video is worth the effort. The clip quality from video recordings is significantly higher than audio visualizations.
+
+---
+
+### Clip Formats That Work for Podcasts in 2026
+
+Different clip types serve different purposes in your audience acquisition funnel:
+
+**The "Best Moment" Clip**
+The single most compelling moment from the episode. The insight that made the host or guest lean forward. The story that got quiet and then explosive. This is your top-of-funnel clip — designed to make people want to hear more.
+
+Caption formula: "[Surprising claim or hook from the clip]. This came from episode X of [podcast name] — full episode linked in bio."
+
+**The "Controversial Take" Clip**
+A moment where the guest or host says something that challenges conventional wisdom. "Everyone says X, but the data shows the opposite." High comment engagement because people want to agree or push back.
+
+**The "Story" Clip**
+A self-contained story with a beginning, middle, and end. Stories hold attention better than pure information delivery. Look for moments where the conversation shifted to a specific anecdote or personal experience.
+
+**The "Practical Tip" Clip**
+A specific, actionable recommendation extracted from the episode. "The one thing I'd change if I were starting over is X." These get saved at high rates — viewers want to come back to them.
+
+**The "Emotional Moment" Clip**
+Vulnerability, humor, frustration, surprise — emotional moments in podcasts are rare enough to stand out. When a guest shares something unexpected or raw, that moment translates powerfully to short-form.
+
+---
+
+### Subtitle Strategy for Podcast Clips
+
+Subtitles are non-negotiable for podcast clips. Audio-heavy content depends entirely on text for viewers who watch without sound.
+
+**For interview podcasts:**
+Use speaker labels in your subtitles when two people are speaking. "HOST:" and "GUEST:" or actual names help viewers follow the conversation. HookCut applies speaker differentiation automatically in two-speaker clips.
+
+**For solo podcasts:**
+Standard word-by-word subtitles work perfectly. The Hormozi style (bold white text, black outline) is the most readable across backgrounds.
+
+**Font size:**
+Podcast clips often have more text per second than other content because the conversation moves quickly. Slightly smaller font size (relative to single-speaker clips) may be needed to fit longer sentences without overflow.
+
+---
+
+### Platform Strategy for Podcast Clips
+
+**YouTube Shorts (highest priority for podcasters)**
+YouTube Shorts appear in Google search results. A Short titled "Why [expert name] thinks [counterintuitive claim]" or "The truth about [industry topic] in 2026" will be discovered by searchers for months. YouTube is also where podcast listeners already live — your clips can convert YouTube viewers to podcast listeners directly.
+
+**TikTok (for discovery)**
+TikTok's algorithm distributes content beyond your follower base aggressively. A single strong clip from a compelling guest can introduce your podcast to 50,000–500,000 new potential listeners. Even if TikTok viewers don't immediately subscribe to your podcast, repeated clip exposure builds brand recognition.
+
+**Instagram Reels (for your existing audience)**
+Reels are more effective for deepening relationships with people who already know you. Use them for behind-the-scenes clips, clips that tease upcoming episodes, and your most visually engaging moments.
+
+**LinkedIn (for B2B podcasts)**
+If your podcast covers business, career, leadership, or industry topics, LinkedIn clips reach exactly the professional audience that is most likely to become regular listeners.
+
+---
+
+### The Podcast Clip Production Schedule
+
+**For weekly podcast publishers:**
+Same-week repurposing is ideal — post clips within 24–48 hours of episode release to maximize the episode's discovery window.
+
+**Efficient weekly workflow:**
+- **Episode release day (30 min):** Upload to HookCut, select top 5 clips, apply subtitles, export
+- **Day 2:** Post clip 1 (best moment) with episode link in bio
+- **Day 3:** Post clip 2 (controversial take or story)
+- **Day 5:** Post clip 3 (practical tip)
+- **Day 7:** Post clip 4 (tease for next episode if available)
+
+5 clips per episode × 52 episodes = 260 clips per year. Posted at a rate of 4 per week, that's a full year of daily content from podcast repurposing alone.
+
+---
+
+### Back Catalog: The Hidden Asset
+
+If you have 50, 100, or 200+ podcast episodes that have never been repurposed into clips, you're sitting on an enormous untapped asset.
+
+A single session repurposing your 10 most popular episodes (by downloads) produces 80–120 clips. Scheduled at one per day, that's a 3–4 month content calendar from content you already created years ago.
+
+Prioritize your back catalog by:
+1. Highest download episodes (already proven audience interest)
+2. Most well-known guests (their name recognition drives initial views)
+3. Most evergreen topics (avoid time-sensitive content that has expired)
+
+---
+
+### The CTA Problem: How to Convert Clip Viewers to Listeners
+
+The biggest mistake podcasters make with short-form clips: no clear path from clip to podcast.
+
+**For TikTok and Instagram:** "Full episode linked in bio. Episode [number] of [podcast name]." Simple and direct. Don't ask viewers to search for your podcast — link them directly.
+
+**For YouTube Shorts:** Add a pinned comment with the full episode link. Describe the episode in the title. YouTube viewers are already on the platform and one click away from the full episode.
+
+**For LinkedIn:** "Full episode at [URL] — I'd love to hear your take in the comments." LinkedIn's professional context means viewers are more likely to engage with the full episode if you frame it as a professional development resource.
+
+**The biggest CTA mistake:** Asking viewers to "subscribe to the podcast" as the first CTA. They don't know your podcast well enough yet. The better CTA is to listen to this specific episode — subscriptions follow naturally from good episodes.
+
+---
+
+### Measuring Podcast Clip Performance
+
+Track these metrics across platforms:
+
+**Views-to-listens ratio:** How many clip views translate to episode listens? A strong clip might convert 1–3% of viewers to listeners. If conversion is very low, your CTA needs work.
+
+**Follower attribution:** Ask new subscribers "How did you find the podcast?" Include "social media clip" as an option. This gives you direct attribution data.
+
+**Best-performing clip topics:** After 30 clips, which 5 performed best? Those topics and formats tell you what your potential audience cares about most. Make more podcast content in those areas.
+
+---
+
+### Start Today: Your Podcast Repurposing First Session
+
+1. Pick your most popular episode (highest downloads)
+2. If you have video: upload to HookCut. If audio only: create a waveform video first.
+3. Select the top 5 clips from the AI suggestions
+4. Apply your subtitle style
+5. Export and post one clip today with a direct link to the full episode
+
+Your podcast has moments that deserve an audience beyond your current listeners. Short-form video is how they find their way there.
+
+**[Try HookCut free — turn your best podcast episode into clips in 20 minutes](/auth)**`
+  },
 ];

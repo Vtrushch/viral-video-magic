@@ -488,6 +488,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "repurpose-podcast-episodes-short-form-video": {
+    title: "How to Repurpose Podcast Episodes into Short-Form Video in 2026 (Complete Guide) | HookCut",
+    description: "Turn every podcast episode into 8–12 short-form video clips for TikTok, Reels, and YouTube Shorts. Complete 2026 guide to podcast video repurposing — tools, workflow, and what actually gets views.",
+    keywords: "repurpose podcast episodes short form video, podcast to short form video 2026, podcast clips tiktok, podcast video repurposing, turn podcast into youtube shorts",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
