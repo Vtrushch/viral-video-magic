@@ -10899,4 +10899,188 @@ The optimal workflow: create content optimized for TikTok first. Cross-post to S
 
 **[Try HookCut free — create content for all three platforms from one video in 20 minutes](/auth)**`
   },
+  {
+    slug: "repurpose-online-course-content-social-media",
+    title: "How to Repurpose Online Course Content into Social Media Clips (2026 Guide)",
+    metaDescription: "Turn your online course into weeks of social media content. Complete guide to repurposing course lessons, modules, and Q&As into TikTok clips, YouTube Shorts, and Instagram Reels that drive enrollments in 2026.",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    keywords: ["repurpose online course content social media", "online course content repurposing 2026", "course to social media clips", "repurpose course modules tiktok", "course creator content strategy"],
+    category: "Strategy",
+    content: `## How to Repurpose Online Course Content into Social Media Clips (2026 Guide)
+
+Your online course might be the most underutilized content asset you own.
+
+You spent months — maybe years — developing your curriculum. Every lesson contains hard-won insights. Every module contains frameworks that took you years to develop. Every Q&A session contains answers to the real questions your students struggle with.
+
+And yet most course creators keep this content locked behind a paywall, visible only to enrolled students, while they struggle to create fresh social media content from scratch every week.
+
+In 2026, the course creators growing fastest are doing the opposite: they're using their course content as the foundation of their entire social media presence. The course is the content library. The social clips are the free samples.
+
+This guide shows you exactly how to do it.
+
+---
+
+### The Free Sample Model: Why It Works
+
+The psychological model behind repurposing course content for social media is the free sample model — the same strategy used by Costco, Spotify, and every "freemium" SaaS product in history.
+
+When a potential student sees a 60-second clip from inside your course — a framework they've never encountered, an insight that genuinely helps them, a perspective that shifts how they see their problem — one of two things happens:
+
+**They implement it and it works.** Now they trust you. They know your course contains more of this. They enroll.
+
+**They implement it and want more context.** The clip was useful but incomplete. They want the full framework, the nuances, the other components they know must exist. They enroll to get the rest.
+
+Either outcome leads to enrollment. The only outcome that doesn't lead to enrollment is giving away content that doesn't work — which means the quality of your free clips is what matters most.
+
+---
+
+### What Course Content to Repurpose (and What to Keep Gated)
+
+Not all course content is equal as a free sample. The goal is maximum perceived value with minimum actual course content given away.
+
+**Repurpose freely:**
+- Framework introductions (show the framework, save the deep implementation for the course)
+- Problem identification clips ("Here's the exact mistake that's keeping you stuck at X")
+- Counterintuitive insights that reframe the problem
+- High-level process overviews (the 4-step system — without teaching each step in full)
+- Results and transformation stories
+- Common myths and misconceptions in your niche
+
+**Keep mostly gated:**
+- Detailed step-by-step implementation instructions
+- Templates, worksheets, and resources
+- Live feedback and coaching sessions
+- Advanced tactics and nuances
+- Full Q&A recordings from paid cohorts
+
+The rule: give away the "what" and the "why." Keep the deep "how" for paying students.
+
+---
+
+### Mapping Your Course Content to Short-Form Formats
+
+Different parts of a course module map to different short-form formats:
+
+**Module intro → "Why this matters" clip**
+The first 2–3 minutes of any module typically explains why this skill or concept is important. Extract this as a standalone clip. "Why most people fail at [topic] (and what actually works)" — complete as a standalone, but leaves viewers wanting the full module.
+
+**Framework presentation → "Here's the system" clip**
+When you reveal a framework — a matrix, a process, a set of principles — this is high-value extractable content. Show the framework structure without teaching every component. The clip generates curiosity about the components. Duration: 45–75 seconds.
+
+**Common mistake → "Warning" clip**
+"I see this mistake in 80% of my students before we fix it." Identify one specific, common mistake from your course. These generate high save and share rates because viewers want to check if they're making this mistake, and share it with people who might be.
+
+**Q&A answer → "Expert answer" clip**
+The best questions from your live cohort Q&As are the best social clips. These questions represent exactly what your target student is struggling with. Record a clean solo answer to the most common question from each module's Q&A.
+
+**Student result → "Proof" clip**
+"My student went from [before state] to [after state] using this framework." Social proof combined with a specific, relatable transformation. High conversion for enrollment.
+
+---
+
+### Step-by-Step: Extracting Clips from Course Recordings with HookCut
+
+**Step 1: Identify your best course content**
+Start with your highest-rated lessons or modules — the ones students consistently mention as transformational. These have already proven to be high-value with your existing students, making them reliable free sample material.
+
+**Step 2: Upload module recordings to HookCut**
+HookCut accepts recordings from any source — Kajabi, Teachable, Thinkific, Zoom, or any platform. Upload the video file or paste the URL if it's hosted on YouTube.
+
+**Step 3: Review AI-suggested clips**
+HookCut identifies the moments with the highest energy, strongest hooks, and most complete thought structures. For course content specifically, prioritize clips that:
+- Start with a strong problem statement
+- Present a concept that's immediately useful on its own
+- End at a natural conclusion point (don't cut in the middle of an explanation)
+
+**Step 4: Apply professional subtitle style**
+For course content clips, the Hormozi or Minimal styles work best. Educational content should feel authoritative and clean — not overly flashy.
+
+**Step 5: Export and label by platform**
+Create folders: TikTok clips, YouTube Shorts, LinkedIn clips, Instagram Reels. Different clips may work better on different platforms based on the audience and content type.
+
+---
+
+### Platform-Specific Strategy for Course Content Clips
+
+**TikTok — Discovery and Top of Funnel**
+Use your most accessible, jargon-free clips here. These are for potential students who don't know you yet. Best formats: myth-busting clips, "surprising truth about X" clips, strong opinion takes. CTA: "Full course linked in bio."
+
+**YouTube Shorts → YouTube Channel → Course**
+The pipeline: Shorts drives viewers to long-form YouTube content → long-form content builds deeper trust → viewers enroll. Optimize Short titles for search terms your potential students are actually searching ("how to [specific skill your course teaches]").
+
+**Instagram Reels — Mid-Funnel**
+Your Instagram audience is slightly warmer than TikTok. Use Reels for more specific methodology clips — content that assumes the viewer already knows they have the problem and is evaluating solutions. Student result stories work particularly well here.
+
+**LinkedIn — For Professional/B2B Courses**
+If your course teaches professional skills (marketing, sales, leadership, finance), LinkedIn clips reach professionals with budget and urgency to solve the exact problems your course addresses.
+
+---
+
+### Building a Course Launch Strategy with Repurposed Clips
+
+Course launches are where content repurposing for course creators becomes a direct revenue driver.
+
+**Pre-launch (2 weeks before cart opens):**
+Post one clip per day from inside the course. Each clip should highlight a different module or concept. By day 14, your audience has seen 14 samples and has a clear sense of what's inside.
+
+**Launch week:**
+- Day 1 (cart open): Your highest-converting clip + clear CTA that enrollment is open
+- Day 2: Student result story
+- Day 3: "Still not sure? Here's what's inside" clips — addressing the most common hesitation
+- Day 4: Urgency clip ("Enrollment closes Friday")
+- Day 5 (cart close): Final reminder
+
+**Post-launch:**
+Continue posting course content clips as evergreen lead magnets for the next enrollment period. The best clips from your launch sequence become permanent fixtures in your content library.
+
+---
+
+### The Evergreen Course Content Library
+
+Every clip you extract from your course is a permanent asset. Unlike launches, which have defined windows, these evergreen clips work for you indefinitely.
+
+The math: a 10-module course, with 4–5 extractable clips per module = 40–50 clips. Posted at one per day, that's 40–50 days of content from a single course. If you have 3 courses, you have 4–5 months of daily social content from your existing paid content alone.
+
+This is the content flywheel that sustains the fastest-growing course creator businesses in 2026: the course creates the clips, the clips drive enrollment, enrollment funds more course development, which creates more clips.
+
+---
+
+### Course Content Repurposing Calendar
+
+| Week | Content |
+|------|---------|
+| Week 1 | Module 1 clips: framework intro, common mistake, 1 result story |
+| Week 2 | Module 2 clips: 3 clips + 1 Q&A answer |
+| Week 3 | Module 3 clips: 3 clips + 1 result story |
+| Week 4 | Best-performing clip from weeks 1–3 (re-post with updated caption) + Module 4 clips |
+
+Rotate through your modules on a 2–3 month cycle. By the time you loop back to Module 1 clips, you'll have new students with new results to share and a fresh angle on the same concepts.
+
+---
+
+### Common Course Creator Content Mistakes
+
+**Mistake 1: Giving away too much**
+The goal is perceived value, not complete value delivery. A clip that makes viewers say "wow, there must be so much more inside" is better than one that makes them say "I got everything I needed from that clip."
+
+**Mistake 2: Making clips too course-specific**
+A clip that only makes sense if you know the course structure ("in module 3, we covered X, and now in module 4...") fails as a standalone social clip. Each clip must work without any prior course context.
+
+**Mistake 3: Inconsistent posting between launches**
+The creators who have the biggest launches are the ones posting consistently between launches. Your audience needs to be warm and growing before you open the cart — not built from scratch in launch week.
+
+**Mistake 4: Not using student language**
+Record yourself answering questions from actual student submissions or live Q&As. Student language is more relatable to potential students than your own expert phrasing.
+
+---
+
+### Start with Your Best Lesson
+
+Open your course platform. Find the lesson that students rate highest or reference most often in testimonials. That lesson contains your best free sample material.
+
+Upload it to HookCut. Get 5–8 clips in 20 minutes. Post one per day this week. Watch which clip performs best — that's your top-of-funnel content, and it's already validated by the fact that your paying students love the lesson.
+
+**[Try HookCut free — start turning your course content into social media clips today](/auth)**`
+  },
 ];
