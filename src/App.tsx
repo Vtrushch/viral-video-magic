@@ -26,6 +26,7 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
+import ComparisonPage from "./pages/ComparisonPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/es/:slug" element={<BlogArticle />} />
             <Route path="/blog/:slug" element={<BlogArticle />} />
+            <Route path="/vs/:competitor" element={<ComparisonPage />} />
             <Route
               path="/dashboard"
               element={

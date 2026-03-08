@@ -170,6 +170,69 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
   },
 };
 
+const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
+  "opus-clip": {
+    title: "HookCut vs Opus Clip 2026: Full Comparison | HookCut",
+    description: "HookCut vs Opus Clip 2026. 40% cheaper, no clip expiry, better caption styles. See why creators are switching.",
+    keywords: "hookcut vs opus clip, opus clip alternative, ai video clipper comparison 2026",
+  },
+  vizard: {
+    title: "HookCut vs Vizard 2026: Which AI Clipper Wins? | HookCut",
+    description: "HookCut vs Vizard 2026. Better for solo creators: simpler workflow, more caption styles, $21/mo cheaper.",
+    keywords: "hookcut vs vizard, vizard alternative, ai video clipper comparison 2026",
+  },
+  descript: {
+    title: "HookCut vs Descript 2026: Auto Clips vs Manual Editing | HookCut",
+    description: "HookCut vs Descript 2026. HookCut finds your best moments automatically. Descript requires manual selection.",
+    keywords: "hookcut vs descript, descript alternative, ai clip detection vs manual editing",
+  },
+};
+
+function renderComparisonHtml(slug: string): string | null {
+  const page = COMPARISON_PAGES[slug];
+  if (!page) return null;
+  const url = `https://hookcut.com/vs/${slug}`;
+  const jsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: page.title,
+    description: page.description,
+    datePublished: "2026-03-08",
+    dateModified: "2026-03-08",
+    author: { "@type": "Organization", name: "HookCut Team", url: "https://hookcut.com" },
+    publisher: { "@type": "Organization", name: "HookCut", url: "https://hookcut.com", logo: { "@type": "ImageObject", url: "https://hookcut.com/og-image.svg" } },
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    keywords: page.keywords,
+    image: "https://hookcut.com/og-image.svg",
+    url,
+  });
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${page.title}</title>
+  <meta name="description" content="${page.description}" />
+  <meta name="keywords" content="${page.keywords}" />
+  <link rel="canonical" href="${url}" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="${url}" />
+  <meta property="og:title" content="${page.title}" />
+  <meta property="og:description" content="${page.description}" />
+  <meta property="og:image" content="https://hookcut.com/og-image.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${page.title}" />
+  <meta name="twitter:description" content="${page.description}" />
+  <script type="application/ld+json">${jsonLd}</script>
+</head>
+<body>
+  <h1>${page.title}</h1>
+  <p>${page.description}</p>
+  <a href="https://hookcut.com">Back to HookCut</a>
+</body>
+</html>`;
+}
+
 function renderBlogArticleHtml(slug: string): string | null {
   const article = BLOG_ARTICLES[slug];
   if (!article) return null;
@@ -269,6 +332,9 @@ serve(async (req: Request) => {
     } else if (path.startsWith("/blog/")) {
       const slug = path.replace("/blog/", "").replace(/\/$/, "");
       html = renderBlogArticleHtml(slug);
+    } else if (path.startsWith("/vs/")) {
+      const slug = path.replace("/vs/", "").replace(/\/$/, "");
+      html = renderComparisonHtml(slug);
     }
 
     if (!html) {
