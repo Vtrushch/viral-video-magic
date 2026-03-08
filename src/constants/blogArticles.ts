@@ -8515,6 +8515,11 @@ Adding subtitles is the highest ROI improvement most creators can make to their 
     date: "2026-03-08",
     readTime: "11 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/short-form-video-marketing-saas" },
+      { lang: "es", href: "https://hookcut.com/blog/es/marketing-video-formato-corto-saas" },
+      { lang: "x-default", href: "https://hookcut.com/blog/short-form-video-marketing-saas" },
+    ],
     content: `## Short-Form Video Marketing Strategy for SaaS Companies in 2026
 
 Short-form video has moved from a "nice to have" to a core acquisition channel for SaaS companies in 2026. The data tells the story: B2B buyers under 40 now discover software primarily through social content — not through Google ads, review sites, or cold email.
