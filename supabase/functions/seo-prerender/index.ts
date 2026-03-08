@@ -160,6 +160,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "es/agencias-escalar-contenido-video-con-ia": {
+    title: "Cómo las Agencias de Redes Sociales Pueden Escalar Contenido de Vídeo con IA en 2026 | HookCut",
+    description: "Guía completa para agencias de redes sociales que quieren escalar la producción de vídeo corto con IA en 2026. Flujos de trabajo, herramientas, precios y cómo entregar 10x más contenido sin contratar.",
+    keywords: "agencias escalar contenido video con IA, herramientas de vídeo para agencias, escalar producción de vídeo, flujo de trabajo de agencia 2026, reutilización de vídeo a escala",
+    date: "2026-03-06",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
 };
 
 function renderBlogArticleHtml(slug: string): string | null {
