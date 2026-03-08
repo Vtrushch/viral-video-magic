@@ -1909,6 +1909,11 @@ HookCut exports every clip in the correct format for all three platforms automat
     date: "2026-03-01",
     readTime: "11 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/ai-video-repurposing-for-agencies" },
+      { lang: "es", href: "https://hookcut.com/blog/es/agencias-escalar-contenido-video-con-ia" },
+      { lang: "x-default", href: "https://hookcut.com/blog/ai-video-repurposing-for-agencies" },
+    ],
     content: `## How Social Media Agencies Can Scale Video Content with AI in 2026
 
 The demand for short-form video content has outpaced what most agencies can deliver. Clients expect TikToks, Reels, and Shorts every week — ideally every day. But producing 30 quality clips per month per client with a human team means enormous cost, time, and coordination.
