@@ -1417,6 +1417,11 @@ Pick your top-performing YouTube video or podcast episode. Run it through HookCu
     date: "2026-03-01",
     readTime: "10 min read",
     category: "How-To Guide",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/best-caption-styles-for-tiktok" },
+      { lang: "es", href: "https://hookcut.com/blog/es/mejores-estilos-de-subtitulos-para-tiktok" },
+      { lang: "x-default", href: "https://hookcut.com/blog/best-caption-styles-for-tiktok" },
+    ],
     content: \`## Best Caption Styles for TikTok in 2026 (With Examples and Data)
 
 Captions are no longer optional on TikTok. In 2026, **88% of TikTok videos** include on-screen captions — and for good reason. Videos with captions get 40% more views on average than videos without them.
