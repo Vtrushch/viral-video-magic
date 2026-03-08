@@ -1697,6 +1697,11 @@ HookCut lets you choose from all 6 styles — Hormozi, MrBeast, Minimal, Neon, F
     date: "2026-03-01",
     readTime: "10 min read",
     category: "How-To Guide",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/resize-video-for-tiktok-reels-shorts" },
+      { lang: "es", href: "https://hookcut.com/blog/es/redimensionar-video-para-tiktok-reels-shorts" },
+      { lang: "x-default", href: "https://hookcut.com/blog/resize-video-for-tiktok-reels-shorts" },
+    ],
     content: `## How to Resize Videos for TikTok, Reels, and YouTube Shorts in 2026 (9:16 Guide)
 
 Creating content for multiple short-form platforms means dealing with one frustrating reality: every platform has slightly different technical requirements, and getting them wrong can tank your performance.
