@@ -1195,6 +1195,11 @@ That's 2 months of daily social content from content you've already created.
     date: "2026-03-01",
     readTime: "10 min read",
     category: "How-To Guide",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/make-instagram-reels-from-long-videos" },
+      { lang: "es", href: "https://hookcut.com/blog/es/crear-instagram-reels-de-videos-largos" },
+      { lang: "x-default", href: "https://hookcut.com/blog/make-instagram-reels-from-long-videos" },
+    ],
     content: `## How to Make Instagram Reels from Long Videos Automatically (2026)
 
 Instagram Reels is the fastest-growing content format on the platform — and for good reason. Reels get **22% more engagement** than standard video posts and are Instagram's primary discovery tool for reaching new audiences.
