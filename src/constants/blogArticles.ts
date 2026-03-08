@@ -4287,6 +4287,11 @@ La ventana para ser temprano todavía está abierta — pero no por mucho tiempo
     date: "2026-03-08",
     readTime: "10 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/go-viral-on-tiktok-with-long-form-content" },
+      { lang: "es", href: "https://hookcut.com/blog/es/como-hacerse-viral-en-tiktok-con-contenido-largo" },
+      { lang: "x-default", href: "https://hookcut.com/blog/go-viral-on-tiktok-with-long-form-content" },
+    ],
     content: `## How to Go Viral on TikTok with Long-Form Content (2026 Strategy)
 
 Here's a counterintuitive truth about TikTok in 2026: the creators going viral fastest aren't making TikTok-native content. They're repurposing long-form content — podcasts, YouTube videos, webinars, interviews — into clips that consistently hit 100k, 500k, even millions of views.
