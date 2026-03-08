@@ -136,6 +136,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "es/crear-instagram-reels-de-videos-largos": {
+    title: "Cómo Crear Instagram Reels a partir de Vídeos Largos Automáticamente (2026) | HookCut",
+    description: "Convierte cualquier vídeo largo en Instagram Reels automáticamente con IA. Duración óptima, estilos de subtítulos, horarios de publicación y herramientas para Reels en 2026.",
+    keywords: "crear instagram reels de videos largos, vídeo largo a reels, instagram reels automático, reutilizar vídeo para instagram, generador de reels con IA",
+    date: "2026-03-06",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 function renderBlogArticleHtml(slug: string): string | null {
