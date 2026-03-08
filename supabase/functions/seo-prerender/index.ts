@@ -216,6 +216,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "es/mejores-herramientas-edicion-video-ia-2026": {
+    title: "Las Mejores Herramientas de Edición de Vídeo con IA para Creadores en 2026 (Análisis Honesto) | HookCut",
+    description: "Las mejores herramientas de edición de vídeo con IA para creadores en 2026 — clasificadas por caso de uso, precio y rendimiento real. Desde detectores de clips hasta generadores de subtítulos y editores completos.",
+    keywords: "mejores herramientas edicion video ia 2026, editor de vídeo ia 2026, mejor software edición vídeo creadores, generador clips ia, editor de vídeo automático",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Comparison",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
