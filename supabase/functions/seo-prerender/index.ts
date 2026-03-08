@@ -112,6 +112,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Strategy",
   },
+  "face-tracking-vertical-video": {
+    title: "Face Tracking for Vertical Video: Why It Matters and How It Works (2026) | HookCut",
+    description: "Face tracking automatically keeps speakers centered in vertical 9:16 video. Learn how AI face tracking works, why it's essential for short-form content, and which tools do it best in 2026.",
+    keywords: "face tracking vertical video, ai face tracking video, auto reframe video, vertical video face tracking, 9:16 reframe ai",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
   "es/convertir-video-largo-en-clips-virales": {
     title: "Cómo Convertir un Vídeo Largo en Clips Virales con IA (2026) | HookCut",
     description: "Aprende a convertir cualquier vídeo largo en 10 clips virales en 15 minutos usando IA. Guía paso a paso para YouTube, TikTok e Instagram Reels en 2026.",
