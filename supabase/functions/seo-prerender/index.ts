@@ -201,6 +201,21 @@ const COMPARISON_PAGES: Record<string, { title: string; description: string; key
     description: "HookCut vs Submagic 2026. HookCut finds clips AND adds captions for $9. Submagic only does captions for $30.",
     keywords: "hookcut vs submagic, submagic alternative, ai captions vs full clip workflow 2026",
   },
+  "vidyo-ai": {
+    title: "HookCut vs Vidyo.ai (Quso) 2026: 80% Cheaper | HookCut",
+    description: "HookCut vs Vidyo.ai 2026. Get the same AI video clipping at $9 vs $49. Full feature and pricing comparison.",
+    keywords: "hookcut vs vidyo ai, hookcut vs quso, vidyo ai alternative, ai video clipper 2026",
+  },
+  "exemplary-ai": {
+    title: "HookCut vs Exemplary AI 2026: Clips vs Transcripts | HookCut",
+    description: "HookCut vs Exemplary AI 2026. HookCut optimizes for viral potential. Exemplary focuses on transcription.",
+    keywords: "hookcut vs exemplary ai, exemplary ai alternative, ai clip vs transcription tool 2026",
+  },
+  klap: {
+    title: "HookCut vs Klap 2026: All Platforms vs TikTok Only | HookCut",
+    description: "HookCut vs Klap 2026. HookCut works for TikTok, Reels AND Shorts. $20 cheaper. No cancellation issues.",
+    keywords: "hookcut vs klap, klap alternative, ai video clipper all platforms 2026",
+  },
 };
 
 function renderComparisonHtml(slug: string): string | null {
