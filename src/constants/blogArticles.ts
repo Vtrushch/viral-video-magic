@@ -8896,6 +8896,11 @@ Upload it to HookCut. Get 8–12 clips. Export the transcript. Turn it into a bl
     date: "2026-03-08",
     readTime: "10 min read",
     category: "How-To Guide",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/viral-score-ai-video" },
+      { lang: "es", href: "https://hookcut.com/blog/es/puntuacion-viral-ia-video" },
+      { lang: "x-default", href: "https://hookcut.com/blog/viral-score-ai-video" },
+    ],
     content: `## Viral Score: What It Is and How AI Predicts Viral Video Content (2026)
 
 When you upload a 60-minute video and an AI tool tells you "this clip has a 94 viral score" — what does that actually mean? How does an algorithm predict which 45-second moment will get 500,000 views and which one will get 500?
