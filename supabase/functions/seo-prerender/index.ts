@@ -264,6 +264,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Strategy",
   },
+  "grow-youtube-channel-with-short-form-content": {
+    title: "How to Grow a YouTube Channel with Short-Form Content in 2026 | HookCut",
+    description: "Use YouTube Shorts to grow your main YouTube channel in 2026. Proven strategy for converting Shorts viewers into long-form subscribers — with clip selection, title optimization, and cross-promotion tactics.",
+    keywords: "grow youtube channel with short form content, youtube shorts growth strategy 2026, grow youtube with shorts, youtube shorts to long form, shorts channel growth 2026",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
