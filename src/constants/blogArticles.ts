@@ -9079,6 +9079,11 @@ Use it to save time identifying your best clip candidates. Use it to filter out 
     date: "2026-03-08",
     readTime: "11 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/short-form-video-without-showing-face" },
+      { lang: "es", href: "https://hookcut.com/blog/es/videos-formato-corto-sin-mostrar-cara" },
+      { lang: "x-default", href: "https://hookcut.com/blog/short-form-video-without-showing-face" },
+    ],
     content: `## How to Create Short-Form Video Content Without Showing Your Face (2026 Guide)
 
 One of the most common reasons people don't start creating video content: "I don't want to be on camera."
