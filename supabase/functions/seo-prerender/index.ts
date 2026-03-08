@@ -392,6 +392,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "11 min read",
     category: "Strategy",
   },
+  "es/puntuacion-viral-ia-video": {
+    title: "Puntuación Viral: Qué Es y Cómo la IA Predice el Contenido de Vídeo Viral (2026) | HookCut",
+    description: "¿Qué es una puntuación viral para vídeo? Cómo las herramientas de IA analizan tus clips y predicen qué momentos se volverán virales en 2026. Incluye qué señales importan y cómo usarla en tu flujo de trabajo.",
+    keywords: "puntuación viral ia video, puntuación viral vídeo, predicción viral ia, cómo predecir contenido viral, herramienta ia vídeo viral 2026",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "How-To Guide",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
