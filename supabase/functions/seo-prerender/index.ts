@@ -544,6 +544,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "es/reutilizar-charla-conferencia-keynote-contenido": {
+    title: "Cómo Convertir una Charla de Conferencia o Keynote en 30 Días de Contenido (Guía 2026) | HookCut",
+    description: "Una charla de conferencia o keynote contiene semanas de contenido. Guía completa 2026 para reutilizar tu presentación en clips, posts de blog, contenido social y lead magnets — incluyendo el flujo de trabajo exacto usado por ponentes profesionales.",
+    keywords: "reutilizar charla conferencia keynote contenido, reutilizar presentación keynote contenido, charla de conferencia a clips de redes sociales, reutilización de contenido de ponente 2026",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
   "es/reutilizar-episodios-podcast-video-formato-corto": {
     title: "Cómo Reutilizar Episodios de Podcast en Vídeo de Formato Corto en 2026 (Guía Completa) | HookCut",
     description: "Convierte cada episodio de podcast en 8–12 clips de vídeo de formato corto para TikTok, Reels y YouTube Shorts. Guía completa 2026 para reutilizar podcasts en vídeo — herramientas, flujo de trabajo y qué consigue visualizaciones.",
