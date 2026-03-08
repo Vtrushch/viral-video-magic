@@ -360,6 +360,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "How-To Guide",
   },
+  "short-form-video-without-showing-face": {
+    title: "How to Create Short-Form Video Content Without Showing Your Face (2026 Guide) | HookCut",
+    description: "Build a successful short-form video presence on TikTok, Reels, and YouTube Shorts without showing your face. 10 proven formats, tools, and strategies for faceless video creators in 2026.",
+    keywords: "short form video without showing face, faceless youtube channel 2026, tiktok without showing face, short form video no face, anonymous content creator strategy",
+    date: "2026-03-08",
+    readTime: "11 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
