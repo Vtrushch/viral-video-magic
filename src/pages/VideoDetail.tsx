@@ -1428,6 +1428,7 @@ function getDisplayTitle(video: Tables<"videos">): string {
 /* ─── Main Page ─── */
 const VideoDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const [video, setVideo] = useState<Tables<"videos"> | null>(null);
   const [clips, setClips] = useState<Tables<"clips">[]>([]);
