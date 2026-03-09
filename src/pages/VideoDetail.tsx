@@ -52,8 +52,9 @@ function formatDate(d: string) {
 }
 
 /* ─── Downloading State (YouTube import) ─── */
-const DownloadingState = ({ video, onStatusChange }: { video: Tables<"videos">; onStatusChange?: () => void }) => {
+const DownloadingState = ({ video }: { video: Tables<"videos"> }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   useEffect(() => {
     const channel = supabase
       .channel(`video-download-${video.id}`)
@@ -64,13 +65,13 @@ const DownloadingState = ({ video, onStatusChange }: { video: Tables<"videos">; 
         filter: `id=eq.${video.id}`,
       }, (payload: any) => {
         if (payload.new.status !== "downloading") {
-          onStatusChange?.();
+          navigate(0); // React Router reload — no full page refresh
         }
       })
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [video.id]);
+  }, [video.id, navigate]);
 
   return (
     <div className="glass-card rounded-2xl p-10 text-center space-y-6">
@@ -95,7 +96,7 @@ const DownloadingState = ({ video, onStatusChange }: { video: Tables<"videos">; 
 };
 
 /* ─── Uploaded State ─── */
-const UploadedState = ({ video, onStatusChange }: { video: Tables<"videos">; onStatusChange?: () => void }) => {
+const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const settings = video.settings as any;
@@ -110,7 +111,7 @@ const UploadedState = ({ video, onStatusChange }: { video: Tables<"videos">; onS
       return;
     }
     toast.success(t("toasts.analysisStartedShort"));
-    onStatusChange?.();
+    navigate(0);
   };
 
   return (
@@ -392,13 +393,6 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
   // Delete clip state
   const [confirmDeleteClipId, setConfirmDeleteClipId] = useState<string | null>(null);
   const [deletingClipId, setDeletingClipId] = useState<string | null>(null);
-
-  const isStaleRender = useCallback((clip: Tables<"clips">) => {
-    if (clip.status !== "rendering") return false;
-    const startedAt = clip.render_started_at;
-    if (!startedAt) return false;
-    return Date.now() - new Date(startedAt).getTime() > 10 * 60 * 1000; // 10 minutes
-  }, []);
 
   // If parent passes new clips (e.g. after realtime fetch), update local state
   useEffect(() => {
@@ -984,42 +978,33 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                       </div>
                     ) : (
                       (credits?.remaining ?? 0) > 0 ? (
-                        <>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 min-h-[44px] px-2 text-xs text-primary hover:text-primary"
-                            onClick={() => renderClip(clip)}
-                            disabled={isRendering}
-                          >
-                            {isRendering ? (
-                              <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> {t("videoDetail.renderingTime", { time: getRenderTimeEstimate(clip) })}</>
-                            ) : (
-                              <><Sparkles className="w-3 h-3 mr-1" /> {t("videoDetail.render")}</>
-                            )}
-                          </Button>
-                          {isStaleRender(clip) && (
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-xs text-yellow-400">Taking longer than expected</span>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-7 text-xs"
-                                onClick={() => {
-                                  supabase.from("clips").update({ status: "pending", error_message: null } as any)
-                                    .eq("id", clip.id).then(() => {
-                                      toast.info("Clip reset — you can render it again");
-                                      setClips(prev => prev.map(c => c.id === clip.id ? { ...c, status: "pending", error_message: null } : c));
-                                      setRenderingIds(prev => { const n = new Set(prev); n.delete(clip.id); return n; });
-                                    });
-                                }}
-                              >
-                                <RefreshCw className="w-3 h-3 mr-1" />
-                                Retry
-                              </Button>
-                            </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 min-h-[44px] px-2 text-xs text-primary hover:text-primary"
+                          onClick={() => renderClip(clip)}
+                          disabled={isRendering}
+                        >
+                          {isRendering ? (
+                            <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> {t("videoDetail.renderingTime", { time: getRenderTimeEstimate(clip) })}</>
+                          ) : (
+                            <><Sparkles className="w-3 h-3 mr-1" /> {t("videoDetail.render")}</>
                           )}
-                        </>
+                        </Button>
+                        {/* Stale render detection: if rendering > 10 min, show retry */}
+                        {isRendering && clip.render_started_at && (Date.now() - new Date(clip.render_started_at as string).getTime() > 10 * 60 * 1000) && (
+                          <button
+                            onClick={async () => {
+                              await supabase.from("clips").update({ status: "pending", error_message: "Reset by user — render timed out" } as any).eq("id", clip.id);
+                              setRenderingIds(prev => { const n = new Set(prev); n.delete(clip.id); return n; });
+                              setClips(prev => prev.map(c => c.id === clip.id ? { ...c, status: "pending" } : c));
+                              toast.info("Clip reset — you can render it again");
+                            }}
+                            className="text-[10px] text-yellow-400 hover:text-yellow-300 hover:underline"
+                          >
+                            ⏱ Taking too long? Reset & retry
+                          </button>
+                        )}
                       ) : (
                         <div className="flex items-center gap-1.5">
                           <span className="text-[10px] text-muted-foreground">{t("videoDetail.noCredits")}</span>
@@ -1339,7 +1324,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
         onClose={() => setReAnalyzeOpen(false)}
         video={video}
         existingClipCount={clips.length}
-        onSuccess={() => onReAnalyze?.()}
+        onSuccess={() => navigate(0)}
       />
 
       {/* Highlight Reels Section */}
@@ -1379,7 +1364,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
 };
 
 /* ─── Failed State ─── */
-const FailedState = ({ video, onStatusChange }: { video: Tables<"videos">; onStatusChange?: () => void }) => {
+const FailedState = ({ video }: { video: Tables<"videos"> }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -1393,7 +1378,7 @@ const FailedState = ({ video, onStatusChange }: { video: Tables<"videos">; onSta
       return;
     }
     toast.success(t("videoDetail.retrying"));
-    onStatusChange?.();
+    navigate(0);
   };
 
   return (
@@ -1515,16 +1500,6 @@ const VideoDetail = () => {
     };
   }, [id]);
 
-  const refetchAll = useCallback(async () => {
-    if (!id) return;
-    const [videoRes, clipsRes] = await Promise.all([
-      supabase.from("videos").select("*").eq("id", id).single(),
-      supabase.from("clips").select("*").eq("video_id", id).order("viral_score", { ascending: false }),
-    ]);
-    if (videoRes.data) setVideo(videoRes.data);
-    if (clipsRes.data) setClips(clipsRes.data);
-  }, [id]);
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -1595,12 +1570,12 @@ const VideoDetail = () => {
       </div>
 
       {/* Status-based content */}
-      {video.status === "downloading" && <DownloadingState video={video} onStatusChange={refetchAll} />}
-      {video.status === "uploading" && <UploadedState video={video} onStatusChange={refetchAll} />}
-      {video.status === "uploaded" && <UploadedState video={video} onStatusChange={refetchAll} />}
+      {video.status === "downloading" && <DownloadingState video={video} />}
+      {video.status === "uploading" && <UploadedState video={video} />}
+      {video.status === "uploaded" && <UploadedState video={video} />}
       {video.status === "analyzing" && <AnalyzingState video={video} />}
       {video.status === "ready" && <ReadyState video={video} clips={clips} onReAnalyze={() => setReAnalyzeOpen(true)} />}
-      {video.status === "failed" && <FailedState video={video} onStatusChange={refetchAll} />}
+      {video.status === "failed" && <FailedState video={video} />}
 
       {/* Re-analyze dialog (page level for ready status) */}
       <ReAnalyzeDialog
@@ -1608,7 +1583,7 @@ const VideoDetail = () => {
         onClose={() => setReAnalyzeOpen(false)}
         video={video}
         existingClipCount={clips.length}
-        onSuccess={() => refetchAll()}
+        onSuccess={() => navigate(0)}
       />
     </div>
   );
