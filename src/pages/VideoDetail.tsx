@@ -978,6 +978,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                       </div>
                     ) : (
                       (credits?.remaining ?? 0) > 0 ? (
+                        <>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -1005,6 +1006,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                             ⏱ Taking too long? Reset & retry
                           </button>
                         )}
+                        </>
                       ) : (
                         <div className="flex items-center gap-1.5">
                           <span className="text-[10px] text-muted-foreground">{t("videoDetail.noCredits")}</span>
@@ -1426,6 +1428,7 @@ function getDisplayTitle(video: Tables<"videos">): string {
 /* ─── Main Page ─── */
 const VideoDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const [video, setVideo] = useState<Tables<"videos"> | null>(null);
   const [clips, setClips] = useState<Tables<"clips">[]>([]);
