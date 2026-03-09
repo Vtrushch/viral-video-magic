@@ -55,7 +55,7 @@ const SettingsPage = () => {
     if (!user) return;
     setSavingPrefs(true);
     const { error } = await supabase.auth.updateUser({
-      data: { caption_style: captionStyle, clip_length: clipLength, clip_count: clipCount },
+      data: { caption_style: captionStyle, clip_length: clipLength, clip_count: clipCount, reframe_mode: reframeMode },
     });
     if (error) { toast.error(t("settings.failedSavePrefs")); } else { toast.success(t("toasts.changesSaved")); }
     setSavingPrefs(false);
