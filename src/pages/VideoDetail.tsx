@@ -1017,8 +1017,8 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                               Retry
                             </Button>
                           </div>
-                        )
-                      ) : (
+                        )}
+                      </>) : (
                         <div className="flex items-center gap-1.5">
                           <span className="text-[10px] text-muted-foreground">{t("videoDetail.noCredits")}</span>
                           <a href="/dashboard/upgrade" className="text-[10px] text-primary hover:underline">{t("videoDetail.upgradeLink")}</a>
