@@ -1585,12 +1585,12 @@ const VideoDetail = () => {
       </div>
 
       {/* Status-based content */}
-      {video.status === "downloading" && <DownloadingState video={video} />}
-      {video.status === "uploading" && <UploadedState video={video} />}
-      {video.status === "uploaded" && <UploadedState video={video} />}
+      {video.status === "downloading" && <DownloadingState video={video} onStatusChange={refetchAll} />}
+      {video.status === "uploading" && <UploadedState video={video} onStatusChange={refetchAll} />}
+      {video.status === "uploaded" && <UploadedState video={video} onStatusChange={refetchAll} />}
       {video.status === "analyzing" && <AnalyzingState video={video} />}
       {video.status === "ready" && <ReadyState video={video} clips={clips} onReAnalyze={() => setReAnalyzeOpen(true)} />}
-      {video.status === "failed" && <FailedState video={video} />}
+      {video.status === "failed" && <FailedState video={video} onStatusChange={refetchAll} />}
 
       {/* Re-analyze dialog (page level for ready status) */}
       <ReAnalyzeDialog
