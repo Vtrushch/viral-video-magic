@@ -52,7 +52,7 @@ function formatDate(d: string) {
 }
 
 /* ─── Downloading State (YouTube import) ─── */
-const DownloadingState = ({ video }: { video: Tables<"videos"> }) => {
+const DownloadingState = ({ video, onStatusChange }: { video: Tables<"videos">; onStatusChange?: () => void }) => {
   const { t } = useTranslation();
   useEffect(() => {
     const channel = supabase
