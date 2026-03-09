@@ -67,9 +67,11 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
       setVideoUrl(publicUrl);
     } else if (video?.file_path) {
       // Unrendered clips: get signed URL from raw-videos bucket
+      // Add media fragment #t=start,end so browser only fetches the needed portion
       getSignedUrl("raw-videos", video.file_path).then((url) => {
         if (url) {
-          setVideoUrl(url);
+          const fragmentUrl = isRenderedClip ? url : `${url}#t=${Math.max(0, startTime - 2)},${endTime + 2}`;
+          setVideoUrl(fragmentUrl);
         } else {
           setError(t("clipPreview.failedToLoad"));
           setLoading(false);
