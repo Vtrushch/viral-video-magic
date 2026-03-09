@@ -64,7 +64,7 @@ const DownloadingState = ({ video, onStatusChange }: { video: Tables<"videos">; 
         filter: `id=eq.${video.id}`,
       }, (payload: any) => {
         if (payload.new.status !== "downloading") {
-          window.location.reload();
+          onStatusChange?.();
         }
       })
       .subscribe();
