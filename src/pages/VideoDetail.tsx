@@ -1339,7 +1339,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
         onClose={() => setReAnalyzeOpen(false)}
         video={video}
         existingClipCount={clips.length}
-        onSuccess={() => window.location.reload()}
+        onSuccess={() => onReAnalyze?.()}
       />
 
       {/* Highlight Reels Section */}
