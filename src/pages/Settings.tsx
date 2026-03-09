@@ -23,6 +23,7 @@ const SettingsPage = () => {
   const [captionStyle, setCaptionStyle] = useState("hormozi");
   const [clipLength, setClipLength] = useState("medium");
   const [clipCount, setClipCount] = useState("10");
+  const [reframeMode, setReframeMode] = useState("smart");
   const [savingPrefs, setSavingPrefs] = useState(false);
   const [loadingPrefs, setLoadingPrefs] = useState(true);
 
@@ -38,6 +39,7 @@ const SettingsPage = () => {
     if (meta.caption_style) setCaptionStyle(meta.caption_style);
     if (meta.clip_length) setClipLength(meta.clip_length);
     if (meta.clip_count) setClipCount(meta.clip_count);
+    if (meta.reframe_mode) setReframeMode(meta.reframe_mode);
     setLoadingPrefs(false);
   }, [user]);
 
@@ -53,7 +55,7 @@ const SettingsPage = () => {
     if (!user) return;
     setSavingPrefs(true);
     const { error } = await supabase.auth.updateUser({
-      data: { caption_style: captionStyle, clip_length: clipLength, clip_count: clipCount },
+      data: { caption_style: captionStyle, clip_length: clipLength, clip_count: clipCount, reframe_mode: reframeMode },
     });
     if (error) { toast.error(t("settings.failedSavePrefs")); } else { toast.success(t("toasts.changesSaved")); }
     setSavingPrefs(false);
@@ -175,6 +177,17 @@ const SettingsPage = () => {
               </Select>
             </div>
 
+            <div className="space-y-2">
+              <Label className="text-sm text-foreground/80">{t("settings.defaultReframeMode")}</Label>
+              <Select value={reframeMode} onValueChange={setReframeMode}>
+                <SelectTrigger className="bg-muted/20 border-border/40 text-foreground"><SelectValue /></SelectTrigger>
+                <SelectContent className="dark">
+                  <SelectItem value="smart">{t("settings.reframeSmart")}</SelectItem>
+                  <SelectItem value="full">{t("settings.reframeFull")}</SelectItem>
+                  <SelectItem value="center">{t("settings.reframeCenter")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Button variant="hero" size="sm" onClick={handleSavePrefs} disabled={savingPrefs || loadingPrefs}>
               {savingPrefs ? t("settings.saving") : t("settings.savePreferences")}
             </Button>
