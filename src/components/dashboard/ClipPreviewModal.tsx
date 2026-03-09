@@ -36,8 +36,8 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   const [muted, setMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [bufferPercent, setBufferPercent] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [bufferPercent, setBufferPercent] = useState(0);
 
   const isRenderedClip = clip?.status === "ready" && !!clip?.file_path;
   const startTime = isRenderedClip ? 0 : parseFloat(clip?.start_time || "0");
@@ -61,6 +61,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     setVideoUrl(null);
     setPlaying(false);
     setCurrentTime(0);
+    setBufferPercent(0);
 
     if (isRenderedClip && clip?.file_path) {
       // Rendered clips are in the public rendered-clips bucket
@@ -68,11 +69,12 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
       setVideoUrl(publicUrl);
     } else if (video?.file_path) {
       // Unrendered clips: get signed URL from raw-videos bucket
-      // Add media fragment #t=start,end so browser only fetches the needed portion
+      // Add media fragment #t=start,end so browser only fetches the needed byte range
       getSignedUrl("raw-videos", video.file_path).then((url) => {
         if (url) {
-          const fragmentUrl = isRenderedClip ? url : `${url}#t=${Math.max(0, startTime - 2)},${endTime + 2}`;
-          setVideoUrl(fragmentUrl);
+          const padStart = Math.max(0, startTime - 2);
+          const padEnd = endTime + 2;
+          setVideoUrl(`${url}#t=${padStart},${padEnd}`);
         } else {
           setError(t("clipPreview.failedToLoad"));
           setLoading(false);
@@ -98,22 +100,6 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     setLoading(false);
   }, [startTime, getVideoEl]);
 
-  // Track buffering progress
-  const handleProgress = useCallback(() => {
-    const el = getVideoEl();
-    if (!el || !el.buffered.length) return;
-    try {
-      const bufferedEnd = el.buffered.end(el.buffered.length - 1);
-      const targetEnd = endTime || el.duration;
-      if (targetEnd > 0) {
-        const pct = Math.min(100, Math.round((bufferedEnd / targetEnd) * 100));
-        setBufferPercent(pct);
-      }
-    } catch {
-      // buffered.end can throw if no ranges available
-    }
-  }, [getVideoEl, endTime]);
-
   // Auto-pause at end_time
   const handleTimeUpdate = useCallback(() => {
     const el = getVideoEl();
@@ -125,6 +111,21 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
       setPlaying(false);
     }
   }, [endTime, startTime, getVideoEl]);
+
+  // Track buffering progress so users see loading %
+  const handleProgress = useCallback(() => {
+    const el = getVideoEl();
+    if (!el || !el.buffered.length) return;
+    try {
+      const bufferedEnd = el.buffered.end(el.buffered.length - 1);
+      const targetEnd = endTime || el.duration;
+      if (targetEnd > 0) {
+        setBufferPercent(Math.min(100, Math.round((bufferedEnd / targetEnd) * 100)));
+      }
+    } catch {
+      // buffered.end can throw if no ranges available yet
+    }
+  }, [getVideoEl, endTime]);
 
   const handleReload = () => {
     const el = getVideoEl();
@@ -188,7 +189,10 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     if (!open) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
-      if (e.key === " ") { e.preventDefault(); togglePlay(); }
+      if (e.key === " ") {
+        e.preventDefault();
+        togglePlay();
+      }
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
@@ -197,7 +201,12 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   if (!open || !clip || !video) return null;
 
   const progress = clipDuration > 0 ? ((currentTime - startTime) / clipDuration) * 100 : 0;
-  const viralAnalysis = clip.viral_analysis as { reason?: string; hook_strength?: number; face_x?: number; hook_variants?: { type: string; label: string; text: string }[] } | null;
+  const viralAnalysis = clip.viral_analysis as {
+    reason?: string;
+    hook_strength?: number;
+    face_x?: number;
+    hook_variants?: { type: string; label: string; text: string }[];
+  } | null;
 
   // --- 9:16 crop simulation from 16:9 source ---
   const isRendered = isRenderedClip;
@@ -251,11 +260,9 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
           <div className="relative w-full max-w-[360px] mx-auto block sm:hidden">
             <div className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-black">
               {loading && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 z-10">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                  <span className="text-xs text-muted-foreground">
-                    {bufferPercent > 0 ? `Loading video... ${bufferPercent}%` : "Loading video..."}
-                  </span>
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black z-10 gap-2">
+                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  {bufferPercent > 0 && <span className="text-[11px] text-white/50">Loading {bufferPercent}%</span>}
                 </div>
               )}
               {error && (
@@ -314,17 +321,27 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                   step={0.1}
                   value={Math.max(startTime, Math.min(currentTime, endTime))}
                   onChange={handleScrub}
-                  className="w-full h-1 appearance-none rounded-full cursor-pointer mb-2"
+                  className="w-full h-2 appearance-none rounded-full cursor-pointer mb-2 touch-manipulation"
                   style={{
                     background: `linear-gradient(to right, hsl(349,100%,59%) ${Math.max(0, progress)}%, hsl(0,0%,30%) ${Math.max(0, progress)}%)`,
                   }}
                 />
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <button onClick={togglePlay} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
-                      {playing ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-white ml-0.5" />}
+                    <button
+                      onClick={togglePlay}
+                      className="w-10 h-10 min-h-[44px] min-w-[44px] rounded-full flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors"
+                    >
+                      {playing ? (
+                        <Pause className="w-4 h-4 text-white" />
+                      ) : (
+                        <Play className="w-4 h-4 text-white ml-0.5" />
+                      )}
                     </button>
-                    <button onClick={() => setMuted(!muted)} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+                    <button
+                      onClick={() => setMuted(!muted)}
+                      className="w-10 h-10 min-h-[44px] min-w-[44px] rounded-full flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors"
+                    >
                       {muted ? <VolumeX className="w-4 h-4 text-white" /> : <Volume2 className="w-4 h-4 text-white" />}
                     </button>
                   </div>
@@ -341,19 +358,19 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
             className="hidden sm:block relative rounded-[2.5rem] p-3 w-[280px] lg:w-[300px]"
             style={{
               background: "linear-gradient(145deg, hsl(240,15%,16%), hsl(240,15%,10%))",
-              boxShadow: "0 25px 60px -10px rgba(0,0,0,0.6), 0 0 40px -10px hsl(349,100%,59%,0.15), inset 0 1px 0 hsl(0,0%,100%,0.08)",
+              boxShadow:
+                "0 25px 60px -10px rgba(0,0,0,0.6), 0 0 40px -10px hsl(349,100%,59%,0.15), inset 0 1px 0 hsl(0,0%,100%,0.08)",
             }}
           >
-            <div className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-6 rounded-b-2xl z-10"
+            <div
+              className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-6 rounded-b-2xl z-10"
               style={{ background: "hsl(240,15%,8%)" }}
             />
             <div className="relative aspect-[9/16] rounded-[2rem] overflow-hidden bg-black">
               {loading && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 z-10">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                  <span className="text-xs text-muted-foreground">
-                    {bufferPercent > 0 ? `Loading video... ${bufferPercent}%` : "Loading video..."}
-                  </span>
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black z-10 gap-2">
+                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  {bufferPercent > 0 && <span className="text-[11px] text-white/50">Loading {bufferPercent}%</span>}
                 </div>
               )}
 
@@ -414,7 +431,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                   step={0.1}
                   value={Math.max(startTime, Math.min(currentTime, endTime))}
                   onChange={handleScrub}
-                  className="w-full h-1 appearance-none rounded-full cursor-pointer mb-2"
+                  className="w-full h-2 appearance-none rounded-full cursor-pointer mb-2 touch-manipulation"
                   style={{
                     background: `linear-gradient(to right, hsl(349,100%,59%) ${Math.max(0, progress)}%, hsl(0,0%,30%) ${Math.max(0, progress)}%)`,
                   }}
@@ -435,11 +452,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                       onClick={() => setMuted(!muted)}
                       className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
                     >
-                      {muted ? (
-                        <VolumeX className="w-4 h-4 text-white" />
-                      ) : (
-                        <Volume2 className="w-4 h-4 text-white" />
-                      )}
+                      {muted ? <VolumeX className="w-4 h-4 text-white" /> : <Volume2 className="w-4 h-4 text-white" />}
                     </button>
                   </div>
                   <span className="text-xs text-white/80 font-mono">
@@ -458,9 +471,15 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
 
             <div className="flex flex-wrap gap-3">
               {clip.viral_score != null && (
-                <div className={`inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg ${
-                  clip.viral_score >= 8 ? "bg-accent/15 text-accent" : clip.viral_score >= 6 ? "bg-secondary/15 text-secondary" : "bg-muted text-muted-foreground"
-                }`}>
+                <div
+                  className={`inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg ${
+                    clip.viral_score >= 8
+                      ? "bg-accent/15 text-accent"
+                      : clip.viral_score >= 6
+                        ? "bg-secondary/15 text-secondary"
+                        : "bg-muted text-muted-foreground"
+                  }`}
+                >
                   <Star className="w-4 h-4" />
                   {t("clipPreview.viralScore")}: {clip.viral_score}/10
                   {clip.viral_score >= 8 && <Flame className="w-4 h-4" />}
@@ -489,7 +508,9 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
           {/* AI Analysis */}
           {viralAnalysis?.reason && (
             <div className="glass-card rounded-xl p-5 space-y-3">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t("clipPreview.aiAnalysis")}</h3>
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                {t("clipPreview.aiAnalysis")}
+              </h3>
               <p className="text-sm text-foreground/90 leading-relaxed">{viralAnalysis.reason}</p>
               {viralAnalysis.hook_strength != null && (
                 <div className="flex items-center gap-2 text-sm">
@@ -500,9 +521,10 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                         key={i}
                         className="w-2.5 h-2.5 rounded-sm transition-colors"
                         style={{
-                          background: i < (viralAnalysis.hook_strength || 0)
-                            ? `hsl(${349 - i * 8}, 100%, 59%)`
-                            : "hsl(240,15%,18%)",
+                          background:
+                            i < (viralAnalysis.hook_strength || 0)
+                              ? `hsl(${349 - i * 8}, 100%, 59%)`
+                              : "hsl(240,15%,18%)",
                         }}
                       />
                     ))}
