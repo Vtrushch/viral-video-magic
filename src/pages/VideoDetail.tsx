@@ -1393,7 +1393,7 @@ const FailedState = ({ video, onStatusChange }: { video: Tables<"videos">; onSta
       return;
     }
     toast.success(t("videoDetail.retrying"));
-    window.location.reload();
+    onStatusChange?.();
   };
 
   return (
