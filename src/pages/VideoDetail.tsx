@@ -1379,7 +1379,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
 };
 
 /* ─── Failed State ─── */
-const FailedState = ({ video }: { video: Tables<"videos"> }) => {
+const FailedState = ({ video, onStatusChange }: { video: Tables<"videos">; onStatusChange?: () => void }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
