@@ -177,6 +177,17 @@ const SettingsPage = () => {
               </Select>
             </div>
 
+            <div className="space-y-2">
+              <Label className="text-sm text-foreground/80">{t("settings.defaultReframeMode")}</Label>
+              <Select value={reframeMode} onValueChange={setReframeMode}>
+                <SelectTrigger className="bg-muted/20 border-border/40 text-foreground"><SelectValue /></SelectTrigger>
+                <SelectContent className="dark">
+                  <SelectItem value="smart">{t("settings.reframeSmart")}</SelectItem>
+                  <SelectItem value="full">{t("settings.reframeFull")}</SelectItem>
+                  <SelectItem value="center">{t("settings.reframeCenter")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Button variant="hero" size="sm" onClick={handleSavePrefs} disabled={savingPrefs || loadingPrefs}>
               {savingPrefs ? t("settings.saving") : t("settings.savePreferences")}
             </Button>
