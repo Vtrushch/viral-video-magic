@@ -576,6 +576,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "content-repurposing-ecommerce-brands-product-videos": {
+    title: "Content Repurposing for E-Commerce Brands: Turn Product Videos into Clips (2026) | HookCut",
+    description: "E-commerce brands that repurpose product videos into short-form clips generate significantly more organic traffic and revenue than those relying on paid ads alone. Complete 2026 guide to video repurposing for e-commerce.",
+    keywords: "content repurposing ecommerce brands product videos, ecommerce video marketing 2026, product video short form clips, tiktok ecommerce strategy, shopify video content strategy",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
