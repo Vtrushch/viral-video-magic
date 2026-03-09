@@ -978,6 +978,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                       </div>
                     ) : (
                       (credits?.remaining ?? 0) > 0 ? (
+                        <>
                         <Button
                           variant="ghost"
                           size="sm"
