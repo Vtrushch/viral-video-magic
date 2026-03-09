@@ -52,10 +52,23 @@ const VideoConfig = () => {
     loadAllPresetFonts();
   }, []);
 
+  const isShortVideo = video?.duration_seconds != null && video.duration_seconds < 120;
+  const isVeryShortVideo = video?.duration_seconds != null && video.duration_seconds < 60;
+
   useEffect(() => {
     if (!id) return;
     supabase.from("videos").select("*").eq("id", id).single().then(({ data }) => {
-      if (data) setVideo(data);
+      if (data) {
+        setVideo(data);
+        // Auto-adjust for short videos
+        if (data.duration_seconds != null && data.duration_seconds < 60) {
+          setClipCount(1);
+          setClipLength("short");
+        } else if (data.duration_seconds != null && data.duration_seconds < 120) {
+          setClipCount(3);
+          setClipLength("short");
+        }
+      }
       setLoading(false);
     });
   }, [id]);
