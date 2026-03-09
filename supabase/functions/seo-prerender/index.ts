@@ -584,6 +584,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "0-to-10000-followers-short-form-video": {
+    title: "How to Go from 0 to 10,000 Followers with Short-Form Video in 2026 | HookCut",
+    description: "The honest, step-by-step guide to growing from 0 to 10,000 followers on TikTok, YouTube Shorts, or Instagram Reels in 2026. What actually works, what doesn't, and the realistic timeline.",
+    keywords: "0 to 10000 followers short form video, grow to 10000 followers tiktok 2026, how to get first 10000 followers, short form video growth strategy, 10k followers short form video",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {
