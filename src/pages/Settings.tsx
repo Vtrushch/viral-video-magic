@@ -39,6 +39,7 @@ const SettingsPage = () => {
     if (meta.caption_style) setCaptionStyle(meta.caption_style);
     if (meta.clip_length) setClipLength(meta.clip_length);
     if (meta.clip_count) setClipCount(meta.clip_count);
+    if (meta.reframe_mode) setReframeMode(meta.reframe_mode);
     setLoadingPrefs(false);
   }, [user]);
 
