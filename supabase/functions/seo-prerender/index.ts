@@ -568,6 +568,14 @@ const BLOG_ARTICLES: Record<string, { title: string; description: string; keywor
     readTime: "10 min read",
     category: "Strategy",
   },
+  "build-personal-brand-short-form-video": {
+    title: "How to Build a Personal Brand with Short-Form Video in 2026 (Complete Guide) | HookCut",
+    description: "Personal brands built on short-form video in 2026 generate more opportunities — clients, partnerships, speaking invites, job offers — than any other channel. Complete guide to building yours from zero.",
+    keywords: "build personal brand short form video, personal brand short form video 2026, personal branding tiktok linkedin, build personal brand online 2026, short form video personal branding strategy",
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+  },
 };
 
 const COMPARISON_PAGES: Record<string, { title: string; description: string; keywords: string }> = {

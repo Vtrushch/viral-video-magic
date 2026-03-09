@@ -13793,4 +13793,173 @@ No todas las charlas se graban profesionalmente. Si no tienes una grabación de 
 
 **[Prueba HookCut gratis — sube tu grabación de conferencia y extrae 10+ clips en 20 minutos](/auth)**`
   },
+  {
+    slug: "build-personal-brand-short-form-video",
+    title: "How to Build a Personal Brand with Short-Form Video in 2026 (Complete Guide)",
+    metaDescription: "Personal brands built on short-form video in 2026 generate more opportunities — clients, partnerships, speaking invites, job offers — than any other channel. Complete guide to building yours from zero.",
+    keywords: ["build personal brand short form video", "personal brand short form video 2026", "personal branding tiktok linkedin", "build personal brand online 2026", "short form video personal branding strategy"],
+    date: "2026-03-08",
+    readTime: "10 min read",
+    category: "Strategy",
+    content: `## How to Build a Personal Brand with Short-Form Video in 2026 (Complete Guide)
+
+In 2026, your personal brand either exists on video or it barely exists at all.
+
+A LinkedIn profile, a website, and a handful of written articles create a small, discoverable footprint. Short-form video creates a presence — something that moves, talks, thinks out loud, and builds the kind of familiarity that drives real opportunities.
+
+The personal brands generating the most inbound opportunities in 2026 — clients reaching out instead of being chased, speaking invitations from organizations the person has never contacted, partnership conversations that open new revenue streams — are almost universally built on consistent short-form video.
+
+This guide covers the complete strategy for building a personal brand with short-form video from zero.
+
+---
+
+### What a Personal Brand Actually Is (And Isn't)
+
+A personal brand is not your logo, your color palette, or your "unique value proposition" as a professional.
+
+A personal brand is the answer to this question: when someone mentions your name in a room you're not in, what do people say?
+
+"Oh, she's the person who explains SaaS pricing strategy in a way that actually makes sense."
+"He's the consultant who keeps saying the things about remote work that everyone else is afraid to say."
+"She's the designer who posts those brutally honest takes on bad UX."
+
+Personal brand is the intersection of your expertise, your perspective, and your visibility. You can have deep expertise and a strong perspective with zero visibility — that's not a personal brand, that's just being good at your job. Short-form video is the visibility layer.
+
+---
+
+### The Personal Brand Foundation: Niche, Perspective, and Consistency
+
+**Your niche**
+The narrower the better — at first. "Marketing" is not a niche. "Email marketing for bootstrapped SaaS founders" is. "Fitness" is not a niche. "Strength training for people who hate the gym" is.
+
+Niche does not mean limiting your future potential. It means building an initial audience that is highly specific, highly engaged, and self-selected. The creators who try to appeal to everyone with broad content grow slowly. The ones who own a specific corner of their category grow faster and convert their audience into opportunities more effectively.
+
+**Your perspective**
+What do you believe that most people in your field don't? What conventional wisdom do you think is wrong, incomplete, or overrated? What contrarian position can you defend with evidence and experience?
+
+Your perspective is the differentiator that makes your content recognizable and shareable. Two people can cover the same topic — the one with the stronger, more distinctive perspective builds the larger audience.
+
+**Your consistency**
+In personal brand building, consistency beats quality at the beginning. A creator who posts 5 times a week for 6 months with decent content will outgrow a creator who posts once a week with brilliant content. Algorithms reward consistency. Audiences develop habits around consistent creators. Your own delivery improves faster with volume than with perfection.
+
+---
+
+### The Personal Brand Content Stack
+
+A sustainable personal brand video strategy has three layers:
+
+**Layer 1: Foundational content (evergreen)**
+Content that will be as relevant in 3 years as it is today. Frameworks, principles, how-to guides for fundamental skills in your area. This content accumulates views over time and forms the backbone of your library.
+
+Example for a marketing strategist: "The 3 elements of any high-converting landing page" or "Why most B2B companies have the wrong funnel model."
+
+**Layer 2: Current perspective content (time-sensitive)**
+Your take on current events, trends, news, and developments in your field. This content has shorter shelf life but generates more immediate engagement because it's tied to what people are thinking about right now.
+
+Example: "What [major industry event] actually means for [your specific audience]" or "Why the new [trend] isn't what everyone says it is."
+
+**Layer 3: Personal/behind-the-scenes content (trust-building)**
+Content about your own work, decisions, failures, lessons learned, and day-to-day reality. This is the content that converts viewers into fans — people who follow you specifically, not just your topic.
+
+Example: "The biggest mistake I made with my first client" or "What a day of client work actually looks like for me."
+
+A healthy personal brand content mix in 2026 is roughly 50% foundational, 30% current perspective, 20% personal.
+
+---
+
+### Platform Priority for Personal Brand Building in 2026
+
+**LinkedIn (Priority #1 for professional personal brands)**
+LinkedIn is the most valuable platform for a professional personal brand in 2026. The audience has decision-making authority, budget, and professional ambition. The organic reach for video is exceptional. Inbound opportunities — client inquiries, speaking invitations, partnership conversations — convert at significantly higher rates from LinkedIn than from any other platform.
+
+The downside: LinkedIn builds slower than TikTok. The first 3 months feel like you're posting into a void. Months 4–9 are where momentum begins.
+
+**TikTok (Priority #2 for discovery)**
+TikTok is where personal brands get discovered fastest. The algorithm is the most democratic in the world — a new account with strong content can reach 100,000 people in a week. TikTok is where you build raw audience; LinkedIn is where you build relationship and opportunity.
+
+**YouTube Shorts + Long-Form (Priority #2 for search-driven personal brands)**
+For personal brands in niches with high YouTube search intent — education, finance, career, technology — YouTube Shorts combined with long-form videos is the most durable platform. YouTube content ranks in Google search. Your content compounds over years, not months.
+
+**Instagram (Priority #3)**
+Instagram bridges personal and professional audiences. Effective for personal brands that have a visual element to their work or whose target audience skews toward Instagram demographics.
+
+---
+
+### The Personal Brand Video Formula
+
+Regardless of platform, personal brand video content that works in 2026 follows consistent patterns:
+
+**The hook (first 3 seconds):**
+Lead with a bold claim, a surprising statement, or a direct address to your specific audience. "The advice everyone gives about [topic] is wrong." "If you're a [specific person type], here's what nobody tells you." "I just [did something relevant] and this is what I learned."
+
+**The credibility signal (seconds 4–10):**
+Why should this viewer trust your perspective? Not your credentials — your experience. "I've done [specific thing] for [timeframe]" or "after working with [number] of [clients/companies/people]."
+
+**The value delivery (the body):**
+One clear idea, fully expressed. Not three things, not five things. One. The best personal brand clips are memorable because they're focused. After watching, the viewer can repeat the core idea.
+
+**The perspective signal (near the end):**
+What's your take? Personal brand content isn't just information delivery — it's your interpretation of that information. The perspective signal is what makes your content recognizable and shareable.
+
+**The closing CTA (final 3–5 seconds):**
+One action. Not "like, subscribe, comment, and follow me on five platforms." One specific action: "If this was useful, save it for later" or "Follow for more on [specific topic]."
+
+---
+
+### Building a Recognizable Visual Identity
+
+Personal brand video doesn't require expensive production. It requires consistency.
+
+**Consistent background:** Film in the same location 80%+ of the time. Viewers develop subconscious associations between your content and your visual environment. A consistent background makes your content recognizable mid-scroll before the viewer even reads the text.
+
+**Consistent lighting:** Front-facing natural light or a ring light. Consistent lighting makes your content look intentional even without high production value.
+
+**Consistent text style:** Use the same subtitle style and caption formatting across all clips. HookCut applies your chosen style consistently across every clip you process. Over time, your text style becomes a visual signature.
+
+**Consistent posting cadence:** Post at the same times on the same days. Audiences develop habits. Algorithms learn your schedule. Consistency compounds.
+
+---
+
+### The Personal Brand Growth Timeline
+
+Realistic expectations for personal brand building with short-form video:
+
+**Month 1–2:** Almost no growth. You're learning your format, finding your voice, building a small foundation of content. Engagement is low. This is normal — most people quit here. Don't.
+
+**Month 3–4:** First breakout clips. Something connects with a larger audience. Profile visits increase. First inbound connection requests from people who found you through content.
+
+**Month 5–6:** Momentum is visible. Consistent engagement on most posts. The algorithm has learned your audience. Followers are growing weekly.
+
+**Month 7–12:** Compound effects start. Each new follower sees old content; old content keeps attracting new followers. Inbound opportunities — client inquiries, collaboration requests, speaking invitations — begin arriving with increasing frequency.
+
+**Month 12–24:** Personal brand is established in your niche. You're a recognizable voice. You don't have to explain who you are anymore — your content precedes you.
+
+This timeline assumes 3–5 posts per week of consistent, focused content. With HookCut repurposing your existing long-form content into clips, maintaining this pace doesn't require 3–5 hours of new creation per week.
+
+---
+
+### Repurposing to Build Personal Brand at Scale
+
+The most efficient personal brand building approach in 2026:
+
+**Record one "flagship" piece of content per week** — a YouTube video, a podcast episode, a webinar, or a long-form interview. This is your primary content investment: 30–60 minutes of focused thinking on camera.
+
+**Upload to HookCut.** Extract 6–10 clips. Your flagship content, which reached your existing audience, now reaches completely new audiences on TikTok, YouTube Shorts, Instagram Reels, and LinkedIn.
+
+**Schedule clips** across all platforms for the week. One flagship piece becomes 6–10 touch points across 4 platforms.
+
+The math: 1 flagship/week × 8 clips = 8 clips/week = daily posts across multiple platforms + extras. Without repurposing, matching this output would require creating 8 separate pieces of content per week.
+
+---
+
+### The Non-Negotiable Personal Brand Rule
+
+Be the same person across all platforms and all content.
+
+The biggest personal brand mistake in 2026: performative content that doesn't reflect your actual personality, beliefs, or expertise. Viewers detect inauthenticity faster than any other quality problem. Content that doesn't feel like you — even if it's technically well-made — fails to build the trust that makes personal brand valuable.
+
+Your perspective, your voice, your specific flavor of expertise — these are your moat. They're the things no algorithm change, no competitor, and no trend can copy.
+
+**[Try HookCut free — turn one long-form recording into a week of personal brand clips](/auth)**`
+  },
 ];
