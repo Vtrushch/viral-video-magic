@@ -36,6 +36,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   const [muted, setMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [bufferPercent, setBufferPercent] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const isRenderedClip = clip?.status === "ready" && !!clip?.file_path;
@@ -96,6 +97,22 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     el.currentTime = startTime;
     setLoading(false);
   }, [startTime, getVideoEl]);
+
+  // Track buffering progress
+  const handleProgress = useCallback(() => {
+    const el = getVideoEl();
+    if (!el || !el.buffered.length) return;
+    try {
+      const bufferedEnd = el.buffered.end(el.buffered.length - 1);
+      const targetEnd = endTime || el.duration;
+      if (targetEnd > 0) {
+        const pct = Math.min(100, Math.round((bufferedEnd / targetEnd) * 100));
+        setBufferPercent(pct);
+      }
+    } catch {
+      // buffered.end can throw if no ranges available
+    }
+  }, [getVideoEl, endTime]);
 
   // Auto-pause at end_time
   const handleTimeUpdate = useCallback(() => {
@@ -234,8 +251,11 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
           <div className="relative w-full max-w-[360px] mx-auto block sm:hidden">
             <div className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-black">
               {loading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
-                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 z-10">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  <span className="text-xs text-muted-foreground">
+                    {bufferPercent > 0 ? `Loading video... ${bufferPercent}%` : "Loading video..."}
+                  </span>
                 </div>
               )}
               {error && (
@@ -252,6 +272,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                   style={cropVideoStyle}
                   onLoadedMetadata={handleLoadedMetadata}
                   onTimeUpdate={handleTimeUpdate}
+                  onProgress={handleProgress}
                   onEnded={() => setPlaying(false)}
                   muted={muted}
                   playsInline
@@ -328,8 +349,11 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
             />
             <div className="relative aspect-[9/16] rounded-[2rem] overflow-hidden bg-black">
               {loading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
-                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 z-10">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  <span className="text-xs text-muted-foreground">
+                    {bufferPercent > 0 ? `Loading video... ${bufferPercent}%` : "Loading video..."}
+                  </span>
                 </div>
               )}
 
@@ -348,6 +372,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                   style={cropVideoStyle}
                   onLoadedMetadata={handleLoadedMetadata}
                   onTimeUpdate={handleTimeUpdate}
+                  onProgress={handleProgress}
                   onEnded={() => setPlaying(false)}
                   muted={muted}
                   playsInline
