@@ -1515,6 +1515,16 @@ const VideoDetail = () => {
     };
   }, [id]);
 
+  const refetchAll = useCallback(async () => {
+    if (!id) return;
+    const [videoRes, clipsRes] = await Promise.all([
+      supabase.from("videos").select("*").eq("id", id).single(),
+      supabase.from("clips").select("*").eq("video_id", id).order("viral_score", { ascending: false }),
+    ]);
+    if (videoRes.data) setVideo(videoRes.data);
+    if (clipsRes.data) setClips(clipsRes.data);
+  }, [id]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full text-muted-foreground">
