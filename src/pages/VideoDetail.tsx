@@ -110,6 +110,17 @@ const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
       toast.error(t("videoDetail.failedToStartAnalysis"));
       return;
     }
+
+    // Trigger Modal analysis API
+    try {
+      const modalResponse = await apiFetch('/analyze', { video_id: video.id });
+      if (!modalResponse.ok) {
+        console.error('Modal API error:', await modalResponse.text());
+      }
+    } catch (modalError) {
+      console.error('Modal connection error:', modalError);
+    }
+
     toast.success(t("toasts.analysisStartedShort"));
     navigate(0);
   };
