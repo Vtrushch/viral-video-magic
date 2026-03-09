@@ -166,9 +166,9 @@ function getAnalysisTimeEstimateKey(fileSizeBytes: number | null): string {
   if (!fileSizeBytes) return "analyzing.timeEstimate2_3";
   const mb = fileSizeBytes / (1024 * 1024);
   if (mb < 20) return "analyzing.timeEstimate1_2";
-  if (mb < 50) return "analyzing.timeEstimate2_3";
-  if (mb < 100) return "analyzing.timeEstimate3_5";
-  if (mb < 200) return "analyzing.timeEstimate5_8";
+  if (mb < 100) return "analyzing.timeEstimate2_3";
+  if (mb < 300) return "analyzing.timeEstimate3_5";
+  if (mb < 500) return "analyzing.timeEstimate5_8";
   return "analyzing.timeEstimate8_15";
 }
 
