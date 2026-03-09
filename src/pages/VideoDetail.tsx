@@ -127,6 +127,16 @@ const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
 
   return (
     <div className="glass-card rounded-2xl p-10 text-center space-y-6">
+      {video.duration_seconds && video.duration_seconds < 120 && (
+        <div className="rounded-xl px-4 py-3 text-sm border border-yellow-500/20 bg-yellow-500/5 text-yellow-300 text-left">
+          <p className="font-medium">⚡ {t("videoDetail.shortVideoDetected", { seconds: video.duration_seconds })}</p>
+          {video.duration_seconds < 60 ? (
+            <p className="text-xs text-yellow-300/70 mt-1">{t("videoDetail.shortVideoUnder60")}</p>
+          ) : (
+            <p className="text-xs text-yellow-300/70 mt-1">{t("videoDetail.shortVideo60to120")}</p>
+          )}
+        </div>
+      )}
       <div className="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center mx-auto shadow-lg glow-primary">
         <Settings2 className="w-8 h-8 text-primary-foreground" />
       </div>

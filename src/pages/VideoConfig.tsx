@@ -200,18 +200,31 @@ const VideoConfig = () => {
       </div>
 
       <div className="space-y-6">
+        {/* Short video warning */}
+        {isShortVideo && (
+          <div className="rounded-xl px-4 py-3 text-sm border border-yellow-500/20 bg-yellow-500/5 text-yellow-300">
+            <p className="font-medium">⚡ {t("videoDetail.shortVideoDetected", { seconds: video?.duration_seconds })}</p>
+            {isVeryShortVideo ? (
+              <p className="text-xs text-yellow-300/70 mt-1">{t("videoDetail.shortVideoUnder60")}</p>
+            ) : (
+              <p className="text-xs text-yellow-300/70 mt-1">{t("videoDetail.shortVideo60to120")}</p>
+            )}
+          </div>
+        )}
+
         {/* 1. Clip Generation */}
         <section className={sectionCard}>
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             🎬 {t("videoConfig.clipGeneration")}
           </h2>
 
-          <div>
+          <div className={isShortVideo ? "opacity-50 pointer-events-none" : ""}>
             <Label className="text-sm font-medium text-foreground/80 mb-3 block">{t("videoConfig.numberOfClips")}</Label>
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {clipCountOptions.map((opt) => (
                 <button
                   key={opt.value}
+                  disabled={isShortVideo}
                   className={`rounded-xl p-2 sm:p-4 text-center transition-all border min-w-0 ${
                     clipCount === opt.value
                       ? "border-primary/60 bg-primary/10 text-foreground shadow-[0_0_16px_hsl(349,100%,59%,0.15)]"
@@ -224,15 +237,18 @@ const VideoConfig = () => {
                 </button>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground mt-2">{t("videoConfig.aiFindsMoments")}</p>
+            <p className="text-xs text-muted-foreground mt-2">
+              {isShortVideo ? t("videoConfig.autoAdjustedForShort") : t("videoConfig.aiFindsMoments")}
+            </p>
           </div>
 
-          <div>
+          <div className={isShortVideo ? "opacity-50 pointer-events-none" : ""}>
             <Label className="text-sm font-medium text-foreground/80 mb-3 block">{t("videoConfig.clipLength")}</Label>
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {clipLengthOptions.map((opt) => (
                 <button
                   key={opt.value}
+                  disabled={isShortVideo}
                   className={`rounded-xl p-2 sm:p-4 text-center transition-all border flex flex-col items-center gap-0.5 sm:gap-1 min-w-0 ${
                     clipLength === opt.value
                       ? "border-primary/60 bg-primary/10 text-foreground shadow-[0_0_16px_hsl(349,100%,59%,0.15)]"
