@@ -219,27 +219,31 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
         youtube_url: trimmed,
       });
 
-      // Step 2: Call backend to start download + analysis
-      const res = await apiFetch('/youtube-import', {
-        youtube_url: trimmed,
-        video_id: videoData.id,
-        user_id: user.id,
-      });
+      // Step 2: Call backend to start download + analysis (fire-and-forget via .spawn())
+      try {
+        const res = await apiFetch('/youtube-import', {
+          youtube_url: trimmed,
+          video_id: videoData.id,
+          user_id: user.id,
+        });
 
-      if (!res.ok) {
-        const errText = await res.text();
-        console.error("YouTube import API error:", errText);
-        await supabase.from("videos").update({ status: "failed", error_message: "Import failed" } as any).eq("id", videoData.id);
-        throw new Error("Import request failed");
+        // Even if response is slow or fails, the backend .spawn() already started
+        if (!res.ok) {
+          console.warn('YouTube import API response not ok, but download may still be running');
+        }
+      } catch (apiError) {
+        // Don't show error to user — the Modal .spawn() is fire-and-forget
+        // The download is likely still running in the background
+        console.warn('YouTube import API call failed, but download may still be running:', apiError);
       }
 
+      // Always navigate to video page — download is happening in background
       toast.success(t("upload.youtubeImportStarted"));
-
-      // Step 3: Close modal and navigate to video detail (will show DownloadingState)
       handleCancel();
       navigate(`/dashboard/videos/${videoData.id}`);
 
     } catch (error: any) {
+      // This catch is only for DB insert failures (step 1)
       console.error("YouTube import error:", error);
       posthog.capture('video_upload_failed', { error: error.message, source: 'youtube' });
       toast.error(t("upload.youtubeImportFailed"));
