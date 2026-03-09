@@ -36,6 +36,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   const [muted, setMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [bufferPercent, setBufferPercent] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const isRenderedClip = clip?.status === "ready" && !!clip?.file_path;
