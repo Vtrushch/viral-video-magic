@@ -23,6 +23,7 @@ const SettingsPage = () => {
   const [captionStyle, setCaptionStyle] = useState("hormozi");
   const [clipLength, setClipLength] = useState("medium");
   const [clipCount, setClipCount] = useState("10");
+  const [reframeMode, setReframeMode] = useState("smart");
   const [savingPrefs, setSavingPrefs] = useState(false);
   const [loadingPrefs, setLoadingPrefs] = useState(true);
 

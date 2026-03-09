@@ -208,6 +208,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
             clipLength: "medium",
             captionStyle: "hormozi",
             languages: ["en"],
+            reframeMode: "smart",
           },
         })
         .select()
