@@ -110,7 +110,7 @@ const UploadedState = ({ video, onStatusChange }: { video: Tables<"videos">; onS
       return;
     }
     toast.success(t("toasts.analysisStartedShort"));
-    window.location.reload();
+    onStatusChange?.();
   };
 
   return (
