@@ -393,6 +393,13 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
   const [confirmDeleteClipId, setConfirmDeleteClipId] = useState<string | null>(null);
   const [deletingClipId, setDeletingClipId] = useState<string | null>(null);
 
+  const isStaleRender = useCallback((clip: Tables<"clips">) => {
+    if (clip.status !== "rendering") return false;
+    const startedAt = clip.render_started_at;
+    if (!startedAt) return false;
+    return Date.now() - new Date(startedAt).getTime() > 10 * 60 * 1000; // 10 minutes
+  }, []);
+
   // If parent passes new clips (e.g. after realtime fetch), update local state
   useEffect(() => {
     if (initialClips.length > 0) setClips(initialClips);
