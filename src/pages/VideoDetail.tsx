@@ -984,41 +984,43 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                       </div>
                     ) : (
                       (credits?.remaining ?? 0) > 0 ? (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 min-h-[44px] px-2 text-xs text-primary hover:text-primary"
-                          onClick={() => renderClip(clip)}
-                          disabled={isRendering}
-                        >
-                          {isRendering ? (
-                            <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> {t("videoDetail.renderingTime", { time: getRenderTimeEstimate(clip) })}</>
-                          ) : (
-                            <><Sparkles className="w-3 h-3 mr-1" /> {t("videoDetail.render")}</>
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 min-h-[44px] px-2 text-xs text-primary hover:text-primary"
+                            onClick={() => renderClip(clip)}
+                            disabled={isRendering}
+                          >
+                            {isRendering ? (
+                              <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> {t("videoDetail.renderingTime", { time: getRenderTimeEstimate(clip) })}</>
+                            ) : (
+                              <><Sparkles className="w-3 h-3 mr-1" /> {t("videoDetail.render")}</>
+                            )}
+                          </Button>
+                          {isStaleRender(clip) && (
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-xs text-yellow-400">Taking longer than expected</span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-7 text-xs"
+                                onClick={() => {
+                                  supabase.from("clips").update({ status: "pending", error_message: null } as any)
+                                    .eq("id", clip.id).then(() => {
+                                      toast.info("Clip reset — you can render it again");
+                                      setClips(prev => prev.map(c => c.id === clip.id ? { ...c, status: "pending", error_message: null } : c));
+                                      setRenderingIds(prev => { const n = new Set(prev); n.delete(clip.id); return n; });
+                                    });
+                                }}
+                              >
+                                <RefreshCw className="w-3 h-3 mr-1" />
+                                Retry
+                              </Button>
+                            </div>
                           )}
-                        </Button>
-                        {isStaleRender(clip) && (
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-xs text-yellow-400">Taking longer than expected</span>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-7 text-xs"
-                              onClick={() => {
-                                supabase.from("clips").update({ status: "pending", error_message: null } as any)
-                                  .eq("id", clip.id).then(() => {
-                                    toast.info("Clip reset — you can render it again");
-                                    setClips(prev => prev.map(c => c.id === clip.id ? { ...c, status: "pending", error_message: null } : c));
-                                    setRenderingIds(prev => { const n = new Set(prev); n.delete(clip.id); return n; });
-                                  });
-                              }}
-                            >
-                              <RefreshCw className="w-3 h-3 mr-1" />
-                              Retry
-                            </Button>
-                          </div>
-                        )}
-                      </>) : (
+                        </>
+                      ) : (
                         <div className="flex items-center gap-1.5">
                           <span className="text-[10px] text-muted-foreground">{t("videoDetail.noCredits")}</span>
                           <a href="/dashboard/upgrade" className="text-[10px] text-primary hover:underline">{t("videoDetail.upgradeLink")}</a>
