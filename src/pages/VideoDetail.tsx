@@ -1598,7 +1598,7 @@ const VideoDetail = () => {
         onClose={() => setReAnalyzeOpen(false)}
         video={video}
         existingClipCount={clips.length}
-        onSuccess={() => window.location.reload()}
+        onSuccess={() => refetchAll()}
       />
     </div>
   );
