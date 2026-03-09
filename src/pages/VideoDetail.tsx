@@ -1006,6 +1006,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                             ⏱ Taking too long? Reset & retry
                           </button>
                         )}
+                        </>
                       ) : (
                         <div className="flex items-center gap-1.5">
                           <span className="text-[10px] text-muted-foreground">{t("videoDetail.noCredits")}</span>
