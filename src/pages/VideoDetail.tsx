@@ -52,7 +52,7 @@ function formatDate(d: string) {
 }
 
 /* ─── Downloading State (YouTube import) ─── */
-const DownloadingState = ({ video }: { video: Tables<"videos"> }) => {
+const DownloadingState = ({ video, onStatusChange }: { video: Tables<"videos">; onStatusChange?: () => void }) => {
   const { t } = useTranslation();
   useEffect(() => {
     const channel = supabase
@@ -64,7 +64,7 @@ const DownloadingState = ({ video }: { video: Tables<"videos"> }) => {
         filter: `id=eq.${video.id}`,
       }, (payload: any) => {
         if (payload.new.status !== "downloading") {
-          window.location.reload();
+          onStatusChange?.();
         }
       })
       .subscribe();
@@ -95,7 +95,7 @@ const DownloadingState = ({ video }: { video: Tables<"videos"> }) => {
 };
 
 /* ─── Uploaded State ─── */
-const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
+const UploadedState = ({ video, onStatusChange }: { video: Tables<"videos">; onStatusChange?: () => void }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const settings = video.settings as any;
@@ -110,7 +110,7 @@ const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
       return;
     }
     toast.success(t("toasts.analysisStartedShort"));
-    window.location.reload();
+    onStatusChange?.();
   };
 
   return (
@@ -1339,7 +1339,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
         onClose={() => setReAnalyzeOpen(false)}
         video={video}
         existingClipCount={clips.length}
-        onSuccess={() => window.location.reload()}
+        onSuccess={() => onReAnalyze?.()}
       />
 
       {/* Highlight Reels Section */}
@@ -1379,7 +1379,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
 };
 
 /* ─── Failed State ─── */
-const FailedState = ({ video }: { video: Tables<"videos"> }) => {
+const FailedState = ({ video, onStatusChange }: { video: Tables<"videos">; onStatusChange?: () => void }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -1393,7 +1393,7 @@ const FailedState = ({ video }: { video: Tables<"videos"> }) => {
       return;
     }
     toast.success(t("videoDetail.retrying"));
-    window.location.reload();
+    onStatusChange?.();
   };
 
   return (
@@ -1515,6 +1515,16 @@ const VideoDetail = () => {
     };
   }, [id]);
 
+  const refetchAll = useCallback(async () => {
+    if (!id) return;
+    const [videoRes, clipsRes] = await Promise.all([
+      supabase.from("videos").select("*").eq("id", id).single(),
+      supabase.from("clips").select("*").eq("video_id", id).order("viral_score", { ascending: false }),
+    ]);
+    if (videoRes.data) setVideo(videoRes.data);
+    if (clipsRes.data) setClips(clipsRes.data);
+  }, [id]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -1585,12 +1595,12 @@ const VideoDetail = () => {
       </div>
 
       {/* Status-based content */}
-      {video.status === "downloading" && <DownloadingState video={video} />}
-      {video.status === "uploading" && <UploadedState video={video} />}
-      {video.status === "uploaded" && <UploadedState video={video} />}
+      {video.status === "downloading" && <DownloadingState video={video} onStatusChange={refetchAll} />}
+      {video.status === "uploading" && <UploadedState video={video} onStatusChange={refetchAll} />}
+      {video.status === "uploaded" && <UploadedState video={video} onStatusChange={refetchAll} />}
       {video.status === "analyzing" && <AnalyzingState video={video} />}
       {video.status === "ready" && <ReadyState video={video} clips={clips} onReAnalyze={() => setReAnalyzeOpen(true)} />}
-      {video.status === "failed" && <FailedState video={video} />}
+      {video.status === "failed" && <FailedState video={video} onStatusChange={refetchAll} />}
 
       {/* Re-analyze dialog (page level for ready status) */}
       <ReAnalyzeDialog
@@ -1598,7 +1608,7 @@ const VideoDetail = () => {
         onClose={() => setReAnalyzeOpen(false)}
         video={video}
         existingClipCount={clips.length}
-        onSuccess={() => window.location.reload()}
+        onSuccess={() => refetchAll()}
       />
     </div>
   );
