@@ -98,6 +98,22 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     setLoading(false);
   }, [startTime, getVideoEl]);
 
+  // Track buffering progress
+  const handleProgress = useCallback(() => {
+    const el = getVideoEl();
+    if (!el || !el.buffered.length) return;
+    try {
+      const bufferedEnd = el.buffered.end(el.buffered.length - 1);
+      const targetEnd = endTime || el.duration;
+      if (targetEnd > 0) {
+        const pct = Math.min(100, Math.round((bufferedEnd / targetEnd) * 100));
+        setBufferPercent(pct);
+      }
+    } catch {
+      // buffered.end can throw if no ranges available
+    }
+  }, [getVideoEl, endTime]);
+
   // Auto-pause at end_time
   const handleTimeUpdate = useCallback(() => {
     const el = getVideoEl();
