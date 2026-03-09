@@ -372,6 +372,7 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                   style={cropVideoStyle}
                   onLoadedMetadata={handleLoadedMetadata}
                   onTimeUpdate={handleTimeUpdate}
+                  onProgress={handleProgress}
                   onEnded={() => setPlaying(false)}
                   muted={muted}
                   playsInline
