@@ -95,7 +95,7 @@ const DownloadingState = ({ video, onStatusChange }: { video: Tables<"videos">; 
 };
 
 /* ─── Uploaded State ─── */
-const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
+const UploadedState = ({ video, onStatusChange }: { video: Tables<"videos">; onStatusChange?: () => void }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const settings = video.settings as any;
