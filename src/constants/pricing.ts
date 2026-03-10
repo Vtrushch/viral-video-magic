@@ -66,7 +66,6 @@ export const PLANS = {
       "Everything in Starter",
       "Priority support",
       "Animated captions",
-      "API access (coming soon)",
     ],
   },
   agency: {
@@ -86,8 +85,6 @@ export const PLANS = {
       "Full quality export (up to 4K)",
       "No watermark",
       "Everything in Pro",
-      "Custom branding (coming soon)",
-      "Team seats (coming soon)",
       "Dedicated support",
     ],
   },
