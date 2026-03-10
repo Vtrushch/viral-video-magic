@@ -66,7 +66,6 @@ export const PLANS = {
       "Everything in Starter",
       "Priority support",
       "Animated captions",
-      "API access (coming soon)",
     ],
   },
   agency: {
