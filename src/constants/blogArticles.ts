@@ -13975,6 +13975,11 @@ Your perspective, your voice, your specific flavor of expertise — these are yo
     date: "2026-03-08",
     readTime: "10 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/content-repurposing-ecommerce-brands-product-videos" },
+      { lang: "es", href: "https://hookcut.com/blog/es/reutilizacion-contenido-tiendas-online-videos-producto" },
+      { lang: "x-default", href: "https://hookcut.com/blog/content-repurposing-ecommerce-brands-product-videos" },
+    ],
     content: `## Content Repurposing for E-Commerce Brands: Turn Product Videos into Clips (2026)
 
 E-commerce brands are in the middle of the most significant marketing shift since Facebook ads became saturated: the move from paid social to organic short-form video.
