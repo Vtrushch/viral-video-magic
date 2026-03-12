@@ -13801,6 +13801,11 @@ No todas las charlas se graban profesionalmente. Si no tienes una grabación de 
     date: "2026-03-08",
     readTime: "10 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/build-personal-brand-short-form-video" },
+      { lang: "es", href: "https://hookcut.com/blog/es/construir-marca-personal-video-formato-corto" },
+      { lang: "x-default", href: "https://hookcut.com/blog/build-personal-brand-short-form-video" },
+    ],
     content: `## How to Build a Personal Brand with Short-Form Video in 2026 (Complete Guide)
 
 In 2026, your personal brand either exists on video or it barely exists at all.
