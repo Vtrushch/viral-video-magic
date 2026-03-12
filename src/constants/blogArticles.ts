@@ -14138,6 +14138,11 @@ The brands that crack this combination — organic video building brand and UGC,
     date: "2026-03-08",
     readTime: "10 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/0-to-10000-followers-short-form-video" },
+      { lang: "es", href: "https://hookcut.com/blog/es/de-0-a-10000-seguidores-video-formato-corto" },
+      { lang: "x-default", href: "https://hookcut.com/blog/0-to-10000-followers-short-form-video" },
+    ],
     content: `## How to Go from 0 to 10,000 Followers with Short-Form Video in 2026
 
 10,000 followers is the milestone that changes everything.
