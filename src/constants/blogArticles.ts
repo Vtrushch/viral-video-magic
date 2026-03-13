@@ -14906,6 +14906,7 @@ A prospect who finds that agent 18 months from now can spend 2 hours watching th
     category: "How-To Guide",
     hreflang: [
       { lang: "en", href: "https://hookcut.com/blog/short-form-video-without-being-on-camera" },
+      { lang: "es", href: "https://hookcut.com/blog/es/video-formato-corto-sin-salir-en-camara" },
       { lang: "x-default", href: "https://hookcut.com/blog/short-form-video-without-being-on-camera" },
     ],
     content: `## How to Create Short-Form Video Content When You Hate Being on Camera (2026)
