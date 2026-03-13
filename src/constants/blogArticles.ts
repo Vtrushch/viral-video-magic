@@ -14296,6 +14296,7 @@ Anyone promising 10,000 followers in 30 days is either selling something or show
     category: "How-To Guide",
     hreflang: [
       { lang: "en", href: "https://hookcut.com/blog/repurpose-newsletter-into-video-content" },
+      { lang: "es", href: "https://hookcut.com/blog/es/reutilizar-newsletter-en-contenido-de-video" },
       { lang: "x-default", href: "https://hookcut.com/blog/repurpose-newsletter-into-video-content" },
     ],
     content: `Newsletter writers are sitting on one of the most overlooked content repurposing opportunities in the creator economy.
