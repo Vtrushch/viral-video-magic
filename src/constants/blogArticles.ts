@@ -14453,6 +14453,7 @@ The newsletter audience deepens. The video audience grows. Each feeds the other.
     category: "Strategy",
     hreflang: [
       { lang: "en", href: "https://hookcut.com/blog/short-form-video-saas-companies-get-more-signups" },
+      { lang: "es", href: "https://hookcut.com/blog/es/video-formato-corto-empresas-saas-mas-registros" },
       { lang: "x-default", href: "https://hookcut.com/blog/short-form-video-saas-companies-get-more-signups" },
     ],
     content: `The SaaS marketing playbook of 2020 — Google Ads, content SEO, email drip sequences — still works. But its CAC has nearly doubled in four years.
