@@ -14605,6 +14605,7 @@ Building that library takes 12–18 months of consistent posting. The companies 
     category: "Strategy",
     hreflang: [
       { lang: "en", href: "https://hookcut.com/blog/video-content-promote-online-course" },
+      { lang: "es", href: "https://hookcut.com/blog/es/contenido-video-para-promocionar-curso-online" },
       { lang: "x-default", href: "https://hookcut.com/blog/video-content-promote-online-course" },
     ],
     content: `The online course market has a paradox: there are more people willing to pay for education than at any point in history, and more course creators struggling to find students than ever before.
