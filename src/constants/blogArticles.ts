@@ -14752,6 +14752,7 @@ For high-ticket courses ($500+), the most effective conversion path is a direct 
     category: "Strategy",
     hreflang: [
       { lang: "en", href: "https://hookcut.com/blog/content-repurposing-real-estate-agents-2026" },
+      { lang: "es", href: "https://hookcut.com/blog/es/reutilizacion-contenido-agentes-inmobiliarios-2026" },
       { lang: "x-default", href: "https://hookcut.com/blog/content-repurposing-real-estate-agents-2026" },
     ],
     content: `## Content Repurposing for Real Estate Agents: The Complete 2026 Guide
