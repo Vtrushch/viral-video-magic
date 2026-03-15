@@ -16410,5 +16410,6 @@ Un agente que publica 5 clips por semana durante 12 meses tiene 260+ piezas de c
 
 Un prospecto que encuentre a ese agente 18 meses después puede pasar 2 horas viendo su contenido y sentir que ya conoce al agente, entiende el mercado y está listo para tener una conversación seria.
 
-**[Prueba HookCut gratis — convierte tu próxima visita a propiedad en una semana de clips inmobiliarios]`
+**[Prueba HookCut gratis — convierte tu próxima visita a propiedad en una semana de clips inmobiliarios]**`,
+  },
 ];
