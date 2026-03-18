@@ -1,5 +1,5 @@
 import { useParams, useLocation, Link, Navigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import ReactMarkdown from "react-markdown";
@@ -7,6 +7,7 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { BLOG_ARTICLES } from "@/constants/blogArticles";
 import { ArrowLeft, Clock } from "lucide-react";
+import { injectInternalLinks } from "@/lib/internalLinks";
 
 const BlogArticle = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -26,6 +27,13 @@ const BlogArticle = () => {
     return () => {
       document.title = "HookCut — AI Video Repurposing for Creators";
     };
+  }, [article]);
+
+  // Inject contextual internal links (EN articles only, memoized)
+  const enrichedContent = useMemo(() => {
+    if (!article) return "";
+    if (article.lang === "es") return article.content;
+    return injectInternalLinks(article.content, article.slug);
   }, [article]);
 
   if (!article) {
@@ -127,7 +135,7 @@ const BlogArticle = () => {
           </h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-a:text-primary prose-li:text-muted-foreground">
-            <ReactMarkdown>{article.content}</ReactMarkdown>
+            <ReactMarkdown>{enrichedContent}</ReactMarkdown>
           </div>
         </article>
       </main>
