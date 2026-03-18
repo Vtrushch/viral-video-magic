@@ -41,7 +41,7 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     label: "guide to adding subtitles automatically",
   },
   {
-    keywords: ["youtube shorts from long-form", "youtube shorts from long form", "make youtube shorts"],
+    keywords: ["make youtube shorts from long videos", "youtube shorts from long form", "make youtube shorts"],
     slug: "youtube-shorts-from-long-form",
     label: "YouTube Shorts from long-form guide",
   },
@@ -64,11 +64,6 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     keywords: ["resize video for tiktok", "resize videos for tiktok", "9:16 video"],
     slug: "resize-video-for-tiktok-reels-shorts",
     label: "video resizing guide",
-  },
-  {
-    keywords: ["face tracking", "face tracking vertical video", "auto reframe"],
-    slug: "face-tracking-vertical-video",
-    label: "face tracking guide",
   },
   {
     keywords: ["create highlight reel", "highlight reel from long video", "highlight reel"],
@@ -128,16 +123,6 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     label: "YouTube repurposing guide",
   },
   {
-    keywords: ["viral score", "viral scoring", "ai predicts viral"],
-    slug: "viral-score-ai-video",
-    label: "viral score explainer",
-  },
-  {
-    keywords: ["without showing face", "without showing your face", "faceless video", "faceless content"],
-    slug: "short-form-video-without-showing-face",
-    label: "faceless video guide",
-  },
-  {
     keywords: ["without being on camera", "without going on camera", "hate being on camera"],
     slug: "short-form-video-without-being-on-camera",
     label: "video without camera guide",
@@ -148,8 +133,8 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     label: "batch content creation guide",
   },
   {
-    keywords: ["real estate agent", "content repurposing real estate", "real estate video"],
-    slug: "content-repurposing-real-estate-agents",
+    keywords: ["real estate agents content", "content repurposing real estate", "real estate video"],
+    slug: "content-repurposing-real-estate-agents-2026",
     label: "real estate content guide",
   },
   {
@@ -173,7 +158,7 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     label: "personal finance video strategy",
   },
   {
-    keywords: ["fitness coach", "fitness coaches", "personal trainer video"],
+    keywords: ["fitness coaches video", "fitness coaches", "personal trainer video"],
     slug: "short-form-video-fitness-coaches",
     label: "fitness coach video guide",
   },
@@ -203,7 +188,7 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     label: "newsletter repurposing guide",
   },
   {
-    keywords: ["saas companies get more signups", "saas signups with video"],
+    keywords: ["saas video marketing", "saas signups with video"],
     slug: "short-form-video-saas-companies-get-more-signups",
     label: "SaaS signups guide",
   },
@@ -247,7 +232,7 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
 
   // --- Broader / last-resort matches ---
   {
-    keywords: ["creators waste their best moments", "best moments go unseen"],
+    keywords: ["why creators miss viral moments", "best moments go unseen"],
     slug: "creators-waste-best-moments",
     label: "why creators waste their best moments",
   },
