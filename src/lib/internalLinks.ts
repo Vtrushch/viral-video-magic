@@ -158,7 +158,7 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     label: "personal finance video strategy",
   },
   {
-    keywords: ["fitness coach", "fitness coaches", "personal trainer video"],
+    keywords: ["fitness coaches video", "fitness coaches", "personal trainer video"],
     slug: "short-form-video-fitness-coaches",
     label: "fitness coach video guide",
   },
