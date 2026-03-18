@@ -66,11 +66,6 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     label: "video resizing guide",
   },
   {
-    keywords: ["face tracking", "face tracking vertical video", "auto reframe"],
-    slug: "face-tracking-vertical-video",
-    label: "face tracking guide",
-  },
-  {
     keywords: ["create highlight reel", "highlight reel from long video", "highlight reel"],
     slug: "create-highlight-reel-from-long-video",
     label: "highlight reel guide",
