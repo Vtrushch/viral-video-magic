@@ -123,11 +123,6 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     label: "YouTube repurposing guide",
   },
   {
-    keywords: ["without showing face", "without showing your face", "faceless video", "faceless content"],
-    slug: "short-form-video-without-showing-face",
-    label: "faceless video guide",
-  },
-  {
     keywords: ["without being on camera", "without going on camera", "hate being on camera"],
     slug: "short-form-video-without-being-on-camera",
     label: "video without camera guide",
