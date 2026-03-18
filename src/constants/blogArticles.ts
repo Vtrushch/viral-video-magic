@@ -16927,4 +16927,156 @@ Si tu nicho está en esta lista, el vídeo sin cara no es un compromiso — es t
 
 **[Prueba HookCut gratis — extrae clips y añade subtítulos a tus grabaciones de pantalla y contenido de locución]**`,
   },
+  {
+    slug: "repurpose-ted-talk-speaking-reel-social-media",
+    title: "How to Repurpose a TED Talk or Speaking Reel into Social Media Clips (2026)",
+    metaDescription: "Your TED Talk or speaking reel is your highest-quality content — but most speakers let it sit on YouTube with 400 views. Complete 2026 guide to turning any keynote or speaking clip into weeks of social media content.",
+    keywords: ["repurpose ted talk speaking reel social media", "ted talk repurposing 2026", "speaking reel short form video", "keynote speaker content strategy", "repurpose speaking content social media"],
+    date: "2026-03-08",
+    readTime: "9 min read",
+    category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/repurpose-ted-talk-speaking-reel-social-media" },
+      { lang: "x-default", href: "https://hookcut.com/blog/repurpose-ted-talk-speaking-reel-social-media" },
+    ],
+    content: `## How to Repurpose a TED Talk or Speaking Reel into Social Media Clips (2026)
+
+A TED Talk is one of the most credible content assets a thought leader can have. A TEDx talk — even a regional one — signals peer validation, intellectual rigor, and the confidence to stand in front of an audience and defend an idea.
+
+Most speakers upload their talk to YouTube, share it once on LinkedIn, get a brief spike of views, and move on. The talk then sits quietly on a channel, accumulating maybe 400–2,000 organic views over the next two years.
+
+This is a missed opportunity of the first order. A well-delivered 12–18 minute TED or TEDx talk contains enough material for 6–8 weeks of short-form social content. The ideas have already been refined to their sharpest form. The delivery has been rehearsed. The production quality is typically far above anything you'd record at your desk.
+
+In 2026, the speakers building the largest platforms are the ones treating their talks not as a one-time event but as a content library.
+
+---
+
+### Why TED-Style Talks Are Exceptional Short-Form Source Material
+
+**The "idea worth spreading" structure**
+TED's format requires speakers to build an entire talk around a single, clearly articulated idea. This constraint — one core idea, fully developed — is exactly the structure of a great short-form clip. Every TED talk has a central thesis that can be extracted and delivered in 60–90 seconds.
+
+**The rehearsed delivery advantage**
+TED talks are rehearsed until the delivery is natural but precise. The pacing, the pauses, the vocal emphasis — all refined through repetition. This makes TED talk audio exceptionally clean for clip extraction. The energy is consistent; there's no rambling or searching for words.
+
+**The credibility signal**
+A clip that begins "In my TED Talk on [topic]..." or uses the TED stage backdrop carries automatic authority signaling. Viewers apply a different level of trust to ideas that have been vetted by a TED curation process.
+
+**The story density**
+TED talks are structured around stories. Every great TED talk has at least one central story that makes the abstract idea concrete. Those stories are your best clips — they work as standalone narratives even without the full context of the talk.
+
+---
+
+### The Speaking Reel: An Underused Content Asset
+
+Beyond TED, most professional speakers have a speaking reel — a 2–5 minute highlight compilation of their best stage moments. These reels are edited for maximum impact: the most compelling moments, the best audience reactions, the clearest articulations of key ideas.
+
+A speaking reel is already a curated clip library. Upload it to HookCut and the AI identifies the individual moments — each compelling stage moment becomes its own standalone clip with subtitles.
+
+For speakers without a polished reel, any conference recording, webinar recording, or even a recorded practice run is workable source material.
+
+---
+
+### The 7 Clip Types That Come From a TED Talk
+
+**Clip 1: The Opening Hook**
+The first 60–90 seconds of most TED talks are the most carefully crafted — the "opening move" designed to earn the audience's full attention. This is almost always your single best clip. It introduces the central idea without fully developing it, leaving the viewer wanting more.
+
+**Clip 2: The Thesis Statement**
+The moment where you state your central argument clearly. "The reason [conventional wisdom] is wrong is [your insight]." In a TED talk, this moment is typically in the first 3 minutes. Extracted as a standalone clip, it's your most quotable and shareable content.
+
+**Clip 3: The Core Story**
+The central narrative that illustrates your idea. If your talk is structured well, there's one story that carries most of the emotional weight. This story, clipped with a clear beginning and end, is your highest-engagement clip — stories hold attention longer than any other format.
+
+**Clip 4: The Surprising Data Point**
+The moment where you reveal a statistic or fact that reframes how viewers understand the topic. "Here's the number that changed how I think about [subject]." High-save content because viewers want to reference it later.
+
+**Clip 5: The Counterintuitive Claim**
+The moment in your talk where you make an argument that challenges what most people believe. "Everyone says X. But here's what actually happens." This is your most shareable clip — people forward it to challenge or confirm their own assumptions.
+
+**Clip 6: The Practical Application**
+The section of your talk where you give the audience something to do differently. Tactical content from TED talks performs well on save rates — viewers want to hold onto the actionable takeaway.
+
+**Clip 7: The Closing Statement**
+The final memorable line or paragraph of your talk. The line you've crafted to be the thing people remember and repeat. This becomes your most quotable clip — the one people screenshot and share as a static image as well as a video.
+
+---
+
+### How to Extract TED Talk Clips with HookCut
+
+Upload your TED or TEDx recording directly to HookCut. The AI analyzes vocal energy, linguistic structure, and content density to identify the 8–12 highest-potential clip moments.
+
+For TED talks specifically:
+- The AI identifies moments of peak vocal energy (typically the thesis statement and core story)
+- The natural pauses in a rehearsed talk create clean clip boundaries
+- The consistent stage lighting means every clip has professional visual quality without additional editing
+
+Add subtitles in your chosen style. The Hormozi-style (bold white text, black outline) works particularly well for stage content because it contrasts against the typically dark TED stage backdrop.
+
+One 15-minute TED talk → 8 clips → 8 days of daily posting across all platforms.
+
+---
+
+### Platform Strategy for Speaker Content
+
+**LinkedIn (Priority #1 for thought leaders)**
+LinkedIn is where thought leadership content lives. A clip from a TED stage on a professional topic reaches exactly the decision-makers, hiring managers, event organizers, and fellow professionals who represent your highest-value audience.
+
+Post the clip with a one-paragraph setup: "I gave a TEDx talk last year about [topic]. The moment that generated the most response was this one. [clip] What do you think — does this match your experience?"
+
+**YouTube (Priority #2 — for long-term discovery)**
+Beyond uploading the full talk to YouTube, create individual Shorts from the talk's key moments. Title them with the specific claim or insight: "Why [conventional belief] is backwards" or "The surprising truth about [topic]." These Shorts appear in Google search results for the topic.
+
+**Twitter/X (Priority #3 for idea distribution)**
+TED-style ideas — clear, counterintuitive, crisply expressed — travel well on X. A 60-second clip with a provocative title gets quote-tweeted and debated in ways that build reach quickly.
+
+**Instagram Reels (Priority #4)**
+For speakers whose audiences include entrepreneurs, creatives, or consumer-facing professionals, Instagram extends the reach beyond the LinkedIn professional sphere.
+
+---
+
+### The Speaker Content Calendar: One Talk, 8 Weeks
+
+A 15-minute TED talk processed through HookCut produces 8 clips. Posted at one per week on LinkedIn plus cross-posted to secondary platforms:
+
+| Week | Clip | Caption Hook |
+|------|------|-------------|
+| 1 | Opening hook | "I gave a TEDx talk about [topic]. This is how it starts." |
+| 2 | Thesis statement | "The single idea my TEDx talk was built around:" |
+| 3 | Core story | "The story that changed how I think about [topic]:" |
+| 4 | Surprising data | "The number that stopped me mid-research:" |
+| 5 | Counterintuitive claim | "Everyone says X. Here's why that's backwards:" |
+| 6 | Practical application | "If you take one thing from my TEDx talk, make it this:" |
+| 7 | Closing statement | "How I ended my TEDx talk on [topic]:" |
+| 8 | Full talk link | "The complete 15-minute talk, if you want the full argument:" |
+
+Eight weeks of content from one talk. If you give 2–3 talks per year, that's 16–24 weeks of LinkedIn-anchor content before you've created a single new piece of content.
+
+---
+
+### If Your TED Talk Recording Isn't Available Yet
+
+Many speakers are accepted to TEDx events but haven't delivered the talk yet, or are building toward a TED application. In this case:
+
+**Record a "pre-talk" version**
+Deliver your talk on camera in a studio or well-lit room before the event. This isn't the TED recording — it's a preparatory version that also generates clips. The rehearsal serves both the talk and the content calendar.
+
+**Use your application content**
+The video application materials for TED and TEDx often include polished short videos explaining your core idea. These are clip-ready.
+
+**Record "the idea behind the talk"**
+A 10–15 minute video explaining the central idea of your talk, the research behind it, and why it matters — recorded before the event — generates clips and builds anticipation for the talk itself.
+
+---
+
+### Building Speaker Authority Through Consistent Clip Posting
+
+The speakers who book the most events in 2026 are not necessarily the most polished — they're the most visible. Event organizers find speakers through social media, through referrals from people who have been influenced by their content, and through the general sense that "this person is talking about something important right now."
+
+Consistent short-form clips from your talks create exactly this visibility. Each clip is a chance for an event organizer to think "I want that person at my conference."
+
+The talk gets you on the stage. The clips build the career around the stage.
+
+**[Try HookCut free — turn your speaking reel into 8 weeks of thought leadership clips]**`,
+  },
 ];
