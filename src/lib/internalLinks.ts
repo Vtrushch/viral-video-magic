@@ -133,8 +133,8 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     label: "batch content creation guide",
   },
   {
-    keywords: ["real estate agent", "content repurposing real estate", "real estate video"],
-    slug: "content-repurposing-real-estate-agents",
+    keywords: ["real estate agents content", "content repurposing real estate", "real estate video"],
+    slug: "content-repurposing-real-estate-agents-2026",
     label: "real estate content guide",
   },
   {
