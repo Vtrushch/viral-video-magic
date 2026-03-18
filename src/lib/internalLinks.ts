@@ -232,7 +232,7 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
 
   // --- Broader / last-resort matches ---
   {
-    keywords: ["creators waste their best moments", "best moments go unseen"],
+    keywords: ["why creators miss viral moments", "best moments go unseen"],
     slug: "creators-waste-best-moments",
     label: "why creators waste their best moments",
   },
