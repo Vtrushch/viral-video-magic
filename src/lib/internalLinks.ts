@@ -41,7 +41,7 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     label: "guide to adding subtitles automatically",
   },
   {
-    keywords: ["youtube shorts from long-form", "youtube shorts from long form", "make youtube shorts"],
+    keywords: ["make youtube shorts from long videos", "youtube shorts from long form", "make youtube shorts"],
     slug: "youtube-shorts-from-long-form",
     label: "YouTube Shorts from long-form guide",
   },
