@@ -123,11 +123,6 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     label: "YouTube repurposing guide",
   },
   {
-    keywords: ["viral score", "viral scoring", "ai predicts viral"],
-    slug: "viral-score-ai-video",
-    label: "viral score explainer",
-  },
-  {
     keywords: ["without showing face", "without showing your face", "faceless video", "faceless content"],
     slug: "short-form-video-without-showing-face",
     label: "faceless video guide",
