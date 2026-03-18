@@ -188,7 +188,7 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     label: "newsletter repurposing guide",
   },
   {
-    keywords: ["saas companies get more signups", "saas signups with video"],
+    keywords: ["saas video marketing", "saas signups with video"],
     slug: "short-form-video-saas-companies-get-more-signups",
     label: "SaaS signups guide",
   },
