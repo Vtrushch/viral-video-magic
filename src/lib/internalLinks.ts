@@ -236,7 +236,6 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     slug: "creators-waste-best-moments",
     label: "why creators waste their best moments",
   },
-  },
   {
     keywords: ["short form video nonprofit", "nonprofit video marketing", "nonprofit tiktok strategy"],
     slug: "short-form-video-nonprofit-organizations",
