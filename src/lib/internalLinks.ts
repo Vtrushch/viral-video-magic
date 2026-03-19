@@ -241,6 +241,11 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     slug: "short-form-video-nonprofit-organizations",
     label: "nonprofit short-form video guide",
   },
+  {
+    keywords: ["short form video local business", "local business tiktok", "local business video marketing"],
+    slug: "short-form-video-local-business-2026",
+    label: "local business short-form video guide",
+  },
 ];
 
 /**
