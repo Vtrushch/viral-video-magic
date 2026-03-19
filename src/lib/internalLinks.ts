@@ -246,6 +246,11 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     slug: "short-form-video-local-business-2026",
     label: "local business short-form video guide",
   },
+  {
+    keywords: ["health wellness coaches video", "wellness coach short form video", "health coach video content"],
+    slug: "video-content-strategy-health-wellness-coaches",
+    label: "wellness coach video strategy guide",
+  },
 ];
 
 /**

@@ -17380,4 +17380,160 @@ In a local market, familiarity is the primary driver of trial. Short-form video 
 
 **[Try HookCut free — turn your behind-the-scenes footage into a week of local content in 20 minutes]**`,
   },
+  {
+    slug: "video-content-strategy-health-wellness-coaches",
+    title: "Video Content Strategy for Health and Wellness Coaches in 2026 (Complete Guide)",
+    metaDescription: "Health and wellness coaches who post short-form video consistently attract 4x more inbound clients than those who don't. Complete 2026 guide to video content strategy for health coaches, nutritionists, and wellness professionals.",
+    keywords: ["video content strategy health wellness coaches", "health coach tiktok strategy 2026", "wellness coach short form video", "nutritionist video content", "health coach instagram reels"],
+    date: "2026-03-08",
+    readTime: "9 min read",
+    category: "Strategy",
+    content: `## Video Content Strategy for Health and Wellness Coaches in 2026 (Complete Guide)
+
+The wellness industry has a trust problem that short-form video is uniquely positioned to solve.
+
+There is more health and wellness misinformation circulating in 2026 than at any previous point in history. Miracle diets, pseudoscientific supplements, and unqualified "coaches" with large followings have made potential clients deeply skeptical of health claims they encounter online.
+
+The wellness professionals who are building thriving practices in this environment share a common approach: they use short-form video not to sell, but to demonstrate competence, evidence-base, and genuine client outcomes before a potential client ever reaches out. By the time someone books a discovery call, they've already seen 20 clips of your thinking, your approach, and your clients' real results.
+
+That's a fundamentally different sales conversation than the one that starts with a cold inquiry.
+
+---
+
+### Why Short-Form Video Works for Wellness Professionals
+
+**Trust is the primary barrier to entry**
+In health and wellness, potential clients don't just evaluate whether you can help them — they evaluate whether you're safe to trust. A professional who consistently demonstrates evidence-based thinking, appropriate professional humility, and real client outcomes over months of content has built the trust that makes hiring feel low-risk.
+
+**Education is the product**
+Wellness professionals who educate consistently — who explain the why behind their recommendations, who debunk myths in their area, who translate research into practical guidance — position themselves as the credible, knowledgeable choice in a market full of hype.
+
+**The niche advantage**
+"Health coach" is too broad. "Gut health for women with autoimmune conditions," "sustainable weight loss for menopausal women," or "nutrition for endurance athletes over 40" are specific enough to attract exactly the clients you're best positioned to help — and specific enough to be discoverable by those clients.
+
+**Regulatory considerations make authenticity essential**
+Health claims are regulated. Wellness professionals who navigate this correctly — making evidence-based claims without unauthorized medical promises — stand out in a landscape full of overclaiming.
+
+---
+
+### The 7 Video Formats That Work for Health and Wellness Coaches
+
+**Format 1: The Myth-Bust**
+"The most damaging health myth I hear from clients — and the research behind why it's wrong." Wellness myth-busting content has extremely high share rates because it gives viewers something to tell their friends and family.
+
+Examples that work: "You don't need to eat less — you need to eat differently," "the problem with 'eat less, move more' for metabolic health," "why willpower is the wrong framework for habit change."
+
+Be specific and cite the mechanism, not just the claim. "This is wrong because [specific reason]" is far more valuable and credible than "this is wrong."
+
+**Format 2: The Evidence Translation**
+Take a recent research finding in your area and translate it into practical guidance. "A new study on [topic] just changed how I think about [recommendation]. Here's what it means for you."
+
+This format positions you as someone who actively engages with evidence and updates their recommendations — exactly the signal of a trustworthy health professional.
+
+**Format 3: The "What I Actually Eat/Do" Clip**
+Your own wellness practice, authentically shown. Not aspirational — real. What you actually ate yesterday. Your actual movement routine. How you handle stress. Your own relationship with the recommendations you make.
+
+Practitioners who model their own advice build trust faster than those who only teach it. There's an implicit credibility signal in "here's how I actually live this."
+
+**Format 4: The Client Transformation (Anonymized or With Permission)**
+A specific client outcome with specific numbers and a specific timeframe. "[Client type] came to me with [specific situation]. Here's what changed over [timeframe] and why."
+
+Always focus on health outcomes and quality of life improvements, not weight-centric metrics that may run afoul of platform policies or reinforce harmful relationships with weight.
+
+**Format 5: The "What to Do When" Clip**
+Practical guidance for specific situations: "What to eat when you're traveling," "how to handle a dinner party when you're working on your nutrition," "what I recommend when a client is too tired to exercise." Situational tactical content is highly saved because clients want to reference it in those exact moments.
+
+**Format 6: The "Signs You Need to See a [Specialist]" Clip**
+This format demonstrates professional humility and appropriate scope of practice: "Signs that what you're experiencing is beyond nutrition/lifestyle coaching and you should see a [doctor/gastroenterologist/endocrinologist]." Content that shows you know the limits of your scope builds enormous trust.
+
+**Format 7: The Protocol Walk-Through**
+Walk through one specific protocol or framework you use with clients: "The 4-week approach I use with every new client in the first month" or "The morning routine framework I teach all my clients." Frameworks are highly saved and shared because they give viewers a complete system they can apply.
+
+---
+
+### Health Claim Compliance for Wellness Content
+
+This is the most important section of this guide for any regulated or quasi-regulated wellness professional.
+
+**What you can say:**
+- "Research suggests that [behavior] may support [health outcome]"
+- "Many of my clients find that [approach] helps them [experience]"
+- "According to [credible source], [finding]"
+- "This is not medical advice — please consult your doctor for [specific situation]"
+
+**What to avoid:**
+- Guaranteed outcomes ("this will cure your [condition]")
+- Specific dosage recommendations for supplements without appropriate credentials
+- Diagnostic claims ("if you have these symptoms, you have [condition]")
+- Comparing your approach favorably to medical treatment
+
+**The disclaimer practice:**
+Many wellness coaches include a standing disclaimer in their bio and periodically in content: "I'm a certified [credential], not a medical doctor. This content is for educational purposes only. Please consult a healthcare provider for personal medical advice."
+
+**Platform policies:**
+TikTok and Instagram have specific policies around health claims. Familiarize yourself with them before posting. Content that violates these policies can be removed or result in account restrictions.
+
+---
+
+### Platform Strategy for Health and Wellness Coaches
+
+**Instagram (Priority #1)**
+Instagram remains the dominant platform for wellness content in 2026. The combination of Reels (discovery), Stories (nurturing daily habits), and DMs (conversion) makes it the most complete client acquisition ecosystem for wellness coaches.
+
+Instagram's save feature is particularly valuable — wellness content gets saved at very high rates because viewers want to reference protocols, recipes, and recommendations later.
+
+**YouTube (Priority #2 — for long-form authority)**
+YouTube is where the most authoritative wellness creators build their deepest audience relationships. Long-form YouTube videos — 20–45 minute deep dives on specific health topics — establish credentials and drive discovery from search. YouTube Shorts extracted from long-form build the channel.
+
+**TikTok (Priority #3 — for discovery)**
+TikTok's algorithm surfaces health and wellness content aggressively to users who have engaged with health topics. The platform has a large, established wellness community. Myth-busting and evidence translation content performs especially well.
+
+**Pinterest (Priority #4 — for content with visual protocols)**
+Pinterest is an underutilized platform for wellness coaches who create visual content: meal plans, protocol infographics, routine visuals. Pinterest drives high-intent discovery and has a long content half-life.
+
+---
+
+### Repurposing Wellness Content Efficiently
+
+**Source 1: Client session insights**
+The questions, revelations, and breakthroughs from client sessions are your best content ideas. Keep a running notes document of moments from client calls that would be valuable to share (anonymized). These real scenarios produce the most resonant content because they're drawn from real problems real people are experiencing.
+
+**Source 2: Weekly educational content**
+Record a 15–20 minute educational video once per week on a specific wellness topic. Upload to HookCut. Extract 5–6 clips: the myth-bust moment, the evidence translation, the practical protocol, the framework explanation.
+
+**Source 3: Your own wellness practice**
+A phone propped against the kitchen counter while you make a nourishing meal. A screen recording of your morning routine app. A clip from your workout. Your own practice, documented casually, is perpetually authentic content.
+
+---
+
+### The Wellness Coach Content Calendar
+
+**Weekly minimum:**
+- 2 educational clips (myth-bust or evidence translation)
+- 1 practical/tactical clip (what to do when, protocol walk-through)
+- 1 personal clip (your own practice or behind-the-scenes)
+
+**Monthly:**
+- 1 client transformation story (with permission)
+- 1 longer educational video (YouTube)
+
+This cadence — 4 posts per week — requires roughly 60–90 minutes of recording and 30–45 minutes of clip extraction and scheduling per week using HookCut.
+
+---
+
+### Converting Viewers into Wellness Coaching Clients
+
+**The free resource funnel**
+The highest-converting wellness lead generation path: free resource → email list → nurture sequence → discovery call offer.
+
+Free resources that convert well: a PDF protocol ("My 5-Day Reset Protocol"), a meal template ("The Anti-Inflammatory Week"), a self-assessment ("The Gut Health Score").
+
+**The discovery call CTA**
+For coaches offering 1:1 services, the eventual CTA is a discovery call or consultation. This call should be positioned as a value exchange, not a sales call: "In our 30-minute call, I'll tell you exactly what's behind [their specific issue] and whether I can help."
+
+**The group program threshold**
+Many wellness coaches offer group programs at lower price points than 1:1 coaching. These programs have lower conversion thresholds and allow you to serve more clients from the same content. A "join my next cohort" waitlist CTA is appropriate for audience sizes over 1,000 followers.
+
+**[Try HookCut free — turn your wellness education sessions into a week of client-attracting clips]**`,
+  },
 ];
