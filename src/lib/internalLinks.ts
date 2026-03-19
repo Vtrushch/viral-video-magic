@@ -251,6 +251,11 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     slug: "video-content-strategy-health-wellness-coaches",
     label: "wellness coach video strategy guide",
   },
+  {
+    keywords: ["short form video analytics", "video analytics guide", "tiktok analytics 2026"],
+    slug: "short-form-video-analytics-guide-2026",
+    label: "short-form video analytics guide",
+  },
 ];
 
 /**
