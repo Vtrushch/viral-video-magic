@@ -17756,4 +17756,146 @@ The creators who grow most consistently in 2026 are not the most talented — th
 
 **[Try HookCut free — create clips ranked by viral potential and use the analytics to improve every week]**`,
   },
+  {
+    slug: "es/reutilizar-ted-talk-speaking-reel-redes-sociales",
+    title: "Cómo Reutilizar una TED Talk o Speaking Reel en Clips para Redes Sociales (2026)",
+    metaDescription: "Tu TED Talk o speaking reel es tu contenido de mayor calidad — pero la mayoría de ponentes lo dejan en YouTube con 400 visualizaciones. Guía completa 2026 para convertir cualquier keynote o clip de ponencia en semanas de contenido para redes sociales.",
+    keywords: ["reutilizar ted talk speaking reel redes sociales", "reutilización ted talk 2026", "speaking reel vídeo formato corto", "estrategia de contenido ponente", "reutilizar contenido de ponencia redes sociales"],
+    date: "2026-03-08",
+    readTime: "9 min read",
+    category: "Strategy",
+    lang: "es",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/repurpose-ted-talk-speaking-reel-social-media" },
+      { lang: "es", href: "https://hookcut.com/blog/es/reutilizar-ted-talk-speaking-reel-redes-sociales" },
+      { lang: "x-default", href: "https://hookcut.com/blog/repurpose-ted-talk-speaking-reel-social-media" },
+    ],
+    content: `## Cómo Reutilizar una TED Talk o Speaking Reel en Clips para Redes Sociales (2026)
+
+Una TED Talk es uno de los activos de contenido más creíbles que puede tener un líder de pensamiento. Una charla TEDx — incluso una regional — señala validación por pares, rigor intelectual y la confianza para pararse frente a una audiencia y defender una idea.
+
+La mayoría de los ponentes suben su charla a YouTube, la comparten una vez en LinkedIn, obtienen un breve pico de visualizaciones y siguen adelante. La charla luego se queda tranquilamente en un canal, acumulando quizás 400–2.000 visualizaciones orgánicas en los próximos dos años.
+
+Esta es una oportunidad perdida de primer orden. Una TED o TEDx bien entregada de 12–18 minutos contiene suficiente material para 6–8 semanas de contenido social de formato corto. Las ideas ya han sido refinadas a su forma más aguda. La entrega ha sido ensayada. La calidad de producción es típicamente muy superior a cualquier cosa que grabarías en tu escritorio.
+
+En 2026, los ponentes que están construyendo las plataformas más grandes son los que tratan sus charlas no como un evento de una sola vez sino como una biblioteca de contenido.
+
+---
+
+### Por Qué las Charlas de Estilo TED Son Material Excepcional para Formato Corto
+
+**La estructura de "idea que vale la pena difundir"**
+El formato de TED requiere que los ponentes construyan toda una charla alrededor de una sola idea claramente articulada. Esta restricción — una idea central, completamente desarrollada — es exactamente la estructura de un gran clip de formato corto. Cada charla TED tiene una tesis central que puede extraerse y entregarse en 60–90 segundos.
+
+**La ventaja de la entrega ensayada**
+Las charlas TED se ensayan hasta que la entrega es natural pero precisa. El ritmo, las pausas, el énfasis vocal — todo refinado a través de la repetición. Esto hace que el audio de las charlas TED sea excepcionalmente limpio para la extracción de clips.
+
+**La señal de credibilidad**
+Un clip que comienza "En mi charla TEDx sobre [tema]..." o usa el telón de fondo del escenario TED lleva una señalización de autoridad automática.
+
+**La densidad de historias**
+Las charlas TED están estructuradas alrededor de historias. Cada gran charla TED tiene al menos una historia central que hace concreta la idea abstracta. Esas historias son tus mejores clips.
+
+---
+
+### El Speaking Reel: Un Activo de Contenido Infrautilizado
+
+Más allá de TED, la mayoría de los ponentes profesionales tienen un speaking reel — una compilación de 2–5 minutos de sus mejores momentos en escenario. Estos reels ya están editados para el máximo impacto: los momentos más convincentes, las mejores reacciones de la audiencia, las articulaciones más claras de las ideas clave.
+
+Un speaking reel ya es una biblioteca de clips curada. Súbelo a HookCut y la IA identifica los momentos individuales — cada momento convincente en el escenario se convierte en su propio clip independiente con subtítulos.
+
+---
+
+### Los 7 Tipos de Clip que Provienen de una TED Talk
+
+**Clip 1: El Gancho de Apertura**
+Los primeros 60–90 segundos de la mayoría de las charlas TED son los más cuidadosamente elaborados. Este es casi siempre tu mejor clip. Introduce la idea central sin desarrollarla completamente, dejando al espectador con ganas de más.
+
+**Clip 2: La Declaración de Tesis**
+El momento donde declaras tu argumento central claramente. En una charla TED, este momento está típicamente en los primeros 3 minutos. Extraído como clip independiente, es tu contenido más citable y compartible.
+
+**Clip 3: La Historia Central**
+La narrativa central que ilustra tu idea. Una historia bien contada con un principio y un final claros es tu clip de mayor engagement.
+
+**Clip 4: El Punto de Datos Sorprendente**
+El momento donde revelas una estadística o hecho que reencuadra cómo los espectadores entienden el tema. Contenido con alta tasa de guardado porque los espectadores quieren referenciarlo después.
+
+**Clip 5: La Afirmación Contraintuitiva**
+El momento en tu charla donde haces un argumento que desafía lo que la mayoría de la gente cree. Este es tu clip más compartible.
+
+**Clip 6: La Aplicación Práctica**
+La sección donde das a la audiencia algo para hacer diferente. El contenido táctico de las charlas TED funciona bien en tasas de guardado.
+
+**Clip 7: La Declaración de Cierre**
+La línea final memorable de tu charla. La línea que has elaborado para que la gente recuerde y repita. Este se convierte en tu clip más citable.
+
+---
+
+### Cómo Extraer Clips de TED Talks con HookCut
+
+Sube tu grabación TED o TEDx directamente a HookCut. La IA analiza la energía vocal, la estructura lingüística y la densidad de contenido para identificar los 8–12 momentos de clip de mayor potencial.
+
+Para charlas TED específicamente:
+- La IA identifica momentos de máxima energía vocal
+- Las pausas naturales en una charla ensayada crean límites limpios de clip
+- La iluminación consistente del escenario significa que cada clip tiene calidad visual profesional
+
+Una charla TED de 15 minutos → 8 clips → 8 días de publicación diaria en todas las plataformas.
+
+---
+
+### Estrategia por Plataforma para Contenido de Ponentes
+
+**LinkedIn (Prioridad #1 para líderes de pensamiento)**
+LinkedIn es donde vive el contenido de liderazgo de pensamiento. Un clip del escenario TED sobre un tema profesional llega exactamente a los tomadores de decisiones, directores de contratación y organizadores de eventos que representan tu audiencia de mayor valor.
+
+**YouTube (Prioridad #2 — para descubrimiento a largo plazo)**
+Crea Shorts individuales de los momentos clave de la charla. Titúlalos con la afirmación o insight específico. Estos Shorts aparecen en los resultados de búsqueda de Google para el tema.
+
+**Twitter/X (Prioridad #3 para distribución de ideas)**
+Las ideas de estilo TED — claras, contraintuitivas, expresadas con precisión — viajan bien en X. Un clip de 60 segundos con un título provocador genera citas y debates que construyen alcance rápidamente.
+
+**Instagram Reels (Prioridad #4)**
+Para ponentes cuyas audiencias incluyen emprendedores, creativos o profesionales orientados al consumidor.
+
+---
+
+### El Calendario de Contenido del Ponente: Una Charla, 8 Semanas
+
+| Semana | Clip | Gancho del Caption |
+|--------|------|-------------------|
+| 1 | Gancho de apertura | "Di una charla TEDx sobre [tema]. Así empieza." |
+| 2 | Declaración de tesis | "La única idea alrededor de la que construí mi TEDx:" |
+| 3 | Historia central | "La historia que cambió cómo pienso sobre [tema]:" |
+| 4 | Punto de datos sorprendente | "El número que me detuvo a mitad de mi investigación:" |
+| 5 | Afirmación contraintuitiva | "Todo el mundo dice X. Por qué eso está al revés:" |
+| 6 | Aplicación práctica | "Si te llevas una cosa de mi TEDx, que sea esta:" |
+| 7 | Declaración de cierre | "Cómo terminé mi TEDx sobre [tema]:" |
+| 8 | Enlace charla completa | "La charla completa de 15 minutos, si quieres el argumento completo:" |
+
+Ocho semanas de contenido de una sola charla.
+
+---
+
+### Si tu Grabación TED Aún No Está Disponible
+
+**Graba una versión "pre-charla"**
+Entrega tu charla en cámara en un estudio o habitación bien iluminada antes del evento. Esta versión preparatoria también genera clips.
+
+**Usa tu contenido de solicitud**
+Los materiales de vídeo de solicitud para TED y TEDx a menudo incluyen vídeos cortos y pulidos explicando tu idea central. Estos están listos para clips.
+
+**Graba "la idea detrás de la charla"**
+Un vídeo de 10–15 minutos explicando la idea central de tu charla, la investigación detrás de ella y por qué importa — grabado antes del evento — genera clips y construye anticipación.
+
+---
+
+### Construyendo Autoridad de Ponente a Través de Clips Consistentes
+
+Los ponentes que reservan más eventos en 2026 no son necesariamente los más pulidos — son los más visibles. Los organizadores de eventos encuentran ponentes a través de las redes sociales y la sensación general de que "esta persona está hablando de algo importante ahora mismo."
+
+La charla te lleva al escenario. Los clips construyen la carrera alrededor del escenario.
+
+**[Prueba HookCut gratis — convierte tu speaking reel en 8 semanas de clips de liderazgo de pensamiento]**`,
+  },
 ];
