@@ -16937,6 +16937,7 @@ Si tu nicho está en esta lista, el vídeo sin cara no es un compromiso — es t
     category: "Strategy",
     hreflang: [
       { lang: "en", href: "https://hookcut.com/blog/repurpose-ted-talk-speaking-reel-social-media" },
+      { lang: "es", href: "https://hookcut.com/blog/es/reutilizar-ted-talk-speaking-reel-redes-sociales" },
       { lang: "x-default", href: "https://hookcut.com/blog/repurpose-ted-talk-speaking-reel-social-media" },
     ],
     content: `## How to Repurpose a TED Talk or Speaking Reel into Social Media Clips (2026)
