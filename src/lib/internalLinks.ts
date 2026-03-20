@@ -256,6 +256,31 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     slug: "short-form-video-analytics-guide-2026",
     label: "short-form video analytics guide",
   },
+  {
+    keywords: ["ted talk repurposing", "speaking reel clips"],
+    slug: "repurpose-ted-talk-speaking-reel-social-media",
+    label: "TED talk repurposing guide",
+  },
+  {
+    keywords: ["nonprofit video", "nonprofits short-form video"],
+    slug: "short-form-video-nonprofit-organizations",
+    label: "nonprofit video guide",
+  },
+  {
+    keywords: ["local business video", "local business short-form"],
+    slug: "short-form-video-local-business-2026",
+    label: "local business video guide",
+  },
+  {
+    keywords: ["health and wellness coaches", "wellness coach video"],
+    slug: "video-content-strategy-health-wellness-coaches",
+    label: "health coach video strategy",
+  },
+  {
+    keywords: ["video analytics", "short-form video metrics"],
+    slug: "short-form-video-analytics-guide-2026",
+    label: "short-form video analytics guide",
+  },
 ];
 
 /**
