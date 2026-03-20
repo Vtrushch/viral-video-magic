@@ -17088,6 +17088,11 @@ The talk gets you on the stage. The clips build the career around the stage.
     date: "2026-03-08",
     readTime: "9 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/short-form-video-nonprofit-organizations" },
+      { lang: "es", href: "https://hookcut.com/blog/es/video-formato-corto-organizaciones-sin-fines-de-lucro" },
+      { lang: "x-default", href: "https://hookcut.com/blog/short-form-video-nonprofit-organizations" },
+    ],
     content: `## Short-Form Video for Nonprofit Organizations: The Complete 2026 Guide
 
 Nonprofits face a marketing challenge that most for-profit businesses don't: the need to compete for attention, trust, and dollars in a crowded cause landscape — with budgets that are a fraction of what commercial brands spend.
