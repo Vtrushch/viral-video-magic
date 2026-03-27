@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
-import { getSignedUrl, prefetchSignedUrls } from "@/lib/signedUrlCache";
+import { getSignedUrl, prefetchSignedUrls, refreshSignedUrl } from "@/lib/signedUrlCache";
 import { toast } from "sonner";
 import { downloadClip, clipFilename } from "@/lib/downloadClip";
 import { apiFetch } from "@/lib/api";
@@ -799,6 +799,13 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
               onEnded={() => setPlayerPlaying(false)}
               onPause={() => setPlayerPlaying(false)}
               onPlay={() => setPlayerPlaying(true)}
+              onError={async () => {
+                // Signed URL likely expired — auto-refresh silently
+                if (video.file_path) {
+                  const fresh = await refreshSignedUrl("raw-videos", video.file_path);
+                  if (fresh) setVideoSignedUrl(fresh);
+                }
+              }}
               playsInline
               preload="auto"
               controls={playerPlaying}

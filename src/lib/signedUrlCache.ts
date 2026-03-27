@@ -34,6 +34,29 @@ export async function getSignedUrl(
 }
 
 /**
+ * Force-refresh a signed URL (used when video fails to load — likely expired).
+ */
+export async function refreshSignedUrl(
+  bucket: string,
+  path: string,
+  expiresIn = 3600
+): Promise<string | null> {
+  const key = `${bucket}/${path}`;
+  cache.delete(key); // invalidate cache entry
+  return getSignedUrl(bucket, path, expiresIn);
+}
+
+/**
+ * Check if a cached URL is expired or about to expire (within 2 min).
+ */
+export function isSignedUrlExpired(bucket: string, path: string): boolean {
+  const key = `${bucket}/${path}`;
+  const cached = cache.get(key);
+  if (!cached) return true;
+  return cached.expires < Date.now() + 2 * 60 * 1000;
+}
+
+/**
  * Prefetch signed URLs for multiple paths (fire-and-forget).
  */
 export function prefetchSignedUrls(bucket: string, paths: (string | null | undefined)[]) {

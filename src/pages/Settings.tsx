@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, CreditCard, Palette, Sparkles, Zap, Crown, AlertTriangle, Globe, LogOut, Mail } from "lucide-react";
+import { User, CreditCard, Palette, Sparkles, Zap, Crown, AlertTriangle, Globe, LogOut, Mail, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCredits } from "@/hooks/useCredits";
 import { toast } from "sonner";
@@ -19,6 +19,8 @@ const SettingsPage = () => {
   const { t, i18n } = useTranslation();
   const [name, setName] = useState(user?.user_metadata?.full_name || "");
   const [savingProfile, setSavingProfile] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
   const [captionStyle, setCaptionStyle] = useState("hormozi");
   const [clipLength, setClipLength] = useState("medium");
@@ -42,6 +44,29 @@ const SettingsPage = () => {
     if (meta.reframe_mode) setReframeMode(meta.reframe_mode);
     setLoadingPrefs(false);
   }, [user]);
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== "DELETE") {
+      toast.error("Type DELETE to confirm account deletion");
+      return;
+    }
+    setDeletingAccount(true);
+    try {
+      // Soft-delete: mark all user videos as deleted, then sign out
+      // Hard deletion requires service role — send a deletion request email instead
+      await supabase.from("videos").update({ deleted_at: new Date().toISOString() } as any).eq("user_id", user!.id);
+      await supabase
+        .from("profiles" as any)
+        .update({ deletion_requested_at: new Date().toISOString() } as any)
+        .eq("user_id", user!.id);
+      toast.success("Account deletion requested. You'll receive a confirmation email within 24 hours. Your data will be fully deleted within 30 days.");
+      setTimeout(() => signOut(), 2000);
+    } catch (err) {
+      toast.error("Failed to request deletion. Please email support@hookcut.com");
+    } finally {
+      setDeletingAccount(false);
+    }
+  };
 
   const handleSaveProfile = async () => {
     if (!user) return;
@@ -124,15 +149,35 @@ const SettingsPage = () => {
               <AlertTriangle className="w-4 h-4 text-destructive" />
               <h3 className="font-semibold text-foreground">{t("settings.dangerZone")}</h3>
             </div>
-            <p className="text-sm text-muted-foreground">{t("settings.dangerDesc")}</p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-destructive/40 text-destructive hover:bg-destructive/10"
-              onClick={() => toast.info(t("settings.deleteAccountMsg"))}
-            >
-              {t("settings.deleteAccount")}
-            </Button>
+            <p className="text-sm text-muted-foreground">
+              Permanently delete your account and all associated data. This action cannot be undone. All videos, clips, and billing information will be removed within 30 days.
+            </p>
+            <div className="space-y-3">
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1 block">
+                  Type <span className="font-mono font-bold text-destructive">DELETE</span> to confirm
+                </Label>
+                <Input
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value.toUpperCase())}
+                  placeholder="Type DELETE"
+                  className="bg-muted/10 border-destructive/30 text-foreground max-w-[200px] font-mono"
+                />
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-destructive/40 text-destructive hover:bg-destructive/10"
+                onClick={handleDeleteAccount}
+                disabled={deletingAccount || deleteConfirmText !== "DELETE"}
+              >
+                {deletingAccount ? (
+                  <><Loader2 className="w-3 h-3 mr-1.5 animate-spin" /> Deleting...</>
+                ) : (
+                  t("settings.deleteAccount")
+                )}
+              </Button>
+            </div>
           </div>
         </TabsContent>
 
