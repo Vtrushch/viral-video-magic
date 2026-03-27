@@ -3722,10 +3722,34 @@ def webhook():
                     user_id = sub.get("metadata", {}).get("supabase_user_id", "")
                     plan = sub.get("metadata", {}).get("plan", "")
                     if user_id and plan in PLAN_CREDITS:
+                        plan_credits = PLAN_CREDITS[plan]
+
+                        # Preserve addon credits (render packs) during monthly reset.
+                        # We reset used_credits to 0 but keep any surplus credits above the plan base.
+                        existing = sb.table("user_credits").select(
+                            "total_credits, used_credits"
+                        ).eq("user_id", user_id).maybe_single().execute()
+
+                        if existing.data:
+                            current_total = existing.data.get("total_credits", 0)
+                            current_used = existing.data.get("used_credits", 0)
+                            # remaining credits right now
+                            remaining_now = max(0, current_total - current_used)
+                            addon_credits = max(0, remaining_now - plan_credits)
+                            new_total = plan_credits + addon_credits
+                        else:
+                            addon_credits = 0
+                            new_total = plan_credits
+
                         sb.table("user_credits").update({
-                            "total_credits": PLAN_CREDITS[plan], "used_credits": 0,
+                            "total_credits": new_total,
+                            "used_credits": 0,
                         }).eq("user_id", user_id).execute()
-                        print(f"🔄 Monthly reset: user={user_id[:8]}, plan={plan}")
+
+                        print(
+                            f"🔄 Monthly reset: user={user_id[:8]}, plan={plan}, "
+                            f"base={plan_credits}, addons={addon_credits}, total={new_total}"
+                        )
                 except Exception as e:
                     print(f"⚠️ invoice.paid error: {e}")
 
