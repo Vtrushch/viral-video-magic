@@ -58,6 +58,14 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
   const { t } = useTranslation();
   const { canUpload, storageRemaining, storageLimit, activeVideos, plan, loading: limitLoading } = useVideoLimit();
 
+  // Read user's saved default preferences
+  const userDefaults = {
+    clipCount: parseInt(user?.user_metadata?.clip_count || "10", 10),
+    clipLength: user?.user_metadata?.clip_length || "medium",
+    captionStyle: user?.user_metadata?.caption_style || "hormozi",
+    reframeMode: user?.user_metadata?.reframe_mode || "smart",
+  };
+
   const MAX_FILE_SIZE_BYTES = 5120 * 1024 * 1024; // 5GB
 
   useEffect(() => {
@@ -151,11 +159,11 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
         file_size: file.size,
         status: "uploaded",
         settings: {
-          clipCount: 10,
-          clipLength: "medium",
-          captionStyle: "hormozi",
+          clipCount: userDefaults.clipCount,
+          clipLength: userDefaults.clipLength,
+          captionStyle: userDefaults.captionStyle,
           languages: ["en"],
-          reframeMode: "smart",
+          reframeMode: userDefaults.reframeMode,
         },
       }).select().single();
 
@@ -204,11 +212,11 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
           status: "downloading",
           source_url: trimmed,
           settings: {
-            clipCount: 10,
-            clipLength: "medium",
-            captionStyle: "hormozi",
+            clipCount: userDefaults.clipCount,
+            clipLength: userDefaults.clipLength,
+            captionStyle: userDefaults.captionStyle,
             languages: ["en"],
-            reframeMode: "smart",
+            reframeMode: userDefaults.reframeMode,
           },
         })
         .select()

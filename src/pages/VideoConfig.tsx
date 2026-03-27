@@ -119,9 +119,18 @@ const VideoConfig = () => {
       if (!modalResponse.ok) {
         const errorText = await modalResponse.text();
         console.error('Modal API error:', errorText);
+        // Reset status so user isn't stuck in "analyzing" forever
+        await supabase.from("videos").update({ status: "uploaded" } as any).eq("id", id);
+        toast.error("Failed to start analysis. Please try again.");
+        setSubmitting(false);
+        return;
       }
     } catch (modalError) {
       console.error('Modal connection error:', modalError);
+      await supabase.from("videos").update({ status: "uploaded" } as any).eq("id", id);
+      toast.error("Connection error. Please check your internet and try again.");
+      setSubmitting(false);
+      return;
     }
 
     posthog.capture('analysis_started', {

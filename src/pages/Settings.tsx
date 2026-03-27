@@ -149,6 +149,10 @@ const SettingsPage = () => {
                   <SelectItem value="hormozi">{t("settings.hormoziDesc")}</SelectItem>
                   <SelectItem value="mrbeast">{t("settings.mrBeastDesc")}</SelectItem>
                   <SelectItem value="minimal">{t("settings.minimalDesc")}</SelectItem>
+                  <SelectItem value="neon">Neon — Electric green glow</SelectItem>
+                  <SelectItem value="fire">Fire — Orange-red gradient</SelectItem>
+                  <SelectItem value="elegant">Elegant — Soft white, thin outline</SelectItem>
+                  <SelectItem value="bold-pop">Bold Pop — High contrast punch</SelectItem>
                 </SelectContent>
               </Select>
             </div>

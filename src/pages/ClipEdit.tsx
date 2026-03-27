@@ -514,12 +514,9 @@ const ClipEdit = () => {
       });
       if (!res.ok) throw new Error("Render request failed");
 
-      // Deduct 1 credit — only after successful render request
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase.rpc("increment_used_credits" as any, { _user_id: user.id });
-        refetchCredits();
-      }
+      // Credit deduction is handled server-side in Modal worker after successful render.
+      // Do NOT deduct here — would cause double deduction.
+      refetchCredits();
       toast.success(t("toasts.renderingStarted"));
       posthog.capture('clip_render_started', {
         caption_style: captionStyle,

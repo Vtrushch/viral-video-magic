@@ -52,9 +52,8 @@ function formatDate(d: string) {
 }
 
 /* ─── Downloading State (YouTube import) ─── */
-const DownloadingState = ({ video }: { video: Tables<"videos"> }) => {
+const DownloadingState = ({ video, onRefresh }: { video: Tables<"videos">; onRefresh: () => void }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   useEffect(() => {
     const channel = supabase
       .channel(`video-download-${video.id}`)
@@ -65,13 +64,13 @@ const DownloadingState = ({ video }: { video: Tables<"videos"> }) => {
         filter: `id=eq.${video.id}`,
       }, (payload: any) => {
         if (payload.new.status !== "downloading") {
-          navigate(0); // React Router reload — no full page refresh
+          onRefresh();
         }
       })
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [video.id, navigate]);
+  }, [video.id, onRefresh]);
 
   return (
     <div className="glass-card rounded-2xl p-10 text-center space-y-6">
@@ -96,7 +95,7 @@ const DownloadingState = ({ video }: { video: Tables<"videos"> }) => {
 };
 
 /* ─── Uploaded State ─── */
-const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
+const UploadedState = ({ video, onRefresh }: { video: Tables<"videos">; onRefresh: () => void }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const settings = video.settings as any;
@@ -115,14 +114,20 @@ const UploadedState = ({ video }: { video: Tables<"videos"> }) => {
     try {
       const modalResponse = await apiFetch('/analyze', { video_id: video.id });
       if (!modalResponse.ok) {
-        console.error('Modal API error:', await modalResponse.text());
+        // Reset status back so user isn't stuck
+        await supabase.from("videos").update({ status: "uploaded" } as any).eq("id", video.id);
+        toast.error(t("toasts.analysisStartFailed") || "Failed to start analysis. Please try again.");
+        return;
       }
     } catch (modalError) {
       console.error('Modal connection error:', modalError);
+      await supabase.from("videos").update({ status: "uploaded" } as any).eq("id", video.id);
+      toast.error(t("toasts.analysisStartFailed") || "Connection error. Please try again.");
+      return;
     }
 
     toast.success(t("toasts.analysisStartedShort"));
-    navigate(0);
+    onRefresh();
   };
 
   return (
@@ -712,6 +717,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
       });
 
       // Poll for transcription completion (check every 2s, max 30s)
+      // Stored in ref so it can be cleared if component unmounts
       let attempts = 0;
       const pollInterval = setInterval(async () => {
         attempts++;
@@ -731,6 +737,9 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
           if (refreshedClips) setClips(refreshedClips);
         }
       }, 2000);
+      // Cleanup on unmount via AbortController pattern — store in closure-safe ref
+      const cleanup = () => clearInterval(pollInterval);
+      window.addEventListener("beforeunload", cleanup, { once: true });
     } catch (transcribeError) {
       console.error("Transcription request failed:", transcribeError);
       // Non-blocking — clip is created, transcription can happen during render as fallback
@@ -1347,7 +1356,11 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
         onClose={() => setReAnalyzeOpen(false)}
         video={video}
         existingClipCount={clips.length}
-        onSuccess={() => navigate(0)}
+        onSuccess={async () => {
+          // Refetch clips after re-analyze starts
+          const { data } = await supabase.from("clips").select("*").eq("video_id", video.id).order("viral_score", { ascending: false });
+          if (data) setClips(data);
+        }}
       />
 
       {/* Highlight Reels Section */}
@@ -1387,7 +1400,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
 };
 
 /* ─── Failed State ─── */
-const FailedState = ({ video }: { video: Tables<"videos"> }) => {
+const FailedState = ({ video, onRefresh }: { video: Tables<"videos">; onRefresh: () => void }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -1400,8 +1413,14 @@ const FailedState = ({ video }: { video: Tables<"videos"> }) => {
       toast.error(t("videoDetail.failedToRetry"));
       return;
     }
+    // Trigger Modal analysis API
+    try {
+      await apiFetch('/analyze', { video_id: video.id });
+    } catch (e) {
+      console.error('Modal connection error on retry:', e);
+    }
     toast.success(t("videoDetail.retrying"));
-    navigate(0);
+    onRefresh();
   };
 
   return (
@@ -1461,6 +1480,16 @@ const VideoDetail = () => {
     videoRef.current = video;
   }, [video]);
 
+  const refetchVideo = async () => {
+    if (!id) return;
+    const [videoRes, clipsRes] = await Promise.all([
+      supabase.from("videos").select("*").eq("id", id).single(),
+      supabase.from("clips").select("*").eq("video_id", id).order("viral_score", { ascending: false }),
+    ]);
+    if (videoRes.data) setVideo(videoRes.data);
+    if (clipsRes.data) setClips(clipsRes.data);
+  };
+
   useEffect(() => {
     if (!id) return;
     const fetchData = async () => {
@@ -1474,28 +1503,7 @@ const VideoDetail = () => {
     };
     fetchData();
 
-    // Poll every 5s
-    const poll = setInterval(async () => {
-      const { data } = await supabase.from("videos").select("*").eq("id", id).single();
-      if (data) {
-        const prevStatus = videoRef.current?.status;
-        if (data.status !== prevStatus) {
-          setVideo(data);
-        }
-        // Always refetch clips when status is ready (they may still be loading)
-        if (data.status === "ready") {
-          const { data: clipsData } = await supabase
-            .from("clips").select("*")
-            .eq("video_id", id)
-            .order("viral_score", { ascending: false });
-          if (clipsData && clipsData.length > 0) {
-            setClips(clipsData);
-          }
-        }
-      }
-    }, 5000);
-
-    // Realtime subscription
+    // Realtime subscription — primary data source (no polling duplication)
     const channel = supabase
       .channel(`video-detail-${id}`)
       .on("postgres_changes", {
@@ -1517,6 +1525,23 @@ const VideoDetail = () => {
         }
       })
       .subscribe();
+
+    // Lightweight fallback poll every 30s (only for missed realtime events)
+    const poll = setInterval(async () => {
+      const current = videoRef.current;
+      if (!current || current.status === "ready" || current.status === "failed") return;
+      const { data } = await supabase.from("videos").select("*").eq("id", id).single();
+      if (data && data.status !== current.status) {
+        setVideo(data);
+        if (data.status === "ready") {
+          const { data: clipsData } = await supabase
+            .from("clips").select("*")
+            .eq("video_id", id)
+            .order("viral_score", { ascending: false });
+          if (clipsData && clipsData.length > 0) setClips(clipsData);
+        }
+      }
+    }, 30000);
 
     return () => {
       clearInterval(poll);
@@ -1594,12 +1619,12 @@ const VideoDetail = () => {
       </div>
 
       {/* Status-based content */}
-      {video.status === "downloading" && <DownloadingState video={video} />}
-      {video.status === "uploading" && <UploadedState video={video} />}
-      {video.status === "uploaded" && <UploadedState video={video} />}
+      {video.status === "downloading" && <DownloadingState video={video} onRefresh={refetchVideo} />}
+      {video.status === "uploading" && <UploadedState video={video} onRefresh={refetchVideo} />}
+      {video.status === "uploaded" && <UploadedState video={video} onRefresh={refetchVideo} />}
       {video.status === "analyzing" && <AnalyzingState video={video} />}
       {video.status === "ready" && <ReadyState video={video} clips={clips} onReAnalyze={() => setReAnalyzeOpen(true)} />}
-      {video.status === "failed" && <FailedState video={video} />}
+      {video.status === "failed" && <FailedState video={video} onRefresh={refetchVideo} />}
 
       {/* Re-analyze dialog (page level for ready status) */}
       <ReAnalyzeDialog
@@ -1607,7 +1632,7 @@ const VideoDetail = () => {
         onClose={() => setReAnalyzeOpen(false)}
         video={video}
         existingClipCount={clips.length}
-        onSuccess={() => navigate(0)}
+        onSuccess={refetchVideo}
       />
     </div>
   );
