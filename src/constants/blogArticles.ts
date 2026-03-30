@@ -17240,6 +17240,11 @@ The gap between a social media follower and a donor is typically crossed through
     date: "2026-03-08",
     readTime: "9 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/short-form-video-local-business-2026" },
+      { lang: "es", href: "https://hookcut.com/blog/es/video-formato-corto-negocio-local-2026" },
+      { lang: "x-default", href: "https://hookcut.com/blog/short-form-video-local-business-2026" },
+    ],
     content: `## How to Use Short-Form Video to Grow a Local Business in 2026 (Complete Guide)
 
 The local business owner in 2026 has a marketing advantage that national chains can't buy: authenticity and local specificity.
