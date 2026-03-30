@@ -17399,6 +17399,11 @@ In a local market, familiarity is the primary driver of trial. Short-form video 
     date: "2026-03-08",
     readTime: "9 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/video-content-strategy-health-wellness-coaches" },
+      { lang: "es", href: "https://hookcut.com/blog/es/estrategia-contenido-video-coaches-salud-bienestar" },
+      { lang: "x-default", href: "https://hookcut.com/blog/video-content-strategy-health-wellness-coaches" },
+    ],
     content: `## Video Content Strategy for Health and Wellness Coaches in 2026 (Complete Guide)
 
 The wellness industry has a trust problem that short-form video is uniquely positioned to solve.
