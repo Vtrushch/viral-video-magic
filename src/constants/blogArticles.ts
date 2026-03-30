@@ -17240,6 +17240,11 @@ The gap between a social media follower and a donor is typically crossed through
     date: "2026-03-08",
     readTime: "9 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/short-form-video-local-business-2026" },
+      { lang: "es", href: "https://hookcut.com/blog/es/video-formato-corto-negocio-local-2026" },
+      { lang: "x-default", href: "https://hookcut.com/blog/short-form-video-local-business-2026" },
+    ],
     content: `## How to Use Short-Form Video to Grow a Local Business in 2026 (Complete Guide)
 
 The local business owner in 2026 has a marketing advantage that national chains can't buy: authenticity and local specificity.
@@ -17394,6 +17399,11 @@ In a local market, familiarity is the primary driver of trial. Short-form video 
     date: "2026-03-08",
     readTime: "9 min read",
     category: "Strategy",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/video-content-strategy-health-wellness-coaches" },
+      { lang: "es", href: "https://hookcut.com/blog/es/estrategia-contenido-video-coaches-salud-bienestar" },
+      { lang: "x-default", href: "https://hookcut.com/blog/video-content-strategy-health-wellness-coaches" },
+    ],
     content: `## Video Content Strategy for Health and Wellness Coaches in 2026 (Complete Guide)
 
 The wellness industry has a trust problem that short-form video is uniquely positioned to solve.
@@ -17550,6 +17560,11 @@ Many wellness coaches offer group programs at lower price points than 1:1 coachi
     date: "2026-03-08",
     readTime: "10 min read",
     category: "Analytics",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/short-form-video-analytics-guide-2026" },
+      { lang: "es", href: "https://hookcut.com/blog/es/guia-completa-analiticas-video-formato-corto-2026" },
+      { lang: "x-default", href: "https://hookcut.com/blog/short-form-video-analytics-guide-2026" },
+    ],
     content: `## The Complete Guide to Short-Form Video Analytics in 2026 (What Actually Matters)
 
 Most creators are optimizing for the wrong numbers.
