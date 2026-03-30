@@ -138,6 +138,19 @@ const Dashboard = () => {
       )}
 
       <UploadModal open={uploadOpen} onClose={() => setUploadOpen(false)} />
+
+      {/* Mobile FAB — floating upload button above bottom nav */}
+      <button
+        onClick={() => setUploadOpen(true)}
+        className="fixed right-4 bottom-24 z-40 w-14 h-14 rounded-full flex items-center justify-center shadow-lg md:hidden transition-transform active:scale-95"
+        style={{
+          background: "linear-gradient(135deg, hsl(349,100%,59%), hsl(270,95%,65%))",
+          boxShadow: "0 4px 20px rgba(255,45,85,0.4)",
+        }}
+        aria-label="Upload Video"
+      >
+        <Plus className="w-6 h-6 text-white" />
+      </button>
     </div>
   );
 };

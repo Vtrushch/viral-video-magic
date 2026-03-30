@@ -7,6 +7,7 @@ import {
   Video, Film, CheckCircle2, Star, Zap, Upload, Sparkles, Clock, TrendingUp,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
@@ -147,6 +148,48 @@ const Analytics = () => {
     return items.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 10);
   }, [videos, clips]);
 
+  // Weekly activity data for chart (last 4 weeks)
+  const weeklyData = useMemo(() => {
+    const weeks: { week: string; videos: number; clips: number }[] = [];
+    for (let i = 3; i >= 0; i--) {
+      const start = new Date();
+      start.setDate(start.getDate() - (i + 1) * 7);
+      const end = new Date();
+      end.setDate(end.getDate() - i * 7);
+      const label = start.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      const vCount = videos.filter((v) => {
+        const d = new Date(v.created_at);
+        return d >= start && d < end;
+      }).length;
+      const cCount = clips.filter((c) => {
+        const d = new Date(c.created_at);
+        return d >= start && d < end;
+      }).length;
+      weeks.push({ week: label, videos: vCount, clips: cCount });
+    }
+    return weeks;
+  }, [videos, clips]);
+
+  // Viral score distribution for bar chart
+  const scoreDistribution = useMemo(() => {
+    const buckets = [
+      { range: "1-3", count: 0 },
+      { range: "4-5", count: 0 },
+      { range: "6-7", count: 0 },
+      { range: "8-9", count: 0 },
+      { range: "10", count: 0 },
+    ];
+    for (const c of clips) {
+      const s = c.viral_score ?? 0;
+      if (s <= 3) buckets[0].count++;
+      else if (s <= 5) buckets[1].count++;
+      else if (s <= 7) buckets[2].count++;
+      else if (s <= 9) buckets[3].count++;
+      else buckets[4].count++;
+    }
+    return buckets;
+  }, [clips]);
+
   const loading = videosLoading || clipsLoading;
 
   return (
@@ -168,6 +211,60 @@ const Analytics = () => {
           <StatCard icon={Film} label={t("analytics.clipsGenerated")} value={stats.totalClips} color="hsl(270,95%,65%)" />
           <StatCard icon={CheckCircle2} label={t("analytics.clipsRendered")} value={stats.rendered} sub={`${stats.totalClips > 0 ? Math.round((stats.rendered / stats.totalClips) * 100) : 0}%`} color="hsl(177,100%,39%)" />
           <StatCard icon={Star} label={t("analytics.avgViralScore")} value={stats.avgScore} sub={t("analytics.outOf10")} color="hsl(50,100%,60%)" />
+        </div>
+      )}
+
+      {/* Charts row */}
+      {!loading && (videos.length > 0 || clips.length > 0) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Weekly Activity Chart */}
+          <div className="rounded-2xl p-5 space-y-4" style={{ background: "hsl(240,15%,10%)", border: "1px solid hsl(0,0%,100%,0.07)" }}>
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-primary" /> {t("analytics.weeklyActivity", "Weekly Activity")}
+            </h3>
+            <div className="h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={weeklyData}>
+                  <defs>
+                    <linearGradient id="colorVideos" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(349,100%,59%)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="hsl(349,100%,59%)" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorClips" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(270,95%,65%)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="hsl(270,95%,65%)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="week" tick={{ fill: "hsl(0,0%,60%)", fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: "hsl(0,0%,60%)", fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{ background: "hsl(240,15%,14%)", border: "1px solid hsl(0,0%,100%,0.1)", borderRadius: "8px", color: "#fff", fontSize: 12 }}
+                  />
+                  <Area type="monotone" dataKey="videos" stroke="hsl(349,100%,59%)" fill="url(#colorVideos)" strokeWidth={2} name={t("analytics.videosUploaded", "Videos")} />
+                  <Area type="monotone" dataKey="clips" stroke="hsl(270,95%,65%)" fill="url(#colorClips)" strokeWidth={2} name={t("analytics.clipsGenerated", "Clips")} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Viral Score Distribution */}
+          <div className="rounded-2xl p-5 space-y-4" style={{ background: "hsl(240,15%,10%)", border: "1px solid hsl(0,0%,100%,0.07)" }}>
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Star className="w-4 h-4 text-yellow-400" /> {t("analytics.scoreDistribution", "Viral Score Distribution")}
+            </h3>
+            <div className="h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={scoreDistribution}>
+                  <XAxis dataKey="range" tick={{ fill: "hsl(0,0%,60%)", fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: "hsl(0,0%,60%)", fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{ background: "hsl(240,15%,14%)", border: "1px solid hsl(0,0%,100%,0.1)", borderRadius: "8px", color: "#fff", fontSize: 12 }}
+                  />
+                  <Bar dataKey="count" fill="hsl(177,100%,39%)" radius={[4, 4, 0, 0]} name={t("analytics.clipsGenerated", "Clips")} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
       )}
 
