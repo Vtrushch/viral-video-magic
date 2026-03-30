@@ -17560,6 +17560,11 @@ Many wellness coaches offer group programs at lower price points than 1:1 coachi
     date: "2026-03-08",
     readTime: "10 min read",
     category: "Analytics",
+    hreflang: [
+      { lang: "en", href: "https://hookcut.com/blog/short-form-video-analytics-guide-2026" },
+      { lang: "es", href: "https://hookcut.com/blog/es/guia-completa-analiticas-video-formato-corto-2026" },
+      { lang: "x-default", href: "https://hookcut.com/blog/short-form-video-analytics-guide-2026" },
+    ],
     content: `## The Complete Guide to Short-Form Video Analytics in 2026 (What Actually Matters)
 
 Most creators are optimizing for the wrong numbers.
