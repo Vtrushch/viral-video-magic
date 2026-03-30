@@ -213,10 +213,25 @@ const ClipsLibrary = () => {
 
   if (clipsLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm text-muted-foreground">{t("clips.loadingClips")}</span>
+      <div className="p-4 sm:p-6 lg:p-8 w-full animate-fade-in" style={{ background: "#0F0F1A", minHeight: "100vh" }}>
+        <div className="mb-6">
+          <div className="h-8 w-48 rounded-lg animate-pulse" style={{ background: "hsl(240,15%,14%)" }} />
+          <div className="h-4 w-64 rounded-lg animate-pulse mt-2" style={{ background: "hsl(240,15%,12%)" }} />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="rounded-xl p-4 space-y-3" style={{ background: "hsl(240,15%,10%)", border: "1px solid hsl(0,0%,100%,0.06)" }}>
+              <div className="flex gap-3">
+                <div className="w-16 h-28 rounded-lg animate-pulse" style={{ background: "hsl(240,15%,14%)" }} />
+                <div className="flex-1 space-y-2 py-1">
+                  <div className="h-4 w-3/4 rounded animate-pulse" style={{ background: "hsl(240,15%,14%)" }} />
+                  <div className="h-3 w-1/2 rounded animate-pulse" style={{ background: "hsl(240,15%,12%)" }} />
+                  <div className="h-7 w-24 rounded animate-pulse mt-3" style={{ background: "hsl(240,15%,12%)" }} />
+                </div>
+                <div className="w-10 h-10 rounded-full animate-pulse" style={{ background: "hsl(240,15%,14%)" }} />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -313,8 +328,11 @@ const ClipsLibrary = () => {
                 <Film className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-lg font-medium text-foreground mb-1">{t("clips.noClipsYet")}</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-sm text-muted-foreground mb-2 max-w-xs">
                 {t("clips.uploadAndRender")}
+              </p>
+              <p className="text-xs text-muted-foreground/60 mb-4 max-w-sm">
+                Upload a video → AI finds the best moments → Preview & edit → Render the clips you like
               </p>
               <Button onClick={() => navigate("/dashboard")} className="bg-primary text-primary-foreground hover:bg-primary/90">
                 {t("common.goToVideos")}
