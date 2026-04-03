@@ -416,6 +416,7 @@ Your content is good. Let people actually see it.
     hreflang: [
       { lang: "en", href: "https://hookcut.com/blog/hookcut-vs-opus-clip" },
       { lang: "es", href: "https://hookcut.com/blog/es/hookcut-vs-opus-clip" },
+      { lang: "uk", href: "https://hookcut.com/blog/ua/hookcut-vs-opus-clip" },
       { lang: "x-default", href: "https://hookcut.com/blog/hookcut-vs-opus-clip" },
     ],
     content: `If you've been researching AI video clipping tools, you've probably already looked at Opus Clip. It's the most well-known name in the space — backed by venture capital, heavily marketed, and used by millions of creators.
