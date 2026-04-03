@@ -30,6 +30,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     hreflang: [
       { lang: "en", href: "https://hookcut.com/blog/turn-long-video-into-clips" },
       { lang: "es", href: "https://hookcut.com/blog/es/convertir-video-largo-en-clips-virales" },
+      { lang: "uk", href: "https://hookcut.com/blog/ua/peretvoriti-dovge-video-na-klipy" },
       { lang: "x-default", href: "https://hookcut.com/blog/turn-long-video-into-clips" },
     ],
     content: `Most creators spend 3–5 hours recording a video, then let it sit on YouTube getting 400 views.
