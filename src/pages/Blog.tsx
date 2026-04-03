@@ -73,6 +73,7 @@ const Blog = () => {
             {[
               { key: "en", label: "EN" },
               { key: "es", label: "ES" },
+              { key: "uk", label: "UA" },
               { key: "all", label: t('landing.blog.allLanguages', 'All') },
             ].map((lang) => (
               <button
