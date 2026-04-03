@@ -11982,6 +11982,7 @@ Súbela a HookCut. Obtén 5–8 clips en 20 minutos. Publica uno por día esta s
     hreflang: [
       { lang: "en", href: "https://hookcut.com/blog/repurpose-podcast-episodes-short-form-video" },
       { lang: "es", href: "https://hookcut.com/blog/es/reutilizar-episodios-podcast-video-formato-corto" },
+      { lang: "uk", href: "https://hookcut.com/blog/ua/perepakuvaty-podkast-u-korotki-video" },
       { lang: "x-default", href: "https://hookcut.com/blog/repurpose-podcast-episodes-short-form-video" },
     ],
     content: `## How to Repurpose Podcast Episodes into Short-Form Video in 2026 (Complete Guide)
