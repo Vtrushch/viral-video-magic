@@ -212,6 +212,7 @@ You recorded the content. Let AI find the gold.
     hreflang: [
       { lang: "en", href: "https://hookcut.com/blog/auto-captions-for-videos" },
       { lang: "es", href: "https://hookcut.com/blog/es/subtitulos-automaticos-para-videos" },
+      { lang: "uk", href: "https://hookcut.com/blog/ua/avtomatychni-subtytry-dlya-video" },
       { lang: "x-default", href: "https://hookcut.com/blog/auto-captions-for-videos" },
     ],
     content: `85% of social media videos are watched without sound.
