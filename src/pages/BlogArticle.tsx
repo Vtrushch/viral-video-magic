@@ -14,9 +14,10 @@ const BlogArticle = () => {
   const location = useLocation();
   const { t } = useTranslation();
 
-  // Construct the full slug including es/ prefix if on /blog/es/ route
+  // Construct the full slug including es/ or ua/ prefix if on localized route
   const isEsRoute = location.pathname.startsWith("/blog/es/");
-  const fullSlug = isEsRoute ? `es/${slug}` : slug;
+  const isUaRoute = location.pathname.startsWith("/blog/ua/");
+  const fullSlug = isEsRoute ? `es/${slug}` : isUaRoute ? `ua/${slug}` : slug;
 
   const article = BLOG_ARTICLES.find((a) => a.slug === fullSlug);
 
