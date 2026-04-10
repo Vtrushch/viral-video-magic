@@ -47,6 +47,7 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/es/:slug" element={<BlogArticle />} />
+            <Route path="/blog/ua/:slug" element={<BlogArticle />} />
             <Route path="/blog/:slug" element={<BlogArticle />} />
             <Route path="/vs/:competitor" element={<ComparisonPage />} />
             <Route
