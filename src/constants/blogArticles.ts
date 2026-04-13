@@ -8537,6 +8537,7 @@ Adding subtitles is the highest ROI improvement most creators can make to their 
     hreflang: [
       { lang: "en", href: "https://hookcut.com/blog/short-form-video-marketing-saas" },
       { lang: "es", href: "https://hookcut.com/blog/es/marketing-video-formato-corto-saas" },
+      { lang: "uk", href: "https://hookcut.com/blog/ua/monetyzatsiya-korotkykh-video-2026" },
       { lang: "x-default", href: "https://hookcut.com/blog/short-form-video-marketing-saas" },
     ],
     content: `## Short-Form Video Marketing Strategy for SaaS Companies in 2026
