@@ -1706,6 +1706,7 @@ HookCut lets you choose from all 6 styles — Hormozi, MrBeast, Minimal, Neon, F
     hreflang: [
       { lang: "en", href: "https://hookcut.com/blog/resize-video-for-tiktok-reels-shorts" },
       { lang: "es", href: "https://hookcut.com/blog/es/redimensionar-video-para-tiktok-reels-shorts" },
+      { lang: "uk", href: "https://hookcut.com/blog/ua/zminyty-format-video-dlya-tiktok-reels-shorts" },
       { lang: "x-default", href: "https://hookcut.com/blog/resize-video-for-tiktok-reels-shorts" },
     ],
     content: `## How to Resize Videos for TikTok, Reels, and YouTube Shorts in 2026 (9:16 Guide)
