@@ -599,6 +599,7 @@ Upload your first video at [HookCut](/) — no credit card required. 10 free cli
     hreflang: [
       { lang: "en", href: "https://hookcut.com/blog/creators-waste-best-moments" },
       { lang: "es", href: "https://hookcut.com/blog/es/creadores-desperdician-sus-mejores-momentos" },
+      { lang: "uk", href: "https://hookcut.com/blog/ua/virusnyy-khuk-dlya-korotkoho-video" },
       { lang: "x-default", href: "https://hookcut.com/blog/creators-waste-best-moments" },
     ],
     content: `You spent 6 hours on that video.
