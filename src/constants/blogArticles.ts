@@ -1919,6 +1919,7 @@ HookCut exports every clip in the correct format for all three platforms automat
     hreflang: [
       { lang: "en", href: "https://hookcut.com/blog/ai-video-repurposing-for-agencies" },
       { lang: "es", href: "https://hookcut.com/blog/es/agencias-escalar-contenido-video-con-ia" },
+      { lang: "uk", href: "https://hookcut.com/blog/ua/videomarceting-dlya-ahentstv-masshtabuvannya" },
       { lang: "x-default", href: "https://hookcut.com/blog/ai-video-repurposing-for-agencies" },
     ],
     content: `## How Social Media Agencies Can Scale Video Content with AI in 2026
