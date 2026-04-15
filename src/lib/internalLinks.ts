@@ -533,6 +533,243 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     slug: "ua/hookcut-povnyy-hayd-dlya-novykh-korystuvachiv",
     label: "гайд HookCut для нових користувачів",
   },
+
+  // === SPANISH (ES) ENTRIES ===
+  {
+    keywords: ["convertir vídeo largo en clips", "clips de vídeo corto"],
+    slug: "es/convertir-video-largo-en-clips-virales",
+    label: "guía para convertir vídeos largos en clips",
+  },
+  {
+    keywords: ["subtítulos automáticos"],
+    slug: "es/subtitulos-automaticos-para-videos",
+    label: "guía de subtítulos automáticos",
+  },
+  {
+    keywords: ["añadir subtítulos automáticamente"],
+    slug: "es/agregar-subtitulos-a-videos-automaticamente",
+    label: "cómo añadir subtítulos automáticamente",
+  },
+  {
+    keywords: ["subtítulos para tiktok", "estilo hormozi"],
+    slug: "es/mejores-estilos-de-subtitulos-para-tiktok",
+    label: "estilos de subtítulos para TikTok",
+  },
+  {
+    keywords: ["hookcut vs opus clip"],
+    slug: "es/hookcut-vs-opus-clip",
+    label: "comparativa HookCut vs Opus Clip",
+  },
+  {
+    keywords: ["youtube shorts de vídeos largos", "hacer youtube shorts"],
+    slug: "es/crear-youtube-shorts-de-videos-largos",
+    label: "guía YouTube Shorts de vídeos largos",
+  },
+  {
+    keywords: ["reutilizar episodios de podcast", "podcast en vídeo corto"],
+    slug: "es/reutilizar-episodios-podcast-video-formato-corto",
+    label: "guía reutilización de podcast",
+  },
+  {
+    keywords: ["instagram reels de vídeos largos", "hacer reels"],
+    slug: "es/crear-instagram-reels-de-videos-largos",
+    label: "guía Instagram Reels de vídeos largos",
+  },
+  {
+    keywords: ["seguimiento facial vídeo", "reencuadre automático"],
+    slug: "es/seguimiento-facial-video-vertical",
+    label: "seguimiento facial para vídeo vertical",
+  },
+  {
+    keywords: ["formato 9:16"],
+    slug: "es/redimensionar-video-para-tiktok-reels-shorts",
+    label: "guía de redimensionamiento de vídeo",
+  },
+  {
+    keywords: ["highlight reel de vídeos", "mejores momentos del vídeo"],
+    slug: "es/crear-highlight-reel-de-videos-largos",
+    label: "guía highlight reel",
+  },
+  {
+    keywords: ["ia para crear contenido", "inteligencia artificial creadores"],
+    slug: "es/usar-ia-para-crear-contenido-mas-rapido",
+    label: "IA para crear contenido más rápido",
+  },
+  {
+    keywords: ["reutilizar webinar", "clips del webinar"],
+    slug: "es/reutilizar-webinar-en-contenido-redes-sociales",
+    label: "guía reutilización de webinar",
+  },
+  {
+    keywords: ["10000 seguidores vídeo corto"],
+    slug: "es/de-0-a-10000-seguidores-video-formato-corto",
+    label: "guía de 0 a 10.000 seguidores",
+  },
+  {
+    keywords: ["crecer en tiktok"],
+    slug: "es/como-hacerse-viral-en-tiktok-2026",
+    label: "cómo hacerse viral en TikTok",
+  },
+  {
+    keywords: ["grabación en lote", "batch recording contenido"],
+    slug: "es/crear-contenido-en-lote-produccion-video",
+    label: "guía creación de contenido en lote",
+  },
+  {
+    keywords: ["crecer en youtube shorts", "estrategia youtube shorts"],
+    slug: "es/crecer-canal-youtube-con-contenido-corto",
+    label: "estrategia YouTube Shorts",
+  },
+  {
+    keywords: ["vídeo para entrenadores fitness", "fitness contenido tiktok"],
+    slug: "es/video-formato-corto-entrenadores-fitness",
+    label: "vídeo para entrenadores fitness",
+  },
+  {
+    keywords: ["marca personal vídeo", "personal branding vídeo corto"],
+    slug: "es/construir-marca-personal-video-formato-corto",
+    label: "marca personal con vídeo corto",
+  },
+  {
+    keywords: ["vídeo agentes inmobiliarios", "inmobiliaria tiktok reels"],
+    slug: "es/reutilizacion-contenido-agentes-inmobiliarios-2026",
+    label: "vídeo para agentes inmobiliarios",
+  },
+  {
+    keywords: ["tiktok vs reels vs shorts", "qué plataforma elegir"],
+    slug: "es/tiktok-vs-reels-vs-shorts-2026",
+    label: "comparativa TikTok vs Reels vs Shorts",
+  },
+  {
+    keywords: ["puntuación viral ia", "viral score hookcut"],
+    slug: "es/puntuacion-viral-ia-video",
+    label: "puntuación viral de IA",
+  },
+  {
+    keywords: ["hacerse viral tiktok"],
+    slug: "es/como-hacerse-viral-en-tiktok-con-contenido-largo",
+    label: "hacerse viral en TikTok",
+  },
+  {
+    keywords: ["reutilizar vídeos youtube", "youtube en múltiples formatos"],
+    slug: "es/reutilizar-videos-youtube-multiples-formatos",
+    label: "reutilización de vídeos YouTube",
+  },
+  {
+    keywords: ["vídeo sin salir en cámara", "faceless video español"],
+    slug: "es/video-formato-corto-sin-salir-en-camara",
+    label: "vídeo sin salir en cámara",
+  },
+  {
+    keywords: ["analíticas vídeo corto", "completion rate español"],
+    slug: "es/guia-completa-analiticas-video-formato-corto-2026",
+    label: "analíticas de vídeo corto",
+  },
+  {
+    keywords: ["vídeo para abogados", "marketing legal vídeo"],
+    slug: "es/estrategia-contenido-video-abogados-despachos",
+    label: "vídeo para abogados y despachos",
+  },
+  {
+    keywords: ["reutilizar charla conferencia"],
+    slug: "es/reutilizar-charla-conferencia-keynote-contenido",
+    label: "reutilización de charla de conferencia",
+  },
+  {
+    keywords: ["speaking reel clips", "ted talk redes sociales"],
+    slug: "es/reutilizar-ted-talk-speaking-reel-redes-sociales",
+    label: "TED Talk en redes sociales",
+  },
+  {
+    keywords: ["ecommerce vídeo ventas"],
+    slug: "es/video-corto-ecommerce-para-ventas",
+    label: "vídeo corto para e-commerce",
+  },
+  {
+    keywords: ["tienda online vídeo corto"],
+    slug: "es/reutilizacion-contenido-tiendas-online-videos-producto",
+    label: "vídeo para tiendas online",
+  },
+  {
+    keywords: ["reutilizar newsletter vídeo"],
+    slug: "es/reutilizar-newsletter-en-contenido-de-video",
+    label: "reutilizar newsletter en vídeo",
+  },
+  {
+    keywords: ["negocio local vídeo"],
+    slug: "es/video-formato-corto-negocio-local-2026",
+    label: "vídeo para negocios locales",
+  },
+  {
+    keywords: ["testimonios vídeo", "casos de éxito clips"],
+    slug: "es/reutilizar-testimonios-casos-exito-contenido-video",
+    label: "reutilizar testimonios en vídeo",
+  },
+  {
+    keywords: ["coach salud vídeo", "nutricionista tiktok"],
+    slug: "es/estrategia-contenido-video-coaches-salud-bienestar",
+    label: "vídeo para coaches de salud",
+  },
+  {
+    keywords: ["linkedin vídeo negocio", "b2b contenido linkedin"],
+    slug: "es/crecer-en-linkedin-con-contenido-de-video",
+    label: "crecer en LinkedIn con vídeo",
+  },
+  {
+    keywords: ["ong vídeo redes sociales"],
+    slug: "es/video-formato-corto-organizaciones-sin-fines-de-lucro",
+    label: "vídeo para organizaciones sin ánimo de lucro",
+  },
+  {
+    keywords: ["finanzas personales vídeo"],
+    slug: "es/estrategia-contenido-video-creadores-finanzas-personales",
+    label: "vídeo para finanzas personales",
+  },
+  {
+    keywords: ["sistema reutilización contenido", "contenido piloto automático"],
+    slug: "es/sistema-de-reutilizacion-de-contenido-automatico",
+    label: "sistema de reutilización de contenido",
+  },
+  {
+    keywords: ["promocionar curso online vídeo", "vender curso con vídeo"],
+    slug: "es/contenido-video-para-promocionar-curso-online",
+    label: "promocionar curso con vídeo",
+  },
+  {
+    keywords: ["saas vídeo corto registros"],
+    slug: "es/video-formato-corto-empresas-saas-mas-registros",
+    label: "vídeo corto para SaaS",
+  },
+  {
+    keywords: ["marketing saas vídeo"],
+    slug: "es/marketing-video-formato-corto-saas",
+    label: "marketing de vídeo para SaaS",
+  },
+  {
+    keywords: ["agencia contenido vídeo ia"],
+    slug: "es/agencias-escalar-contenido-video-con-ia",
+    label: "agencias: escalar vídeo con IA",
+  },
+  {
+    keywords: ["stream en clips"],
+    slug: "es/convertir-stream-en-directo-en-clips-virales",
+    label: "convertir stream en clips",
+  },
+  {
+    keywords: ["mejor hora publicar"],
+    slug: "es/mejor-hora-publicar-tiktok-reels-shorts-2026",
+    label: "mejor hora para publicar",
+  },
+  {
+    keywords: ["herramientas edición vídeo ia"],
+    slug: "es/mejores-herramientas-edicion-video-ia-2026",
+    label: "herramientas de edición con IA",
+  },
+  {
+    keywords: ["linkedin reutilizar vídeos"],
+    slug: "es/reutilizar-videos-para-linkedin",
+    label: "reutilizar vídeos para LinkedIn",
+  },
 ];
 
 /**
