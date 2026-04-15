@@ -10,6 +10,7 @@ import { ArrowLeft, Clock } from "lucide-react";
 import { injectInternalLinks } from "@/lib/internalLinks";
 import { UARelatedArticles } from "@/components/UARelatedArticles";
 import { ENRelatedArticles } from "@/components/ENRelatedArticles";
+import { ESRelatedArticles } from "@/components/ESRelatedArticles";
 
 const BlogArticle = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -35,7 +36,6 @@ const BlogArticle = () => {
   // Inject contextual internal links (EN and UA articles, memoized)
   const enrichedContent = useMemo(() => {
     if (!article) return "";
-    if (article.lang === "es") return article.content;
     return injectInternalLinks(article.content, article.slug);
   }, [article]);
 
@@ -146,6 +146,9 @@ const BlogArticle = () => {
           )}
           {!isUaRoute && !isEsRoute && slug && (
             <ENRelatedArticles currentSlug={slug} />
+          )}
+          {isEsRoute && slug && (
+            <ESRelatedArticles currentSlug={slug} />
           )}
         </article>
       </main>
