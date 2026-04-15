@@ -188,6 +188,7 @@ const BlogArticle = () => {
 
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
         <script type="application/ld+json">{JSON.stringify(breadcrumbLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(articleFaqLd)}</script>
       </Helmet>
 
       <Navbar />
