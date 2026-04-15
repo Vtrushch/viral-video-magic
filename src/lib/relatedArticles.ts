@@ -310,3 +310,269 @@ export const UA_ARTICLE_META: Record<string, { title: string; description: strin
   "videokontent-dlya-karyery-poshuk-roboty": { title: "Відеоконтент для кар'єри і пошуку роботи", description: "Як короткі відео переводять пошук роботи з outbound в inbound." },
   "hookcut-povnyy-hayd-dlya-novykh-korystuvachiv": { title: "HookCut: повний гайд для нових користувачів", description: "Покрокова інструкція від першого завантаження до готових кліпів за 20 хвилин." },
 };
+
+// ============================================================
+// ENGLISH (EN) RELATED ARTICLES
+// ============================================================
+
+export const EN_RELATED_ARTICLES: Record<string, string[]> = {
+  "turn-long-video-into-clips": [
+    "repurpose-youtube-videos-multiple-formats",
+    "batch-create-content-video",
+    "content-repurposing-system-autopilot"
+  ],
+  "add-subtitles-to-videos-automatically": [
+    "best-caption-styles-for-tiktok",
+    "face-tracking-vertical-video",
+    "short-form-video-without-being-on-camera"
+  ],
+  "best-caption-styles-for-tiktok": [
+    "add-subtitles-to-videos-automatically",
+    "viral-score-ai-video",
+    "go-viral-on-tiktok-with-long-form-content"
+  ],
+  "face-tracking-vertical-video": [
+    "resize-video-for-tiktok-reels-shorts",
+    "add-subtitles-to-videos-automatically",
+    "turn-long-video-into-clips"
+  ],
+  "resize-video-for-tiktok-reels-shorts": [
+    "face-tracking-vertical-video",
+    "make-instagram-reels-from-long-videos",
+    "tiktok-vs-reels-vs-shorts-2026"
+  ],
+  "viral-score-ai-video": [
+    "go-viral-on-tiktok-with-long-form-content",
+    "best-caption-styles-for-tiktok",
+    "short-form-video-analytics-guide-2026"
+  ],
+  "go-viral-on-tiktok-with-long-form-content": [
+    "0-to-10000-followers-short-form-video",
+    "viral-score-ai-video",
+    "best-time-to-post-on-tiktok-reels-shorts-2026"
+  ],
+  "make-instagram-reels-from-long-videos": [
+    "best-caption-styles-for-tiktok",
+    "resize-video-for-tiktok-reels-shorts",
+    "tiktok-vs-reels-vs-shorts-2026"
+  ],
+  "grow-youtube-channel-with-short-form-content": [
+    "repurpose-youtube-videos-multiple-formats",
+    "short-form-video-analytics-guide-2026",
+    "best-time-to-post-on-tiktok-reels-shorts-2026"
+  ],
+  "create-highlight-reel-from-long-video": [
+    "repurpose-conference-talk-keynote-content",
+    "repurpose-ted-talk-speaking-reel-social-media",
+    "turn-long-video-into-clips"
+  ],
+  "repurpose-podcast-episodes-short-form-video": [
+    "repurpose-webinar-into-social-media-clips",
+    "repurpose-newsletter-into-video-content",
+    "batch-create-content-video"
+  ],
+  "repurpose-webinar-into-social-media-clips": [
+    "repurpose-podcast-episodes-short-form-video",
+    "repurpose-conference-talk-keynote-content",
+    "content-repurposing-system-autopilot"
+  ],
+  "repurpose-youtube-videos-multiple-formats": [
+    "content-repurposing-system-autopilot",
+    "grow-youtube-channel-with-short-form-content",
+    "batch-create-content-video"
+  ],
+  "repurpose-newsletter-into-video-content": [
+    "repurpose-podcast-episodes-short-form-video",
+    "content-repurposing-system-autopilot",
+    "best-time-to-post-on-tiktok-reels-shorts-2026"
+  ],
+  "repurpose-conference-talk-keynote-content": [
+    "repurpose-ted-talk-speaking-reel-social-media",
+    "create-highlight-reel-from-long-video",
+    "repurpose-webinar-into-social-media-clips"
+  ],
+  "repurpose-ted-talk-speaking-reel-social-media": [
+    "repurpose-conference-talk-keynote-content",
+    "create-highlight-reel-from-long-video",
+    "build-personal-brand-short-form-video"
+  ],
+  "repurpose-testimonials-case-studies-video-content": [
+    "video-content-strategy-coaches-course-creators",
+    "build-personal-brand-short-form-video",
+    "content-repurposing-real-estate-agents-2026"
+  ],
+  "turn-live-stream-into-viral-clips": [
+    "turn-long-video-into-clips",
+    "create-highlight-reel-from-long-video",
+    "content-repurposing-system-autopilot"
+  ],
+  "batch-create-content-video": [
+    "content-repurposing-system-autopilot",
+    "best-time-to-post-on-tiktok-reels-shorts-2026",
+    "use-ai-to-create-content-faster"
+  ],
+  "content-repurposing-system-autopilot": [
+    "batch-create-content-video",
+    "use-ai-to-create-content-faster",
+    "best-time-to-post-on-tiktok-reels-shorts-2026"
+  ],
+  "use-ai-to-create-content-faster": [
+    "content-repurposing-system-autopilot",
+    "batch-create-content-video",
+    "short-form-video-analytics-guide-2026"
+  ],
+  "best-time-to-post-on-tiktok-reels-shorts-2026": [
+    "tiktok-vs-reels-vs-shorts-2026",
+    "short-form-video-analytics-guide-2026",
+    "go-viral-on-tiktok-with-long-form-content"
+  ],
+  "tiktok-vs-reels-vs-shorts-2026": [
+    "go-viral-on-tiktok-with-long-form-content",
+    "grow-youtube-channel-with-short-form-content",
+    "make-instagram-reels-from-long-videos"
+  ],
+  "short-form-video-analytics-guide-2026": [
+    "0-to-10000-followers-short-form-video",
+    "best-time-to-post-on-tiktok-reels-shorts-2026",
+    "viral-score-ai-video"
+  ],
+  "0-to-10000-followers-short-form-video": [
+    "go-viral-on-tiktok-with-long-form-content",
+    "short-form-video-analytics-guide-2026",
+    "build-personal-brand-short-form-video"
+  ],
+  "build-personal-brand-short-form-video": [
+    "grow-on-linkedin-with-video-content",
+    "0-to-10000-followers-short-form-video",
+    "tiktok-vs-reels-vs-shorts-2026"
+  ],
+  "grow-on-linkedin-with-video-content": [
+    "build-personal-brand-short-form-video",
+    "video-content-strategy-personal-finance-creators",
+    "video-content-strategy-lawyers-law-firms"
+  ],
+  "short-form-video-fitness-coaches": [
+    "build-personal-brand-short-form-video",
+    "video-content-strategy-health-wellness-coaches",
+    "best-time-to-post-on-tiktok-reels-shorts-2026"
+  ],
+  "video-content-strategy-health-wellness-coaches": [
+    "short-form-video-fitness-coaches",
+    "video-content-strategy-coaches-course-creators",
+    "build-personal-brand-short-form-video"
+  ],
+  "video-content-strategy-coaches-course-creators": [
+    "video-content-promote-online-course",
+    "repurpose-webinar-into-social-media-clips",
+    "repurpose-testimonials-case-studies-video-content"
+  ],
+  "video-content-promote-online-course": [
+    "video-content-strategy-coaches-course-creators",
+    "repurpose-webinar-into-social-media-clips",
+    "build-personal-brand-short-form-video"
+  ],
+  "content-repurposing-real-estate-agents-2026": [
+    "short-form-video-local-business-2026",
+    "build-personal-brand-short-form-video",
+    "repurpose-testimonials-case-studies-video-content"
+  ],
+  "short-form-video-local-business-2026": [
+    "content-repurposing-real-estate-agents-2026",
+    "build-personal-brand-short-form-video",
+    "short-form-video-analytics-guide-2026"
+  ],
+  "short-form-video-saas-companies-get-more-signups": [
+    "short-form-video-marketing-saas",
+    "use-ai-to-create-content-faster",
+    "grow-on-linkedin-with-video-content"
+  ],
+  "short-form-video-marketing-saas": [
+    "short-form-video-saas-companies-get-more-signups",
+    "ai-video-repurposing-for-agencies",
+    "repurpose-webinar-into-social-media-clips"
+  ],
+  "ai-video-repurposing-for-agencies": [
+    "content-repurposing-system-autopilot",
+    "use-ai-to-create-content-faster",
+    "short-form-video-marketing-saas"
+  ],
+  "video-content-strategy-lawyers-law-firms": [
+    "grow-on-linkedin-with-video-content",
+    "build-personal-brand-short-form-video",
+    "video-content-strategy-personal-finance-creators"
+  ],
+  "video-content-strategy-personal-finance-creators": [
+    "grow-on-linkedin-with-video-content",
+    "build-personal-brand-short-form-video",
+    "video-content-strategy-lawyers-law-firms"
+  ],
+  "short-form-video-nonprofit-organizations": [
+    "repurpose-testimonials-case-studies-video-content",
+    "build-personal-brand-short-form-video",
+    "short-form-video-local-business-2026"
+  ],
+  "short-form-video-without-being-on-camera": [
+    "turn-long-video-into-clips",
+    "add-subtitles-to-videos-automatically",
+    "face-tracking-vertical-video"
+  ],
+  "repurpose-online-course-content-social-media": [
+    "video-content-strategy-coaches-course-creators",
+    "video-content-promote-online-course",
+    "repurpose-webinar-into-social-media-clips"
+  ],
+  "best-ai-video-editing-tools-2026": [
+    "use-ai-to-create-content-faster",
+    "add-subtitles-to-videos-automatically",
+    "content-repurposing-system-autopilot"
+  ],
+};
+
+export function getENRelatedArticles(slug: string): string[] {
+  return EN_RELATED_ARTICLES[slug] ?? [];
+}
+
+export const EN_ARTICLE_META: Record<string, { title: string; description: string }> = {
+  "turn-long-video-into-clips": { title: "How to Turn Long Videos into Short Clips", description: "Step-by-step guide to repurposing long-form video into clips for TikTok, Reels and YouTube Shorts." },
+  "add-subtitles-to-videos-automatically": { title: "Add Subtitles to Videos Automatically", description: "How to add auto-captions to any video in minutes using AI — with the best style for each platform." },
+  "best-caption-styles-for-tiktok": { title: "Best Caption Styles for TikTok 2026", description: "Hormozi, MrBeast, minimal — which subtitle style gets the highest completion rate on TikTok." },
+  "face-tracking-vertical-video": { title: "Face Tracking for Vertical Video", description: "How AI face tracking automatically reframes horizontal video into 9:16 without manual editing." },
+  "resize-video-for-tiktok-reels-shorts": { title: "How to Resize Video for TikTok, Reels & Shorts", description: "Convert horizontal video to vertical 9:16 format with automatic reframing and safe zones." },
+  "viral-score-ai-video": { title: "Viral Score: How AI Ranks Your Clips", description: "What the viral score means, how HookCut calculates it, and how to use it to pick winning clips." },
+  "go-viral-on-tiktok-with-long-form-content": { title: "Go Viral on TikTok with Long-Form Content", description: "How to repurpose existing long videos into TikTok clips that reach new audiences." },
+  "make-instagram-reels-from-long-videos": { title: "How to Make Instagram Reels from Long Videos", description: "Create native Instagram Reels without watermarks from webinars, interviews and YouTube videos." },
+  "grow-youtube-channel-with-short-form-content": { title: "Grow Your YouTube Channel with Short-Form Content", description: "YouTube Shorts + long-form strategy for maximum channel growth in 2026." },
+  "create-highlight-reel-from-long-video": { title: "How to Create a Highlight Reel from Long Video", description: "Compile the best moments of your content into a 2–5 minute highlight reel in one session." },
+  "repurpose-podcast-episodes-short-form-video": { title: "Repurpose Podcast Episodes into Short-Form Video", description: "Turn every podcast episode into 8–12 clips for TikTok, Reels and YouTube Shorts." },
+  "repurpose-webinar-into-social-media-clips": { title: "Repurpose a Webinar into Social Media Clips", description: "One 60-minute webinar → 3–4 weeks of content for all platforms." },
+  "repurpose-youtube-videos-multiple-formats": { title: "Repurpose YouTube Videos into Multiple Formats", description: "One YouTube video → 25–40 content pieces across all platforms and formats." },
+  "repurpose-newsletter-into-video-content": { title: "Repurpose Your Newsletter into Video Content", description: "System for turning each newsletter issue into 5 clips in 90 minutes." },
+  "repurpose-conference-talk-keynote-content": { title: "Repurpose a Conference Talk into 30 Days of Content", description: "Full map: one 30-minute keynote → clips, blog posts, LinkedIn articles, email series." },
+  "repurpose-ted-talk-speaking-reel-social-media": { title: "Repurpose a TED Talk or Speaking Reel", description: "7 clip types from any TED or TEDx talk — 8 weeks of thought leadership content." },
+  "repurpose-testimonials-case-studies-video-content": { title: "Repurpose Testimonials & Case Studies into Video", description: "4 social proof clip formats that convert better than any paid ad." },
+  "turn-live-stream-into-viral-clips": { title: "Turn Live Streams into Viral Clips", description: "System for extracting 8–10 clips from every stream — the same day it ends." },
+  "batch-create-content-video": { title: "Batch Create a Week of Video in One Session", description: "The batch recording system that lets consistent creators publish daily without burnout." },
+  "content-repurposing-system-autopilot": { title: "Content Repurposing System on Autopilot", description: "5-component system that turns content production from a daily decision into an automated workflow." },
+  "use-ai-to-create-content-faster": { title: "Use AI to Create Content Faster", description: "Full AI workflow: ideation, scripting, editing, captions and distribution — cut production time in half." },
+  "best-time-to-post-on-tiktok-reels-shorts-2026": { title: "Best Time to Post on TikTok, Reels & Shorts", description: "Platform-specific posting schedules and the monthly content planning system for 2026." },
+  "tiktok-vs-reels-vs-shorts-2026": { title: "TikTok vs Reels vs YouTube Shorts: Which to Choose", description: "Detailed comparison with a decision tree for finding the right platform for your niche and goals." },
+  "short-form-video-analytics-guide-2026": { title: "Short-Form Video Analytics: What Actually Matters", description: "3-tier metrics hierarchy — what really predicts growth vs. vanity metrics in 2026." },
+  "0-to-10000-followers-short-form-video": { title: "0 to 10,000 Followers with Short-Form Video", description: "Honest phase-by-phase guide to building a short-form audience from scratch in 2026." },
+  "build-personal-brand-short-form-video": { title: "Build a Personal Brand with Short-Form Video", description: "The 3 foundations of a durable personal brand and a realistic growth timeline." },
+  "grow-on-linkedin-with-video-content": { title: "Grow on LinkedIn with Video Content", description: "LinkedIn video strategy for B2B client acquisition and professional personal branding." },
+  "short-form-video-fitness-coaches": { title: "Short-Form Video for Fitness Coaches", description: "8 video formats that attract new personal training clients in 2026." },
+  "video-content-strategy-health-wellness-coaches": { title: "Video Content Strategy for Health & Wellness Coaches", description: "Ethical formats and claim compliance for nutritionists and wellness professionals." },
+  "video-content-strategy-coaches-course-creators": { title: "Video Content Strategy for Coaches & Course Creators", description: "How coaches use short-form video to fill programs and attract inbound clients." },
+  "video-content-promote-online-course": { title: "Video Content to Promote Your Online Course", description: "5 clip types that pre-sell courses — including the week-by-week launch strategy." },
+  "content-repurposing-real-estate-agents-2026": { title: "Content Repurposing for Real Estate Agents", description: "8 video formats for realtors — from neighborhood tours to market updates." },
+  "short-form-video-local-business-2026": { title: "Short-Form Video for Local Businesses", description: "How local content wins local search and attracts community customers." },
+  "short-form-video-saas-companies-get-more-signups": { title: "Short-Form Video for SaaS: Get More Sign-Ups", description: "6 clip formats that generate organic SaaS trial registrations and lower CAC." },
+  "short-form-video-marketing-saas": { title: "Short-Form Video Marketing for SaaS", description: "Monthly content workflow for SaaS teams: one product update → 8 clips per week." },
+  "ai-video-repurposing-for-agencies": { title: "AI Video Repurposing for Agencies", description: "Operating model, pricing tiers and repeatable delivery system for agencies." },
+  "video-content-strategy-lawyers-law-firms": { title: "Video Content Strategy for Lawyers & Law Firms", description: "How attorneys build inbound lead generation through educational video content." },
+  "video-content-strategy-personal-finance-creators": { title: "Video Content Strategy for Personal Finance Creators", description: "Formats, platforms, compliance and monetization for finance content in 2026." },
+  "short-form-video-nonprofit-organizations": { title: "Short-Form Video for Nonprofits", description: "6 video formats that help nonprofits attract donors, volunteers and awareness." },
+  "short-form-video-without-being-on-camera": { title: "Short-Form Video Without Being On Camera", description: "7 faceless video formats — screen recording, voiceover, B-roll and more." },
+  "repurpose-online-course-content-social-media": { title: "Repurpose Online Course Content for Social Media", description: "How to ethically clip course material into promotional content that sells." },
+  "best-ai-video-editing-tools-2026": { title: "Best AI Video Editing Tools 2026", description: "Honest comparison of AI video editing tools — features, pricing and which to use for what." },
+};
