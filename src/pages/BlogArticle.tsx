@@ -144,6 +144,9 @@ const BlogArticle = () => {
           {isUaRoute && slug && (
             <UARelatedArticles currentSlug={slug} />
           )}
+          {!isUaRoute && !isEsRoute && slug && (
+            <ENRelatedArticles currentSlug={slug} />
+          )}
         </article>
       </main>
 
