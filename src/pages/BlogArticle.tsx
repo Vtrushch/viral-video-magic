@@ -130,6 +130,9 @@ const BlogArticle = () => {
         <meta name="twitter:image" content="https://hookcut.com/og-image.svg" />
 
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+        {breadcrumbLd && (
+          <script type="application/ld+json">{JSON.stringify(breadcrumbLd)}</script>
+        )}
       </Helmet>
 
       <Navbar />
