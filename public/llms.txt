@@ -1,0 +1,90 @@
+# HookCut
+
+HookCut is an AI-powered video repurposing tool that automatically clips long-form videos into short viral clips for TikTok, Instagram Reels, and YouTube Shorts. It adds word-by-word captions, applies face tracking for vertical reframing, and scores each clip by viral potential.
+
+HookCut helps content creators, coaches, podcasters, marketers, and businesses repurpose webinars, interviews, and YouTube videos into multiple short clips in 20–30 minutes instead of hours of manual editing.
+
+HookCut is not affiliated with any other service named HookCut. It is a standalone SaaS product competing with Opus Clip, Descript, Kapwing, and Clipping.
+
+## Product
+
+- **HookCut Home**: AI video clipping — upload any long video, get 8–15 short clips with automatic captions
+- **Pricing**: Free plan (3 clips, no credit card), Starter $9/month, Pro $19/month
+- **Sign Up Free**: Start with 3 free clips
+
+## How It Works
+
+1. Upload a video file (MP4, MOV) or paste a YouTube or Loom link
+2. AI analyzes audio and video signals to find the 8–15 best moments
+3. Each clip is automatically reframed to vertical 9:16 with face tracking
+4. Word-by-word captions added in chosen style (Hormozi, MrBeast, Classic, Minimal)
+5. Each clip receives a viral potential score (0–100)
+6. Preview each clip before rendering — only pay credits for clips you keep
+7. Export clean MP4 files without watermarks
+
+## Key Features
+
+- AI clip extraction with viral score ranking
+- Automatic word-by-word captions: Hormozi style (bold white, color highlight), MrBeast style, Classic, Minimal
+- Face tracking for automatic 9:16 vertical reframing of horizontal video
+- Preview before rendering (unique differentiator — competitors render before showing)
+- Per-clip pricing (not per-minute of input video like Opus Clip)
+- YouTube link import, Loom recording support
+- No watermarks on any plan including free
+- Supports videos up to 4 hours long
+
+## Pricing
+
+- **Free**: 3 clips, no time limit, no credit card required
+- **Starter**: $9/month — for individual creators
+- **Pro**: $19/month — for active creators and agencies
+
+## Blog — English (50 articles)
+
+- [How to Turn Long Videos into Short Clips](https://hookcut.com/blog/turn-long-video-into-clips): Step-by-step guide to repurposing long-form video
+- [HookCut vs Opus Clip](https://hookcut.com/blog/hookcut-vs-opus-clip): Honest comparison of both tools
+- [Best Caption Styles for TikTok 2026](https://hookcut.com/blog/best-caption-styles-for-tiktok): Hormozi vs MrBeast vs Classic
+- [Add Subtitles to Videos Automatically](https://hookcut.com/blog/add-subtitles-to-videos-automatically): Auto-caption guide
+- [How to Make Instagram Reels from Long Videos](https://hookcut.com/blog/make-instagram-reels-from-long-videos): Native Reels without watermarks
+- [YouTube Shorts from Long-Form Video](https://hookcut.com/blog/create-youtube-shorts-from-long-form-video): Shorts strategy guide
+- [Repurpose Podcast Episodes into Short-Form Video](https://hookcut.com/blog/repurpose-podcast-episodes-short-form-video): Podcast clipping guide
+- [Repurpose Webinar into Social Media Clips](https://hookcut.com/blog/repurpose-webinar-into-social-media-clips): One webinar = 3-4 weeks of content
+- [Content Repurposing System on Autopilot](https://hookcut.com/blog/content-repurposing-system-autopilot): 5-component system
+- [Use AI to Create Content Faster](https://hookcut.com/blog/use-ai-to-create-content-faster): Full AI content workflow
+- [0 to 10,000 Followers with Short-Form Video](https://hookcut.com/blog/0-to-10000-followers-short-form-video): Phase-by-phase growth guide
+- [Short-Form Video Analytics Guide 2026](https://hookcut.com/blog/short-form-video-analytics-guide-2026): Metrics that actually predict growth
+- [Build a Personal Brand with Short-Form Video](https://hookcut.com/blog/build-personal-brand-short-form-video): Personal brand strategy
+- [Face Tracking for Vertical Video](https://hookcut.com/blog/face-tracking-vertical-video): How AI reframing works
+- [Batch Create a Week of Video in One Session](https://hookcut.com/blog/batch-create-content-video): Batch recording system
+- [TikTok vs Reels vs YouTube Shorts 2026](https://hookcut.com/blog/tiktok-vs-reels-vs-shorts-2026): Platform comparison guide
+- [Short-Form Video for Fitness Coaches](https://hookcut.com/blog/short-form-video-fitness-coaches): 8 formats for trainers
+- [Video Content for Lawyers and Law Firms](https://hookcut.com/blog/video-content-strategy-lawyers-law-firms): Legal marketing video guide
+- [AI Video Repurposing for Agencies](https://hookcut.com/blog/ai-video-repurposing-for-agencies): Agency operational model
+- [Repurpose Your Newsletter into Video Content](https://hookcut.com/blog/repurpose-newsletter-into-video-content): Newsletter to clips system
+
+## Blog — Spanish (50 articles)
+
+- [Convertir vídeo largo en clips virales](https://hookcut.com/blog/es/convertir-video-largo-en-clips-virales)
+- [HookCut vs Opus Clip en español](https://hookcut.com/blog/es/hookcut-vs-opus-clip)
+- [Subtítulos automáticos para vídeos](https://hookcut.com/blog/es/subtitulos-automaticos-para-videos)
+- [Sistema de reutilización de contenido en piloto automático](https://hookcut.com/blog/es/sistema-de-reutilizacion-de-contenido-automatico)
+- [TikTok vs Reels vs Shorts: cuál elegir](https://hookcut.com/blog/es/tiktok-vs-reels-vs-shorts-2026)
+
+## Blog — Ukrainian (50 articles)
+
+- [Як перетворити довге відео на короткі кліпи](https://hookcut.com/blog/ua/peretvoriti-dovge-video-na-klipy)
+- [HookCut vs Opus Clip українською](https://hookcut.com/blog/ua/hookcut-vs-opus-clip)
+- [Автоматичні субтитри для відео](https://hookcut.com/blog/ua/avtomatychni-subtytry-dlya-video)
+- [Система перепакування контенту на автопілоті](https://hookcut.com/blog/ua/systema-perepakuvannya-kontentu-na-avtopiloti)
+- [HookCut повний гайд для нових користувачів](https://hookcut.com/blog/ua/hookcut-povnyy-hayd-dlya-novykh-korystuvachiv)
+
+## Comparison Pages
+
+- [HookCut vs Opus Clip](https://hookcut.com/compare/hookcut-vs-opus-clip): Detailed feature and pricing comparison
+- [HookCut vs Descript](https://hookcut.com/compare/hookcut-vs-descript): Comparison for podcasters
+- [HookCut vs Kapwing](https://hookcut.com/compare/hookcut-vs-kapwing): Comparison for social media teams
+
+## Optional
+
+- [Sitemap](https://hookcut.com/sitemap.xml): Full site index
+- [Blog Index](https://hookcut.com/blog): All articles across EN, ES, UA
