@@ -9,6 +9,7 @@ import { BLOG_ARTICLES } from "@/constants/blogArticles";
 import { ArrowLeft, Clock } from "lucide-react";
 import { injectInternalLinks } from "@/lib/internalLinks";
 import { UARelatedArticles } from "@/components/UARelatedArticles";
+import { ENRelatedArticles } from "@/components/ENRelatedArticles";
 
 const BlogArticle = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -142,6 +143,9 @@ const BlogArticle = () => {
 
           {isUaRoute && slug && (
             <UARelatedArticles currentSlug={slug} />
+          )}
+          {!isUaRoute && !isEsRoute && slug && (
+            <ENRelatedArticles currentSlug={slug} />
           )}
         </article>
       </main>
