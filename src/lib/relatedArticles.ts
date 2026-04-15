@@ -576,3 +576,329 @@ export const EN_ARTICLE_META: Record<string, { title: string; description: strin
   "repurpose-online-course-content-social-media": { title: "Repurpose Online Course Content for Social Media", description: "How to ethically clip course material into promotional content that sells." },
   "best-ai-video-editing-tools-2026": { title: "Best AI Video Editing Tools 2026", description: "Honest comparison of AI video editing tools — features, pricing and which to use for what." },
 };
+
+// ============================================================
+// SPANISH (ES) RELATED ARTICLES
+// ============================================================
+
+export const ES_RELATED_ARTICLES: Record<string, string[]> = {
+  "convertir-video-largo-en-clips-virales": [
+    "reutilizar-videos-youtube-multiples-formatos",
+    "crear-contenido-en-lote-produccion-video",
+    "sistema-de-reutilizacion-de-contenido-automatico"
+  ],
+  "subtitulos-automaticos-para-videos": [
+    "mejores-estilos-de-subtitulos-para-tiktok",
+    "seguimiento-facial-video-vertical",
+    "agregar-subtitulos-a-videos-automaticamente"
+  ],
+  "agregar-subtitulos-a-videos-automaticamente": [
+    "subtitulos-automaticos-para-videos",
+    "mejores-estilos-de-subtitulos-para-tiktok",
+    "hookcut-vs-opus-clip"
+  ],
+  "mejores-estilos-de-subtitulos-para-tiktok": [
+    "subtitulos-automaticos-para-videos",
+    "agregar-subtitulos-a-videos-automaticamente",
+    "creadores-desperdician-sus-mejores-momentos"
+  ],
+  "hookcut-vs-opus-clip": [
+    "convertir-video-largo-en-clips-virales",
+    "subtitulos-automaticos-para-videos",
+    "puntuacion-viral-ia-video"
+  ],
+  "crear-youtube-shorts-de-videos-largos": [
+    "crecer-canal-youtube-con-contenido-corto",
+    "reutilizar-videos-youtube-multiples-formatos",
+    "convertir-video-largo-en-clips-virales"
+  ],
+  "crecer-canal-youtube-con-contenido-corto": [
+    "crear-youtube-shorts-de-videos-largos",
+    "reutilizar-videos-youtube-multiples-formatos",
+    "guia-completa-analiticas-video-formato-corto-2026"
+  ],
+  "reutilizar-episodios-podcast-video-formato-corto": [
+    "reutilizar-webinar-en-contenido-redes-sociales",
+    "reutilizar-newsletter-en-contenido-de-video",
+    "crear-contenido-en-lote-produccion-video"
+  ],
+  "crear-instagram-reels-de-videos-largos": [
+    "mejores-estilos-de-subtitulos-para-tiktok",
+    "redimensionar-video-para-tiktok-reels-shorts",
+    "tiktok-vs-reels-vs-shorts-2026"
+  ],
+  "seguimiento-facial-video-vertical": [
+    "redimensionar-video-para-tiktok-reels-shorts",
+    "subtitulos-automaticos-para-videos",
+    "convertir-video-largo-en-clips-virales"
+  ],
+  "redimensionar-video-para-tiktok-reels-shorts": [
+    "seguimiento-facial-video-vertical",
+    "crear-instagram-reels-de-videos-largos",
+    "tiktok-vs-reels-vs-shorts-2026"
+  ],
+  "crear-highlight-reel-de-videos-largos": [
+    "reutilizar-charla-conferencia-keynote-contenido",
+    "reutilizar-ted-talk-speaking-reel-redes-sociales",
+    "convertir-video-largo-en-clips-virales"
+  ],
+  "usar-ia-para-crear-contenido-mas-rapido": [
+    "sistema-de-reutilizacion-de-contenido-automatico",
+    "crear-contenido-en-lote-produccion-video",
+    "guia-completa-analiticas-video-formato-corto-2026"
+  ],
+  "estrategia-contenido-video-coaches-creadores-cursos": [
+    "contenido-video-para-promocionar-curso-online",
+    "reutilizar-webinar-en-contenido-redes-sociales",
+    "reutilizar-testimonios-casos-exito-contenido-video"
+  ],
+  "reutilizar-webinar-en-contenido-redes-sociales": [
+    "reutilizar-episodios-podcast-video-formato-corto",
+    "reutilizar-charla-conferencia-keynote-contenido",
+    "sistema-de-reutilizacion-de-contenido-automatico"
+  ],
+  "de-0-a-10000-seguidores-video-formato-corto": [
+    "como-hacerse-viral-en-tiktok-con-contenido-largo",
+    "guia-completa-analiticas-video-formato-corto-2026",
+    "construir-marca-personal-video-formato-corto"
+  ],
+  "crear-contenido-en-lote-produccion-video": [
+    "sistema-de-reutilizacion-de-contenido-automatico",
+    "mejor-hora-publicar-tiktok-reels-shorts-2026",
+    "usar-ia-para-crear-contenido-mas-rapido"
+  ],
+  "crecer-canal-youtube-con-clips-cortos": [
+    "crear-youtube-shorts-de-videos-largos",
+    "reutilizar-videos-youtube-multiples-formatos",
+    "guia-completa-analiticas-video-formato-corto-2026"
+  ],
+  "video-formato-corto-entrenadores-fitness": [
+    "construir-marca-personal-video-formato-corto",
+    "estrategia-contenido-video-coaches-salud-bienestar",
+    "mejor-hora-publicar-tiktok-reels-shorts-2026"
+  ],
+  "construir-marca-personal-video-formato-corto": [
+    "crecer-en-linkedin-con-contenido-de-video",
+    "de-0-a-10000-seguidores-video-formato-corto",
+    "tiktok-vs-reels-vs-shorts-2026"
+  ],
+  "reutilizacion-contenido-agentes-inmobiliarios-2026": [
+    "video-formato-corto-negocio-local-2026",
+    "construir-marca-personal-video-formato-corto",
+    "reutilizar-testimonios-casos-exito-contenido-video"
+  ],
+  "tiktok-vs-reels-vs-shorts-2026": [
+    "como-hacerse-viral-en-tiktok-con-contenido-largo",
+    "crecer-canal-youtube-con-contenido-corto",
+    "crear-instagram-reels-de-videos-largos"
+  ],
+  "puntuacion-viral-ia-video": [
+    "como-hacerse-viral-en-tiktok-con-contenido-largo",
+    "creadores-desperdician-sus-mejores-momentos",
+    "guia-completa-analiticas-video-formato-corto-2026"
+  ],
+  "como-hacerse-viral-en-tiktok-con-contenido-largo": [
+    "de-0-a-10000-seguidores-video-formato-corto",
+    "puntuacion-viral-ia-video",
+    "mejor-hora-publicar-tiktok-reels-shorts-2026"
+  ],
+  "reutilizar-videos-youtube-multiples-formatos": [
+    "sistema-de-reutilizacion-de-contenido-automatico",
+    "crecer-canal-youtube-con-contenido-corto",
+    "crear-contenido-en-lote-produccion-video"
+  ],
+  "video-formato-corto-sin-salir-en-camara": [
+    "convertir-video-largo-en-clips-virales",
+    "subtitulos-automaticos-para-videos",
+    "seguimiento-facial-video-vertical"
+  ],
+  "guia-completa-analiticas-video-formato-corto-2026": [
+    "de-0-a-10000-seguidores-video-formato-corto",
+    "mejor-hora-publicar-tiktok-reels-shorts-2026",
+    "puntuacion-viral-ia-video"
+  ],
+  "estrategia-contenido-video-abogados-despachos": [
+    "crecer-en-linkedin-con-contenido-de-video",
+    "construir-marca-personal-video-formato-corto",
+    "estrategia-contenido-video-creadores-finanzas-personales"
+  ],
+  "reutilizar-charla-conferencia-keynote-contenido": [
+    "reutilizar-ted-talk-speaking-reel-redes-sociales",
+    "crear-highlight-reel-de-videos-largos",
+    "reutilizar-webinar-en-contenido-redes-sociales"
+  ],
+  "video-corto-ecommerce-para-ventas": [
+    "video-formato-corto-negocio-local-2026",
+    "reutilizar-testimonios-casos-exito-contenido-video",
+    "usar-ia-para-crear-contenido-mas-rapido"
+  ],
+  "reutilizar-newsletter-en-contenido-de-video": [
+    "reutilizar-episodios-podcast-video-formato-corto",
+    "sistema-de-reutilizacion-de-contenido-automatico",
+    "mejor-hora-publicar-tiktok-reels-shorts-2026"
+  ],
+  "video-formato-corto-negocio-local-2026": [
+    "reutilizacion-contenido-agentes-inmobiliarios-2026",
+    "construir-marca-personal-video-formato-corto",
+    "guia-completa-analiticas-video-formato-corto-2026"
+  ],
+  "reutilizar-testimonios-casos-exito-contenido-video": [
+    "estrategia-contenido-video-coaches-creadores-cursos",
+    "construir-marca-personal-video-formato-corto",
+    "reutilizacion-contenido-agentes-inmobiliarios-2026"
+  ],
+  "estrategia-contenido-video-coaches-salud-bienestar": [
+    "video-formato-corto-entrenadores-fitness",
+    "estrategia-contenido-video-coaches-creadores-cursos",
+    "construir-marca-personal-video-formato-corto"
+  ],
+  "crecer-en-linkedin-con-contenido-de-video": [
+    "construir-marca-personal-video-formato-corto",
+    "estrategia-contenido-video-creadores-finanzas-personales",
+    "marketing-video-formato-corto-saas"
+  ],
+  "video-formato-corto-organizaciones-sin-fines-de-lucro": [
+    "reutilizar-testimonios-casos-exito-contenido-video",
+    "construir-marca-personal-video-formato-corto",
+    "video-formato-corto-negocio-local-2026"
+  ],
+  "reutilizar-ted-talk-speaking-reel-redes-sociales": [
+    "reutilizar-charla-conferencia-keynote-contenido",
+    "crear-highlight-reel-de-videos-largos",
+    "construir-marca-personal-video-formato-corto"
+  ],
+  "estrategia-contenido-video-creadores-finanzas-personales": [
+    "crecer-en-linkedin-con-contenido-de-video",
+    "construir-marca-personal-video-formato-corto",
+    "estrategia-contenido-video-abogados-despachos"
+  ],
+  "sistema-de-reutilizacion-de-contenido-automatico": [
+    "crear-contenido-en-lote-produccion-video",
+    "usar-ia-para-crear-contenido-mas-rapido",
+    "mejor-hora-publicar-tiktok-reels-shorts-2026"
+  ],
+  "contenido-video-para-promocionar-curso-online": [
+    "estrategia-contenido-video-coaches-creadores-cursos",
+    "reutilizar-webinar-en-contenido-redes-sociales",
+    "construir-marca-personal-video-formato-corto"
+  ],
+  "como-hacerse-viral-en-tiktok-2026": [
+    "de-0-a-10000-seguidores-video-formato-corto",
+    "creadores-desperdician-sus-mejores-momentos",
+    "guia-completa-analiticas-video-formato-corto-2026"
+  ],
+  "video-formato-corto-empresas-saas-mas-registros": [
+    "marketing-video-formato-corto-saas",
+    "usar-ia-para-crear-contenido-mas-rapido",
+    "crecer-en-linkedin-con-contenido-de-video"
+  ],
+  "marketing-video-formato-corto-saas": [
+    "video-formato-corto-empresas-saas-mas-registros",
+    "agencias-escalar-contenido-video-con-ia",
+    "reutilizar-webinar-en-contenido-redes-sociales"
+  ],
+  "agencias-escalar-contenido-video-con-ia": [
+    "sistema-de-reutilizacion-de-contenido-automatico",
+    "usar-ia-para-crear-contenido-mas-rapido",
+    "marketing-video-formato-corto-saas"
+  ],
+  "convertir-stream-en-directo-en-clips-virales": [
+    "convertir-video-largo-en-clips-virales",
+    "crear-highlight-reel-de-videos-largos",
+    "sistema-de-reutilizacion-de-contenido-automatico"
+  ],
+  "mejor-hora-publicar-tiktok-reels-shorts-2026": [
+    "tiktok-vs-reels-vs-shorts-2026",
+    "guia-completa-analiticas-video-formato-corto-2026",
+    "sistema-de-reutilizacion-de-contenido-automatico"
+  ],
+  "creadores-desperdician-sus-mejores-momentos": [
+    "como-hacerse-viral-en-tiktok-con-contenido-largo",
+    "puntuacion-viral-ia-video",
+    "convertir-video-largo-en-clips-virales"
+  ],
+  "reutilizar-contenido-curso-online-redes-sociales": [
+    "estrategia-contenido-video-coaches-creadores-cursos",
+    "contenido-video-para-promocionar-curso-online",
+    "reutilizar-webinar-en-contenido-redes-sociales"
+  ],
+  "reutilizacion-contenido-tiendas-online-videos-producto": [
+    "video-corto-ecommerce-para-ventas",
+    "reutilizar-testimonios-casos-exito-contenido-video",
+    "usar-ia-para-crear-contenido-mas-rapido"
+  ],
+  "mejores-herramientas-edicion-video-ia-2026": [
+    "usar-ia-para-crear-contenido-mas-rapido",
+    "subtitulos-automaticos-para-videos",
+    "sistema-de-reutilizacion-de-contenido-automatico"
+  ],
+  "procesar-videos-en-lote-mes-de-contenido": [
+    "crear-contenido-en-lote-produccion-video",
+    "sistema-de-reutilizacion-de-contenido-automatico",
+    "mejor-hora-publicar-tiktok-reels-shorts-2026"
+  ],
+  "reutilizar-videos-para-linkedin": [
+    "crecer-en-linkedin-con-contenido-de-video",
+    "construir-marca-personal-video-formato-corto",
+    "reutilizar-videos-youtube-multiples-formatos"
+  ],
+};
+
+export function getESRelatedArticles(slug: string): string[] {
+  return ES_RELATED_ARTICLES[slug] ?? [];
+}
+
+export const ES_ARTICLE_META: Record<string, { title: string; description: string }> = {
+  "convertir-video-largo-en-clips-virales": { title: "Cómo convertir vídeos largos en clips virales", description: "Guía paso a paso para recortar vídeos largos en clips para TikTok, Reels y YouTube Shorts." },
+  "subtitulos-automaticos-para-videos": { title: "Subtítulos automáticos para vídeos", description: "Cómo añadir subtítulos automáticos a cualquier vídeo en minutos usando inteligencia artificial." },
+  "agregar-subtitulos-a-videos-automaticamente": { title: "Añadir subtítulos a vídeos automáticamente", description: "Guía completa para añadir subtítulos automáticos al estilo Hormozi, MrBeast y más." },
+  "mejores-estilos-de-subtitulos-para-tiktok": { title: "Mejores estilos de subtítulos para TikTok", description: "Hormozi, MrBeast, minimalista — qué estilo de subtítulo da mayor completion rate en TikTok." },
+  "hookcut-vs-opus-clip": { title: "HookCut vs Opus Clip: comparativa 2026", description: "Comparación honesta de precios, funciones y calidad de clips entre HookCut y Opus Clip." },
+  "crear-youtube-shorts-de-videos-largos": { title: "Cómo crear YouTube Shorts de vídeos largos", description: "Guía paso a paso para convertir webinars, clases y vídeos de YouTube en Shorts." },
+  "crecer-canal-youtube-con-contenido-corto": { title: "Crecer en YouTube con contenido de formato corto", description: "Estrategia de YouTube Shorts + vídeos largos para máximo crecimiento de canal en 2026." },
+  "reutilizar-episodios-podcast-video-formato-corto": { title: "Reutilizar episodios de podcast en vídeo corto", description: "Convierte cada episodio de podcast en 8–12 clips para TikTok, Reels y YouTube Shorts." },
+  "crear-instagram-reels-de-videos-largos": { title: "Crear Instagram Reels de vídeos largos", description: "Cómo crear Reels nativos sin marcas de agua desde contenido de larga duración." },
+  "seguimiento-facial-video-vertical": { title: "Seguimiento facial para vídeo vertical", description: "Cómo el face tracking de IA reencuadra automáticamente el vídeo horizontal a 9:16." },
+  "redimensionar-video-para-tiktok-reels-shorts": { title: "Redimensionar vídeo para TikTok, Reels y Shorts", description: "Convierte vídeo horizontal al formato vertical 9:16 con reencuadre automático e IA." },
+  "crear-highlight-reel-de-videos-largos": { title: "Cómo crear un highlight reel de vídeos largos", description: "Recopila los mejores momentos de tu contenido en un highlight reel de 2–5 minutos." },
+  "usar-ia-para-crear-contenido-mas-rapido": { title: "Usar IA para crear contenido más rápido", description: "Flujo de trabajo completo con IA: ideas, guiones, edición, subtítulos y distribución." },
+  "estrategia-contenido-video-coaches-creadores-cursos": { title: "Estrategia de vídeo para coaches y creadores de cursos", description: "Cómo los coaches usan el vídeo corto para llenar programas y atraer clientes." },
+  "reutilizar-webinar-en-contenido-redes-sociales": { title: "Reutilizar un webinar en contenido para redes sociales", description: "Un webinar de 60 minutos → 3–4 semanas de contenido para todas las plataformas." },
+  "de-0-a-10000-seguidores-video-formato-corto": { title: "De 0 a 10.000 seguidores con vídeo corto", description: "Guía honesta y por fases para construir audiencia desde cero en 2026." },
+  "crear-contenido-en-lote-produccion-video": { title: "Creación de contenido en lote: una semana en una sesión", description: "El sistema de grabación en lote que permite publicar a diario sin agotarse." },
+  "crecer-canal-youtube-con-clips-cortos": { title: "Crecer en YouTube con clips cortos", description: "Estrategia de YouTube Shorts para nuevos canales y canales establecidos en 2026." },
+  "video-formato-corto-entrenadores-fitness": { title: "Vídeo de formato corto para entrenadores de fitness", description: "8 formatos de vídeo que atraen nuevos clientes de entrenamiento personal en 2026." },
+  "construir-marca-personal-video-formato-corto": { title: "Construir una marca personal con vídeo corto", description: "Los 3 pilares de una marca personal duradera y el timeline realista de crecimiento." },
+  "reutilizacion-contenido-agentes-inmobiliarios-2026": { title: "Reutilización de contenido para agentes inmobiliarios", description: "8 formatos de vídeo para agentes — desde tours de barrio hasta análisis de mercado." },
+  "tiktok-vs-reels-vs-shorts-2026": { title: "TikTok vs Reels vs YouTube Shorts: cuál elegir", description: "Comparación detallada con árbol de decisión para elegir la plataforma correcta." },
+  "puntuacion-viral-ia-video": { title: "Puntuación viral: cómo la IA clasifica tus clips", description: "Qué significa el viral score, cómo lo calcula HookCut y cómo usarlo para elegir los mejores clips." },
+  "como-hacerse-viral-en-tiktok-con-contenido-largo": { title: "Hacerse viral en TikTok con contenido largo", description: "Cómo reutilizar vídeos existentes en clips de TikTok que lleguen a nuevas audiencias." },
+  "reutilizar-videos-youtube-multiples-formatos": { title: "Reutilizar vídeos de YouTube en múltiples formatos", description: "Un vídeo de YouTube → 25–40 piezas de contenido para todas las plataformas." },
+  "video-formato-corto-sin-salir-en-camara": { title: "Vídeo corto sin salir en cámara", description: "7 formatos de vídeo sin cara — grabación de pantalla, voz en off, B-roll y más." },
+  "guia-completa-analiticas-video-formato-corto-2026": { title: "Guía completa de analíticas de vídeo corto 2026", description: "Jerarquía de 3 niveles de métricas — qué predice realmente el crecimiento en 2026." },
+  "estrategia-contenido-video-abogados-despachos": { title: "Estrategia de vídeo para abogados y despachos", description: "Cómo los abogados generan leads entrantes con contenido educativo en vídeo." },
+  "reutilizar-charla-conferencia-keynote-contenido": { title: "Reutilizar una charla de conferencia en 30 días de contenido", description: "Mapa completo: una keynote de 30 minutos → clips, posts, artículos y newsletter." },
+  "video-corto-ecommerce-para-ventas": { title: "Vídeo corto para e-commerce: más ventas", description: "7 formatos de vídeo de producto que convierten para tiendas online en 2026." },
+  "reutilizar-newsletter-en-contenido-de-video": { title: "Reutilizar tu newsletter en contenido de vídeo", description: "Sistema para convertir cada número de newsletter en 5 clips en 90 minutos." },
+  "video-formato-corto-negocio-local-2026": { title: "Vídeo corto para negocios locales 2026", description: "Cómo el contenido local gana el SEO local y atrae clientes de proximidad." },
+  "reutilizar-testimonios-casos-exito-contenido-video": { title: "Reutilizar testimonios y casos de éxito en vídeo", description: "4 formatos de prueba social en vídeo que convierten mejor que cualquier anuncio." },
+  "estrategia-contenido-video-coaches-salud-bienestar": { title: "Estrategia de vídeo para coaches de salud y bienestar", description: "Formatos éticos y cumplimiento de claims para nutricionistas y profesionales del wellness." },
+  "crecer-en-linkedin-con-contenido-de-video": { title: "Crecer en LinkedIn con contenido de vídeo", description: "Estrategia de vídeo en LinkedIn para captar clientes B2B y construir marca personal." },
+  "video-formato-corto-organizaciones-sin-fines-de-lucro": { title: "Vídeo corto para organizaciones sin ánimo de lucro", description: "6 formatos de vídeo que ayudan a las ONG a captar donantes y voluntarios." },
+  "reutilizar-ted-talk-speaking-reel-redes-sociales": { title: "Reutilizar un TED Talk o speaking reel", description: "7 tipos de clips de cualquier TED Talk — 8 semanas de contenido de thought leadership." },
+  "estrategia-contenido-video-creadores-finanzas-personales": { title: "Estrategia de vídeo para creadores de finanzas personales", description: "Formatos, plataformas, cumplimiento y monetización para contenido financiero en 2026." },
+  "sistema-de-reutilizacion-de-contenido-automatico": { title: "Sistema de reutilización de contenido en piloto automático", description: "Sistema de 5 componentes que convierte la producción de contenido en un flujo automatizado." },
+  "contenido-video-para-promocionar-curso-online": { title: "Contenido de vídeo para promocionar un curso online", description: "5 tipos de clips que pre-venden cursos — incluyendo la estrategia de lanzamiento semana a semana." },
+  "como-hacerse-viral-en-tiktok-2026": { title: "Cómo hacerse viral en TikTok en 2026", description: "Guía honesta: algoritmo de TikTok, hooks, estrategia de 30 días y expectativas realistas." },
+  "video-formato-corto-empresas-saas-mas-registros": { title: "Vídeo corto para empresas SaaS: más registros", description: "6 formatos de clips que generan registros orgánicos de prueba y reducen el CAC." },
+  "marketing-video-formato-corto-saas": { title: "Marketing de vídeo corto para SaaS", description: "Flujo de trabajo mensual para equipos SaaS: una actualización de producto → 8 clips por semana." },
+  "agencias-escalar-contenido-video-con-ia": { title: "Agencias: escalar contenido de vídeo con IA", description: "Modelo operativo, precios y sistema de entrega repetible para agencias de vídeo." },
+  "convertir-stream-en-directo-en-clips-virales": { title: "Convertir un stream en directo en clips virales", description: "Sistema para extraer 8–10 clips de cada stream — el mismo día que termina." },
+  "mejor-hora-publicar-tiktok-reels-shorts-2026": { title: "Mejor hora para publicar en TikTok, Reels y Shorts", description: "Horarios óptimos por plataforma y el sistema de planificación mensual de contenido." },
+  "creadores-desperdician-sus-mejores-momentos": { title: "Los creadores desperdician sus mejores momentos", description: "Por qué la mayoría de los creadores pierde el 90% del valor de su contenido — y cómo evitarlo." },
+  "reutilizar-contenido-curso-online-redes-sociales": { title: "Reutilizar contenido de curso online en redes sociales", description: "Cómo recortar material de curso en contenido promocional que vende éticamente." },
+  "reutilizacion-contenido-tiendas-online-videos-producto": { title: "Reutilización de contenido para tiendas online", description: "Cómo convertir vídeos de producto en clips virales para e-commerce en 2026." },
+  "mejores-herramientas-edicion-video-ia-2026": { title: "Mejores herramientas de edición de vídeo con IA 2026", description: "Comparación honesta de herramientas de edición de vídeo con IA — características y precios." },
+  "procesar-videos-en-lote-mes-de-contenido": { title: "Procesar vídeos en lote: un mes de contenido en una sesión", description: "Cómo planificar y grabar un mes completo de contenido en una sola sesión de trabajo." },
+  "reutilizar-videos-para-linkedin": { title: "Reutilizar vídeos para LinkedIn", description: "Cómo adaptar clips de otras plataformas al tono y formato de LinkedIn para máximo alcance." },
+};
