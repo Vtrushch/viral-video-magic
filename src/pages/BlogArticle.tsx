@@ -104,6 +104,58 @@ const BlogArticle = () => {
     ],
   };
 
+  // Contextual FAQ schema — gives AI models Q&A pairs to cite
+  const articleFaqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: isUaRoute
+          ? `Як HookCut допомагає з "${article.title.slice(0, 80)}"?`
+          : isEsRoute
+            ? `¿Cómo ayuda HookCut con "${article.title.slice(0, 80)}"?`
+            : `How does HookCut help with "${article.title.slice(0, 80)}"?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: article.metaDescription,
+        },
+      },
+      {
+        "@type": "Question",
+        name: isUaRoute
+          ? "Скільки коштує HookCut?"
+          : isEsRoute
+            ? "¿Cuánto cuesta HookCut?"
+            : "How much does HookCut cost?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: isUaRoute
+            ? "HookCut має безкоштовний план (3 кліпи, без кредитної картки), Starter $9/місяць та Pro $19/місяць. Оплата за кліп — ви платите лише за кліпи, які зберігаєте."
+            : isEsRoute
+              ? "HookCut tiene un plan gratuito (3 clips, sin tarjeta de crédito), Starter $9/mes y Pro $19/mes. Pago por clip — solo pagas por los clips que conservas."
+              : "HookCut has a free plan (3 clips, no credit card required), Starter at $9/month, and Pro at $19/month. Per-clip pricing means you only pay for clips you keep.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: isUaRoute
+          ? "Як швидко HookCut обробляє відео?"
+          : isEsRoute
+            ? "¿Cuánto tarda HookCut en procesar un vídeo?"
+            : "How long does HookCut take to process a video?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: isUaRoute
+            ? "60-хвилинне відео обробляється за 10–20 хвилин. HookCut надсилає сповіщення коли обробка завершена."
+            : isEsRoute
+              ? "Un vídeo de 60 minutos se procesa en 10–20 minutos. HookCut envía una notificación cuando está listo."
+              : "A 60-minute video takes 10–20 minutes to process. HookCut sends a notification when processing is complete.",
+        },
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Helmet>
@@ -136,6 +188,7 @@ const BlogArticle = () => {
 
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
         <script type="application/ld+json">{JSON.stringify(breadcrumbLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(articleFaqLd)}</script>
       </Helmet>
 
       <Navbar />

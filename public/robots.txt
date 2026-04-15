@@ -38,14 +38,17 @@ Allow: /
 # Allow AI crawlers to access knowledge files
 User-agent: GPTBot
 Allow: /llms.txt
+Allow: /llms-full.txt
 Allow: /sitemap.xml
 
 User-agent: PerplexityBot
 Allow: /llms.txt
+Allow: /llms-full.txt
 Allow: /sitemap.xml
 
 User-agent: anthropic-ai
 Allow: /llms.txt
+Allow: /llms-full.txt
 Allow: /sitemap.xml
 
 # Default

@@ -23,15 +23,40 @@ const ComparisonPage = () => {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
+    "@id": `${data.seo.canonical}#article`,
     headline: data.seo.title,
     description: data.seo.description,
-    datePublished: "2026-03-08",
-    dateModified: "2026-03-08",
-    inLanguage: "en",
-    author: { "@type": "Organization", name: "HookCut Team" },
-    publisher: { "@type": "Organization", name: "HookCut", url: "https://hookcut.com" },
+    datePublished: "2026-03-08T00:00:00Z",
+    dateModified: "2026-04-14T00:00:00Z",
+    inLanguage: "en-US",
+    author: { "@type": "Organization", "@id": "https://hookcut.com/#organization", name: "HookCut Team" },
+    publisher: { "@id": "https://hookcut.com/#organization" },
     mainEntityOfPage: { "@type": "WebPage", "@id": data.seo.canonical },
+    isPartOf: { "@id": "https://hookcut.com/#website" },
+    about: [
+      { "@type": "SoftwareApplication", "@id": "https://hookcut.com/#software" },
+      { "@type": "SoftwareApplication", name: data.name },
+    ],
   };
+
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hookcut.com" },
+      { "@type": "ListItem", position: 2, name: `HookCut vs ${data.name}`, item: data.seo.canonical },
+    ],
+  };
+
+  const faqLd = data.faq?.length ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: data.faq.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  } : null;
 
   return (
     <div className="min-h-screen dark">
@@ -43,10 +68,13 @@ const ComparisonPage = () => {
         <meta property="og:description" content={data.seo.description} />
         <meta property="og:url" content={data.seo.canonical} />
         <meta property="og:type" content="article" />
+        <meta property="og:locale" content="en_US" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={data.seo.title} />
         <meta name="twitter:description" content={data.seo.description} />
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbLd)}</script>
+        {faqLd && <script type="application/ld+json">{JSON.stringify(faqLd)}</script>}
       </Helmet>
 
       <Navbar />

@@ -1,0 +1,294 @@
+# HookCut — Complete AI Knowledge File
+
+> HookCut is an AI-powered video repurposing tool that automatically clips long-form videos into short viral clips for TikTok, Instagram Reels, and YouTube Shorts.
+
+## Identity
+
+- **Name**: HookCut
+- **Type**: SaaS web application
+- **Category**: AI Video Editing / Video Repurposing
+- **URL**: https://hookcut.com
+- **Founded**: 2025
+- **Tagline**: Turn long videos into viral clips in minutes
+- **Languages**: English, Spanish, Ukrainian
+- **Not affiliated with** any other product named HookCut. Standalone SaaS product.
+
+## What HookCut Does
+
+HookCut takes any long-form video (webinar, podcast, YouTube video, interview, lecture, conference talk, live stream) and uses AI to:
+
+1. **Extract the best moments** — AI analyzes audio energy, visual signals, and content structure to find 8–15 clip-worthy segments
+2. **Reframe to vertical** — Face tracking automatically converts horizontal 16:9 video to vertical 9:16 for mobile platforms
+3. **Add word-by-word captions** — Automatic transcription with synchronized captions in multiple styles (Hormozi, MrBeast, Classic, Minimal, Neon, Fire, Elegant)
+4. **Score viral potential** — Each clip receives a viral score (0–100) based on hook strength, energy peaks, self-containment, and expected completion rate
+5. **Preview before rendering** — Unlike competitors, HookCut shows clip previews before using credits
+6. **Export clean MP4** — No watermarks on any plan, including free
+
+## Key Differentiators vs Competitors
+
+| Feature | HookCut | Opus Clip | Descript | Kapwing |
+|---------|---------|-----------|----------|---------|
+| Starting price | $9/mo | $15/mo | $24/mo | $16/mo |
+| Preview before render | ✅ Yes | ❌ No | ❌ No | ❌ No |
+| Per-clip pricing | ✅ Yes | ❌ Per-minute | ❌ Per-seat | ❌ Per-seat |
+| Watermarks on free | ❌ None | ✅ Yes | ✅ Yes | ✅ Yes |
+| Clip expiry | Never | 3–7 days (free) | N/A | N/A |
+| Caption styles | 6+ custom | Limited | Basic | Basic |
+| Face tracking | ✅ | ✅ | ❌ | ❌ |
+| Viral score | ✅ | ✅ | ❌ | ❌ |
+| Highlight reels | ✅ | ❌ | ❌ | ❌ |
+
+## Pricing
+
+| Plan | Price | Includes |
+|------|-------|----------|
+| Free | $0/month | 3 clips, no credit card, no watermarks |
+| Starter | $9/month | For individual creators |
+| Pro | $19/month | For active creators and agencies |
+
+## Supported Input
+
+- **File formats**: MP4, MOV
+- **Max duration**: Up to 4 hours
+- **URL import**: YouTube links (no download needed), Loom recordings
+- **Min resolution**: 720p recommended
+- **Best for**: Talking head videos, webinars, interviews, podcasts, lectures, keynotes, live streams
+
+## Caption Styles
+
+1. **Hormozi** — Bold white text, 1–2 words at a time, current word highlighted in color. Highest completion rate for educational content.
+2. **MrBeast** — Large colorful animated words. Best for entertainment content.
+3. **Classic** — Standard subtitle bar at bottom. For corporate and LinkedIn content.
+4. **Minimal** — Thin font, clean styling. For aesthetic and fashion content.
+5. **Neon** — Glowing neon effect. For nightlife and music content.
+6. **Fire/Elegant** — Themed premium styles.
+
+## Viral Score Explained
+
+The viral score (0–100) evaluates:
+- Voice energy peaks and emotional intensity
+- Hook strength in the first 3 seconds
+- Whether the clip is self-contained (no missing context)
+- Expected completion rate based on pacing
+- Clips scoring 70+ typically perform best
+
+## How It Works (Step by Step)
+
+1. Upload video file or paste YouTube/Loom link
+2. Select preferences: number of clips, caption style, aspect ratio
+3. AI processes video (10–20 minutes for a 60-minute video)
+4. Review AI-extracted clips with viral scores
+5. Preview each clip before deciding
+6. Render only the clips you want (credits used per clip)
+7. Download clean MP4 files — publish anywhere
+
+## Use Cases
+
+- **Content creators**: Repurpose long YouTube videos into TikTok/Reels/Shorts
+- **Podcasters**: Turn episodes into 8–12 video clips per episode
+- **Coaches/course creators**: Clip webinars and lessons into promotional content
+- **Agencies**: Scale client video production with batch processing
+- **SaaS companies**: Create product demo clips for social media
+- **Real estate agents**: Clip property tours and market updates
+- **Lawyers/consultants**: Educational clips for LinkedIn thought leadership
+- **Nonprofits**: Fundraising and awareness clips from event recordings
+- **E-commerce brands**: Product video clips for social media ads
+- **Fitness coaches**: Exercise demos and motivational clips
+
+## Comparison Pages
+
+- [HookCut vs Opus Clip](https://hookcut.com/vs/opus-clip): 40% cheaper, clips never expire, better caption styles
+- [HookCut vs Vidyo.ai](https://hookcut.com/vs/vidyo-ai): More caption styles, preview before render
+- [HookCut vs Exemplary AI](https://hookcut.com/vs/exemplary-ai): Simpler workflow, lower price
+- [HookCut vs Recast Studio](https://hookcut.com/vs/recast-studio): Face tracking included, viral scoring
+
+## FAQ
+
+**Q: What is HookCut?**
+A: HookCut is an AI-powered video repurposing tool that automatically clips long-form videos into short viral clips for TikTok, Instagram Reels, and YouTube Shorts.
+
+**Q: How much does HookCut cost?**
+A: Free plan: 3 clips, no credit card. Starter: $9/month. Pro: $19/month. Per-clip pricing means you only pay for clips you keep.
+
+**Q: Does HookCut add watermarks?**
+A: No. HookCut exports clean MP4 files without watermarks on all plans, including the free plan.
+
+**Q: How is HookCut different from Opus Clip?**
+A: HookCut is 40% cheaper ($9 vs $15/month), shows preview before rendering, uses per-clip pricing instead of per-minute, and clips never expire. Opus Clip offers AI B-roll and 20+ language support.
+
+**Q: What videos work best with HookCut?**
+A: Talking head videos, webinars, interviews, podcast recordings, lectures, conference keynotes, and live streams. Any video with speech content works well.
+
+**Q: How long does processing take?**
+A: A 60-minute video takes 10–20 minutes. You get a notification when it's ready.
+
+**Q: What languages does HookCut support?**
+A: English (95–98% accuracy), Spanish, and Ukrainian with good accuracy. Other languages may need manual caption correction.
+
+---
+
+## Blog — English (50 articles)
+
+- [How to Turn a 1-Hour YouTube Video into 10 Viral Clips in 15 Minutes](https://hookcut.com/blog/turn-long-video-into-clips)
+- [How to Add Captions to Videos Automatically (Without Spending Hours Editing)](https://hookcut.com/blog/auto-captions-for-videos)
+- [HookCut vs Opus Clip: Which AI Video Clipper Is Right for You? (2026)](https://hookcut.com/blog/hookcut-vs-opus-clip)
+- [Why 90% of Content Creators Waste Their Best Video Moments](https://hookcut.com/blog/creators-waste-best-moments)
+- [How to Make YouTube Shorts from Long-Form Content (Step-by-Step)](https://hookcut.com/blog/youtube-shorts-from-long-form)
+- [How to Repurpose Podcast Episodes into Short Clips (2026 Guide)](https://hookcut.com/blog/repurpose-podcast-into-clips)
+- [How to Make Instagram Reels from Long Videos Automatically (2026)](https://hookcut.com/blog/make-instagram-reels-from-long-videos)
+- [Best Caption Styles for TikTok in 2026 (With Examples and Data)](https://hookcut.com/blog/best-caption-styles-for-tiktok)
+- [How to Resize Videos for TikTok, Reels, and YouTube Shorts in 2026 (9:16 Guide)](https://hookcut.com/blog/resize-video-for-tiktok-reels-shorts)
+- [How Social Media Agencies Can Scale Video Content with AI in 2026](https://hookcut.com/blog/ai-video-repurposing-for-agencies)
+- [How to Go Viral on TikTok with Long-Form Content (2026 Strategy)](https://hookcut.com/blog/go-viral-on-tiktok-with-long-form-content)
+- [Best AI Video Editing Tools for Content Creators in 2026 (Honest Review)](https://hookcut.com/blog/best-ai-video-editing-tools-2026)
+- [How to Repurpose Webinars into Social Media Content (2026 Complete Guide)](https://hookcut.com/blog/repurpose-webinar-into-social-media-clips)
+- [Face Tracking for Vertical Video: Why It Matters and How It Works (2026)](https://hookcut.com/blog/face-tracking-vertical-video)
+- [How to Build a Content Repurposing System That Runs on Autopilot (2026)](https://hookcut.com/blog/content-repurposing-system-autopilot)
+- [How to Create a Highlight Reel from Long Videos (2026 Guide)](https://hookcut.com/blog/create-highlight-reel-from-long-video)
+- [Best Time to Post on TikTok, Reels and YouTube Shorts in 2026 (Data-Backed Guide)](https://hookcut.com/blog/best-time-to-post-on-tiktok-reels-shorts-2026)
+- [How to Grow a YouTube Channel with Short-Form Content in 2026](https://hookcut.com/blog/grow-youtube-channel-with-short-form-content)
+- [Video Content Strategy for Coaches and Course Creators in 2026 (Complete Guide)](https://hookcut.com/blog/video-content-strategy-coaches-course-creators)
+- [How to Turn a Live Stream into Viral Clips (2026 Complete Guide)](https://hookcut.com/blog/turn-live-stream-into-viral-clips)
+- [How to Add Subtitles to Videos Automatically in 2026 (Complete Guide)](https://hookcut.com/blog/add-subtitles-to-videos-automatically)
+- [Short-Form Video Marketing Strategy for SaaS Companies in 2026](https://hookcut.com/blog/short-form-video-marketing-saas)
+- [How to Repurpose YouTube Videos into Multiple Content Formats in 2026](https://hookcut.com/blog/repurpose-youtube-videos-multiple-formats)
+- [Viral Score: What It Is and How AI Predicts Viral Video Content (2026)](https://hookcut.com/blog/viral-score-ai-video)
+- [How to Create Short-Form Video Content Without Showing Your Face (2026 Guide)](https://hookcut.com/blog/short-form-video-without-showing-face)
+- [How to Batch Create Content: The Creator's Guide (2026)](https://hookcut.com/blog/batch-create-content-video)
+- [Content Repurposing for Real Estate Agents: The Complete 2026 Guide](https://hookcut.com/blog/content-repurposing-real-estate-agents)
+- [How to Grow on LinkedIn with Video Content in 2026 (Complete Strategy)](https://hookcut.com/blog/grow-on-linkedin-with-video-content)
+- [TikTok vs Instagram Reels vs YouTube Shorts: Which Platform to Focus On in 2026](https://hookcut.com/blog/tiktok-vs-reels-vs-shorts-2026)
+- [How to Repurpose Online Course Content into Social Media Clips (2026 Guide)](https://hookcut.com/blog/repurpose-online-course-content-social-media)
+- [How to Repurpose Podcast Episodes into Short-Form Video in 2026 (Complete Guide)](https://hookcut.com/blog/repurpose-podcast-episodes-short-form-video)
+- [Video Content Strategy for Personal Finance Creators in 2026](https://hookcut.com/blog/video-content-strategy-personal-finance-creators)
+- [How to Use AI to Create Content Faster in 2026 (Complete Workflow)](https://hookcut.com/blog/use-ai-to-create-content-faster)
+- [Short-Form Video for Fitness Coaches: Get More Clients with Clips in 2026](https://hookcut.com/blog/short-form-video-fitness-coaches)
+- [How to Turn a Conference Talk or Keynote into 30 Days of Content (2026 Guide)](https://hookcut.com/blog/repurpose-conference-talk-keynote-content)
+- [How to Build a Personal Brand with Short-Form Video in 2026 (Complete Guide)](https://hookcut.com/blog/build-personal-brand-short-form-video)
+- [Content Repurposing for E-Commerce Brands: Turn Product Videos into Clips (2026)](https://hookcut.com/blog/content-repurposing-ecommerce-brands-product-videos)
+- [How to Go from 0 to 10,000 Followers with Short-Form Video in 2026](https://hookcut.com/blog/0-to-10000-followers-short-form-video)
+- [How to Repurpose a Newsletter into Short-Form Video Content (2026 Guide)](https://hookcut.com/blog/repurpose-newsletter-into-video-content)
+- [Short-Form Video for SaaS Companies: Get More Signups with Clips in 2026](https://hookcut.com/blog/short-form-video-saas-companies-get-more-signups)
+- [How to Use Video Content to Promote Your Online Course in 2026 (Complete Guide)](https://hookcut.com/blog/video-content-promote-online-course)
+- [Content Repurposing for Real Estate Agents: The Complete 2026 Guide](https://hookcut.com/blog/content-repurposing-real-estate-agents-2026)
+- [How to Create Short-Form Video Content When You Hate Being on Camera (2026)](https://hookcut.com/blog/short-form-video-without-being-on-camera)
+- [How to Repurpose Testimonials and Case Studies into Video Content (2026 Guide)](https://hookcut.com/blog/repurpose-testimonials-case-studies-video-content)
+- [Video Content Strategy for Lawyers and Law Firms in 2026 (Complete Guide)](https://hookcut.com/blog/video-content-strategy-lawyers-law-firms)
+- [How to Repurpose a TED Talk or Speaking Reel into Social Media Clips (2026)](https://hookcut.com/blog/repurpose-ted-talk-speaking-reel-social-media)
+- [Short-Form Video for Nonprofit Organizations: The Complete 2026 Guide](https://hookcut.com/blog/short-form-video-nonprofit-organizations)
+- [How to Use Short-Form Video to Grow a Local Business in 2026 (Complete Guide)](https://hookcut.com/blog/short-form-video-local-business-2026)
+- [Video Content Strategy for Health and Wellness Coaches in 2026 (Complete Guide)](https://hookcut.com/blog/video-content-strategy-health-wellness-coaches)
+- [The Complete Guide to Short-Form Video Analytics in 2026 (What Actually Matters)](https://hookcut.com/blog/short-form-video-analytics-guide-2026)
+
+## Blog — Spanish (50 articles)
+
+- [Cómo Convertir un Vídeo Largo en Clips Virales con IA (2026)](https://hookcut.com/blog/es/convertir-video-largo-en-clips-virales)
+- [Cómo Añadir Subtítulos Automáticos a tus Vídeos en 2026](https://hookcut.com/blog/es/subtitulos-automaticos-para-videos)
+- [HookCut vs Opus Clip 2026: Comparativa Completa](https://hookcut.com/blog/es/hookcut-vs-opus-clip)
+- [Por Qué los Creadores Desperdician sus Mejores Momentos](https://hookcut.com/blog/es/creadores-desperdician-sus-mejores-momentos)
+- [Cómo Crear YouTube Shorts de Vídeos Largos (2026)](https://hookcut.com/blog/es/crear-youtube-shorts-de-videos-largos)
+- [Cómo Reutilizar Episodios de Podcast en Clips](https://hookcut.com/blog/es/reutilizar-episodios-de-podcast-en-clips)
+- [Cómo Crear Instagram Reels de Vídeos Largos](https://hookcut.com/blog/es/crear-instagram-reels-de-videos-largos)
+- [Mejores Estilos de Subtítulos para TikTok 2026](https://hookcut.com/blog/es/mejores-estilos-de-subtitulos-para-tiktok)
+- [Redimensionar Vídeo para TikTok, Reels y Shorts](https://hookcut.com/blog/es/redimensionar-video-para-tiktok-reels-shorts)
+- [Agencias: Escalar Contenido de Vídeo con IA](https://hookcut.com/blog/es/agencias-escalar-contenido-video-con-ia)
+- [Hacerse Viral en TikTok con Contenido Largo](https://hookcut.com/blog/es/como-hacerse-viral-en-tiktok-con-contenido-largo)
+- [Mejores Herramientas de Edición de Vídeo con IA 2026](https://hookcut.com/blog/es/mejores-herramientas-edicion-video-ia-2026)
+- [Reutilizar Webinar en Contenido para Redes Sociales](https://hookcut.com/blog/es/reutilizar-webinar-en-contenido-redes-sociales)
+- [Seguimiento Facial para Vídeo Vertical](https://hookcut.com/blog/es/seguimiento-facial-video-vertical)
+- [Sistema de Reutilización de Contenido Automático](https://hookcut.com/blog/es/sistema-reutilizacion-contenido-automatico)
+- [Crear Highlight Reel de Vídeos Largos](https://hookcut.com/blog/es/crear-highlight-reel-de-videos-largos)
+- [Mejor Hora para Publicar en TikTok, Reels y Shorts 2026](https://hookcut.com/blog/es/mejor-hora-publicar-tiktok-reels-shorts-2026)
+- [Crecer en YouTube con Contenido Corto](https://hookcut.com/blog/es/crecer-canal-youtube-con-contenido-corto)
+- [Estrategia de Vídeo para Coaches y Creadores de Cursos](https://hookcut.com/blog/es/estrategia-contenido-video-coaches-creadores-cursos)
+- [Convertir Stream en Directo en Clips Virales](https://hookcut.com/blog/es/convertir-stream-en-directo-en-clips-virales)
+- [Agregar Subtítulos a Vídeos Automáticamente](https://hookcut.com/blog/es/agregar-subtitulos-a-videos-automaticamente)
+- [Marketing de Vídeo Corto para SaaS](https://hookcut.com/blog/es/marketing-video-formato-corto-saas)
+- [Reutilizar Vídeos de YouTube en Múltiples Formatos](https://hookcut.com/blog/es/reutilizar-videos-youtube-multiples-formatos)
+- [Puntuación Viral: Cómo la IA Predice Vídeo Viral](https://hookcut.com/blog/es/puntuacion-viral-ia-video)
+- [Vídeo Corto Sin Mostrar la Cara](https://hookcut.com/blog/es/videos-formato-corto-sin-mostrar-cara)
+- [Crear Contenido en Lote: Producción Masiva de Vídeo](https://hookcut.com/blog/es/crear-contenido-en-lote-produccion-video)
+- [Reutilización de Contenido para Agentes Inmobiliarios](https://hookcut.com/blog/es/reutilizacion-contenido-agentes-inmobiliarios)
+- [Crecer en LinkedIn con Contenido de Vídeo](https://hookcut.com/blog/es/crecer-en-linkedin-con-contenido-de-video)
+- [TikTok vs Reels vs Shorts: Cuál Elegir en 2026](https://hookcut.com/blog/es/tiktok-vs-reels-vs-shorts-2026)
+- [Reutilizar Contenido de Curso Online en Redes Sociales](https://hookcut.com/blog/es/reutilizar-contenido-curso-online-redes-sociales)
+- [Reutilizar Episodios de Podcast en Vídeo Corto](https://hookcut.com/blog/es/reutilizar-episodios-podcast-video-formato-corto)
+- [Estrategia de Vídeo para Creadores de Finanzas Personales](https://hookcut.com/blog/es/estrategia-contenido-video-creadores-finanzas-personales)
+- [Usar IA para Crear Contenido Más Rápido](https://hookcut.com/blog/es/usar-ia-para-crear-contenido-mas-rapido)
+- [Vídeo Corto para Entrenadores de Fitness](https://hookcut.com/blog/es/video-formato-corto-entrenadores-fitness)
+- [Reutilizar Charla de Conferencia en 30 Días de Contenido](https://hookcut.com/blog/es/reutilizar-charla-conferencia-keynote-contenido)
+- [Construir Marca Personal con Vídeo Corto](https://hookcut.com/blog/es/construir-marca-personal-video-formato-corto)
+- [Reutilización de Contenido para E-Commerce](https://hookcut.com/blog/es/reutilizacion-contenido-tiendas-online-videos-producto)
+- [De 0 a 10.000 Seguidores con Vídeo Corto](https://hookcut.com/blog/es/de-0-a-10000-seguidores-video-formato-corto)
+- [Reutilizar Newsletter en Contenido de Vídeo](https://hookcut.com/blog/es/reutilizar-newsletter-en-contenido-de-video)
+- [Vídeo Corto para SaaS: Más Registros](https://hookcut.com/blog/es/video-formato-corto-empresas-saas-mas-registros)
+- [Vídeo para Promocionar Curso Online](https://hookcut.com/blog/es/contenido-video-para-promocionar-curso-online)
+- [Reutilización de Contenido para Agentes Inmobiliarios 2026](https://hookcut.com/blog/es/reutilizacion-contenido-agentes-inmobiliarios-2026)
+- [Vídeo Corto Sin Salir en Cámara](https://hookcut.com/blog/es/video-formato-corto-sin-salir-en-camara)
+- [Reutilizar Testimonios y Casos de Éxito en Vídeo](https://hookcut.com/blog/es/reutilizar-testimonios-casos-exito-contenido-video)
+- [Estrategia de Vídeo para Abogados y Despachos](https://hookcut.com/blog/es/estrategia-contenido-video-abogados-despachos)
+- [Reutilizar TED Talk en Redes Sociales](https://hookcut.com/blog/es/reutilizar-ted-talk-speaking-reel-redes-sociales)
+- [Vídeo Corto para Organizaciones Sin Ánimo de Lucro](https://hookcut.com/blog/es/video-formato-corto-organizaciones-sin-fines-de-lucro)
+- [Vídeo Corto para Negocios Locales 2026](https://hookcut.com/blog/es/video-formato-corto-negocio-local-2026)
+- [Estrategia de Vídeo para Coaches de Salud y Bienestar](https://hookcut.com/blog/es/estrategia-contenido-video-coaches-salud-bienestar)
+- [Guía Completa de Analíticas de Vídeo Corto 2026](https://hookcut.com/blog/es/guia-completa-analiticas-video-formato-corto-2026)
+
+## Blog — Ukrainian (49 articles)
+
+- [Як перетворити довге відео на короткі вірусні кліпи](https://hookcut.com/blog/ua/peretvoriti-dovge-video-na-klipy)
+- [Як додати субтитри до відео автоматично](https://hookcut.com/blog/ua/avtomatychni-subtytry-dlya-video)
+- [HookCut vs Opus Clip: порівняння для креаторів](https://hookcut.com/blog/ua/hookcut-vs-opus-clip)
+- [Чому креатори втрачають найкращі моменти свого контенту](https://hookcut.com/blog/ua/kreatory-vtrachayut-naykrashchi-momenty)
+- [Як створити YouTube Shorts з довгих відео](https://hookcut.com/blog/ua/youtube-shorts-z-dovhykh-video)
+- [Як перепакувати подкаст у короткі кліпи](https://hookcut.com/blog/ua/perepakuvaty-podkast-u-korotki-klipy)
+- [Як зробити Instagram Reels з довгих відео](https://hookcut.com/blog/ua/instagram-reels-z-dovhykh-video)
+- [Найкращі стилі субтитрів для TikTok 2026](https://hookcut.com/blog/ua/naykrashchi-styli-subtytriv-dlya-tiktok)
+- [Як змінити розмір відео для TikTok, Reels і Shorts](https://hookcut.com/blog/ua/zminyty-rozmir-video-dlya-tiktok-reels-shorts)
+- [Як агенції масштабують відеоконтент з ІІ](https://hookcut.com/blog/ua/ahentsiyi-masshtabuyut-videokontent-z-ii)
+- [Як стати вірусним у TikTok з довгим контентом](https://hookcut.com/blog/ua/yak-staty-virusnym-u-tiktok-z-dovhym-kontentom)
+- [Найкращі AI інструменти для монтажу відео 2026](https://hookcut.com/blog/ua/naykrashchi-ai-instrumenty-dlya-montazhu-video-2026)
+- [Як перепакувати вебінар у контент для соціальних мереж](https://hookcut.com/blog/ua/perepakuvaty-vebinar-u-kontent-dlya-sotsialnykh-merezh)
+- [Face tracking для вертикального відео](https://hookcut.com/blog/ua/face-tracking-dlya-vertykalnoho-video)
+- [Система перепакування контенту на автопілоті](https://hookcut.com/blog/ua/systema-perepakuvannya-kontentu-na-avtopiloti)
+- [Як створити highlight reel з довгих відео](https://hookcut.com/blog/ua/stvoryty-highlight-reel-z-dovhykh-video)
+- [Найкращий час для публікації в TikTok, Reels і Shorts 2026](https://hookcut.com/blog/ua/naykrashchyy-chas-dlya-publikatsiyi-tiktok-reels-shorts-2026)
+- [Як зростити YouTube канал за допомогою короткого контенту](https://hookcut.com/blog/ua/zrostyty-youtube-kanal-z-korotkymy-video)
+- [Відео стратегія для коучів та творців курсів 2026](https://hookcut.com/blog/ua/video-stratehiya-dlya-kouchiv-ta-tvortsiv-kursiv)
+- [Як перетворити стрім у вірусні кліпи](https://hookcut.com/blog/ua/peretvoryty-strim-u-virusni-klipy)
+- [Як додати субтитри до відео автоматично (повний гайд)](https://hookcut.com/blog/ua/dodaty-subtytry-do-video-avtomatychno)
+- [Маркетинг коротким відео для SaaS компаній](https://hookcut.com/blog/ua/marketynh-korotke-video-dlya-saas)
+- [Перепакування YouTube відео у різні формати](https://hookcut.com/blog/ua/perepakuvannya-youtube-video-u-rizni-formaty)
+- [Вірусний скор: як ІІ оцінює відео контент](https://hookcut.com/blog/ua/virusnyy-skor-yak-ii-otsinyuye-video)
+- [Короткі відео без показу обличчя](https://hookcut.com/blog/ua/korotki-video-bez-pokazu-oblychchya)
+- [Пакетне створення контенту за один день](https://hookcut.com/blog/ua/paketne-stvorennya-kontentu)
+- [Перепакування контенту для ріелторів 2026](https://hookcut.com/blog/ua/perepakuvannya-kontentu-dlya-rieltoriv)
+- [Як зростити LinkedIn за допомогою відео](https://hookcut.com/blog/ua/zrostyty-linkedin-za-dopomohoyu-video)
+- [TikTok vs Reels vs Shorts: яку платформу обрати](https://hookcut.com/blog/ua/tiktok-vs-reels-vs-shorts-2026)
+- [Перепакування онлайн-курсу у кліпи для соцмереж](https://hookcut.com/blog/ua/perepakuvannya-onlayn-kursu-u-klipy)
+- [Перепакування подкастів у короткі відео](https://hookcut.com/blog/ua/perepakuvannya-podkastiv-u-korotki-video)
+- [Відео стратегія для фінансових креаторів](https://hookcut.com/blog/ua/video-stratehiya-dlya-finansovykh-kreatoriv)
+- [Як використовувати ІІ для швидшого створення контенту](https://hookcut.com/blog/ua/vykorystovuvaty-ii-dlya-shvydshoho-stvorennya-kontentu)
+- [Короткі відео для фітнес-тренерів](https://hookcut.com/blog/ua/korotki-video-dlya-fitnes-treneriv)
+- [Перепакування конференції у 30 днів контенту](https://hookcut.com/blog/ua/perepakuvannya-konferentsiyi-u-30-dniv-kontentu)
+- [Як побудувати персональний бренд з коротким відео](https://hookcut.com/blog/ua/pobuduvaty-personalnyy-brend-z-korotkymy-video)
+- [Перепакування контенту для e-commerce](https://hookcut.com/blog/ua/perepakuvannya-kontentu-dlya-e-commerce)
+- [Від 0 до 10000 підписників з коротким відео](https://hookcut.com/blog/ua/vid-0-do-10000-pidpysnykiv-z-korotkymy-video)
+- [Перепакування розсилки у відеоконтент](https://hookcut.com/blog/ua/perepakuvannya-rozsylky-u-videokontent)
+- [Короткі відео для SaaS: більше реєстрацій](https://hookcut.com/blog/ua/korotki-video-dlya-saas-bilshe-reyestratsiy)
+- [Відео для просування онлайн-курсу](https://hookcut.com/blog/ua/video-dlya-prosuvannya-onlayn-kursu)
+- [Перепакування контенту для ріелторів (оновлено 2026)](https://hookcut.com/blog/ua/perepakuvannya-kontentu-dlya-rieltoriv-2026)
+- [Короткі відео без камери: 7 форматів](https://hookcut.com/blog/ua/korotki-video-bez-kamery)
+- [Перепакування відгуків і кейсів у відеоконтент](https://hookcut.com/blog/ua/perepakuvannya-vidhukiv-i-keysiv-u-videokontent)
+- [Відео стратегія для юристів та адвокатів](https://hookcut.com/blog/ua/video-stratehiya-dlya-yurystiv)
+- [Перепакування TED Talk у контент для соцмереж](https://hookcut.com/blog/ua/perepakuvannya-ted-talk-u-kontent)
+- [Короткі відео для неприбуткових організацій](https://hookcut.com/blog/ua/korotki-video-dlya-neprybutkovykh-orhanizatsiy)
+- [Короткі відео для локального бізнесу 2026](https://hookcut.com/blog/ua/korotki-video-dlya-lokalnoho-biznesu)
+- [HookCut: повний гайд для нових користувачів](https://hookcut.com/blog/ua/hookcut-povnyy-hayd-dlya-novykh-korystuvachiv)
+
+## Resources
+
+- [Sitemap](https://hookcut.com/sitemap.xml)
+- [Blog Index](https://hookcut.com/blog)
+- [llms.txt (summary)](https://hookcut.com/llms.txt)
+- [Terms of Service](https://hookcut.com/terms)
+- [Privacy Policy](https://hookcut.com/privacy)
