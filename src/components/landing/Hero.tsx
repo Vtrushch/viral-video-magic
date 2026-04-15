@@ -4,10 +4,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-const CYCLING_WORDS = ["podcast", "interview", "webinar", "vlog", "lecture"];
-
 const Hero = () => {
   const { t } = useTranslation();
+  const cyclingWords = t("landing.hero.cyclingWords", { returnObjects: true }) as string[];
   const [wordIndex, setWordIndex] = useState(0);
   const [visible, setVisible] = useState(true);
 
@@ -15,12 +14,12 @@ const Hero = () => {
     const interval = setInterval(() => {
       setVisible(false);
       setTimeout(() => {
-        setWordIndex((prev) => (prev + 1) % CYCLING_WORDS.length);
+        setWordIndex((prev) => (prev + 1) % cyclingWords.length);
         setVisible(true);
       }, 300);
     }, 2500);
     return () => clearInterval(interval);
-  }, []);
+  }, [cyclingWords.length]);
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden gradient-hero-bg" aria-label="HookCut hero">
@@ -41,15 +40,15 @@ const Hero = () => {
           className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black max-w-4xl mx-auto mb-8 leading-[1.05] opacity-0 animate-fade-in"
           style={{ animationDelay: "0.1s" }}
         >
-          <span className="text-foreground">Your next </span>
-          <span className="shimmer-text font-serif-display italic">viral short</span>
+          <span className="text-foreground">{t("landing.hero.heroYourNext")} </span>
+          <span className="shimmer-text font-serif-display italic">{t("landing.hero.heroViralShort")}</span>
           <br />
-          <span className="text-foreground">is hiding in your </span>
+          <span className="text-foreground">{t("landing.hero.heroIsHidingIn")} </span>
           <span
             className="text-primary inline-block min-w-[140px] sm:min-w-[200px] transition-all duration-300"
             style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(8px)" }}
           >
-            {CYCLING_WORDS[wordIndex]}
+            {cyclingWords[wordIndex]}
           </span>
         </h1>
 
