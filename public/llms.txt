@@ -1,5 +1,7 @@
 # HookCut
 
+> For a comprehensive version with all 150 articles and detailed feature descriptions, see [llms-full.txt](https://hookcut.com/llms-full.txt)
+
 HookCut is an AI-powered video repurposing tool that automatically clips long-form videos into short viral clips for TikTok, Instagram Reels, and YouTube Shorts. It adds word-by-word captions, applies face tracking for vertical reframing, and scores each clip by viral potential.
 
 HookCut helps content creators, coaches, podcasters, marketers, and businesses repurpose webinars, interviews, and YouTube videos into multiple short clips in 20–30 minutes instead of hours of manual editing.
