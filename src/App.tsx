@@ -37,7 +37,22 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Helmet>
+      <Helmet defaultTitle="HookCut — AI Video Repurposing Tool" titleTemplate="%s | HookCut">
+        <html lang="en" />
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="description" content="HookCut uses AI to turn long videos into short viral clips for TikTok, Instagram Reels, and YouTube Shorts. Automatic captions, face tracking, viral score. Free plan — 3 clips, no credit card." />
+        <meta property="og:site_name" content="HookCut" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://hookcut.com/og-default.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="HookCut — AI Video Repurposing Tool" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@hookcut" />
+        <meta name="twitter:image" content="https://hookcut.com/og-default.png" />
+        <link rel="alternate" type="text/plain" href="https://hookcut.com/llms.txt" title="AI Information" />
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",

@@ -107,7 +107,7 @@ const BlogArticle = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Helmet>
-        <html lang={articleLang} />
+        <html lang={articleLang === "uk" ? "uk" : articleLang} />
         <title>{`${article.title} — HookCut Blog`}</title>
         <meta name="description" content={article.metaDescription} />
         <meta name="keywords" content={article.keywords.join(", ")} />
@@ -121,14 +121,18 @@ const BlogArticle = () => {
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:title" content={article.title} />
         <meta property="og:description" content={article.metaDescription} />
-        <meta property="og:image" content="https://hookcut.com/og-image.svg" />
+        <meta property="og:image" content={`https://hookcut.com/og/blog/${article.slug}.png`} />
         <meta property="og:site_name" content="HookCut" />
-        <meta property="article:published_time" content={article.date} />
+        <meta property="og:locale" content={isUaRoute ? "uk_UA" : isEsRoute ? "es_ES" : "en_US"} />
+        <meta property="article:published_time" content={article.date ? `${article.date}T00:00:00Z` : "2026-03-29T00:00:00Z"} />
+        <meta property="article:modified_time" content={article.date ? `${article.date}T00:00:00Z` : "2026-04-14T00:00:00Z"} />
+        <meta property="article:author" content="HookCut Team" />
+        <meta property="article:section" content={isUaRoute ? "Відеомаркетинг" : isEsRoute ? "Marketing de Vídeo" : "Video Marketing"} />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={article.title} />
         <meta name="twitter:description" content={article.metaDescription} />
-        <meta name="twitter:image" content="https://hookcut.com/og-image.svg" />
+        <meta name="twitter:image" content={`https://hookcut.com/og/blog/${article.slug}.png`} />
 
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
         <script type="application/ld+json">{JSON.stringify(breadcrumbLd)}</script>

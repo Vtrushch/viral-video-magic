@@ -36,6 +36,19 @@ const Index = () => {
   return (
     <div className="min-h-screen dark">
       <Helmet>
+        <title>HookCut — AI Video Clipping Tool | Turn Long Videos into Viral Clips</title>
+        <meta name="description" content="HookCut uses AI to automatically clip long videos into short viral clips for TikTok, Instagram Reels, and YouTube Shorts. Auto captions, face tracking, viral score. Start free — 3 clips, no credit card." />
+        <link rel="canonical" href="https://hookcut.com/" />
+        <meta property="og:title" content="HookCut — AI Video Clipping Tool" />
+        <meta property="og:description" content="Turn any long video into 8-15 short viral clips in 20 minutes. AI captions, face tracking, viral score. Free plan available." />
+        <meta property="og:url" content="https://hookcut.com/" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://hookcut.com/og-home.png" />
+        <meta property="og:locale" content="en_US" />
+        <meta property="og:locale:alternate" content="es_ES" />
+        <meta property="og:locale:alternate" content="uk_UA" />
+        <meta name="twitter:title" content="HookCut — Turn Long Videos into Viral Clips" />
+        <meta name="twitter:description" content="AI-powered video clipping. Auto captions, face tracking, viral score. Free plan — 3 clips, no credit card." />
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
