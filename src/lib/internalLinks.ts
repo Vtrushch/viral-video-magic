@@ -534,6 +534,8 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     label: "гайд HookCut для нових користувачів",
   },
 ];
+
+/**
  * Injects up to MAX_LINKS_PER_ARTICLE contextual markdown links
  * into the article content string.
  *
