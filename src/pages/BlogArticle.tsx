@@ -46,36 +46,62 @@ const BlogArticle = () => {
   const canonicalUrl = `https://hookcut.com/blog/${article.slug}`;
   const articleLang = article.lang || "en";
 
+  const isEnArticle = !isUaRoute && !isEsRoute;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
+    ...(isEnArticle ? { "@id": `https://hookcut.com/blog/${article.slug}#article` } : {}),
     headline: article.title,
     description: article.metaDescription,
-    datePublished: article.date,
-    dateModified: article.date,
-    inLanguage: articleLang,
+    datePublished: article.date ? `${article.date}T00:00:00Z` : "2026-03-29T00:00:00Z",
+    dateModified: article.date ? `${article.date}T00:00:00Z` : "2026-04-14T00:00:00Z",
+    inLanguage: articleLang === "en" ? "en-US" : articleLang,
     author: {
       "@type": "Organization",
+      "@id": "https://hookcut.com/#organization",
       name: "HookCut Team",
-      url: "https://hookcut.com",
     },
     publisher: {
-      "@type": "Organization",
-      name: "HookCut",
-      url: "https://hookcut.com",
-      logo: {
-        "@type": "ImageObject",
-        url: "https://hookcut.com/og-image.svg",
-      },
+      "@id": "https://hookcut.com/#organization",
     },
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": canonicalUrl,
     },
+    ...(isEnArticle
+      ? {
+          isPartOf: {
+            "@type": "Blog",
+            "@id": "https://hookcut.com/blog",
+            name: "HookCut Blog",
+            publisher: { "@id": "https://hookcut.com/#organization" },
+          },
+          about: { "@type": "Thing", name: "Video repurposing and short-form video content" },
+          mentions: { "@id": "https://hookcut.com/#software" },
+        }
+      : {}),
+    image: {
+      "@type": "ImageObject",
+      url: `https://hookcut.com/og/blog/${article.slug}.png`,
+      width: 1200,
+      height: 630,
+    },
     keywords: article.keywords.join(", "),
-    image: "https://hookcut.com/og-image.svg",
     url: canonicalUrl,
   };
+
+  const breadcrumbLd = isEnArticle
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://hookcut.com" },
+          { "@type": "ListItem", position: 2, name: "Blog", item: "https://hookcut.com/blog" },
+          { "@type": "ListItem", position: 3, name: article.title, item: `https://hookcut.com/blog/${article.slug}` },
+        ],
+      }
+    : null;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
