@@ -51,7 +51,7 @@ const BlogArticle = () => {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    ...(isEnArticle ? { "@id": `https://hookcut.com/blog/${article.slug}#article` } : {}),
+    "@id": `https://hookcut.com/blog/${article.slug}#article`,
     headline: article.title,
     description: article.metaDescription,
     datePublished: article.date ? `${article.date}T00:00:00Z` : "2026-03-29T00:00:00Z",
@@ -69,18 +69,21 @@ const BlogArticle = () => {
       "@type": "WebPage",
       "@id": canonicalUrl,
     },
-    ...(isEnArticle
-      ? {
-          isPartOf: {
-            "@type": "Blog",
-            "@id": "https://hookcut.com/blog",
-            name: "HookCut Blog",
-            publisher: { "@id": "https://hookcut.com/#organization" },
-          },
-          about: { "@type": "Thing", name: "Video repurposing and short-form video content" },
-          mentions: { "@id": "https://hookcut.com/#software" },
-        }
-      : {}),
+    isPartOf: {
+      "@type": "Blog",
+      "@id": "https://hookcut.com/blog",
+      name: "HookCut Blog",
+      publisher: { "@id": "https://hookcut.com/#organization" },
+    },
+    about: {
+      "@type": "Thing",
+      name: isUaRoute
+        ? "Перепакування відео та короткий відеоконтент"
+        : isEsRoute
+          ? "Reutilización de vídeo y contenido de formato corto"
+          : "Video repurposing and short-form video content",
+    },
+    mentions: { "@id": "https://hookcut.com/#software" },
     image: {
       "@type": "ImageObject",
       url: `https://hookcut.com/og/blog/${article.slug}.png`,
@@ -91,17 +94,15 @@ const BlogArticle = () => {
     url: canonicalUrl,
   };
 
-  const breadcrumbLd = isEnArticle
-    ? {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: "https://hookcut.com" },
-          { "@type": "ListItem", position: 2, name: "Blog", item: "https://hookcut.com/blog" },
-          { "@type": "ListItem", position: 3, name: article.title, item: `https://hookcut.com/blog/${article.slug}` },
-        ],
-      }
-    : null;
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: isUaRoute ? "HookCut" : "Home", item: "https://hookcut.com" },
+      { "@type": "ListItem", position: 2, name: isUaRoute ? "Блог" : isEsRoute ? "Blog" : "Blog", item: "https://hookcut.com/blog" },
+      { "@type": "ListItem", position: 3, name: article.title, item: canonicalUrl },
+    ],
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
