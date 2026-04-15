@@ -8,6 +8,7 @@ import Footer from "@/components/landing/Footer";
 import { BLOG_ARTICLES } from "@/constants/blogArticles";
 import { ArrowLeft, Clock } from "lucide-react";
 import { injectInternalLinks } from "@/lib/internalLinks";
+import { UARelatedArticles } from "@/components/UARelatedArticles";
 
 const BlogArticle = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -30,7 +31,7 @@ const BlogArticle = () => {
     };
   }, [article]);
 
-  // Inject contextual internal links (EN articles only, memoized)
+  // Inject contextual internal links (EN and UA articles, memoized)
   const enrichedContent = useMemo(() => {
     if (!article) return "";
     if (article.lang === "es") return article.content;
@@ -138,6 +139,10 @@ const BlogArticle = () => {
           <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-a:text-primary prose-li:text-muted-foreground">
             <ReactMarkdown>{enrichedContent}</ReactMarkdown>
           </div>
+
+          {isUaRoute && slug && (
+            <UARelatedArticles currentSlug={slug} />
+          )}
         </article>
       </main>
 

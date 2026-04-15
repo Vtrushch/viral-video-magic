@@ -281,6 +281,258 @@ export const INTERNAL_LINK_MAP: InternalLinkEntry[] = [
     slug: "short-form-video-analytics-guide-2026",
     label: "short-form video analytics guide",
   },
+
+  // === UKRAINIAN (UA) ENTRIES ===
+  {
+    keywords: ["перетворити довге відео на кліпи", "нарізати відео на кліпи", "короткі кліпи з відео"],
+    slug: "ua/peretvoriti-dovge-video-na-klipy",
+    label: "гайд як нарізати довге відео на кліпи",
+  },
+  {
+    keywords: ["автоматичні субтитри"],
+    slug: "ua/avtomatychni-subtytry-dlya-video",
+    label: "гайд по автоматичних субтитрах",
+  },
+  {
+    keywords: ["субтитри для відео", "додати субтитри автоматично"],
+    slug: "ua/dodaty-subtytry-do-video-avtomatychno",
+    label: "як додати субтитри автоматично",
+  },
+  {
+    keywords: ["hookcut vs opus clip", "альтернатива opus clip"],
+    slug: "ua/hookcut-vs-opus-clip",
+    label: "порівняння HookCut vs Opus Clip",
+  },
+  {
+    keywords: ["youtube shorts з довгих відео", "зробити youtube shorts"],
+    slug: "ua/youtube-shorts-z-dovgykh-video",
+    label: "гайд YouTube Shorts з довгих відео",
+  },
+  {
+    keywords: ["перепакувати подкаст", "подкаст у короткі відео"],
+    slug: "ua/perepakuvaty-podkast-u-korotki-video",
+    label: "гайд перепакування подкасту",
+  },
+  {
+    keywords: ["instagram reels з довгих відео", "зробити reels"],
+    slug: "ua/instagram-reels-z-dovgykh-video",
+    label: "гайд Instagram Reels з довгих відео",
+  },
+  {
+    keywords: ["стилі субтитрів тікток", "hormozi субтитри"],
+    slug: "ua/styli-subtyriv-dlya-tiktok",
+    label: "стилі субтитрів для TikTok",
+  },
+  {
+    keywords: ["змінити формат відео 9:16", "вертикальний формат відео", "конвертувати відео для тікток"],
+    slug: "ua/zminyty-format-video-dlya-tiktok-reels-shorts",
+    label: "гайд зміни формату відео",
+  },
+  {
+    keywords: ["face tracking відео", "автоматичний рекадринг"],
+    slug: "ua/face-tracking-vertykalne-video",
+    label: "face tracking для вертикального відео",
+  },
+  {
+    keywords: ["highlight reel", "найкращі моменти відео"],
+    slug: "ua/stvorty-highlight-reel-z-dovgogo-video",
+    label: "гайд highlight reel",
+  },
+  {
+    keywords: ["штучний інтелект для контенту", "ші для creators"],
+    slug: "ua/shtuchnyi-intelekt-dlya-stvorennya-kontentu",
+    label: "ШІ для створення контенту",
+  },
+  {
+    keywords: ["відеоконтент для коучів", "відео для авторів курсів"],
+    slug: "ua/videokontent-dlya-kouchiv-ta-avtoriv-kursiv",
+    label: "відеоконтент для коучів",
+  },
+  {
+    keywords: ["перепакувати вебінар", "кліпи з вебінару"],
+    slug: "ua/perepakuvaty-vebinar-u-klipy-dlya-socmerezh",
+    label: "гайд перепакування вебінару",
+  },
+  {
+    keywords: ["10000 підписників", "набрати підписників тікток"],
+    slug: "ua/yak-nabrary-10000-pidpysnykiv-korotki-video",
+    label: "гайд набору 10 000 підписників",
+  },
+  {
+    keywords: ["пакетне створення контенту", "batch recording"],
+    slug: "ua/pakentne-stvorennya-videokontetu",
+    label: "гайд пакетного створення контенту",
+  },
+  {
+    keywords: ["рости на youtube", "youtube shorts стратегія"],
+    slug: "ua/rosty-na-youtube-cherez-korotki-video",
+    label: "стратегія зростання на YouTube",
+  },
+  {
+    keywords: ["відео для фітнес тренера", "фітнес контент тікток"],
+    slug: "ua/korotki-video-dlya-fitnes-treneriv",
+    label: "відео для фітнес-тренерів",
+  },
+  {
+    keywords: ["особистий бренд відео", "personal branding відео"],
+    slug: "ua/osobystyi-brend-cherez-korotki-video",
+    label: "особистий бренд через відео",
+  },
+  {
+    keywords: ["відео для агентів нерухомості", "ріелтор тікток"],
+    slug: "ua/videokontent-dlya-agentiv-neruhomosti",
+    label: "відео для агентів нерухомості",
+  },
+  {
+    keywords: ["tiktok vs reels vs shorts", "яку платформу обрати"],
+    slug: "ua/tiktok-reels-shorts-yaku-platformu-obraty",
+    label: "порівняння TikTok vs Reels vs Shorts",
+  },
+  {
+    keywords: ["відеомаркетинг saas", "відео для saas компанії"],
+    slug: "ua/videomarceting-dlya-saas-kompanii",
+    label: "відеомаркетинг для SaaS",
+  },
+  {
+    keywords: ["перепакувати youtube відео", "один відео багато форматів"],
+    slug: "ua/perepakuvaty-youtube-video-u-rizni-formaty",
+    label: "перепакування YouTube відео",
+  },
+  {
+    keywords: ["відео без обличчя", "faceless відео"],
+    slug: "ua/korotki-video-bez-poyavy-v-kadri",
+    label: "відео без появи в кадрі",
+  },
+  {
+    keywords: ["аналітика коротких відео", "completion rate відео"],
+    slug: "ua/analityka-korotkykh-video-metryki",
+    label: "аналітика коротких відео",
+  },
+  {
+    keywords: ["відео для юристів", "юридичний маркетинг відео"],
+    slug: "ua/videokontent-dlya-yurystiv-advokativ",
+    label: "відеоконтент для юристів",
+  },
+  {
+    keywords: ["перепакувати конференційний виступ", "speaking reel кліпи"],
+    slug: "ua/perepakuvaty-vystup-konferentsiya-kontent",
+    label: "перепакування конференційного виступу",
+  },
+  {
+    keywords: ["відео для інтернет магазину", "e-commerce відеоконтент"],
+    slug: "ua/videokontent-dlya-internet-magazynu-klipy",
+    label: "відео для інтернет-магазину",
+  },
+  {
+    keywords: ["перепакувати розсилку у відео", "newsletter у кліпи"],
+    slug: "ua/perepakuvaty-rozsilku-u-video",
+    label: "перепакування розсилки у відео",
+  },
+  {
+    keywords: ["відео для місцевого бізнесу", "локальний бізнес тікток"],
+    slug: "ua/korotki-video-dlya-mistsevogo-biznesu",
+    label: "відео для місцевого бізнесу",
+  },
+  {
+    keywords: ["відгуки клієнтів відео", "кейси клієнтів кліпи"],
+    slug: "ua/perepakuvaty-vidhuky-klientiv-video",
+    label: "перепакування відгуків клієнтів",
+  },
+  {
+    keywords: ["велнес коуч відео", "відео для нутриціолога"],
+    slug: "ua/videokontent-dlya-koucha-zdorovya-velnes",
+    label: "відео для велнес коучів",
+  },
+  {
+    keywords: ["linkedin відео зростання", "b2b відеоконтент linkedin"],
+    slug: "ua/zrostannya-linkedin-cherez-korotki-video",
+    label: "зростання LinkedIn через відео",
+  },
+  {
+    keywords: ["відео для нко", "некомерційна організація відео"],
+    slug: "ua/videokontent-dlya-nko-nekomertsiyni-orhanizatsiyi",
+    label: "відео для НКО",
+  },
+  {
+    keywords: ["ted talk у кліпи", "перепакувати ted talk"],
+    slug: "ua/ted-talk-speaking-reel-kontent-sotsmerezhi",
+    label: "TED Talk у контент для соцмереж",
+  },
+  {
+    keywords: ["фінансовий контент відео", "особисті фінанси тікток"],
+    slug: "ua/videokontent-osobysti-finansy",
+    label: "відео про особисті фінанси",
+  },
+  {
+    keywords: ["система перепакування контенту", "контент на автопілоті"],
+    slug: "ua/systema-perepakuvannya-kontentu-avtopilot",
+    label: "система перепакування контенту",
+  },
+  {
+    keywords: ["просування онлайн курсу відео", "продавати курс через відео"],
+    slug: "ua/videokontent-prosuvanya-onlayn-kursu",
+    label: "просування онлайн-курсу через відео",
+  },
+  {
+    keywords: ["як вирости на тікток", "тікток з нуля"],
+    slug: "ua/yak-vyrosty-na-tiktok-z-nulya",
+    label: "як вирости на TikTok з нуля",
+  },
+  {
+    keywords: ["фінансовий коуч відео", "відео для фінансового консультанта"],
+    slug: "ua/videokontent-finansovyi-kouch-konsultant",
+    label: "відео для фінансових коучів",
+  },
+  {
+    keywords: ["перепакувати лайв стрім", "кліпи зі стріму"],
+    slug: "ua/perepakuvaty-lajv-strim-u-klipy",
+    label: "перепакування лайв-стріму",
+  },
+  {
+    keywords: ["відеомаркетинг для агентств", "агентство відеоконтент клієнти"],
+    slug: "ua/videomarceting-dlya-ahentstv-masshtabuvannya",
+    label: "відеомаркетинг для агентств",
+  },
+  {
+    keywords: ["відео для вчителів", "edutok контент"],
+    slug: "ua/korotki-video-dlya-vchyteliv-osvita",
+    label: "відео для вчителів та освіти",
+  },
+  {
+    keywords: ["вірусний хук відео", "перші 3 секунди відео"],
+    slug: "ua/virusnyy-khuk-dlya-korotkoho-video",
+    label: "вірусний хук для відео",
+  },
+  {
+    keywords: ["відеоконтент для it компанії", "tech контент linkedin"],
+    slug: "ua/videokontent-dlya-it-tech-kompanii",
+    label: "відео для IT компаній",
+  },
+  {
+    keywords: ["контент план місяць", "місячний план публікацій"],
+    slug: "ua/kontent-plan-korotki-video-misyats",
+    label: "контент-план на місяць",
+  },
+  {
+    keywords: ["відео для психолога", "mental health контент"],
+    slug: "ua/videokontent-dlya-psykholohiv-mental-health",
+    label: "відео для психологів",
+  },
+  {
+    keywords: ["монетизація коротких відео", "заробити на тікток reels"],
+    slug: "ua/monetyzatsiya-korotkykh-video-2026",
+    label: "монетизація коротких відео",
+  },
+  {
+    keywords: ["відео для пошуку роботи", "кар'єрний контент відео"],
+    slug: "ua/videokontent-dlya-karyery-poshuk-roboty",
+    label: "відео для кар'єри",
+  },
+  {
+    keywords: ["hookcut гайд", "як користуватись hookcut"],
+    slug: "ua/hookcut-povnyy-hayd-dlya-novykh-korystuvachiv",
+    label: "гайд HookCut для нових користувачів",
+  },
 ];
 
 /**
