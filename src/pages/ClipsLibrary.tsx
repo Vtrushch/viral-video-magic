@@ -24,9 +24,11 @@ import {
   Play,
   Eye,
   Trash2,
+  CalendarPlus,
 } from "lucide-react";
 import HighlightReelCard from "@/components/dashboard/HighlightReelCard";
 import ClipPreviewModal from "@/components/dashboard/ClipPreviewModal";
+import SchedulePostDialog from "@/components/calendar/SchedulePostDialog";
 import { useTranslation } from "react-i18next";
 
 type MainTab = "clips" | "reels";
@@ -45,6 +47,7 @@ const ClipsLibrary = () => {
   const [deletingClipId, setDeletingClipId] = useState<string | null>(null);
   const [reelCreditDialog, setReelCreditDialog] = useState<any | null>(null);
   const [reelCreditLoading, setReelCreditLoading] = useState(false);
+  const [schedulingClip, setSchedulingClip] = useState<Tables<"clips"> | null>(null);
   const { credits, refetch: refetchCredits } = useCredits();
 
   const SORT_OPTIONS: { id: SortBy; label: string }[] = [
@@ -430,6 +433,14 @@ const ClipsLibrary = () => {
                             <span className="sm:hidden">{t("clips.saveVideo")}</span>
                             <span className="hidden sm:inline">{t("common.download")}</span>
                           </button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 min-h-[44px] px-2 text-xs text-primary hover:text-primary hover:bg-primary/10"
+                            onClick={() => setSchedulingClip(clip)}
+                          >
+                            <CalendarPlus className="w-3 h-3 sm:mr-1" /><span className="hidden sm:inline">{t("calendar.schedule")}</span>
+                          </Button>
                           {/* Delete */}
                           {confirmDeleteClipId === clip.id ? (
                             <div className="flex items-center gap-1">
@@ -527,6 +538,13 @@ const ClipsLibrary = () => {
         creditsRemaining={credits?.remaining ?? 0}
         loading={reelCreditLoading}
         plan={credits?.plan}
+      />
+
+      {/* Schedule Post Dialog */}
+      <SchedulePostDialog
+        open={!!schedulingClip}
+        onClose={() => setSchedulingClip(null)}
+        clip={schedulingClip ? { id: schedulingClip.id, title: schedulingClip.title } : null}
       />
     </div>
   );

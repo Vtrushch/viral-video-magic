@@ -16,6 +16,31 @@ import time
 YT_FORMAT_H264 = "bv*[vcodec^=avc1][height<=1080]+ba/b[height<=1080]/bv*[vcodec^=avc1]+ba/b"
 YT_FORMAT_ANY = "bv*[height<=1080]+ba/b[height<=1080]/bv*+ba/b"
 
+# Supported URL-import platforms (yt-dlp handles all of them).
+# Order matters: first regex match wins.
+IMPORT_URL_PATTERNS = [
+    ("youtube",     r'https?://((www|m)\.)?(youtube\.com|youtu\.be)/'),
+    ("tiktok",      r'https?://((www|vm|vt|m)\.)?tiktok\.com/'),
+    ("instagram",   r'https?://(www\.)?instagram\.com/(reel|reels|p|tv|share)/'),
+    ("facebook",    r'https?://((www|m|web)\.)?(facebook\.com|fb\.watch)/'),
+    ("twitter",     r'https?://((www|mobile)\.)?(twitter\.com|x\.com)/\w+/status/'),
+    ("vimeo",       r'https?://(www\.)?vimeo\.com/\d+'),
+    ("twitch",      r'https?://(www\.)?twitch\.tv/videos/\d+'),
+    ("rumble",      r'https?://(www\.)?rumble\.com/'),
+    ("dailymotion", r'https?://(www\.)?dailymotion\.com/video/'),
+    ("loom",        r'https?://(www\.)?loom\.com/share/'),
+]
+
+
+def detect_import_platform(url: str):
+    """Return platform key for a video URL, or None if unsupported."""
+    import re as _re
+    u = (url or "").strip()
+    for name, pattern in IMPORT_URL_PATTERNS:
+        if _re.match(pattern, u):
+            return name
+    return None
+
 # ============================================
 # MODAL APP SETUP
 # ============================================
@@ -82,7 +107,7 @@ secrets = [
     modal.Secret.from_name("groq-secret"),        # GROQ_API_KEY
     modal.Secret.from_name("cloudflare-r2"),      # R2_ENDPOINT, R2_BUCKET_NAME, CLOUDFLARE_* etc
     modal.Secret.from_name("supabase-secret"),    # SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
-    modal.Secret.from_name("youtube-cookies"),    # YOUTUBE_COOKIES_B64
+    modal.Secret.from_name("youtube-cookies"),    # YOUTUBE_COOKIES_B64 + optional: YTDLP_PROXY, COBALT_API_URL/KEY, INSTAGRAM/TIKTOK/FACEBOOK/TWITTER_COOKIES_B64
     modal.Secret.from_name("stripe-secret"),      # STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_*
     modal.Secret.from_name("resend-secret"),      # RESEND_API_KEY
 ]
@@ -2227,11 +2252,14 @@ def trigger_analysis(video_id: str):
     scaledown_window=120,          # Keep warm 2 min
     max_containers=10,             # 10 parallel YouTube downloads
 )
-def download_youtube_and_analyze(youtube_url: str, video_id: str, user_id: str):
-    """Download YouTube video, upload to Supabase Storage, then trigger analysis"""
+def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platform: str = ""):
+    """Download a video from any supported platform (YouTube, TikTok, Instagram,
+    X/Twitter, Facebook, Vimeo, Twitch, Rumble, Dailymotion, Loom),
+    upload to Supabase Storage, then wait for user to configure analysis."""
     import requests as req
 
-    print(f"🎬 YouTube import: {youtube_url}")
+    platform = platform or detect_import_platform(source_url) or "generic"
+    print(f"🎬 URL import [{platform}]: {source_url}")
     print(f"📦 Video ID: {video_id}, User: {user_id}")
 
     supabase = init_supabase()
@@ -2241,141 +2269,104 @@ def download_youtube_and_analyze(youtube_url: str, video_id: str, user_id: str):
         # Update status
         supabase.table("videos").update({"status": "downloading"}).eq("id", video_id).execute()
 
-        # Download with yt-dlp (try multiple strategies)
+        # Download with yt-dlp (platform-aware strategy chain)
         video_path = f"/tmp/yt_{video_id}.mp4"
-        print("📥 Downloading from YouTube...")
+        print(f"📥 Downloading from {platform}...")
 
-        # Write cookies file from env
-        cookies_path = f"/tmp/yt_cookies_{video_id}.txt"
-        cookies_b64 = os.environ.get("YOUTUBE_COOKIES_B64", "")
+        # Optional rotating residential/ISP proxy — the reliable fix for YouTube
+        # blocking datacenter IPs (Modal egress). Set YTDLP_PROXY inside the
+        # `youtube-cookies` Modal secret, e.g. http://user:pass@gate.host:7777
+        proxy = os.environ.get("YTDLP_PROXY", "").strip()
+        proxy_args = ["--proxy", proxy] if proxy else []
+        if proxy:
+            print("🌐 Proxy configured for downloads")
+        else:
+            print("⚠️ No YTDLP_PROXY configured — YouTube may bot-block Modal's datacenter IPs")
+
+        # Per-platform cookies (Netscape format, base64-encoded in Modal secrets)
+        cookie_env_by_platform = {
+            "youtube": "YOUTUBE_COOKIES_B64",
+            "instagram": "INSTAGRAM_COOKIES_B64",
+            "tiktok": "TIKTOK_COOKIES_B64",
+            "facebook": "FACEBOOK_COOKIES_B64",
+            "twitter": "TWITTER_COOKIES_B64",
+        }
+        cookies_path = None
+        cookies_b64 = os.environ.get(cookie_env_by_platform.get(platform, ""), "")
         if cookies_b64:
             import base64
+            cookies_path = f"/tmp/imp_cookies_{video_id}.txt"
             with open(cookies_path, "wb") as cf:
                 cf.write(base64.b64decode(cookies_b64))
-            print("🍪 YouTube cookies loaded")
+            print(f"🍪 {platform} cookies loaded")
         else:
-            cookies_path = None
-            print("⚠️ No YouTube cookies configured")
+            print(f"⚠️ No {platform} cookies configured")
 
         # Build cookie args
         cookie_args = ["--cookies", cookies_path] if cookies_path else []
 
-        # Strategy 1: yt-dlp with cookies + best quality
-        # Since yt-dlp 2025.11.12, a JS runtime (deno) is required for YouTube
-        # Deno is the recommended runtime — sandboxed, single binary, enabled by default
-        js_runtime_args = []  # deno is enabled by default, no need to specify
-        ejs_args = ["--remote-components", "ejs:github"]  # download EJS solver from GitHub
-
-        # First run a diagnostic to see what formats are available
-        diag_cmd = [
-            "yt-dlp", *ejs_args,
-            "--list-formats", "--no-playlist",
+        # Args shared by every strategy. 2000M cap matches the 5GB/2h product
+        # limit closely enough while protecting the 4GB container.
+        ejs_args = ["--remote-components", "ejs:github"]  # EJS challenge solver (PO tokens / n-sig) via Deno
+        common_args = [
+            "--merge-output-format", "mp4",
+            "--no-playlist",
+            "--max-filesize", "2000M",
             "--no-check-certificates",
-            *cookie_args,
-            youtube_url,
+            "--socket-timeout", "30",
+            "--retries", "3",
+            *proxy_args,
+            "-o", video_path,
+            source_url,
         ]
-        diag_result = subprocess.run(diag_cmd, capture_output=True, text=True, timeout=60)
-        print(f"📋 Available formats:\n{(diag_result.stdout or '')[-800:]}")
-        if diag_result.stderr:
-            print(f"📋 Diag stderr:\n{(diag_result.stderr or '')[-400:]}")
 
-        # android_vr does NOT support cookies, so we must NOT pass cookies with it
-        # web/web_safari DO support cookies but need PO token / EJS
-        yt_dlp_strategies = [
-            # Strategy 1: cookies + EJS + web_creator client + H.264
-            [
-                "yt-dlp",
-                *ejs_args,
-                "-f", YT_FORMAT_H264,
-                "--merge-output-format", "mp4",
-                "--no-playlist",
-                "--max-filesize", "500M",
+        if platform == "youtube":
+            # Diagnostic: list available formats (shows SABR/bot-check state in logs)
+            diag_cmd = [
+                "yt-dlp", *ejs_args,
+                "--list-formats", "--no-playlist",
+                "--no-check-certificates",
+                *proxy_args,
                 *cookie_args,
-                "--no-check-certificates",
-                "--socket-timeout", "30",
-                "--retries", "3",
-                "--extractor-args", "youtube:player_client=web_creator",
-                "-o", video_path,
-                youtube_url,
-            ],
-            # Strategy 2: cookies + EJS + default client + H.264
-            [
-                "yt-dlp",
-                *ejs_args,
-                "-f", YT_FORMAT_H264,
-                "--merge-output-format", "mp4",
-                "--no-playlist",
-                "--max-filesize", "500M",
-                *cookie_args,
-                "--no-check-certificates",
-                "--socket-timeout", "30",
-                "--retries", "3",
-                "-o", video_path,
-                youtube_url,
-            ],
-            # Strategy 3: cookies + EJS + missing_pot + H.264
-            [
-                "yt-dlp",
-                *ejs_args,
-                "-f", YT_FORMAT_H264,
-                "--merge-output-format", "mp4",
-                "--no-playlist",
-                "--max-filesize", "500M",
-                *cookie_args,
-                "--no-check-certificates",
-                "--socket-timeout", "30",
-                "--retries", "3",
-                "--extractor-args", "youtube:formats=missing_pot",
-                "-o", video_path,
-                youtube_url,
-            ],
-            # Strategy 4: cookies + EJS + H.264 720p (YouTube almost always has 720p H.264)
-            [
-                "yt-dlp",
-                *ejs_args,
-                "-f", "136+ba/bv*[vcodec^=avc1][height<=720]+ba/b[height<=720]",
-                "--merge-output-format", "mp4",
-                "--no-playlist",
-                "--max-filesize", "500M",
-                *cookie_args,
-                "--no-check-certificates",
-                "--socket-timeout", "30",
-                "--retries", "3",
-                "-o", video_path,
-                youtube_url,
-            ],
-            # Strategy 5: cookies + EJS + ANY codec (may get AV1 — will transcode)
-            [
-                "yt-dlp",
-                *ejs_args,
-                "-f", YT_FORMAT_ANY,
-                "--merge-output-format", "mp4",
-                "--no-playlist",
-                "--max-filesize", "500M",
-                *cookie_args,
-                "--no-check-certificates",
-                "--socket-timeout", "30",
-                "--retries", "3",
-                "--extractor-args", "youtube:player_client=web_creator",
-                "-o", video_path,
-                youtube_url,
-            ],
-            # Strategy 6: NO cookies, mweb client — sometimes works without auth
-            [
-                "yt-dlp",
-                *ejs_args,
-                "-f", "bv*+ba/b",
-                "--merge-output-format", "mp4",
-                "--no-playlist",
-                "--max-filesize", "500M",
-                "--no-check-certificates",
-                "--socket-timeout", "30",
-                "--retries", "3",
-                "--extractor-args", "youtube:player_client=mweb",
-                "-o", video_path,
-                youtube_url,
-            ],
-        ]
+                source_url,
+            ]
+            diag_result = subprocess.run(diag_cmd, capture_output=True, text=True, timeout=90)
+            print(f"📋 Available formats:\n{(diag_result.stdout or '')[-800:]}")
+            if diag_result.stderr:
+                print(f"📋 Diag stderr:\n{(diag_result.stderr or '')[-400:]}")
+
+            # June 2026 reality: web_creator client is login-only/removed, SABR is
+            # enforced aggressively, and public Cobalt/Invidious/Piped instances are
+            # dead. tv/web_safari survive SABR best; android_vr rejects cookies.
+            yt_dlp_strategies = [
+                # Strategy 1: default clients (tv,web_safari,web) + cookies + EJS + H.264
+                ["yt-dlp", *ejs_args, "-f", YT_FORMAT_H264, *cookie_args, *common_args],
+                # Strategy 2: tv client + cookies + EJS + H.264
+                ["yt-dlp", *ejs_args, "-f", YT_FORMAT_H264, *cookie_args,
+                 "--extractor-args", "youtube:player_client=tv", *common_args],
+                # Strategy 3: web_safari client + cookies + EJS + H.264
+                ["yt-dlp", *ejs_args, "-f", YT_FORMAT_H264, *cookie_args,
+                 "--extractor-args", "youtube:player_client=web_safari", *common_args],
+                # Strategy 4: mweb client + missing_pot formats + cookies + EJS
+                ["yt-dlp", *ejs_args, "-f", YT_FORMAT_H264, *cookie_args,
+                 "--extractor-args", "youtube:player_client=mweb;formats=missing_pot", *common_args],
+                # Strategy 5: android_vr WITHOUT cookies (client rejects them) + any codec
+                ["yt-dlp", *ejs_args, "-f", YT_FORMAT_ANY,
+                 "--extractor-args", "youtube:player_client=android_vr", *common_args],
+                # Strategy 6: anonymous + missing_pot + any codec (last resort)
+                ["yt-dlp", *ejs_args, "-f", YT_FORMAT_ANY,
+                 "--extractor-args", "youtube:formats=missing_pot", *common_args],
+            ]
+        else:
+            # Non-YouTube platforms are far less hostile to server IPs
+            yt_dlp_strategies = [
+                # Strategy 1: prefer H.264 ≤1080p
+                ["yt-dlp", "-f", YT_FORMAT_H264, *cookie_args, *common_args],
+                # Strategy 2: any codec ≤1080p
+                ["yt-dlp", "-f", YT_FORMAT_ANY, *cookie_args, *common_args],
+                # Strategy 3: single best pre-merged file
+                ["yt-dlp", "-f", "b", *cookie_args, *common_args],
+            ]
 
         downloaded = False
         last_error = ""
@@ -2398,135 +2389,70 @@ def download_youtube_and_analyze(youtube_url: str, video_id: str, user_id: str):
             last_error = (result.stderr or result.stdout or "")[-500:]
             print(f"⚠️ Strategy {i+1} failed: {last_error[:200]}...")
 
-        # Fallback APIs (no cookies needed, no bot detection)
+        # Fallback: cobalt-compatible API (self-hosted or paid, env-configured).
+        # Public Cobalt/Invidious/Piped instances all died or went key-only by
+        # mid-2026, so hardcoded lists are useless — configure your own via
+        # COBALT_API_URL (+ optional COBALT_API_KEY) in the youtube-cookies secret.
         if not downloaded:
-            import re
-            video_id_match = re.search(r'(?:v=|youtu\.be/)([\w-]{11})', youtube_url)
-            if video_id_match:
-                yt_video_id = video_id_match.group(1)
-
-                # Fallback A: Cobalt API instances
-                # Cobalt is an open-source media downloader — self-hosted instances don't need cookies
-                # POST / with JSON body, returns {status: "tunnel"/"redirect", url: "..."}
-                cobalt_instances = [
-                    "https://cobalt.api.timelessnesses.me",
-                    "https://cobalt.tskau.team",
-                    "https://cobalt-api.ayo.tf",
-                ]
-                for cobalt_url in cobalt_instances:
-                    try:
-                        print(f"🔄 Trying Cobalt: {cobalt_url}...")
-                        cobalt_resp = req.post(
-                            f"{cobalt_url}/",
-                            json={
-                                "url": youtube_url,
-                                "videoQuality": "1080",
-                                "youtubeVideoCodec": "h264",
-                                "downloadMode": "auto",
-                            },
-                            headers={
-                                "Accept": "application/json",
-                                "Content-Type": "application/json",
-                            },
-                            timeout=30,
-                        )
-                        if cobalt_resp.status_code == 200:
-                            cobalt_data = cobalt_resp.json()
-                            cobalt_status = cobalt_data.get("status", "")
-                            download_url = cobalt_data.get("url", "")
-
-                            if cobalt_status in ("tunnel", "redirect") and download_url:
-                                print(f"  📥 Downloading from Cobalt ({cobalt_status})...")
-                                vid_resp = req.get(download_url, timeout=300, stream=True)
-                                vid_resp.raise_for_status()
-                                with open(video_path, "wb") as f:
-                                    for chunk in vid_resp.iter_content(chunk_size=1024*1024):
-                                        f.write(chunk)
-                                if os.path.exists(video_path) and os.path.getsize(video_path) > 10000:
-                                    downloaded = True
-                                    print(f"✅ Cobalt download worked! File: {os.path.getsize(video_path) / (1024*1024):.1f} MB")
-                                    break
-                            else:
-                                print(f"  ⚠️ Cobalt returned status={cobalt_status}: {cobalt_data.get('error', {}).get('code', 'unknown')}")
+            cobalt_api = os.environ.get("COBALT_API_URL", "").strip().rstrip("/")
+            cobalt_key = os.environ.get("COBALT_API_KEY", "").strip()
+            if cobalt_api:
+                try:
+                    print(f"🔄 Trying Cobalt API: {cobalt_api}...")
+                    cobalt_headers = {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json",
+                    }
+                    if cobalt_key:
+                        cobalt_headers["Authorization"] = f"Api-Key {cobalt_key}"
+                    cobalt_resp = req.post(
+                        f"{cobalt_api}/",
+                        json={
+                            "url": source_url,
+                            "videoQuality": "1080",
+                            "youtubeVideoCodec": "h264",
+                            "downloadMode": "auto",
+                        },
+                        headers=cobalt_headers,
+                        timeout=30,
+                    )
+                    if cobalt_resp.status_code == 200:
+                        cobalt_data = cobalt_resp.json()
+                        cobalt_status = cobalt_data.get("status", "")
+                        download_url = cobalt_data.get("url", "")
+                        if cobalt_status in ("tunnel", "redirect") and download_url:
+                            print(f"  📥 Downloading from Cobalt ({cobalt_status})...")
+                            vid_resp = req.get(download_url, timeout=600, stream=True)
+                            vid_resp.raise_for_status()
+                            with open(video_path, "wb") as f:
+                                for chunk in vid_resp.iter_content(chunk_size=1024*1024):
+                                    f.write(chunk)
+                            if os.path.exists(video_path) and os.path.getsize(video_path) > 10000:
+                                downloaded = True
+                                print(f"✅ Cobalt download worked! File: {os.path.getsize(video_path) / (1024*1024):.1f} MB")
                         else:
-                            print(f"  ⚠️ Cobalt {cobalt_url} returned HTTP {cobalt_resp.status_code}")
-                    except Exception as ce:
-                        print(f"  ⚠️ Cobalt {cobalt_url} failed: {str(ce)[:150]}")
-                        continue
-
-            # Fallback B: Invidious API instances
-            if not downloaded and video_id_match:
-                invidious_instances = [
-                    "https://inv.nadeko.net",
-                    "https://invidious.nerdvpn.de",
-                    "https://invidious.privacyredirect.com",
-                ]
-                for inv_url in invidious_instances:
-                    try:
-                        print(f"🔄 Trying Invidious: {inv_url}...")
-                        inv_resp = req.get(f"{inv_url}/api/v1/videos/{yt_video_id}", timeout=15)
-                        if inv_resp.status_code == 200:
-                            inv_data = inv_resp.json()
-                            # Find best adaptive format (H.264, <= 1080p, has audio)
-                            formats = inv_data.get("formatStreams", [])
-                            best = None
-                            for fmt in formats:
-                                h = int(fmt.get("resolution", "0p").replace("p", "") or 0)
-                                if h <= 1080 and (best is None or h > int(best.get("resolution", "0p").replace("p", "") or 0)):
-                                    best = fmt
-                            if best and best.get("url"):
-                                print(f"  📥 Downloading from Invidious ({best.get('resolution', '?')})...")
-                                vid_resp = req.get(best["url"], timeout=300, stream=True)
-                                with open(video_path, "wb") as f:
-                                    for chunk in vid_resp.iter_content(chunk_size=1024*1024):
-                                        f.write(chunk)
-                                if os.path.exists(video_path) and os.path.getsize(video_path) > 10000:
-                                    downloaded = True
-                                    print(f"✅ Invidious download worked!")
-                                    break
-                    except Exception as ie:
-                        print(f"  ⚠️ Invidious {inv_url} failed: {str(ie)[:150]}")
-                        continue
-
-            # Fallback C: Piped API instances (last resort)
-            if not downloaded and video_id_match:
-                piped_instances = [
-                    "https://pipedapi.kavin.rocks",
-                    "https://pipedapi.r4fo.com",
-                    "https://pipedapi.in.projectsegfau.lt",
-                ]
-                for piped_url in piped_instances:
-                    try:
-                        print(f"🔄 Trying Piped: {piped_url}...")
-                        resp = req.get(f"{piped_url}/streams/{yt_video_id}", timeout=15)
-                        if resp.status_code == 200:
-                            data = resp.json()
-                            streams = data.get("videoStreams", [])
-                            best = None
-                            for s in streams:
-                                if s.get("videoOnly", True):
-                                    continue
-                                h = s.get("height", 0)
-                                if h <= 1080 and (best is None or h > best.get("height", 0)):
-                                    best = s
-                            if not best and streams:
-                                best = streams[0]
-                            if best and best.get("url"):
-                                print(f"  📥 Downloading from Piped ({best.get('quality', '?')})...")
-                                vid_resp = req.get(best["url"], timeout=120, stream=True)
-                                with open(video_path, "wb") as f:
-                                    for chunk in vid_resp.iter_content(chunk_size=1024*1024):
-                                        f.write(chunk)
-                                if os.path.exists(video_path) and os.path.getsize(video_path) > 10000:
-                                    downloaded = True
-                                    print(f"✅ Piped download worked!")
-                                    break
-                    except Exception as pe:
-                        print(f"  ⚠️ Piped {piped_url} failed: {pe}")
-                        continue
+                            print(f"  ⚠️ Cobalt returned status={cobalt_status}: {str(cobalt_data.get('error', ''))[:120]}")
+                    else:
+                        print(f"  ⚠️ Cobalt API returned HTTP {cobalt_resp.status_code}")
+                except Exception as ce:
+                    print(f"  ⚠️ Cobalt API failed: {str(ce)[:150]}")
+            else:
+                print("ℹ️ No COBALT_API_URL configured — skipping API fallback")
 
         if not downloaded:
-            raise RuntimeError(f"All download strategies failed. Last error: {last_error}")
+            if platform == "youtube":
+                user_hint = (
+                    "YouTube is currently blocking automated server downloads for this video "
+                    "(bot detection). Try again in a few minutes — or download the video "
+                    "yourself and upload the file directly, which always works."
+                )
+            else:
+                user_hint = (
+                    f"Could not download this {platform} video. It may be private, "
+                    "region-locked, or require login. Try downloading it yourself and "
+                    "uploading the file directly."
+                )
+            raise RuntimeError(f"{user_hint} [tech: {last_error[:200]}]")
 
         file_size = os.path.getsize(video_path)
         print(f"✅ Downloaded: {file_size / (1024*1024):.1f} MB")
@@ -2603,13 +2529,14 @@ def download_youtube_and_analyze(youtube_url: str, video_id: str, user_id: str):
 
         # Get video title
         title_cmd = [
-            "yt-dlp", "--remote-components", "ejs:github",
+            "yt-dlp", *(ejs_args if platform == "youtube" else []),
             "--get-title", "--no-playlist",
+            *proxy_args,
             *cookie_args,
-            youtube_url,
+            source_url,
         ]
         title_result = subprocess.run(title_cmd, capture_output=True, text=True, timeout=30)
-        yt_title = (title_result.stdout or "").strip()[:100] or "YouTube Video"
+        yt_title = (title_result.stdout or "").strip()[:100] or f"{platform.capitalize()} Video"
 
         # Upload to Supabase Storage (raw-videos bucket)
         supabase_url = os.environ["SUPABASE_URL"].rstrip("/")
@@ -2626,8 +2553,8 @@ def download_youtube_and_analyze(youtube_url: str, video_id: str, user_id: str):
                     "apikey": service_key,
                     "Content-Type": "video/mp4",
                 },
-                data=f.read(),
-                timeout=120,
+                data=f,  # stream from disk — don't load up to 2GB into RAM
+                timeout=600,
             )
 
         if upload_resp.status_code not in (200, 201):
@@ -2651,20 +2578,20 @@ def download_youtube_and_analyze(youtube_url: str, video_id: str, user_id: str):
             "duration": duration_str,
             "duration_seconds": int(duration),
             "status": "uploaded",
-            "source_url": youtube_url,
+            "source_url": source_url,
         }).eq("id", video_id).execute()
 
         # Do NOT auto-trigger analysis — let user configure settings first
         # (clip count, caption style, reframe mode, etc.)
         # User will click "Start Analysis" from the VideoConfig page
 
-        print(f"🚀 YouTube download complete: {yt_title}")
+        print(f"🚀 URL import complete [{platform}]: {yt_title}")
         print(f"   Duration: {duration_str}, Size: {file_size / (1024*1024):.1f} MB")
         print(f"   Status set to 'uploaded' — waiting for user to configure and start analysis")
         return {"success": True, "title": yt_title}
 
     except Exception as e:
-        print(f"❌ YouTube import failed: {e}")
+        print(f"❌ URL import failed [{platform}]: {e}")
         supabase.table("videos").update({
             "status": "failed",
             "error_message": str(e)[:500],
@@ -2674,7 +2601,7 @@ def download_youtube_and_analyze(youtube_url: str, video_id: str, user_id: str):
     finally:
         if video_path and os.path.exists(video_path):
             os.unlink(video_path)
-        cookies_tmp = f"/tmp/yt_cookies_{video_id}.txt"
+        cookies_tmp = f"/tmp/imp_cookies_{video_id}.txt"
         if os.path.exists(cookies_tmp):
             os.unlink(cookies_tmp)
 
@@ -3252,6 +3179,85 @@ def cleanup_stale_jobs():
 
 
 # ============================================
+# CONTENT CALENDAR — POST REMINDERS (every 10 min)
+# ============================================
+
+@app.function(
+    image=webhook_image,
+    secrets=secrets,
+    schedule=modal.Cron("*/10 * * * *"),
+)
+def send_scheduled_post_reminders():
+    """Email users when a scheduled post from the Content Calendar is due
+    within the next 30 minutes. Safe no-op if the table doesn't exist yet."""
+    from datetime import datetime, timezone, timedelta
+
+    supabase = init_supabase()
+    now = datetime.now(timezone.utc)
+    soon = (now + timedelta(minutes=30)).isoformat()
+
+    try:
+        due = (
+            supabase.table("scheduled_posts")
+            .select("id, user_id, clip_id, platform, scheduled_at, caption")
+            .eq("status", "scheduled")
+            .eq("reminder_sent", False)
+            .lte("scheduled_at", soon)
+            .limit(50)
+            .execute()
+        )
+    except Exception as e:
+        print(f"ℹ️ scheduled_posts not available yet (run the migration): {e}")
+        return
+
+    posts = due.data or []
+    if not posts:
+        return
+    print(f"📅 {len(posts)} scheduled post(s) due soon — sending reminders")
+
+    platform_labels = {
+        "tiktok": "TikTok", "instagram": "Instagram Reels", "youtube": "YouTube Shorts",
+        "facebook": "Facebook", "twitter": "X (Twitter)", "linkedin": "LinkedIn",
+    }
+    for post in posts:
+        try:
+            email = get_user_email(post["user_id"])
+            if email:
+                label = platform_labels.get(post.get("platform", ""), post.get("platform", "your platform"))
+                caption = (post.get("caption") or "").strip()
+                caption_html = f"<p style='color:#555;font-style:italic'>“{caption[:200]}”</p>" if caption else ""
+                send_email(
+                    email,
+                    f"⏰ Time to post on {label}!",
+                    email_base(f"""
+                        <h2>Your scheduled clip is ready to go 🚀</h2>
+                        <p>You planned to publish a clip on <b>{label}</b> at
+                        {post['scheduled_at'][:16].replace('T', ' ')} UTC.</p>
+                        {caption_html}
+                        <p><a href="https://hookcut.com/dashboard/calendar"
+                              style="display:inline-block;padding:12px 24px;background:#7c3aed;color:#fff;
+                                     border-radius:8px;text-decoration:none;font-weight:600">
+                           Open Content Calendar</a></p>
+                        <p style="color:#888;font-size:13px">Download the clip from your calendar
+                        and post it — consistency is what grows accounts.</p>
+                    """),
+                )
+            supabase.table("scheduled_posts").update({"reminder_sent": True}).eq("id", post["id"]).execute()
+        except Exception as e:
+            print(f"⚠️ Reminder for post {post.get('id', '?')} failed: {e}")
+
+    # Mark long-overdue posts (>24h past schedule, still 'scheduled') as missed
+    try:
+        overdue_cutoff = (now - timedelta(hours=24)).isoformat()
+        missed = supabase.table("scheduled_posts").update({"status": "missed"}) \
+            .eq("status", "scheduled").lt("scheduled_at", overdue_cutoff).execute()
+        if missed.data:
+            print(f"📅 Marked {len(missed.data)} post(s) as missed")
+    except Exception as e:
+        print(f"⚠️ Missed-post sweep failed: {e}")
+
+
+# ============================================
 # HTTP WEBHOOK ENDPOINT (ASGI)
 # ============================================
 
@@ -3474,36 +3480,55 @@ def webhook():
             print(f"❌ /generate-titles error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
 
-    class YouTubeImportRequest(BaseModel):
-        youtube_url: str
+    class UrlImportRequest(BaseModel):
+        # `url` is the new generic field; `youtube_url` kept for older frontends
+        url: str | None = None
+        youtube_url: str | None = None
         video_id: str
         user_id: str
 
-    @web_app.post("/youtube-import")
-    async def youtube_import(req: YouTubeImportRequest, user: dict = Depends(verify_auth)):
-        try:
-            import re as _re
-            auth_user_id = user.get("id", "")
-            # Security: prefer authenticated user_id over request body
-            effective_user_id = auth_user_id or req.user_id
+    async def _handle_url_import(req: UrlImportRequest, user: dict, route: str):
+        auth_user_id = user.get("id", "")
+        # Security: prefer authenticated user_id over request body
+        effective_user_id = auth_user_id or req.user_id
 
-            print(f"📨 /youtube-import received url={req.youtube_url} from user={effective_user_id[:8]}")
+        source_url = (req.url or req.youtube_url or "").strip()
+        platform = detect_import_platform(source_url)
+        print(f"📨 {route} received url={source_url} platform={platform} from user={effective_user_id[:8]}")
 
-            # Validate YouTube URL format
-            yt_pattern = _re.compile(r'https?://(www\.)?(youtube\.com|youtu\.be|m\.youtube\.com)/')
-            if not yt_pattern.match(req.youtube_url.strip()):
-                raise HTTPException(status_code=400, detail="Invalid YouTube URL format")
-
-            download_youtube_and_analyze.spawn(
-                youtube_url=req.youtube_url.strip(),
-                video_id=req.video_id,
-                user_id=effective_user_id,
+        if not platform:
+            raise HTTPException(
+                status_code=400,
+                detail="Unsupported video URL. Supported: YouTube, TikTok, Instagram, "
+                       "Facebook, X/Twitter, Vimeo, Twitch, Rumble, Dailymotion, Loom",
             )
-            return {"success": True, "video_id": req.video_id, "status": "downloading"}
+
+        download_url_and_analyze.spawn(
+            source_url=source_url,
+            video_id=req.video_id,
+            user_id=effective_user_id,
+            platform=platform,
+        )
+        return {"success": True, "video_id": req.video_id, "status": "downloading", "platform": platform}
+
+    @web_app.post("/youtube-import")  # legacy route — older deployed frontends
+    async def youtube_import(req: UrlImportRequest, user: dict = Depends(verify_auth)):
+        try:
+            return await _handle_url_import(req, user, "/youtube-import")
         except HTTPException:
             raise
         except Exception as e:
             print(f"❌ /youtube-import error: {e}")
+            raise HTTPException(status_code=500, detail=str(e))
+
+    @web_app.post("/url-import")
+    async def url_import(req: UrlImportRequest, user: dict = Depends(verify_auth)):
+        try:
+            return await _handle_url_import(req, user, "/url-import")
+        except HTTPException:
+            raise
+        except Exception as e:
+            print(f"❌ /url-import error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
 
     class HighlightReelClip(BaseModel):

@@ -21,6 +21,7 @@ import ClipEdit from "./pages/ClipEdit";
 import Admin from "./pages/Admin";
 import Upgrade from "./pages/Upgrade";
 import Analytics from "./pages/Analytics";
+import ContentCalendar from "./pages/ContentCalendar";
 import NotFound from "./pages/NotFound";
 import HighlightReelPage from "./pages/HighlightReelPage";
 import Terms from "./pages/Terms";
@@ -192,6 +193,7 @@ const App = () => (
               <Route path="videos/edit/:clipId" element={<ClipEdit />} />
               <Route path="settings" element={<Settings />} />
               <Route path="clips" element={<ClipsLibrary />} />
+              <Route path="calendar" element={<ContentCalendar />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="upgrade" element={<Upgrade />} />
               <Route path="admin" element={<Admin />} />

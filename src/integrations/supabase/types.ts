@@ -192,6 +192,59 @@ export type Database = {
         }
         Relationships: []
       }
+      scheduled_posts: {
+        Row: {
+          caption: string | null
+          clip_id: string | null
+          created_at: string
+          external_post_id: string | null
+          id: string
+          platform: string
+          publish_error: string | null
+          reminder_sent: boolean
+          scheduled_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          caption?: string | null
+          clip_id?: string | null
+          created_at?: string
+          external_post_id?: string | null
+          id?: string
+          platform?: string
+          publish_error?: string | null
+          reminder_sent?: boolean
+          scheduled_at: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          caption?: string | null
+          clip_id?: string | null
+          created_at?: string
+          external_post_id?: string | null
+          id?: string
+          platform?: string
+          publish_error?: string | null
+          reminder_sent?: boolean
+          scheduled_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_posts_clip_id_fkey"
+            columns: ["clip_id"]
+            isOneToOne: false
+            referencedRelation: "clips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_credits: {
         Row: {
           created_at: string | null

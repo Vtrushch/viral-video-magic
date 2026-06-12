@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useCredits } from "@/hooks/useCredits";
 import {
-  Scissors, Video, Film, BarChart3, Settings, CreditCard, LogOut, ChevronLeft, ChevronRight, Shield, Sparkles, Globe, HelpCircle,
+  Scissors, Video, Film, BarChart3, Settings, CreditCard, LogOut, ChevronLeft, ChevronRight, Shield, Sparkles, Globe, HelpCircle, CalendarDays,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -23,6 +23,7 @@ const DashboardSidebar = () => {
   const menuItems = [
     { icon: Video, label: t("nav.videos"), path: "/dashboard" },
     { icon: Film, label: t("nav.clips"), path: "/dashboard/clips" },
+    { icon: CalendarDays, label: t("nav.calendar"), path: "/dashboard/calendar" },
     { icon: BarChart3, label: t("nav.analytics"), path: "/dashboard/analytics" },
     { icon: Settings, label: t("nav.settings"), path: "/dashboard/settings" },
     { icon: CreditCard, label: t("nav.upgrade"), path: "/dashboard/upgrade" },
@@ -264,7 +265,7 @@ const DashboardSidebar = () => {
         {[
           { icon: Video, label: t("nav.videos"), path: "/dashboard" },
           { icon: Film, label: t("nav.clips"), path: "/dashboard/clips" },
-          { icon: BarChart3, label: t("nav.analytics"), path: "/dashboard/analytics" },
+          { icon: CalendarDays, label: t("nav.calendar"), path: "/dashboard/calendar" },
           { icon: Settings, label: t("nav.settings"), path: "/dashboard/settings" },
           { icon: CreditCard, label: t("nav.upgrade"), path: "/dashboard/upgrade" },
         ].map((item) => {

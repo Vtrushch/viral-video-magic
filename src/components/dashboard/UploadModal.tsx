@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Upload, X, FileVideo, Loader2, Sparkles, CloudUpload, Youtube, Link2, ArrowRight, Info } from "lucide-react";
+import { Upload, X, FileVideo, Loader2, Sparkles, CloudUpload, Link2, ArrowRight, Info } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,20 +26,37 @@ interface UploadModalProps {
 
 type TabType = "file" | "youtube";
 
-function isValidYouTubeUrl(url: string): boolean {
-  const patterns = [
-    /^https?:\/\/(www\.)?youtube\.com\/watch\?v=[\w-]{11}/,
-    /^https?:\/\/youtu\.be\/[\w-]{11}/,
-    /^https?:\/\/(www\.)?youtube\.com\/shorts\/[\w-]{11}/,
-    /^https?:\/\/(www\.)?youtube\.com\/embed\/[\w-]{11}/,
-    /^https?:\/\/m\.youtube\.com\/watch\?v=[\w-]{11}/,
-  ];
-  return patterns.some((p) => p.test(url.trim()));
+// Mirrors IMPORT_URL_PATTERNS in modal_worker.py — keep in sync
+const SUPPORTED_PLATFORMS: { key: string; label: string; pattern: RegExp }[] = [
+  { key: "youtube", label: "YouTube", pattern: /^https?:\/\/((www|m)\.)?(youtube\.com|youtu\.be)\// },
+  { key: "tiktok", label: "TikTok", pattern: /^https?:\/\/((www|vm|vt|m)\.)?tiktok\.com\// },
+  { key: "instagram", label: "Instagram", pattern: /^https?:\/\/(www\.)?instagram\.com\/(reel|reels|p|tv|share)\// },
+  { key: "facebook", label: "Facebook", pattern: /^https?:\/\/((www|m|web)\.)?(facebook\.com|fb\.watch)\// },
+  { key: "twitter", label: "X", pattern: /^https?:\/\/((www|mobile)\.)?(twitter\.com|x\.com)\/\w+\/status\// },
+  { key: "vimeo", label: "Vimeo", pattern: /^https?:\/\/(www\.)?vimeo\.com\/\d+/ },
+  { key: "twitch", label: "Twitch", pattern: /^https?:\/\/(www\.)?twitch\.tv\/videos\/\d+/ },
+  { key: "rumble", label: "Rumble", pattern: /^https?:\/\/(www\.)?rumble\.com\// },
+  { key: "dailymotion", label: "Dailymotion", pattern: /^https?:\/\/(www\.)?dailymotion\.com\/video\// },
+  { key: "loom", label: "Loom", pattern: /^https?:\/\/(www\.)?loom\.com\/share\// },
+];
+
+function detectPlatform(url: string): { key: string; label: string } | null {
+  const trimmed = url.trim();
+  for (const p of SUPPORTED_PLATFORMS) {
+    if (p.pattern.test(trimmed)) return { key: p.key, label: p.label };
+  }
+  return null;
 }
 
-function extractYouTubeTitle(url: string): string {
-  const match = url.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/);
-  return match ? `YouTube Video (${match[1]})` : "YouTube Video";
+function isValidImportUrl(url: string): boolean {
+  return detectPlatform(url) !== null;
+}
+
+function extractTempTitle(url: string): string {
+  const platform = detectPlatform(url);
+  const ytMatch = url.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/);
+  if (platform?.key === "youtube" && ytMatch) return `YouTube Video (${ytMatch[1]})`;
+  return platform ? `${platform.label} Video` : "Imported Video";
 }
 
 const UploadModal = ({ open, onClose }: UploadModalProps) => {
@@ -189,12 +206,13 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
     }
   };
 
-  /* ── YouTube Import ── */
+  /* ── URL Import (YouTube, TikTok, Instagram, X, Vimeo, Twitch...) ── */
   const handleYoutubeImport = async () => {
     if (!user) return;
 
     const trimmed = youtubeUrl.trim();
-    if (!isValidYouTubeUrl(trimmed)) {
+    const platform = detectPlatform(trimmed);
+    if (!platform) {
       toast.error(t("upload.youtubeInvalidUrl"));
       return;
     }
@@ -203,7 +221,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
 
     try {
       // Step 1: Create video record in DB FIRST (status: downloading)
-      const tempTitle = extractYouTubeTitle(trimmed);
+      const tempTitle = extractTempTitle(trimmed);
       const { data: videoData, error: dbError } = await supabase
         .from("videos")
         .insert({
@@ -225,37 +243,58 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
       if (dbError) throw dbError;
 
       posthog.capture('video_upload_started', {
-        source: 'youtube',
-        youtube_url: trimmed,
+        source: 'url_import',
+        platform: platform.key,
+        url: trimmed,
       });
 
-      // Step 2: Call backend to start download + analysis (fire-and-forget via .spawn())
+      // Step 2: Call backend to start the download (fire-and-forget via .spawn()).
+      // Send both `url` and `youtube_url` for old/new worker compatibility, and
+      // fall back to the legacy route if the worker hasn't been redeployed yet.
       try {
-        const res = await apiFetch('/youtube-import', {
+        let res = await apiFetch('/url-import', {
+          url: trimmed,
           youtube_url: trimmed,
           video_id: videoData.id,
           user_id: user.id,
         });
 
-        // Even if response is slow or fails, the backend .spawn() already started
+        if (res.status === 404) {
+          res = await apiFetch('/youtube-import', {
+            url: trimmed,
+            youtube_url: trimmed,
+            video_id: videoData.id,
+            user_id: user.id,
+          });
+        }
+
         if (!res.ok) {
-          console.warn('YouTube import API response not ok, but download may still be running');
+          // Backend rejected the request — the download never started
+          const detail = await res.json().then((d) => d?.detail || "").catch(() => "");
+          await supabase.from("videos").update({
+            status: "failed",
+            error_message: detail || `Import request failed (HTTP ${res.status})`,
+          }).eq("id", videoData.id);
+          posthog.capture('video_upload_failed', { error: detail, source: 'url_import', platform: platform.key });
+          toast.error(t("upload.youtubeImportFailed"));
+          setYoutubeImporting(false);
+          return;
         }
       } catch (apiError) {
-        // Don't show error to user — the Modal .spawn() is fire-and-forget
-        // The download is likely still running in the background
-        console.warn('YouTube import API call failed, but download may still be running:', apiError);
+        // Network error after retries — the Modal .spawn() may still have started.
+        // Keep optimistic flow; the stale-download cleanup cron will mark it failed if not.
+        console.warn('URL import API call failed, download may still be running:', apiError);
       }
 
-      // Always navigate to video page — download is happening in background
+      // Navigate to video page — download is happening in background
       toast.success(t("upload.youtubeImportStarted"));
       handleCancel();
       navigate(`/dashboard/videos/${videoData.id}`);
 
     } catch (error: any) {
       // This catch is only for DB insert failures (step 1)
-      console.error("YouTube import error:", error);
-      posthog.capture('video_upload_failed', { error: error.message, source: 'youtube' });
+      console.error("URL import error:", error);
+      posthog.capture('video_upload_failed', { error: error.message, source: 'url_import' });
       toast.error(t("upload.youtubeImportFailed"));
       setYoutubeImporting(false);
     }
@@ -313,7 +352,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
             : "text-muted-foreground hover:text-foreground"
         }`}
       >
-        <Youtube className="w-4 h-4" />
+        <Link2 className="w-4 h-4" />
         {t("upload.tabYoutube")}
       </button>
     </div>
@@ -438,16 +477,32 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
     );
   };
 
-  /* ── YouTube Tab ── */
+  /* ── URL Import Tab ── */
   const renderYoutubeTab = () => (
     <div className="space-y-4">
-      {/* YouTube branding header */}
+      {/* Import header */}
       <div className="text-center space-y-2 py-2">
-        <div className="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center bg-destructive/10 border border-destructive/20">
-          <Youtube className="w-7 h-7 text-destructive" />
+        <div className="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center bg-primary/10 border border-primary/20">
+          <Link2 className="w-7 h-7 text-primary" />
         </div>
         <p className="text-base font-semibold text-foreground">{t("upload.youtubeImportTitle")}</p>
         <p className="text-sm text-muted-foreground">{t("upload.youtubeImportDesc")}</p>
+      </div>
+
+      {/* Supported platforms */}
+      <div className="flex items-center justify-center flex-wrap gap-1.5">
+        {SUPPORTED_PLATFORMS.map((p) => (
+          <span
+            key={p.key}
+            className={`px-2 py-0.5 rounded-full text-xs font-medium border transition-colors ${
+              detectPlatform(youtubeUrl)?.key === p.key
+                ? "bg-primary/15 text-primary border-primary/40"
+                : "bg-muted text-muted-foreground border-border"
+            }`}
+          >
+            {p.label}
+          </span>
+        ))}
       </div>
 
       {/* URL Input */}
@@ -461,11 +516,11 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
             className="pl-10 h-12 text-base rounded-xl border-border/50 bg-muted/20 focus-visible:border-primary/50"
             disabled={youtubeImporting}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && youtubeUrl.trim() && isValidYouTubeUrl(youtubeUrl.trim()) && copyrightConfirmed) handleYoutubeImport();
+              if (e.key === "Enter" && youtubeUrl.trim() && isValidImportUrl(youtubeUrl.trim()) && copyrightConfirmed) handleYoutubeImport();
             }}
           />
         </div>
-        {youtubeUrl.trim() && !isValidYouTubeUrl(youtubeUrl.trim()) && (
+        {youtubeUrl.trim() && !isValidImportUrl(youtubeUrl.trim()) && (
           <p className="text-xs text-destructive pl-1">{t("upload.youtubeInvalidUrl")}</p>
         )}
       </div>
@@ -515,7 +570,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
           variant="hero"
           onClick={handleYoutubeImport}
           className="w-full sm:flex-1 min-h-[44px] hover:!scale-100"
-          disabled={youtubeImporting || !youtubeUrl.trim() || !isValidYouTubeUrl(youtubeUrl.trim()) || !copyrightConfirmed}
+          disabled={youtubeImporting || !youtubeUrl.trim() || !isValidImportUrl(youtubeUrl.trim()) || !copyrightConfirmed}
         >
           {youtubeImporting ? (
             <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t("upload.youtubeImportBtnImporting")}</>
