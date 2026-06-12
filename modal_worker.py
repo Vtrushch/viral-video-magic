@@ -80,8 +80,10 @@ image = (
         "curl -fsSL https://deno.land/install.sh | sh",
         "ln -sf /root/.deno/bin/deno /usr/local/bin/deno",
         "deno --version",
-        # Ensure latest yt-dlp with EJS support
-        "pip install --upgrade yt-dlp[default]",
+        # Ensure latest yt-dlp with EJS support.
+        # The date comment busts Modal's layer cache — bump it to pull a fresh
+        # yt-dlp on the next deploy (YouTube breaks old versions constantly).
+        "pip install --upgrade yt-dlp[default]  # cache-bust 2026-06-12",
         "python -c \"import yt_dlp; print('yt-dlp version:', yt_dlp.version.__version__)\"",
     )
 )
