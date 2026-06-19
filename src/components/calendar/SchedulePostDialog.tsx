@@ -86,16 +86,21 @@ const SchedulePostDialog = ({ open, onClose, clip, post, onSaved }: SchedulePost
     setSaving(true);
     try {
       if (post) {
+        const updates: Record<string, unknown> = {
+          platform,
+          scheduled_at: when.toISOString(),
+          caption: caption.trim() || null,
+        };
+        // Only re-arm the reminder and reset to 'scheduled' when the new time is in
+        // the future. Editing the caption/platform of an already-published or past
+        // post must NOT silently revert it to 'scheduled' and re-trigger reminders.
+        if (when.getTime() > Date.now()) {
+          updates.status = "scheduled";
+          updates.reminder_sent = false;
+        }
         const { error } = await supabase
           .from("scheduled_posts")
-          .update({
-            platform,
-            scheduled_at: when.toISOString(),
-            caption: caption.trim() || null,
-            // re-arm the reminder if the time moved into the future
-            reminder_sent: false,
-            status: "scheduled",
-          })
+          .update(updates)
           .eq("id", post.id);
         if (error) throw error;
         toast.success(t("calendar.updated"));

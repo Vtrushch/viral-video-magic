@@ -41,6 +41,34 @@ def detect_import_platform(url: str):
             return name
     return None
 
+
+_YTDLP_SELF_UPDATED = False
+
+
+def ensure_latest_ytdlp():
+    """Self-update yt-dlp once per container before downloading.
+
+    YouTube breaks old yt-dlp versions within days, and Modal image layers are
+    cached between deploys — so the image's yt-dlp goes stale. Upgrading at
+    runtime (~10s on cold start, cached for warm containers) keeps every
+    download on the latest release without redeploys."""
+    global _YTDLP_SELF_UPDATED
+    if _YTDLP_SELF_UPDATED:
+        return
+    try:
+        result = subprocess.run(
+            ["pip", "install", "--upgrade", "--quiet", "yt-dlp[default]"],
+            capture_output=True, text=True, timeout=120,
+        )
+        version = subprocess.run(
+            ["yt-dlp", "--version"], capture_output=True, text=True, timeout=15
+        )
+        status = "ok" if result.returncode == 0 else f"failed: {(result.stderr or '')[-150:]}"
+        print(f"🔄 yt-dlp self-update {status} → version {(version.stdout or '?').strip()}")
+    except Exception as e:
+        print(f"⚠️ yt-dlp self-update skipped (using image version): {e}")
+    _YTDLP_SELF_UPDATED = True
+
 # ============================================
 # MODAL APP SETUP
 # ============================================
@@ -448,14 +476,15 @@ def transcribe_audio(audio_path: str, clip_duration: float = 0, max_retries: int
 # EMAIL NOTIFICATIONS (Resend API)
 # ============================================
 
-def send_email(to: str, subject: str, html: str):
-    """Send email via Resend API. Non-blocking, never raises."""
+def send_email(to: str, subject: str, html: str) -> bool:
+    """Send email via Resend API. Non-blocking, never raises.
+    Returns True only when Resend confirms delivery (2xx)."""
     try:
         import requests as req_lib
         api_key = os.environ.get("RESEND_API_KEY", "")
         if not api_key:
             print("⚠️ RESEND_API_KEY not set, skipping email")
-            return
+            return False
         resp = req_lib.post(
             "https://api.resend.com/emails",
             headers={
@@ -472,10 +501,12 @@ def send_email(to: str, subject: str, html: str):
         )
         if resp.status_code in (200, 201):
             print(f"📧 Email sent to {to[:20]}***: {subject}")
-        else:
-            print(f"⚠️ Email failed ({resp.status_code}): {resp.text[:200]}")
+            return True
+        print(f"⚠️ Email failed ({resp.status_code}): {resp.text[:200]}")
+        return False
     except Exception as e:
         print(f"⚠️ Email error (non-fatal): {e}")
+        return False
 
 
 def get_user_email(user_id: str) -> str | None:
@@ -495,6 +526,28 @@ def get_user_email(user_id: str) -> str | None:
     except Exception as e:
         print(f"⚠️ Could not fetch user email: {e}")
     return None
+
+
+def user_owns_row(table: str, row_id: str, user_id: str) -> bool:
+    """Service-role ownership check: True iff `row_id` in `table` belongs to `user_id`.
+    The worker connects with the RLS-bypassing service-role key, so EVERY endpoint
+    that acts on a client-supplied id MUST gate on this to prevent cross-tenant IDOR."""
+    if not row_id or not user_id:
+        return False
+    try:
+        supabase = init_supabase()
+        res = supabase.table(table).select("user_id").eq("id", row_id).limit(1).execute()
+        rows = res.data or []
+        return bool(rows) and rows[0].get("user_id") == user_id
+    except Exception as e:
+        print(f"⚠️ Ownership check failed for {table}/{row_id}: {e}")
+        return False
+
+
+def storage_path_belongs_to(path: str, user_id: str) -> bool:
+    """Storage paths are always '{user_id}/...'; reject anything else so a caller
+    cannot point a render/transcribe/reel job at another tenant's raw video."""
+    return bool(path) and bool(user_id) and path.split("/", 1)[0] == user_id
 
 
 def email_base(content: str) -> str:
@@ -2268,8 +2321,11 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
     video_path = None
 
     try:
-        # Update status
-        supabase.table("videos").update({"status": "downloading"}).eq("id", video_id).execute()
+        # Update status (scoped to owner — service-role bypasses RLS)
+        supabase.table("videos").update({"status": "downloading"}).eq("id", video_id).eq("user_id", user_id).execute()
+
+        # Always download with the freshest yt-dlp — YouTube breaks old ones fast
+        ensure_latest_ytdlp()
 
         # Download with yt-dlp (platform-aware strategy chain)
         video_path = f"/tmp/yt_{video_id}.mp4"
@@ -2332,10 +2388,15 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
                 *cookie_args,
                 source_url,
             ]
-            diag_result = subprocess.run(diag_cmd, capture_output=True, text=True, timeout=90)
-            print(f"📋 Available formats:\n{(diag_result.stdout or '')[-800:]}")
-            if diag_result.stderr:
-                print(f"📋 Diag stderr:\n{(diag_result.stderr or '')[-400:]}")
+            try:
+                diag_result = subprocess.run(diag_cmd, capture_output=True, text=True, timeout=90)
+                print(f"📋 Available formats:\n{(diag_result.stdout or '')[-800:]}")
+                if diag_result.stderr:
+                    print(f"📋 Diag stderr:\n{(diag_result.stderr or '')[-400:]}")
+            except Exception as diag_err:
+                # Diagnostic is best-effort — must NEVER abort the import (e.g. a 90s
+                # stall on a SABR/bot-checked video would otherwise kill it pre-download)
+                print(f"📋 Diag skipped (non-fatal): {diag_err}")
 
             # June 2026 reality: web_creator client is login-only/removed, SABR is
             # enforced aggressively, and public Cobalt/Invidious/Piped instances are
@@ -2379,7 +2440,17 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
             # Remove leftover file from previous attempt
             if os.path.exists(video_path):
                 os.unlink(video_path)
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            except subprocess.TimeoutExpired:
+                # A hanging strategy must NOT kill the chain — fall through to the next one
+                last_error = f"Strategy {i+1} timed out after 300s"
+                print(f"⚠️ {last_error} — trying next strategy")
+                continue
+            except Exception as run_err:
+                last_error = f"Strategy {i+1} crashed: {run_err}"
+                print(f"⚠️ {last_error} — trying next strategy")
+                continue
             if result.returncode == 0 and os.path.exists(video_path):
                 file_size_check = os.path.getsize(video_path)
                 if file_size_check > 10000:  # must be more than 10KB (not just an error page)
@@ -2581,7 +2652,7 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
             "duration_seconds": int(duration),
             "status": "uploaded",
             "source_url": source_url,
-        }).eq("id", video_id).execute()
+        }).eq("id", video_id).eq("user_id", user_id).execute()
 
         # Do NOT auto-trigger analysis — let user configure settings first
         # (clip count, caption style, reframe mode, etc.)
@@ -2597,7 +2668,7 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
         supabase.table("videos").update({
             "status": "failed",
             "error_message": str(e)[:500],
-        }).eq("id", video_id).execute()
+        }).eq("id", video_id).eq("user_id", user_id).execute()
         raise
 
     finally:
@@ -3224,27 +3295,34 @@ def send_scheduled_post_reminders():
     for post in posts:
         try:
             email = get_user_email(post["user_id"])
-            if email:
-                label = platform_labels.get(post.get("platform", ""), post.get("platform", "your platform"))
-                caption = (post.get("caption") or "").strip()
-                caption_html = f"<p style='color:#555;font-style:italic'>“{caption[:200]}”</p>" if caption else ""
-                send_email(
-                    email,
-                    f"⏰ Time to post on {label}!",
-                    email_base(f"""
-                        <h2>Your scheduled clip is ready to go 🚀</h2>
-                        <p>You planned to publish a clip on <b>{label}</b> at
-                        {post['scheduled_at'][:16].replace('T', ' ')} UTC.</p>
-                        {caption_html}
-                        <p><a href="https://hookcut.com/dashboard/calendar"
-                              style="display:inline-block;padding:12px 24px;background:#7c3aed;color:#fff;
-                                     border-radius:8px;text-decoration:none;font-weight:600">
-                           Open Content Calendar</a></p>
-                        <p style="color:#888;font-size:13px">Download the clip from your calendar
-                        and post it — consistency is what grows accounts.</p>
-                    """),
-                )
-            supabase.table("scheduled_posts").update({"reminder_sent": True}).eq("id", post["id"]).execute()
+            if not email:
+                # No address resolvable — leave reminder_sent=False so a later tick retries
+                print(f"⚠️ No email for user {str(post.get('user_id'))[:8]} — will retry next tick")
+                continue
+            label = platform_labels.get(post.get("platform", ""), post.get("platform", "your platform"))
+            caption = (post.get("caption") or "").strip()
+            caption_html = f"<p style='color:#555;font-style:italic'>“{caption[:200]}”</p>" if caption else ""
+            sent = send_email(
+                email,
+                f"⏰ Time to post on {label}!",
+                email_base(f"""
+                    <h2>Your scheduled clip is ready to go 🚀</h2>
+                    <p>You planned to publish a clip on <b>{label}</b> at
+                    {post['scheduled_at'][:16].replace('T', ' ')} UTC.</p>
+                    {caption_html}
+                    <p><a href="https://hookcut.com/dashboard/calendar"
+                          style="display:inline-block;padding:12px 24px;background:#7c3aed;color:#fff;
+                                 border-radius:8px;text-decoration:none;font-weight:600">
+                       Open Content Calendar</a></p>
+                    <p style="color:#888;font-size:13px">Download the clip from your calendar
+                    and post it — consistency is what grows accounts.</p>
+                """),
+            )
+            # Only mark sent when Resend confirmed delivery — otherwise retry next tick
+            if sent:
+                supabase.table("scheduled_posts").update({"reminder_sent": True}).eq("id", post["id"]).execute()
+            else:
+                print(f"⚠️ Reminder email not delivered for post {post.get('id', '?')} — will retry next tick")
         except Exception as e:
             print(f"⚠️ Reminder for post {post.get('id', '?')} failed: {e}")
 
@@ -3375,8 +3453,12 @@ def webhook():
     async def analyze(req: AnalysisRequest, user: dict = Depends(verify_auth)):
         try:
             print(f"📨 /analyze received video_id={req.video_id} from user={user.get('id', '?')[:8]}")
+            if not user_owns_row("videos", req.video_id, user.get("id", "")):
+                raise HTTPException(status_code=403, detail="Video not found or not owned by you")
             trigger_analysis.spawn(req.video_id)
             return {"success": True, "video_id": req.video_id, "status": "started"}
+        except HTTPException:
+            raise
         except Exception as e:
             print(f"❌ /analyze error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
@@ -3385,6 +3467,10 @@ def webhook():
     async def render(req: RenderRequest, user: dict = Depends(verify_auth)):
         try:
             print(f"📨 /render received clip_id={req.clip_id} from user={user.get('id', '?')[:8]}")
+            if not user_owns_row("clips", req.clip_id, user.get("id", "")):
+                raise HTTPException(status_code=403, detail="Clip not found or not owned by you")
+            if not storage_path_belongs_to(req.video_storage_path, user.get("id", "")):
+                raise HTTPException(status_code=403, detail="Invalid video path")
             if req.custom_transcription:
                 print(f"📝 Custom transcription: {req.custom_transcription[:80]}...")
             render_clip.spawn(
@@ -3401,6 +3487,8 @@ def webhook():
                 reframe_mode=req.reframe_mode,
             )
             return {"success": True, "clip_id": req.clip_id, "status": "rendering"}
+        except HTTPException:
+            raise
         except Exception as e:
             print(f"❌ /render error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
@@ -3409,6 +3497,10 @@ def webhook():
     async def transcribe_clip_endpoint(req: TranscribeClipRequest, user: dict = Depends(verify_auth)):
         try:
             print(f"📝 /transcribe-clip for clip_id={req.clip_id}")
+            if not user_owns_row("clips", req.clip_id, user.get("id", "")):
+                raise HTTPException(status_code=403, detail="Clip not found or not owned by you")
+            if not storage_path_belongs_to(req.video_storage_path, user.get("id", "")):
+                raise HTTPException(status_code=403, detail="Invalid video path")
             transcribe_clip_fn.spawn(
                 clip_id=req.clip_id,
                 video_storage_path=req.video_storage_path,
@@ -3416,6 +3508,8 @@ def webhook():
                 end_time=req.end_time,
             )
             return {"success": True, "clip_id": req.clip_id, "status": "transcribing"}
+        except HTTPException:
+            raise
         except Exception as e:
             print(f"❌ /transcribe-clip error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
@@ -3450,6 +3544,10 @@ def webhook():
         Returns words with timestamps synchronously (not spawned)."""
         try:
             print(f"📨 /transcribe-segment {req.start_time}s-{req.end_time}s from user={user.get('id', '?')[:8]}")
+            if not storage_path_belongs_to(req.video_storage_path, user.get("id", "")):
+                raise HTTPException(status_code=403, detail="Invalid video path")
+            if req.clip_id and not user_owns_row("clips", req.clip_id, user.get("id", "")):
+                raise HTTPException(status_code=403, detail="Clip not found or not owned by you")
             result = transcribe_video_segment.remote(
                 video_storage_path=req.video_storage_path,
                 start_time=req.start_time,
@@ -3457,6 +3555,8 @@ def webhook():
                 clip_id=req.clip_id,
             )
             return result
+        except HTTPException:
+            raise
         except Exception as e:
             print(f"❌ /transcribe-segment error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
@@ -3472,12 +3572,16 @@ def webhook():
         """Generate 3 title variants + hashtags for a clip using Gemini."""
         try:
             print(f"📨 /generate-titles clip={req.clip_id} platform={req.platform} from user={user.get('id', '?')[:8]}")
+            if not user_owns_row("clips", req.clip_id, user.get("id", "")):
+                raise HTTPException(status_code=403, detail="Clip not found or not owned by you")
             result = generate_ai_titles.remote(
                 clip_id=req.clip_id,
                 transcription=req.transcription,
                 platform=req.platform,
             )
             return result
+        except HTTPException:
+            raise
         except Exception as e:
             print(f"❌ /generate-titles error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
@@ -3504,6 +3608,11 @@ def webhook():
                 detail="Unsupported video URL. Supported: YouTube, TikTok, Instagram, "
                        "Facebook, X/Twitter, Vimeo, Twitch, Rumble, Dailymotion, Loom",
             )
+
+        # IDOR guard: the frontend creates the videos row (RLS-scoped) before calling us,
+        # so it must already exist and belong to the caller.
+        if not user_owns_row("videos", req.video_id, effective_user_id):
+            raise HTTPException(status_code=403, detail="Video not found or not owned by you")
 
         download_url_and_analyze.spawn(
             source_url=source_url,
@@ -3556,6 +3665,8 @@ def webhook():
     async def create_reel(req: HighlightReelRequest, user: dict = Depends(verify_auth)):
         try:
             print(f"📨 /create-highlight-reel received reel_id={req.reel_id} from user={user.get('id', '?')[:8]}")
+            if not storage_path_belongs_to(req.video_storage_path, user.get("id", "")):
+                raise HTTPException(status_code=403, detail="Invalid video path")
             create_highlight_reel.spawn(
                 reel_id=req.reel_id,
                 video_storage_path=req.video_storage_path,
@@ -3564,6 +3675,8 @@ def webhook():
                 add_transitions=req.add_transitions,
             )
             return {"success": True, "reel_id": req.reel_id, "status": "rendering"}
+        except HTTPException:
+            raise
         except Exception as e:
             print(f"❌ /create-highlight-reel error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
@@ -3572,6 +3685,10 @@ def webhook():
     async def create_smart_reel(req: SmartReelRequest, user: dict = Depends(verify_auth)):
         try:
             print(f"📨 /create-smart-reel for video_id={req.video_id}, style={req.style}, target={req.target_duration}s")
+            if not user_owns_row("videos", req.video_id, user.get("id", "")):
+                raise HTTPException(status_code=403, detail="Video not found or not owned by you")
+            if not storage_path_belongs_to(req.video_storage_path, user.get("id", "")):
+                raise HTTPException(status_code=403, detail="Invalid video path")
             build_smart_reel.spawn(
                 video_id=req.video_id,
                 video_storage_path=req.video_storage_path,
@@ -3581,6 +3698,8 @@ def webhook():
                 reel_style=req.style,
             )
             return {"success": True, "video_id": req.video_id, "status": "building"}
+        except HTTPException:
+            raise
         except Exception as e:
             print(f"❌ /create-smart-reel error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
