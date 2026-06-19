@@ -626,7 +626,8 @@ def send_low_credits_email(to: str, remaining: int):
     secrets=secrets,
     timeout=1800,       # 30 min (large videos need time to download + compress + analyze)
     memory=4096,        # 4GB RAM
-    scaledown_window=120,  # Keep container warm 2 min between analyses
+    cpu=2.0,            # 2 cores for ffmpeg chunk-extraction / compression on long videos
+    scaledown_window=300,  # Keep warm 5 min so upload bursts reuse the container
     max_containers=10,     # Max 10 parallel analyses (handles bursts)
 )
 def analyze_video_with_gemini(video_url: str, video_id: str, user_id: str, auth_headers: dict = None, settings: dict = None):
@@ -652,22 +653,11 @@ def analyze_video_with_gemini(video_url: str, video_id: str, user_id: str, auth_
 
     client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
     
-    # Use gemini-2.5-flash for better rate limits and video understanding
-    # Fallback chain: 2.5-flash → 2.0-flash
-    selected_model = None
-    for model_name in ["gemini-2.5-flash", "gemini-2.0-flash"]:
-        try:
-            # Test model availability with a simple call
-            client.models.get(model=model_name)
-            selected_model = model_name
-            print(f"🤖 Using model: {model_name}")
-            break
-        except Exception as me:
-            print(f"⚠️ Model {model_name} unavailable: {me}")
-    
-    if selected_model is None:
-        selected_model = "gemini-2.0-flash"
-        print(f"🤖 Defaulting to: {selected_model}")
+    # Use gemini-2.5-flash directly. Skip the per-analysis availability probe
+    # (client.models.get on each model = 1-2 blocking round-trips every time);
+    # the "no valid clips" path below already falls back to gemini-2.0-flash.
+    selected_model = "gemini-2.5-flash"
+    print(f"🤖 Using model: {selected_model}")
 
     video_path = None
     video_file = None
@@ -1552,7 +1542,8 @@ def detect_face_position(video_path: str, start_time: float, duration: float) ->
     secrets=secrets,
     timeout=900,
     memory=4096,                   # 4GB RAM (was 2GB — ffmpeg needs more for 1080p)
-    scaledown_window=120,          # Keep warm 2 min between renders
+    cpu=4.0,                       # 4 cores — libx264 encode scales ~linearly; default 0.125 starves it
+    scaledown_window=300,          # Keep warm 5 min so a multi-clip render burst reuses the container
     max_containers=20,             # 20 parallel renders — handles burst of 5000 users
 )
 def render_clip(
@@ -1806,6 +1797,7 @@ def render_clip(
                 "-i", video_path,
                 "-vf", vf,
                 "-c:v", "libx264",
+                "-threads", "4",
                 "-preset", "fast",
                 "-crf", "23",
                 "-c:a", "aac",
@@ -2379,24 +2371,25 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
         ]
 
         if platform == "youtube":
-            # Diagnostic: list available formats (shows SABR/bot-check state in logs)
-            diag_cmd = [
-                "yt-dlp", *ejs_args,
-                "--list-formats", "--no-playlist",
-                "--no-check-certificates",
-                *proxy_args,
-                *cookie_args,
-                source_url,
-            ]
-            try:
-                diag_result = subprocess.run(diag_cmd, capture_output=True, text=True, timeout=90)
-                print(f"📋 Available formats:\n{(diag_result.stdout or '')[-800:]}")
-                if diag_result.stderr:
-                    print(f"📋 Diag stderr:\n{(diag_result.stderr or '')[-400:]}")
-            except Exception as diag_err:
-                # Diagnostic is best-effort — must NEVER abort the import (e.g. a 90s
-                # stall on a SABR/bot-checked video would otherwise kill it pre-download)
-                print(f"📋 Diag skipped (non-fatal): {diag_err}")
+            # Optional diagnostic (OFF by default — it adds a full extra yt-dlp
+            # round-trip, up to 90s, before every single download). Set YTDLP_DEBUG=1
+            # in the worker env to re-enable when debugging SABR/bot-check state.
+            if os.environ.get("YTDLP_DEBUG"):
+                diag_cmd = [
+                    "yt-dlp", *ejs_args,
+                    "--list-formats", "--no-playlist",
+                    "--no-check-certificates",
+                    *proxy_args,
+                    *cookie_args,
+                    source_url,
+                ]
+                try:
+                    diag_result = subprocess.run(diag_cmd, capture_output=True, text=True, timeout=90)
+                    print(f"📋 Available formats:\n{(diag_result.stdout or '')[-800:]}")
+                    if diag_result.stderr:
+                        print(f"📋 Diag stderr:\n{(diag_result.stderr or '')[-400:]}")
+                except Exception as diag_err:
+                    print(f"📋 Diag skipped (non-fatal): {diag_err}")
 
             # June 2026 reality: web_creator client is login-only/removed, SABR is
             # enforced aggressively, and public Cobalt/Invidious/Piped instances are
@@ -2460,6 +2453,20 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
                 else:
                     print(f"⚠️ Strategy {i+1} produced tiny file ({file_size_check} bytes), skipping")
             last_error = (result.stderr or result.stdout or "")[-500:]
+            # Early-exit on DEFINITIVE, non-transient failures — no later strategy
+            # (different player_client / no-cookies / anonymous) can fix an
+            # account/content-state error, so retrying all of them just wastes time.
+            full_err = ((result.stderr or "") + " " + (result.stdout or "")).lower()
+            definitive_markers = (
+                "private video", "video unavailable", "members-only", "members only",
+                "join this channel to get access", "who has paid", "removed by the user",
+                "account associated with this video has been terminated",
+                "is not available in your country", "video has been removed",
+                "this video is no longer available",
+            )
+            if any(m in full_err for m in definitive_markers):
+                print(f"⛔ Strategy {i+1} hit a definitive/unwinnable error — skipping remaining strategies")
+                break
             print(f"⚠️ Strategy {i+1} failed: {last_error[:200]}...")
 
         # Fallback: cobalt-compatible API (self-hosted or paid, env-configured).
@@ -2688,6 +2695,7 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
     secrets=secrets,
     timeout=900,
     memory=4096,
+    cpu=2.0,                       # concat + re-encode is ffmpeg-bound
     scaledown_window=120,
     max_containers=5,
 )
