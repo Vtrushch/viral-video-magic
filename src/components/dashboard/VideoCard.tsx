@@ -60,6 +60,14 @@ const VideoCard = ({ id, title, duration, uploadDate, status, thumbnail, filePat
     return map[s] || s.charAt(0).toUpperCase() + s.slice(1);
   };
 
+  // CTA label that matches the destination: "View Clips" only when clips exist,
+  // "Retry" for a failed video, "Open" for uploaded/analyzing/etc.
+  const ctaLabel = (s: string) => {
+    if (s === "ready") return t("videoCard.viewClips");
+    if (s === "failed") return t("videoCard.retry");
+    return t("videoCard.open");
+  };
+
   return (
     <div
       className="group rounded-xl border overflow-hidden transition-all duration-300 hover:-translate-y-1"
@@ -101,7 +109,7 @@ const VideoCard = ({ id, title, duration, uploadDate, status, thumbnail, filePat
         </div>
         <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
           <Button variant="ghost" size="sm" className="flex-1 text-xs" style={{ color: "rgba(255,255,255,0.7)" }} asChild>
-            <Link to={`/dashboard/videos/${id}`}>{t("videoCard.viewClips")}</Link>
+            <Link to={`/dashboard/videos/${id}`}>{ctaLabel(status)}</Link>
           </Button>
           {status === "ready" && (
             <Button

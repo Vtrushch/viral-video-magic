@@ -75,6 +75,12 @@ def ensure_latest_ytdlp():
 
 app = modal.App("cutviral-worker")
 
+# Shared cache of downloaded SOURCE videos, reused across the many render containers
+# spawned for the same video (e.g. "Render All N clips" / re-rendering after edits)
+# so we don't re-download the full source from Supabase for every clip. Keyed by
+# storage path; entries evicted after 24h by evict_source_cache.
+source_cache_volume = modal.Volume.from_name("hookcut-source-cache", create_if_missing=True)
+
 # Heavy worker image (ffmpeg + rendering + gemini + groq)
 image = (
     modal.Image.debian_slim(python_version="3.11")
@@ -174,6 +180,63 @@ def download_video(url: str, output_path: str, auth_headers: dict = None) -> str
 
     print(f"✅ Downloaded to {output_path} ({bytes_written/(1024*1024):.2f} MB)")
     return output_path
+
+
+def get_source_video(video_url: str, video_storage_path: str, auth_headers: dict = None) -> str:
+    """Return a LOCAL temp path to the source video, reusing a Volume-cached copy
+    when present (skips the network re-download from Supabase).
+
+    The returned path is ALWAYS a fresh local temp file — callers keep deriving
+    audio/srt/output paths from it and unlinking it as before; the Volume cache file
+    itself is never handed back, so the per-clip render never deletes the cache."""
+    import hashlib
+    import shutil
+    import uuid
+
+    local_path = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False).name
+    key = hashlib.sha256((video_storage_path or video_url).encode()).hexdigest()[:32]
+    cache_path = f"/source_cache/{key}.mp4"
+
+    # Cache hit → copy Volume→local (local disk, no Supabase egress / network wait)
+    try:
+        source_cache_volume.reload()
+        if os.path.exists(cache_path) and os.path.getsize(cache_path) > 10000:
+            shutil.copyfile(cache_path, local_path)
+            # Validate the cached copy is a real, COMPLETE video before trusting it.
+            # The size floor only rejects error pages — a truncated/torn file would
+            # pass it but break ffmpeg. If it doesn't probe, fall through to download.
+            try:
+                if get_video_duration(local_path) > 0:
+                    print(f"📦 Source from cache ({os.path.getsize(local_path)/(1024*1024):.1f} MB) — skipped re-download")
+                    return local_path
+            except Exception:
+                pass
+            print("⚠️ Cached source failed validation — re-downloading")
+    except Exception as ce:
+        print(f"⚠️ Source cache read failed (falling back to download): {ce}")
+
+    # Miss → download to local, then best-effort publish into the cache for siblings
+    download_video(video_url, local_path, auth_headers=auth_headers)
+    try:
+        if os.path.getsize(local_path) > 10000:
+            # Globally-unique staging name so concurrent writers (Render All across
+            # separate containers) never share a .tmp path; each publishes a COMPLETE
+            # file via atomic replace (last complete writer wins — never interleaved).
+            tmp_cache = f"{cache_path}.{uuid.uuid4().hex}.tmp"
+            try:
+                shutil.copyfile(local_path, tmp_cache)
+                os.replace(tmp_cache, cache_path)
+                source_cache_volume.commit()
+                print("📦 Source cached for subsequent clips of this video")
+            finally:
+                if os.path.exists(tmp_cache):
+                    try:
+                        os.unlink(tmp_cache)
+                    except Exception:
+                        pass
+    except Exception as ce:
+        print(f"⚠️ Source cache write failed (non-fatal): {ce}")
+    return local_path
 
 
 def get_video_duration(video_path: str) -> float:
@@ -1545,6 +1608,7 @@ def detect_face_position(video_path: str, start_time: float, duration: float) ->
     cpu=4.0,                       # 4 cores — libx264 encode scales ~linearly; default 0.125 starves it
     scaledown_window=300,          # Keep warm 5 min so a multi-clip render burst reuses the container
     max_containers=20,             # 20 parallel renders — handles burst of 5000 users
+    volumes={"/source_cache": source_cache_volume},  # reuse downloaded source across clips
 )
 def render_clip(
     clip_id: str,
@@ -1611,10 +1675,10 @@ def render_clip(
             "render_started_at": ts,
         }).eq("id", clip_id).execute()
 
-        # Download source video with auth
-        with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
-            download_video(video_url, tmp.name, auth_headers=auth_headers)
-            video_path = tmp.name
+        # Acquire source video — reuses a Volume-cached copy across clips of the same
+        # source (e.g. "Render All", re-render after edits) instead of re-downloading
+        # the full file from Supabase every time. Returns a fresh LOCAL temp path.
+        video_path = get_source_video(video_url, video_storage_path, auth_headers)
 
         # Audio extraction (for transcription)
         audio_path = video_path.replace(".mp4", ".wav")
@@ -3196,6 +3260,38 @@ Return ONLY valid JSON, no markdown."""
 # ============================================
 # STALE RENDER & STUCK VIDEO CLEANUP (runs every 10 min)
 # ============================================
+
+@app.function(
+    image=webhook_image,
+    volumes={"/source_cache": source_cache_volume},
+    schedule=modal.Cron("17 4 * * *"),   # daily 04:17 UTC
+)
+def evict_source_cache():
+    """Delete cached source videos older than 24h to bound the Volume size."""
+    import time
+
+    try:
+        source_cache_volume.reload()
+        now = time.time()
+        removed = 0
+        for name in os.listdir("/source_cache"):
+            p = f"/source_cache/{name}"
+            try:
+                if not os.path.isfile(p):
+                    continue
+                age = now - os.path.getmtime(p)
+                # cache entries after 24h; orphaned .tmp staging files after 1h
+                if age > 86400 or (name.endswith(".tmp") and age > 3600):
+                    os.unlink(p)
+                    removed += 1
+            except Exception:
+                pass
+        if removed:
+            source_cache_volume.commit()
+        print(f"🧹 Source cache eviction: removed {removed} stale file(s)")
+    except Exception as e:
+        print(f"⚠️ Source cache eviction error: {e}")
+
 
 @app.function(
     image=webhook_image,

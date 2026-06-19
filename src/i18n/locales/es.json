@@ -264,6 +264,8 @@
   },
   "videoCard": {
     "viewClips": "Ver Clips",
+    "retry": "Reintentar",
+    "open": "Abrir",
     "ready": "Listo",
     "analyzing": "Analizando",
     "rendering": "Renderizando",

@@ -156,7 +156,7 @@ const UploadedState = ({ video, onRefresh }: { video: Tables<"videos">; onRefres
         <div className="glass-card rounded-xl p-5 text-left max-w-sm mx-auto space-y-2">
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">{t("videoDetail.currentSettings")}</h3>
           <div className="space-y-1.5 text-sm text-foreground/80">
-            <p className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-accent" /> {t("videoDetail.generateNClips", { count: settings.clipCount || 10 })}</p>
+            <p className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-accent" /> {t("videoDetail.generateNClips", { count: (video.duration_seconds && video.duration_seconds < 60) ? 1 : (settings.clipCount || 10) })}</p>
             <p className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-accent" /> {settings.clipLength || "medium"} length</p>
             <p className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-accent" /> {settings.captionStyle || "hormozi"} captions</p>
             <p className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-accent" /> {(settings.languages || ["en"]).join(", ")}</p>
@@ -1438,7 +1438,9 @@ const FailedState = ({ video, onRefresh }: { video: Tables<"videos">; onRefresh:
       <div>
         <h2 className="text-xl font-bold text-foreground mb-2">{t("videoDetail.analysisFailed")}</h2>
         <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          {t("videoDetail.analysisFreeRetry")}
+          {video.error_message
+            ? video.error_message.replace(/\s*\[tech:[\s\S]*$/, "").trim()
+            : t("videoDetail.analysisFreeRetry")}
         </p>
       </div>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
