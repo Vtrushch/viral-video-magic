@@ -1,0 +1,31 @@
+name: Deploy Modal worker
+
+# Auto-deploys modal_worker.py to Modal whenever it changes on main.
+# Frontend-only pushes do NOT trigger this (paths filter) — Lovable handles those.
+#
+# One-time setup: add two repo secrets (Settings → Secrets and variables → Actions):
+#   MODAL_TOKEN_ID      ← token_id     from ~/.modal.toml
+#   MODAL_TOKEN_SECRET  ← token_secret from ~/.modal.toml
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'modal_worker.py'
+  workflow_dispatch: {}   # allow manual run from the Actions tab
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Modal
+        run: pip install --quiet modal
+      - name: Deploy worker
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+        run: modal deploy modal_worker.py
