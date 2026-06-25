@@ -4,34 +4,45 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
+import { lazy, Suspense } from "react";
+// Landing is eager — it's the LCP-critical first paint. Everything below is
+// code-split so loading "/" no longer ships the entire dashboard/editor/blog.
 import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
-import ClipsLibrary from "./pages/ClipsLibrary";
-import VideoDetail from "./pages/VideoDetail";
-import VideoConfig from "./pages/VideoConfig";
+import ErrorBoundary from "./components/ErrorBoundary";
+
+// Lazy too — ProtectedRoute pulls useAuth → supabase, which we keep OUT of the
+// landing's critical bundle (only /dashboard needs it).
+const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute"));
+const Auth = lazy(() => import("./pages/Auth"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const ClipsLibrary = lazy(() => import("./pages/ClipsLibrary"));
+const VideoDetail = lazy(() => import("./pages/VideoDetail"));
+const VideoConfig = lazy(() => import("./pages/VideoConfig"));
+const Settings = lazy(() => import("./pages/Settings"));
+const ClipEdit = lazy(() => import("./pages/ClipEdit"));
+const Admin = lazy(() => import("./pages/Admin"));
+const Upgrade = lazy(() => import("./pages/Upgrade"));
+const Analytics = lazy(() => import("./pages/Analytics"));
+const ContentCalendar = lazy(() => import("./pages/ContentCalendar"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const HighlightReelPage = lazy(() => import("./pages/HighlightReelPage"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogArticle = lazy(() => import("./pages/BlogArticle"));
+const ComparisonPage = lazy(() => import("./pages/ComparisonPage"));
+const DashboardLayout = lazy(() => import("./components/layout/DashboardLayout"));
 
 const VideoReviewRedirect = () => {
   const { id } = useParams();
   return <Navigate to={`/dashboard/videos/${id}`} replace />;
 };
 
-import Settings from "./pages/Settings";
-import ClipEdit from "./pages/ClipEdit";
-import Admin from "./pages/Admin";
-import Upgrade from "./pages/Upgrade";
-import Analytics from "./pages/Analytics";
-import ContentCalendar from "./pages/ContentCalendar";
-import NotFound from "./pages/NotFound";
-import HighlightReelPage from "./pages/HighlightReelPage";
-import Terms from "./pages/Terms";
-import Privacy from "./pages/Privacy";
-import Blog from "./pages/Blog";
-import BlogArticle from "./pages/BlogArticle";
-import ComparisonPage from "./pages/ComparisonPage";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
-import DashboardLayout from "./components/layout/DashboardLayout";
-import ErrorBoundary from "./components/ErrorBoundary";
+const PageFallback = () => (
+  <div className="min-h-[60vh] flex items-center justify-center">
+    <div className="w-8 h-8 rounded-full border-[3px] border-white/15 border-t-primary animate-spin" />
+  </div>
+);
 
 const queryClient = new QueryClient();
 
@@ -168,6 +179,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ErrorBoundary>
+          <Suspense fallback={<PageFallback />}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
@@ -202,6 +214,7 @@ const App = () => (
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
         </ErrorBoundary>
       </BrowserRouter>
     </TooltipProvider>

@@ -1,15 +1,28 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    <meta charset="UTF-8" />
+    <!-- Speed up the first API/auth call once the deferred supabase chunk loads -->
+    <link rel="preconnect" href="https://chogrmyerbtlcndpjtfs.supabase.co" crossorigin />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    <!-- Google Tag Manager — DEFERRED for performance: loads on first interaction or
+         when the page goes idle (≤5s), so GA/GTM never blocks first paint / LCP.
+         GA4 G-TTW7R3VRKE is configured via GTM - do not add gtag directly. -->
+    <script>(function(w,d,s,l,i){
+      function loadGTM(){
+        if(w.__gtmLoaded)return; w.__gtmLoaded=true;
+        w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+        var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+        j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+        f.parentNode.insertBefore(j,f);
+      }
+      ['scroll','mousemove','touchstart','keydown','click'].forEach(function(e){
+        w.addEventListener(e,loadGTM,{once:true,passive:true});
+      });
+      if('requestIdleCallback'in w)w.requestIdleCallback(loadGTM,{timeout:5000});
+      else w.addEventListener('load',function(){setTimeout(loadGTM,3000);});
     })(window,document,'script','dataLayer','GTM-WZ8WM69H');</script>
     <!-- End Google Tag Manager -->
-    <!-- GA4 G-TTW7R3VRKE is configured via GTM - do not add gtag directly -->
-    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>HookCut — AI Video Repurposing for Creators</title>
     <meta name="description" content="Turn 1 hour of video into viral clips in 5 minutes. AI-powered video repurposing with auto captions, face tracking, and viral scoring. Free to start." />

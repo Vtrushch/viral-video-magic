@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
 import HowItWorks from "@/components/landing/HowItWorks";
@@ -14,13 +13,16 @@ const Index = () => {
   const location = useLocation();
 
   useEffect(() => {
+    let cancelled = false;
     const checkAuth = async () => {
+      // Lazy-load supabase so its ~167KB stays OUT of the landing's critical JS;
+      // the redirect still happens, just after first paint.
+      const { supabase } = await import("@/integrations/supabase/client");
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        navigate("/dashboard");
-      }
+      if (session && !cancelled) navigate("/dashboard");
     };
     checkAuth();
+    return () => { cancelled = true; };
   }, [navigate]);
 
   useEffect(() => {

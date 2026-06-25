@@ -37,8 +37,7 @@ const Hero = () => {
         </div>
 
         <h1
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black max-w-4xl mx-auto mb-8 leading-[1.05] opacity-0 animate-fade-in"
-          style={{ animationDelay: "0.1s" }}
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black max-w-4xl mx-auto mb-8 leading-[1.05]"
         >
           <span className="text-foreground">{t("landing.hero.heroYourNext")} </span>
           <span className="shimmer-text font-serif-display italic">{t("landing.hero.heroViralShort")}</span>
