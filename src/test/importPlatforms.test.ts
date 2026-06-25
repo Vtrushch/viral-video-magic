@@ -9,12 +9,6 @@ describe("detectPlatform", () => {
     ["https://m.youtube.com/watch?v=dQw4w9WgXcQ", "youtube"],
     ["https://www.tiktok.com/@user/video/7301234567890123456", "tiktok"],
     ["https://vm.tiktok.com/ZMabcdef/", "tiktok"],
-    ["https://www.instagram.com/reel/Cxyz123abcd/", "instagram"],
-    ["https://www.instagram.com/p/Cxyz123abcd/", "instagram"],
-    ["https://www.facebook.com/watch/?v=123456789", "facebook"],
-    ["https://fb.watch/abc123/", "facebook"],
-    ["https://x.com/user/status/1234567890123456789", "twitter"],
-    ["https://twitter.com/user/status/1234567890123456789", "twitter"],
     ["https://vimeo.com/123456789", "vimeo"],
     ["https://www.twitch.tv/videos/1234567890", "twitch"],
     ["https://rumble.com/v4abcd-some-video.html", "rumble"],
@@ -27,7 +21,8 @@ describe("detectPlatform", () => {
   it.each([
     "https://example.com/video.mp4",
     "not a url",
-    "https://x.com/user",              // profile, not a status
+    "https://x.com/user/status/1234567890123456789", // X/Instagram/Facebook no longer supported
+    "https://www.instagram.com/reel/Cxyz123abcd/",
     "https://www.twitch.tv/somechannel", // live channel, not a VOD
     "",
   ])("rejects %s", (url) => {

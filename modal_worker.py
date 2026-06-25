@@ -21,9 +21,6 @@ YT_FORMAT_ANY = "bv*[height<=1080]+ba/b[height<=1080]/bv*+ba/b"
 IMPORT_URL_PATTERNS = [
     ("youtube",     r'https?://((www|m)\.)?(youtube\.com|youtu\.be)/'),
     ("tiktok",      r'https?://((www|vm|vt|m)\.)?tiktok\.com/'),
-    ("instagram",   r'https?://(www\.)?instagram\.com/(reel|reels|p|tv|share)/'),
-    ("facebook",    r'https?://((www|m|web)\.)?(facebook\.com|fb\.watch)/'),
-    ("twitter",     r'https?://((www|mobile)\.)?(twitter\.com|x\.com)/\w+/status/'),
     ("vimeo",       r'https?://(www\.)?vimeo\.com/\d+'),
     ("twitch",      r'https?://(www\.)?twitch\.tv/videos/\d+'),
     ("rumble",      r'https?://(www\.)?rumble\.com/'),
@@ -3709,8 +3706,8 @@ def webhook():
         if not platform:
             raise HTTPException(
                 status_code=400,
-                detail="Unsupported video URL. Supported: YouTube, TikTok, Instagram, "
-                       "Facebook, X/Twitter, Vimeo, Twitch, Rumble, Dailymotion, Loom",
+                detail="Unsupported video URL. Supported: YouTube, TikTok, Vimeo, "
+                       "Twitch, Rumble, Dailymotion, Loom",
             )
 
         # IDOR guard: the frontend creates the videos row (RLS-scoped) before calling us,

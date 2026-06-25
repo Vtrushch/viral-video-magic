@@ -2,9 +2,6 @@
 export const SUPPORTED_PLATFORMS: { key: string; label: string; pattern: RegExp }[] = [
   { key: "youtube", label: "YouTube", pattern: /^https?:\/\/((www|m)\.)?(youtube\.com|youtu\.be)\// },
   { key: "tiktok", label: "TikTok", pattern: /^https?:\/\/((www|vm|vt|m)\.)?tiktok\.com\// },
-  { key: "instagram", label: "Instagram", pattern: /^https?:\/\/(www\.)?instagram\.com\/(reel|reels|p|tv|share)\// },
-  { key: "facebook", label: "Facebook", pattern: /^https?:\/\/((www|m|web)\.)?(facebook\.com|fb\.watch)\// },
-  { key: "twitter", label: "X", pattern: /^https?:\/\/((www|mobile)\.)?(twitter\.com|x\.com)\/\w+\/status\// },
   { key: "vimeo", label: "Vimeo", pattern: /^https?:\/\/(www\.)?vimeo\.com\/\d+/ },
   { key: "twitch", label: "Twitch", pattern: /^https?:\/\/(www\.)?twitch\.tv\/videos\/\d+/ },
   { key: "rumble", label: "Rumble", pattern: /^https?:\/\/(www\.)?rumble\.com\// },
