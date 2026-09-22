@@ -3904,8 +3904,11 @@ def webhook():
             raise HTTPException(status_code=400, detail=str(e))
 
     @web_app.post("/stripe-webhook")
+    @web_app.post("/stripe/webhook")  # alias: the Stripe dashboard endpoint is configured with this path
     async def stripe_webhook(request: Request):
-        """Handle Stripe webhook events — NO AUTH (verified via Stripe signature)."""
+        """Handle Stripe webhook events — NO AUTH (verified via Stripe signature).
+        Registered on both /stripe-webhook and /stripe/webhook so the live Stripe
+        endpoint (which uses the slash form) stops returning 404."""
         import stripe
         stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
 
