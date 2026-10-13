@@ -36,16 +36,35 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // Get all videos
-    const { data: videos } = await adminClient.from("videos").select("id, user_id, title, status, created_at, duration, duration_seconds, file_path, source_url, thumbnail_url");
-    // Get all clips
-    const { data: clips } = await adminClient.from("clips").select("id, user_id, video_id, title, status, viral_score, start_time, end_time, duration_seconds, caption_style, created_at");
-    // Get all profiles
-    const { data: profiles } = await adminClient.from("profiles").select("user_id, full_name, avatar_url");
-    // Get all credits
-    const { data: creditsData } = await adminClient.from("user_credits").select("user_id, total_credits, used_credits, plan");
-    // Get all users from auth
-    const { data: { users: authUsers } } = await adminClient.auth.admin.listUsers();
+    // PostgREST caps a select at 1000 rows and auth.admin.listUsers() returns only
+    // 50/page by default — so paginate EVERYTHING, otherwise totals are capped and
+    // most users show their UUID instead of their email (only the first 50 resolve).
+    const fetchAll = async (table: string, columns: string) => {
+      const all: any[] = [];
+      const pageSize = 1000;
+      for (let from = 0; ; from += pageSize) {
+        const { data, error } = await adminClient.from(table).select(columns).range(from, from + pageSize - 1);
+        if (error || !data || data.length === 0) break;
+        all.push(...data);
+        if (data.length < pageSize) break;
+      }
+      return all;
+    };
+
+    const videos = await fetchAll("videos", "id, user_id, title, status, created_at, duration, duration_seconds, file_path, source_url, thumbnail_url");
+    const clips = await fetchAll("clips", "id, user_id, video_id, title, status, viral_score, start_time, end_time, duration_seconds, caption_style, created_at");
+    const profiles = await fetchAll("profiles", "user_id, full_name, avatar_url");
+    const creditsData = await fetchAll("user_credits", "user_id, total_credits, used_credits, plan");
+
+    // Fetch ALL auth users (listUsers defaults to 50 per page)
+    const authUsers: any[] = [];
+    for (let page = 1; ; page++) {
+      const { data, error } = await adminClient.auth.admin.listUsers({ page, perPage: 1000 });
+      if (error) break;
+      const batch = data?.users || [];
+      authUsers.push(...batch);
+      if (batch.length < 1000) break;
+    }
 
     // Build user map
     const userMap: Record<string, { email: string; created_at: string; full_name?: string }> = {};
