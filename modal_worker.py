@@ -256,51 +256,29 @@ def get_video_duration(video_path: str) -> float:
 
 
 def upload_to_r2(file_path: str, s3_key: str, content_type: str = "video/mp4") -> str:
-    """Upload rendered clip to Supabase Storage (rendered-clips bucket) instead of R2"""
-    import requests as req
+    """Upload a rendered asset (clip / reel / thumbnail) to Cloudflare R2 and return
+    its public URL served via the cdn.hookcut.com custom domain. Zero egress cost.
 
-    print(f"☁️ Uploading to Supabase Storage: {s3_key}")
+    s3_key is the object key AND the public path, e.g. 'clips/<id>.mp4' ->
+    https://cdn.hookcut.com/clips/<id>.mp4"""
+    import boto3
 
-    supabase_url = os.environ["SUPABASE_URL"].rstrip("/")
-    service_key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+    print(f"☁️ Uploading to R2: {s3_key}")
 
-    # Upload to rendered-clips bucket
-    bucket = "rendered-clips"
-    file_size = os.path.getsize(file_path)
+    s3 = boto3.client(
+        "s3",
+        endpoint_url=os.environ["R2_ENDPOINT"],
+        aws_access_key_id=os.environ["CLOUDFLARE_ACCESS_KEY_ID"],
+        aws_secret_access_key=os.environ["CLOUDFLARE_SECRET_ACCESS_KEY"],
+        region_name="auto",
+    )
+    bucket = os.environ["R2_BUCKET_NAME"]
 
-    # Stream upload — don't load entire file into memory
-    with open(file_path, "rb") as f:
-        resp = req.post(
-            f"{supabase_url}/storage/v1/object/{bucket}/{s3_key}",
-            headers={
-                "Authorization": f"Bearer {service_key}",
-                "apikey": service_key,
-                "Content-Type": content_type,
-                "Content-Length": str(file_size),
-            },
-            data=f,
-            timeout=300,
-        )
+    # upload_file streams from disk and handles multipart for large files.
+    s3.upload_file(file_path, bucket, s3_key, ExtraArgs={"ContentType": content_type})
 
-    if resp.status_code not in (200, 201):
-        # Try upsert if file already exists
-        with open(file_path, "rb") as f:
-            resp = req.put(
-                f"{supabase_url}/storage/v1/object/{bucket}/{s3_key}",
-                headers={
-                    "Authorization": f"Bearer {service_key}",
-                    "apikey": service_key,
-                    "Content-Type": content_type,
-                    "Content-Length": str(file_size),
-                },
-                data=f,
-                timeout=300,
-            )
-
-    if resp.status_code not in (200, 201):
-        raise RuntimeError(f"Supabase Storage upload failed: {resp.status_code} {resp.text[:300]}")
-
-    public_url = f"{supabase_url}/storage/v1/object/public/{bucket}/{s3_key}"
+    base = os.environ.get("R2_PUBLIC_BASE", "").rstrip("/")
+    public_url = f"{base}/{s3_key}"
 
     print(f"✅ Uploaded: {public_url}")
     return public_url
@@ -858,31 +836,12 @@ def analyze_video_with_gemini(video_url: str, video_id: str, user_id: str, auth_
                 thumb_path
             ], check=True, capture_output=True)
 
-            # Upload thumbnail via Supabase Storage REST API
-            import requests as req
-            supabase_url = os.environ["SUPABASE_URL"].rstrip("/")
-            service_key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
-            thumb_key = f"{user_id}/{video_id}_thumb.jpg"
-
-            with open(thumb_path, "rb") as tf:
-                resp_thumb = req.post(
-                    f"{supabase_url}/storage/v1/object/thumbnails/{thumb_key}",
-                    headers={
-                        "Authorization": f"Bearer {service_key}",
-                        "apikey": service_key,
-                        "Content-Type": "image/jpeg",
-                    },
-                    data=tf.read(),
-                    timeout=30,
-                )
-
-            if resp_thumb.status_code in (200, 201):
-                thumb_url = f"{supabase_url}/storage/v1/object/public/thumbnails/{thumb_key}"
-                sb_temp = init_supabase()
-                sb_temp.table("videos").update({"thumbnail_url": thumb_url}).eq("id", video_id).execute()
-                print(f"🖼️ Thumbnail uploaded: {thumb_url}")
-            else:
-                print(f"⚠️ Thumbnail upload failed: {resp_thumb.status_code} {resp_thumb.text[:200]}")
+            # Upload thumbnail to R2 (served via cdn.hookcut.com)
+            thumb_key = f"thumbs/{user_id}/{video_id}_thumb.jpg"
+            thumb_url = upload_to_r2(thumb_path, thumb_key, content_type="image/jpeg")
+            sb_temp = init_supabase()
+            sb_temp.table("videos").update({"thumbnail_url": thumb_url}).eq("id", video_id).execute()
+            print(f"🖼️ Thumbnail uploaded: {thumb_url}")
         except Exception as thumb_err:
             print(f"⚠️ Thumbnail generation failed (non-fatal): {thumb_err}")
         finally:
@@ -3350,6 +3309,61 @@ def cleanup_stale_jobs():
         print(f"⚠️ Reel cleanup error: {e}")
 
     print("🧹 Cleanup complete")
+
+
+@app.function(
+    image=webhook_image,
+    secrets=secrets,
+    schedule=modal.Cron("0 8 * * *"),  # daily ~3am CT
+)
+def cleanup_old_raw_videos():
+    """Delete raw source videos from Supabase Storage older than 7 days.
+
+    Clips + thumbnails live on R2 (cdn.hookcut.com) and are kept forever; the raw
+    source is only needed during processing and short-term re-editing. Pruning it
+    keeps Supabase Storage tiny so the project stays within the free tier. The
+    videos/clips DB rows are kept; only the raw file is removed and file_path cleared."""
+    from datetime import datetime, timezone, timedelta
+    import requests as req
+
+    supabase = init_supabase()
+    supabase_url = os.environ["SUPABASE_URL"].rstrip("/")
+    service_key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
+
+    try:
+        rows = (
+            supabase.table("videos")
+            .select("id, file_path")
+            .lt("created_at", cutoff)
+            .not_.is_("file_path", "null")
+            .limit(2000)
+            .execute()
+        )
+    except Exception as e:
+        print(f"⚠️ Raw cleanup query failed: {e}")
+        return
+
+    deleted = 0
+    for v in (rows.data or []):
+        fp = v.get("file_path")
+        # Only prune raw storage paths (R2/cdn full URLs are never raw sources)
+        if not fp or fp.startswith("http"):
+            continue
+        try:
+            r = req.delete(
+                f"{supabase_url}/storage/v1/object/raw-videos/{fp}",
+                headers={"Authorization": f"Bearer {service_key}", "apikey": service_key},
+                timeout=30,
+            )
+            # 200/204 = deleted; 400/404 = already gone — treat both as done
+            if r.status_code in (200, 204, 400, 404):
+                supabase.table("videos").update({"file_path": None}).eq("id", v["id"]).execute()
+                deleted += 1
+        except Exception as e:
+            print(f"⚠️ Raw delete failed for {v['id']}: {e}")
+
+    print(f"🧹 Raw video cleanup: pruned {deleted} source file(s) older than 7 days")
 
 
 # ============================================

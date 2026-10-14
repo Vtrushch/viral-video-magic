@@ -64,9 +64,8 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     setBufferPercent(0);
 
     if (isRenderedClip && clip?.file_path) {
-      // Rendered clips are in the public rendered-clips bucket
-      const publicUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/rendered-clips/${clip.file_path}`;
-      setVideoUrl(publicUrl);
+      // Rendered clips: file_path is the full public URL (R2 via cdn.hookcut.com)
+      setVideoUrl(clip.file_path);
     } else if (video?.file_path) {
       // Unrendered clips: get signed URL from raw-videos bucket
       // Add media fragment #t=start,end so browser only fetches the needed byte range
