@@ -107,7 +107,10 @@ image = (
         "opencv-python-headless>=4.8.0",
     )
     # Install Deno — the recommended JS runtime for yt-dlp (sandboxed, single binary)
+    # + aria2c (multi-connection downloader, 3-8x faster). Installed HERE (after
+    # pip) rather than in apt_install so the pip layer cache stays valid.
     .run_commands(
+        "apt-get update && apt-get install -y aria2 && aria2c --version | head -1",
         "curl -fsSL https://deno.land/install.sh | sh",
         "ln -sf /root/.deno/bin/deno /usr/local/bin/deno",
         "deno --version",
@@ -672,6 +675,7 @@ def analyze_video_with_gemini(video_url: str, video_id: str, user_id: str, auth_
     import time
     import re
     from google import genai
+    from google.genai import types
 
     # Parse settings
     settings = settings or {}
@@ -691,11 +695,20 @@ def analyze_video_with_gemini(video_url: str, video_id: str, user_id: str, auth_
 
     client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
     
-    # Use gemini-2.5-flash directly. Skip the per-analysis availability probe
+    # Use gemini-2.5-flash directly (gemini-2.0-flash was retired → 404). Skip the per-analysis availability probe
     # (client.models.get on each model = 1-2 blocking round-trips every time);
     # the "no valid clips" path below already falls back to gemini-2.0-flash.
     selected_model = "gemini-2.5-flash"
     print(f"🤖 Using model: {selected_model}")
+
+    # Generation config: a HIGH output-token budget prevents truncation (10 clips
+    # with hook_variants is long — truncation left the JSON incomplete and the
+    # parser salvaged only 1 clip), and JSON mime makes Gemini return raw JSON
+    # (no ```json fence) so parsing is reliable.
+    gen_config = types.GenerateContentConfig(
+        max_output_tokens=32768,
+        response_mime_type="application/json",
+    )
 
     video_path = None
     video_file = None
@@ -984,8 +997,29 @@ Return ONLY valid JSON array:
             # Short video: upload directly (no chunking needed)
             print(f"📦 Video OK for Gemini: {file_size_mb:.0f}MB, {duration:.0f}s ({duration/60:.0f}min)")
         
+            # Gemini's File API returns intermittent 429/500/503 — these are
+            # transient and MUST NOT kill the whole analysis (an unretried 503
+            # here is exactly what failed real user uploads).
+            def _gemini_transient(e):
+                s = str(e)
+                return any(m in s for m in (
+                    "429", "500", "502", "503", "UNAVAILABLE", "unavailable",
+                    "InternalError", "ResourceExhausted",
+                ))
+
             print("⬆️ Uploading to Gemini...")
-            video_file = client.files.upload(file=video_path)
+            video_file = None
+            for up_attempt in range(4):
+                try:
+                    video_file = client.files.upload(file=video_path)
+                    break
+                except Exception as up_err:
+                    if _gemini_transient(up_err) and up_attempt < 3:
+                        wait = 5 * (up_attempt + 1)
+                        print(f"⚠️ Gemini upload transient error ({str(up_err)[:90]}) — retry in {wait}s...")
+                        time.sleep(wait)
+                    else:
+                        raise
 
             max_wait_sec = 300
             started = time.time()
@@ -1001,7 +1035,14 @@ Return ONLY valid JSON array:
                 if elapsed % 10 == 0:  # Print every 10s to reduce log spam
                     print(f"⏳ Processing... ({elapsed}s, state={video_file.state})")
                 time.sleep(2)  # Poll every 2s instead of 5s — saves 15-30s
-                video_file = client.files.get(name=video_file.name)
+                try:
+                    video_file = client.files.get(name=video_file.name)
+                except Exception as poll_err:
+                    # Transient blip while polling — keep the last state, retry next tick.
+                    if _gemini_transient(poll_err):
+                        print(f"⚠️ Transient error polling Gemini file state ({str(poll_err)[:90]}) — retrying...")
+                        continue
+                    raise
 
             print(f"✅ Gemini file ready (state={video_file.state})")
 
@@ -1071,6 +1112,7 @@ Return ONLY valid JSON array:
                     resp = client.models.generate_content(
                         model=selected_model,
                         contents=[video_file, prompt],
+                        config=gen_config,
                     )
                     break
                 except Exception as gemini_err:
@@ -1104,6 +1146,7 @@ Return ONLY valid JSON array:
                         resp = client.models.generate_content(
                             model=selected_model,
                             contents=[video_file, stronger_prompt],
+                            config=gen_config,
                         )
                         resp_text = getattr(resp, "text", "") or ""
                         print(f"📝 Retry response length: {len(resp_text)} chars")
@@ -1164,11 +1207,12 @@ Return ONLY valid JSON array:
 
         # If no valid clips, retry with gemini-2.0-flash as fallback
         if not cleaned:
-            print("⚠️ No valid clips from primary model. Retrying with gemini-2.0-flash...")
+            print("⚠️ No valid clips from primary model. Retrying with gemini-2.5-flash...")
             try:
                 resp2 = client.models.generate_content(
-                    model="gemini-2.0-flash",
+                    model="gemini-2.5-flash",
                     contents=[video_file, prompt],
+                    config=gen_config,
                 )
                 clips_raw2 = extract_json_array(getattr(resp2, "text", ""))
                 
@@ -1291,6 +1335,13 @@ Return ONLY valid JSON array:
         
         print(f"🌍 Detected language: {detected_lang}")
 
+        # Re-analysis REPLACES the clip set (it previously APPENDED, so "Try Again"
+        # piled up duplicate clips). Clear this video's existing clips first.
+        try:
+            supabase.table("clips").delete().eq("video_id", video_id).execute()
+        except Exception as del_err:
+            print(f"⚠️ Could not clear old clips before insert (non-fatal): {del_err}")
+
         supabase.table("clips").insert(rows_to_insert).execute()
 
         print("✅ Analysis complete and saved to database!")
@@ -1396,6 +1447,7 @@ Return ONLY valid JSON array:
             sb_err = init_supabase()
             sb_err.table("videos").update({
                 "status": "failed",
+                "error_message": str(analysis_err)[:500],
             }).eq("id", video_id).execute()
         except Exception:
             pass
@@ -2105,7 +2157,7 @@ Rules:
     for attempt in range(max_retries):
         try:
             response = client.models.generate_content(
-                model="gemini-2.0-flash",
+                model="gemini-2.5-flash",
                 contents=prompt,
             )
             text = response.text.strip()
@@ -2319,10 +2371,17 @@ def trigger_analysis(video_id: str):
     scaledown_window=120,          # Keep warm 2 min
     max_containers=10,             # 10 parallel YouTube downloads
 )
-def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platform: str = ""):
+def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platform: str = "", attempt: int = 0):
     """Download a video from any supported platform (YouTube, TikTok, Instagram,
     X/Twitter, Facebook, Vimeo, Twitch, Rumble, Dailymotion, Loom),
-    upload to Supabase Storage, then wait for user to configure analysis."""
+    upload to Supabase Storage, then wait for user to configure analysis.
+
+    `attempt` is the 0-based retry counter. YouTube bot-detection blocks
+    datacenter IPs intermittently, so when a download fails with a transient
+    bot-block (not a definitive private/removed/geo error) we self-respawn on a
+    FRESH Modal container — which gets a new egress IP — up to MAX_DL_ATTEMPTS
+    times before giving up. The video stays `downloading` across retries so the
+    user never sees a spurious `failed` for a block that the next IP clears."""
     import requests as req
 
     platform = platform or detect_import_platform(source_url) or "generic"
@@ -2377,6 +2436,10 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
 
         # Args shared by every strategy. 2000M cap matches the 5GB/2h product
         # limit closely enough while protecting the 4GB container.
+        # HYBRID: the strategy chain runs DIRECT (no proxy) — datacenter egress is
+        # fast and free. The residential proxy is applied ONLY as a fallback tier
+        # below, after a non-definitive block, so we pay proxy bandwidth solely for
+        # videos the direct path couldn't fetch.
         ejs_args = ["--remote-components", "ejs:github"]  # EJS challenge solver (PO tokens / n-sig) via Deno
         common_args = [
             "--merge-output-format", "mp4",
@@ -2385,7 +2448,13 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
             "--no-check-certificates",
             "--socket-timeout", "30",
             "--retries", "3",
-            *proxy_args,
+            # SPEED: aria2c multi-connection downloader (16 conns) + parallel
+            # fragments → 3-8x faster than the single-stream native downloader.
+            # yt-dlp forwards --proxy to aria2c (--all-proxy), so the proxy tier
+            # stays routed through the residential proxy.
+            "--concurrent-fragments", "8",
+            "--downloader", "aria2c",
+            "--downloader-args", "aria2c:-x16 -s16 -k1M",
             "-o", video_path,
             source_url,
         ]
@@ -2446,6 +2515,7 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
 
         downloaded = False
         last_error = ""
+        definitive_failure = False  # private/removed/geo/members-only — no IP change can fix it
 
         for i, cmd in enumerate(yt_dlp_strategies):
             print(f"🔄 Strategy {i+1}/{len(yt_dlp_strategies)}...")
@@ -2486,6 +2556,7 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
             )
             if any(m in full_err for m in definitive_markers):
                 print(f"⛔ Strategy {i+1} hit a definitive/unwinnable error — skipping remaining strategies")
+                definitive_failure = True
                 break
             print(f"⚠️ Strategy {i+1} failed: {last_error[:200]}...")
 
@@ -2539,7 +2610,49 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
             else:
                 print("ℹ️ No COBALT_API_URL configured — skipping API fallback")
 
+        # HYBRID proxy fallback tier: only when the fast/free direct attempts failed
+        # with a NON-definitive block AND a residential proxy is configured. One
+        # attempt through the proxy — the reliable fix for datacenter-IP bot-blocks.
+        # Dormant (skipped) until YTDLP_PROXY is set in the youtube-cookies secret.
+        if not downloaded and not definitive_failure and proxy:
+            print("🌐 Direct attempts failed — retrying once through residential proxy...")
+            proxy_cmd = [
+                "yt-dlp", *(ejs_args if platform == "youtube" else []),
+                "-f", YT_FORMAT_H264, "--proxy", proxy, *cookie_args, *common_args,
+            ]
+            if os.path.exists(video_path):
+                os.unlink(video_path)
+            try:
+                presult = subprocess.run(proxy_cmd, capture_output=True, text=True, timeout=600)
+                if presult.returncode == 0 and os.path.exists(video_path) and os.path.getsize(video_path) > 10000:
+                    downloaded = True
+                    print(f"✅ Proxy attempt worked! File: {os.path.getsize(video_path)/(1024*1024):.1f} MB")
+                else:
+                    last_error = (presult.stderr or presult.stdout or "")[-500:]
+                    print(f"⚠️ Proxy attempt failed: {last_error[:200]}...")
+            except subprocess.TimeoutExpired:
+                last_error = "Proxy attempt timed out after 600s"
+                print(f"⚠️ {last_error}")
+            except Exception as pe:
+                last_error = f"Proxy attempt crashed: {pe}"
+                print(f"⚠️ {last_error}")
+
         if not downloaded:
+            # Transient YouTube bot-block → respawn on a FRESH Modal container
+            # (new egress IP) before surfacing failure. Definitive errors
+            # (private / removed / geo / members-only) skip this — no IP can fix them.
+            MAX_DL_ATTEMPTS = 2  # extra retries after the first (3 distinct IPs total)
+            if platform == "youtube" and not definitive_failure and attempt < MAX_DL_ATTEMPTS:
+                next_attempt = attempt + 1
+                print(f"🔁 YouTube bot-block on attempt {attempt+1}/{MAX_DL_ATTEMPTS+1} — "
+                      f"respawning on a fresh IP (attempt {next_attempt+1}/{MAX_DL_ATTEMPTS+1})")
+                download_url_and_analyze.spawn(
+                    source_url=source_url, video_id=video_id, user_id=user_id,
+                    platform=platform, attempt=next_attempt,
+                )
+                # Keep status 'downloading'; the respawned run owns the final outcome.
+                return {"success": False, "status": "retrying", "attempt": next_attempt}
+
             if platform == "youtube":
                 user_hint = (
                     "YouTube is currently blocking automated server downloads for this video "
@@ -3115,7 +3228,7 @@ Return ONLY valid JSON, no markdown."""
                     time.sleep(wait)
                 
                 response = client.models.generate_content(
-                    model="gemini-2.0-flash",
+                    model="gemini-2.5-flash",
                     contents=prompt,
                 )
                 raw = response.text.strip()
