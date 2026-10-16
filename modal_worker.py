@@ -2454,6 +2454,7 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
             # stays routed through the residential proxy.
             "--concurrent-fragments", "8",
             "--downloader", "aria2c",
+            "--downloader", "m3u8:native",  # aria2c can't assemble HLS — native handles it
             "--downloader-args", "aria2c:-x16 -s16 -k1M",
             "-o", video_path,
             source_url,
@@ -2516,6 +2517,7 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
         downloaded = False
         last_error = ""
         definitive_failure = False  # private/removed/geo/members-only — no IP change can fix it
+        apify_title = ""             # real title from Apify (yt-dlp --get-title bot-blocks too)
 
         for i, cmd in enumerate(yt_dlp_strategies):
             print(f"🔄 Strategy {i+1}/{len(yt_dlp_strategies)}...")
@@ -2610,32 +2612,91 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
             else:
                 print("ℹ️ No COBALT_API_URL configured — skipping API fallback")
 
+        # ── Apify YouTube downloader fallback (the reliable one) ──
+        # When the free direct path fails with a non-definitive block, hand the
+        # download to Apify's maintained actor. It fetches via Apify's residential
+        # proxies and returns a ready MP4 — bypassing BOTH the datacenter bot-block
+        # AND googlevideo's media 403 that defeated our own proxy. YouTube only.
+        # Cost ~$0.09–2/video by length (quality capped at 720p); billed only for
+        # the videos the free path couldn't fetch. Needs APIFY_API_TOKEN in the
+        # youtube-cookies secret.
+        apify_token = os.environ.get("APIFY_API_TOKEN", "").strip()
+        if not downloaded and not definitive_failure and platform == "youtube" and apify_token:
+            try:
+                print("🎬 Direct failed — downloading via Apify actor...")
+                run_resp = req.post(
+                    "https://api.apify.com/v2/acts/dami_studio~youtube-video-downloader/run-sync-get-dataset-items",
+                    headers={"Authorization": f"Bearer {apify_token}", "Content-Type": "application/json"},
+                    json={"videoUrl": source_url, "quality": "720", "maxMegabytes": 2000, "includeMetadata": True},
+                    timeout=900,
+                )
+                if run_resp.status_code in (200, 201):
+                    items = run_resp.json() or []
+                    item = items[0] if items else {}
+                    media_url = item.get("mediaUrl")
+                    apify_title = (item.get("title") or "").strip()[:100]
+                    if media_url:
+                        size_mb = (item.get("fileSizeBytes") or 0) / (1024 * 1024)
+                        print(f"🎬 Apify returned MP4 ({size_mb:.1f}MB) — fetching to container...")
+                        if os.path.exists(video_path):
+                            os.unlink(video_path)
+                        with req.get(media_url, stream=True, timeout=600) as mr:
+                            mr.raise_for_status()
+                            with open(video_path, "wb") as f:
+                                for chunk in mr.iter_content(1 << 20):
+                                    f.write(chunk)
+                        if os.path.exists(video_path) and os.path.getsize(video_path) > 10000:
+                            downloaded = True
+                            print(f"✅ Apify download worked! File: {os.path.getsize(video_path)/(1024*1024):.1f} MB")
+                        else:
+                            last_error = "Apify MP4 fetch produced an empty/tiny file"
+                            print(f"⚠️ {last_error}")
+                    else:
+                        last_error = f"Apify returned no mediaUrl (item: {str(item)[:200]})"
+                        print(f"⚠️ {last_error}")
+                else:
+                    last_error = f"Apify actor HTTP {run_resp.status_code}: {run_resp.text[:200]}"
+                    print(f"⚠️ {last_error}")
+            except Exception as ae:
+                last_error = f"Apify download failed: {str(ae)[:200]}"
+                print(f"⚠️ {last_error}")
+
         # HYBRID proxy fallback tier: only when the fast/free direct attempts failed
         # with a NON-definitive block AND a residential proxy is configured. One
         # attempt through the proxy — the reliable fix for datacenter-IP bot-blocks.
         # Dormant (skipped) until YTDLP_PROXY is set in the youtube-cookies secret.
         if not downloaded and not definitive_failure and proxy:
-            print("🌐 Direct attempts failed — retrying once through residential proxy...")
-            proxy_cmd = [
-                "yt-dlp", *(ejs_args if platform == "youtube" else []),
-                "-f", YT_FORMAT_H264, "--proxy", proxy, *cookie_args, *common_args,
-            ]
-            if os.path.exists(video_path):
-                os.unlink(video_path)
-            try:
-                presult = subprocess.run(proxy_cmd, capture_output=True, text=True, timeout=600)
-                if presult.returncode == 0 and os.path.exists(video_path) and os.path.getsize(video_path) > 10000:
+            print("🌐 Direct attempts failed — retrying the FULL strategy chain through residential proxy...")
+            # The residential IP removes YouTube's datacenter bot-block, so we re-run
+            # the SAME proven strategies (tv/web_safari/mweb/android_vr + EJS) that
+            # download fine on a good IP — just add --proxy. (Inventing new format/
+            # client combos here hit GVS-PO-token 403s; the real strategies don't.)
+            for i, cmd in enumerate(yt_dlp_strategies):
+                print(f"🌐 Proxy strategy {i+1}/{len(yt_dlp_strategies)}...")
+                if os.path.exists(video_path):
+                    os.unlink(video_path)
+                try:
+                    pr = subprocess.run(cmd + ["--proxy", proxy], capture_output=True, text=True, timeout=600)
+                except subprocess.TimeoutExpired:
+                    last_error = f"Proxy strategy {i+1} timed out after 600s"
+                    print(f"⚠️ {last_error}")
+                    continue
+                except Exception as pe:
+                    last_error = f"Proxy strategy {i+1} crashed: {pe}"
+                    print(f"⚠️ {last_error}")
+                    continue
+                if pr.returncode == 0 and os.path.exists(video_path) and os.path.getsize(video_path) > 10000:
                     downloaded = True
-                    print(f"✅ Proxy attempt worked! File: {os.path.getsize(video_path)/(1024*1024):.1f} MB")
-                else:
-                    last_error = (presult.stderr or presult.stdout or "")[-500:]
-                    print(f"⚠️ Proxy attempt failed: {last_error[:200]}...")
-            except subprocess.TimeoutExpired:
-                last_error = "Proxy attempt timed out after 600s"
-                print(f"⚠️ {last_error}")
-            except Exception as pe:
-                last_error = f"Proxy attempt crashed: {pe}"
-                print(f"⚠️ {last_error}")
+                    print(f"✅ Proxy strategy {i+1} worked! File: {os.path.getsize(video_path)/(1024*1024):.1f} MB")
+                    break
+                last_error = (pr.stderr or pr.stdout or "")[-500:]
+                # Same definitive-error early-exit as the direct chain
+                full_err = ((pr.stderr or "") + " " + (pr.stdout or "")).lower()
+                if any(m in full_err for m in definitive_markers):
+                    print(f"⛔ Proxy strategy {i+1} hit a definitive error — stopping")
+                    definitive_failure = True
+                    break
+                print(f"⚠️ Proxy strategy {i+1} failed: {last_error[:200]}")
 
         if not downloaded:
             # Transient YouTube bot-block → respawn on a FRESH Modal container
@@ -2740,16 +2801,20 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
         except Exception as tc_err:
             print(f"⚠️ Codec check failed (non-fatal): {tc_err}")
 
-        # Get video title
-        title_cmd = [
-            "yt-dlp", *(ejs_args if platform == "youtube" else []),
-            "--get-title", "--no-playlist",
-            *proxy_args,
-            *cookie_args,
-            source_url,
-        ]
-        title_result = subprocess.run(title_cmd, capture_output=True, text=True, timeout=30)
-        yt_title = (title_result.stdout or "").strip()[:100] or f"{platform.capitalize()} Video"
+        # Get video title. Prefer Apify's title (yt-dlp --get-title bot-blocks on
+        # the same datacenter IP, so it would return a generic placeholder).
+        if apify_title:
+            yt_title = apify_title
+        else:
+            title_cmd = [
+                "yt-dlp", *(ejs_args if platform == "youtube" else []),
+                "--get-title", "--no-playlist",
+                *proxy_args,
+                *cookie_args,
+                source_url,
+            ]
+            title_result = subprocess.run(title_cmd, capture_output=True, text=True, timeout=30)
+            yt_title = (title_result.stdout or "").strip()[:100] or f"{platform.capitalize()} Video"
 
         # Upload to Supabase Storage (raw-videos bucket)
         supabase_url = os.environ["SUPABASE_URL"].rstrip("/")
