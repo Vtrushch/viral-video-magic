@@ -2614,33 +2614,34 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
 
         # ── Apify YouTube downloader fallback (the reliable one) ──
         # When the free direct path fails with a non-definitive block, hand the
-        # download to Apify's maintained actor. It fetches via Apify's residential
-        # proxies and returns a ready MP4 — bypassing BOTH the datacenter bot-block
-        # AND googlevideo's media 403 that defeated our own proxy. YouTube only.
-        # Cost ~$0.09–2/video by length (quality capped at 720p); billed only for
-        # the videos the free path couldn't fetch. Needs APIFY_API_TOKEN in the
-        # youtube-cookies secret.
+        # download to Apify's maintained `johnvc/youtube-download-api` actor. It
+        # fetches server-side and returns a ready MP4 (fileUrl on Apify storage),
+        # bypassing BOTH the datacenter bot-block AND googlevideo's media 403 that
+        # defeated our own residential proxy. Billed PER DELIVERED MINUTE (not per
+        # GB), so cost is cents/video and independent of file size — full 1080p is
+        # fine; failed/skipped downloads are free. YouTube only. Needs
+        # APIFY_API_TOKEN in the youtube-cookies secret.
         apify_token = os.environ.get("APIFY_API_TOKEN", "").strip()
         if not downloaded and not definitive_failure and platform == "youtube" and apify_token:
             try:
-                print("🎬 Direct failed — downloading via Apify actor...")
+                print("🎬 Direct failed — downloading via Apify (johnvc, per-minute)...")
                 run_resp = req.post(
-                    "https://api.apify.com/v2/acts/dami_studio~youtube-video-downloader/run-sync-get-dataset-items",
+                    "https://api.apify.com/v2/acts/johnvc~youtube-download-api/run-sync-get-dataset-items",
                     headers={"Authorization": f"Bearer {apify_token}", "Content-Type": "application/json"},
-                    json={"videoUrl": source_url, "quality": "720", "maxMegabytes": 2000, "includeMetadata": True},
+                    json={"videoUrls": [source_url], "format": "video", "quality": "1080p", "maxMegabytes": 2000},
                     timeout=900,
                 )
                 if run_resp.status_code in (200, 201):
                     items = run_resp.json() or []
                     item = items[0] if items else {}
-                    media_url = item.get("mediaUrl")
+                    file_url = item.get("fileUrl")
                     apify_title = (item.get("title") or "").strip()[:100]
-                    if media_url:
+                    if file_url:
                         size_mb = (item.get("fileSizeBytes") or 0) / (1024 * 1024)
-                        print(f"🎬 Apify returned MP4 ({size_mb:.1f}MB) — fetching to container...")
+                        print(f"🎬 Apify returned MP4 ({item.get('quality')}, {size_mb:.1f}MB) — fetching to container...")
                         if os.path.exists(video_path):
                             os.unlink(video_path)
-                        with req.get(media_url, stream=True, timeout=600) as mr:
+                        with req.get(file_url, stream=True, timeout=600) as mr:
                             mr.raise_for_status()
                             with open(video_path, "wb") as f:
                                 for chunk in mr.iter_content(1 << 20):
@@ -2652,7 +2653,8 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
                             last_error = "Apify MP4 fetch produced an empty/tiny file"
                             print(f"⚠️ {last_error}")
                     else:
-                        last_error = f"Apify returned no mediaUrl (item: {str(item)[:200]})"
+                        note = item.get("note") or item.get("error") or str(item)[:200]
+                        last_error = f"Apify returned no fileUrl: {note}"
                         print(f"⚠️ {last_error}")
                 else:
                     last_error = f"Apify actor HTTP {run_resp.status_code}: {run_resp.text[:200]}"
