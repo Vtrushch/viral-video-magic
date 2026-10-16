@@ -2634,7 +2634,13 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
                 start = req.post(
                     "https://api.apify.com/v2/acts/johnvc~youtube-download-api/runs",
                     headers={**ahdr, "Content-Type": "application/json"},
-                    json={"videoUrls": [source_url], "format": "video", "quality": "1080p",
+                    # 720p: ~2.5x smaller than 1080p so it downloads far faster over
+                    # Apify's residential bandwidth (the real bottleneck), and 720p
+                    # H.264 is native on YouTube so neither Apify nor our worker has
+                    # to transcode. A vertical 1080x1920 clip is a center crop, so a
+                    # 720p source yields the same clip quality; Upload File stays the
+                    # path for a pristine full-resolution original.
+                    json={"videoUrls": [source_url], "format": "video", "quality": "720p",
                           "videoCodec": "h264", "maxMegabytes": 2000},
                     timeout=60,
                 )
