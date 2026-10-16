@@ -2622,17 +2622,35 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
         # fine; failed/skipped downloads are free. YouTube only. Needs
         # APIFY_API_TOKEN in the youtube-cookies secret.
         apify_token = os.environ.get("APIFY_API_TOKEN", "").strip()
+        apify_used = False
         if not downloaded and not definitive_failure and platform == "youtube" and apify_token:
+            apify_used = True
             try:
+                import time as _t
                 print("🎬 Direct failed — downloading via Apify (johnvc, per-minute)...")
-                run_resp = req.post(
-                    "https://api.apify.com/v2/acts/johnvc~youtube-download-api/run-sync-get-dataset-items",
-                    headers={"Authorization": f"Bearer {apify_token}", "Content-Type": "application/json"},
-                    json={"videoUrls": [source_url], "format": "video", "quality": "1080p", "maxMegabytes": 2000},
-                    timeout=900,
+                ahdr = {"Authorization": f"Bearer {apify_token}"}
+                # Start the run ASYNC + poll. (run-sync caps at 5 min, so long videos
+                # falsely "failed" there and triggered needless respawns + re-downloads.)
+                start = req.post(
+                    "https://api.apify.com/v2/acts/johnvc~youtube-download-api/runs",
+                    headers={**ahdr, "Content-Type": "application/json"},
+                    json={"videoUrls": [source_url], "format": "video", "quality": "1080p",
+                          "videoCodec": "h264", "maxMegabytes": 2000},
+                    timeout=60,
                 )
-                if run_resp.status_code in (200, 201):
-                    items = run_resp.json() or []
+                run = (start.json() or {}).get("data", {})
+                run_id = run.get("id")
+                ds_id = run.get("defaultDatasetId")
+                status = run.get("status")
+                deadline = _t.time() + 1500  # up to 25 min for long videos
+                while run_id and status not in ("SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT") and _t.time() < deadline:
+                    _t.sleep(5)
+                    rr = req.get(f"https://api.apify.com/v2/actor-runs/{run_id}", headers=ahdr, timeout=30)
+                    run = (rr.json() or {}).get("data", {})
+                    status = run.get("status")
+                    ds_id = run.get("defaultDatasetId") or ds_id
+                if status == "SUCCEEDED" and ds_id:
+                    items = req.get(f"https://api.apify.com/v2/datasets/{ds_id}/items", headers=ahdr, timeout=60).json() or []
                     item = items[0] if items else {}
                     file_url = item.get("fileUrl")
                     apify_title = (item.get("title") or "").strip()[:100]
@@ -2657,7 +2675,7 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
                         last_error = f"Apify returned no fileUrl: {note}"
                         print(f"⚠️ {last_error}")
                 else:
-                    last_error = f"Apify actor HTTP {run_resp.status_code}: {run_resp.text[:200]}"
+                    last_error = f"Apify run ended status={status}"
                     print(f"⚠️ {last_error}")
             except Exception as ae:
                 last_error = f"Apify download failed: {str(ae)[:200]}"
@@ -2704,8 +2722,11 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
             # Transient YouTube bot-block → respawn on a FRESH Modal container
             # (new egress IP) before surfacing failure. Definitive errors
             # (private / removed / geo / members-only) skip this — no IP can fix them.
+            # Respawn to a fresh Modal IP only when Apify did NOT handle it. If
+            # johnvc ran (apify_used), respawning just re-runs direct + johnvc and
+            # re-downloads — Apify isn't Modal-IP-dependent, so it won't help.
             MAX_DL_ATTEMPTS = 2  # extra retries after the first (3 distinct IPs total)
-            if platform == "youtube" and not definitive_failure and attempt < MAX_DL_ATTEMPTS:
+            if platform == "youtube" and not definitive_failure and not apify_used and attempt < MAX_DL_ATTEMPTS:
                 next_attempt = attempt + 1
                 print(f"🔁 YouTube bot-block on attempt {attempt+1}/{MAX_DL_ATTEMPTS+1} — "
                       f"respawning on a fresh IP (attempt {next_attempt+1}/{MAX_DL_ATTEMPTS+1})")
