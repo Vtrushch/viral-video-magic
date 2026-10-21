@@ -2519,17 +2519,33 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
         definitive_failure = False  # private/removed/geo/members-only — no IP change can fix it
         apify_title = ""             # real title from Apify (yt-dlp --get-title bot-blocks too)
 
+        import time as _time
+        _dl_start = _time.time()  # cap the free direct phase — it mostly bot-blocks
         for i, cmd in enumerate(yt_dlp_strategies):
+            # If the free direct path hasn't landed the file in ~30s, stop grinding
+            # strategies and hand off to the fast Apify fallback (~13s). (A good-IP
+            # strategy that's actually downloading sets `downloaded` and breaks below
+            # before this fires; this only short-circuits the bot-block churn.)
+            if platform == "youtube" and _time.time() - _dl_start > 30:
+                print("⏱️ Direct phase exceeded 30s — handing off to Apify")
+                break
             print(f"🔄 Strategy {i+1}/{len(yt_dlp_strategies)}...")
             print(f"   CMD: {' '.join(cmd[:6])}...")
             # Remove leftover file from previous attempt
             if os.path.exists(video_path):
                 os.unlink(video_path)
+            # Cap each attempt to the remaining budget so the whole YouTube direct
+            # phase stays within ~30s before Apify takes over. Other platforms have
+            # no fallback, so they keep the full 300s.
+            if platform == "youtube":
+                _strat_timeout = max(5, 30 - (_time.time() - _dl_start))
+            else:
+                _strat_timeout = 300
             try:
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=_strat_timeout)
             except subprocess.TimeoutExpired:
                 # A hanging strategy must NOT kill the chain — fall through to the next one
-                last_error = f"Strategy {i+1} timed out after 300s"
+                last_error = f"Strategy {i+1} timed out after {_strat_timeout:.0f}s"
                 print(f"⚠️ {last_error} — trying next strategy")
                 continue
             except Exception as run_err:
@@ -2612,14 +2628,14 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
             else:
                 print("ℹ️ No COBALT_API_URL configured — skipping API fallback")
 
-        # ── Apify YouTube downloader fallback (the reliable one) ──
+        # ── Apify YouTube downloader fallback (the FAST one) ──
         # When the free direct path fails with a non-definitive block, hand the
-        # download to Apify's maintained `johnvc/youtube-download-api` actor. It
-        # fetches server-side and returns a ready MP4 (fileUrl on Apify storage),
-        # bypassing BOTH the datacenter bot-block AND googlevideo's media 403 that
-        # defeated our own residential proxy. Billed PER DELIVERED MINUTE (not per
-        # GB), so cost is cents/video and independent of file size — full 1080p is
-        # fine; failed/skipped downloads are free. YouTube only. Needs
+        # download to Apify's `dami_studio/youtube-video-downloader` actor. It
+        # downloads multi-connection (~6 MB/s → ~13s for a 6-min 720p clip, vs the
+        # per-minute johnvc actor's ~7 min), returning a ready MP4 (mediaUrl on
+        # Apify storage), bypassing BOTH the datacenter bot-block AND googlevideo's
+        # media 403. Billed per GB (~$4.5/GB ≈ $0.37 for a 6-min 720p video), only
+        # for the blocked videos the free path couldn't fetch. YouTube only; needs
         # APIFY_API_TOKEN in the youtube-cookies secret.
         apify_token = os.environ.get("APIFY_API_TOKEN", "").strip()
         apify_used = False
@@ -2627,21 +2643,21 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
             apify_used = True
             try:
                 import time as _t
-                print("🎬 Direct failed — downloading via Apify (johnvc, per-minute)...")
+                print("🎬 Direct failed — downloading via Apify (dami_studio, fast)...")
                 ahdr = {"Authorization": f"Bearer {apify_token}"}
-                # Start the run ASYNC + poll. (run-sync caps at 5 min, so long videos
-                # falsely "failed" there and triggered needless respawns + re-downloads.)
+                # Start ASYNC + poll (run-sync caps at 5 min). 720p = smaller + native
+                # H.264 so nothing transcodes; a vertical 1080x1920 clip is a center
+                # crop, so 720p source = same clip quality. memory=8192 for headroom.
                 start = req.post(
-                    "https://api.apify.com/v2/acts/johnvc~youtube-download-api/runs",
+                    "https://api.apify.com/v2/acts/dami_studio~youtube-video-downloader/runs?memory=8192",
                     headers={**ahdr, "Content-Type": "application/json"},
-                    # 720p: ~2.5x smaller than 1080p so it downloads far faster over
-                    # Apify's residential bandwidth (the real bottleneck), and 720p
-                    # H.264 is native on YouTube so neither Apify nor our worker has
-                    # to transcode. A vertical 1080x1920 clip is a center crop, so a
-                    # 720p source yields the same clip quality; Upload File stays the
-                    # path for a pristine full-resolution original.
-                    json={"videoUrls": [source_url], "format": "video", "quality": "720p",
-                          "videoCodec": "h264", "maxMegabytes": 2000},
+                    # proxyConfiguration is REQUIRED: without it the actor fetches from
+                    # bare Apify datacenter IPs and hits the same YouTube block this
+                    # fallback exists to bypass. useApifyProxy=true (datacenter group,
+                    # included in the plan) is what the verified-working run used.
+                    json={"videoUrl": source_url, "quality": "720", "maxMegabytes": 2000,
+                          "includeMetadata": True,
+                          "proxyConfiguration": {"useApifyProxy": True}},
                     timeout=60,
                 )
                 run = (start.json() or {}).get("data", {})
@@ -2658,11 +2674,12 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
                 if status == "SUCCEEDED" and ds_id:
                     items = req.get(f"https://api.apify.com/v2/datasets/{ds_id}/items", headers=ahdr, timeout=60).json() or []
                     item = items[0] if items else {}
-                    file_url = item.get("fileUrl")
+                    file_url = item.get("mediaUrl")
                     apify_title = (item.get("title") or "").strip()[:100]
                     if file_url:
                         size_mb = (item.get("fileSizeBytes") or 0) / (1024 * 1024)
-                        print(f"🎬 Apify returned MP4 ({item.get('quality')}, {size_mb:.1f}MB) — fetching to container...")
+                        billed = item.get("billedMegabytes") or item.get("megabytesBilled")
+                        print(f"🎬 Apify returned MP4 ({item.get('resolution')}, {size_mb:.1f}MB, billed {billed}MB) — fetching to container...")
                         if os.path.exists(video_path):
                             os.unlink(video_path)
                         with req.get(file_url, stream=True, timeout=600) as mr:
@@ -2678,7 +2695,7 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
                             print(f"⚠️ {last_error}")
                     else:
                         note = item.get("note") or item.get("error") or str(item)[:200]
-                        last_error = f"Apify returned no fileUrl: {note}"
+                        last_error = f"Apify returned no mediaUrl: {note}"
                         print(f"⚠️ {last_error}")
                 else:
                     last_error = f"Apify run ended status={status}"
