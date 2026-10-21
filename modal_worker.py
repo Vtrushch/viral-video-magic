@@ -153,33 +153,64 @@ secrets = [
 # ============================================
 
 def download_video(url: str, output_path: str, auth_headers: dict = None) -> str:
-    """Download video from URL to local path"""
+    """Download video from URL to local path.
+
+    Retries transient server/network failures with backoff. Supabase Storage
+    occasionally returns a 5xx (observed a 555) for a few seconds right after an
+    upload — a single blip used to kill the whole analysis because there was no
+    retry here. This helper is shared by analysis, reels, etc., so the retry
+    protects every storage read.
+    """
     import requests
+    import time
 
     print(f"📥 Downloading video from {url}")
     headers = {"User-Agent": "HookCutWorker/1.0"}
     if auth_headers:
         headers.update(auth_headers)
 
-    with requests.get(url, stream=True, headers=headers, timeout=(10, 600)) as r:
-        r.raise_for_status()
+    ATTEMPTS = 5
+    last_err = ""
+    for attempt in range(ATTEMPTS):
+        try:
+            with requests.get(url, stream=True, headers=headers, timeout=(10, 600)) as r:
+                # Transient storage/CDN 5xx (e.g. Supabase 555 just after upload):
+                # back off and retry rather than failing the whole job.
+                if r.status_code >= 500 and attempt < ATTEMPTS - 1:
+                    last_err = f"storage {r.status_code}"
+                    wait = 2 * (attempt + 1)
+                    print(f"⚠️ {last_err} on download (attempt {attempt+1}/{ATTEMPTS}) — retrying in {wait}s…")
+                    time.sleep(wait)
+                    continue
+                r.raise_for_status()
 
-        content_type = r.headers.get("Content-Type", "")
-        if "video" not in content_type and "octet-stream" not in content_type:
-            print(f"⚠️ Warning: unexpected Content-Type: {content_type}")
+                content_type = r.headers.get("Content-Type", "")
+                if "video" not in content_type and "octet-stream" not in content_type:
+                    print(f"⚠️ Warning: unexpected Content-Type: {content_type}")
 
-        bytes_written = 0
-        with open(output_path, "wb") as f:
-            for chunk in r.iter_content(chunk_size=1024 * 1024):
-                if chunk:
-                    f.write(chunk)
-                    bytes_written += len(chunk)
+                bytes_written = 0
+                with open(output_path, "wb") as f:
+                    for chunk in r.iter_content(chunk_size=1024 * 1024):
+                        if chunk:
+                            f.write(chunk)
+                            bytes_written += len(chunk)
 
-    if bytes_written == 0:
-        raise RuntimeError("Downloaded file is empty (0 bytes). Check the URL / permissions.")
+            if bytes_written == 0:
+                raise RuntimeError("Downloaded file is empty (0 bytes). Check the URL / permissions.")
 
-    print(f"✅ Downloaded to {output_path} ({bytes_written/(1024*1024):.2f} MB)")
-    return output_path
+            print(f"✅ Downloaded to {output_path} ({bytes_written/(1024*1024):.2f} MB)")
+            return output_path
+        except requests.exceptions.RequestException as e:
+            # Connection reset / read timeout (possibly mid-stream) — retry a few times.
+            last_err = str(e)[:200]
+            if attempt < ATTEMPTS - 1:
+                wait = 2 * (attempt + 1)
+                print(f"⚠️ download error ({last_err}) — attempt {attempt+1}/{ATTEMPTS}, retrying in {wait}s…")
+                time.sleep(wait)
+                continue
+            raise
+
+    raise RuntimeError(f"download_video failed after {ATTEMPTS} attempts: {last_err}")
 
 
 def get_source_video(video_url: str, video_storage_path: str, auth_headers: dict = None) -> str:
