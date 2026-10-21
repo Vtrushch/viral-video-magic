@@ -78,6 +78,10 @@ app = modal.App("cutviral-worker")
 # storage path; entries evicted after 24h by evict_source_cache.
 source_cache_volume = modal.Volume.from_name("hookcut-source-cache", create_if_missing=True)
 
+# Hand-off volume for the parallel fresh-IP YouTube burst: each helper container
+# writes its winning mp4 here, the orchestrator reads the first winner back.
+burst_volume = modal.Volume.from_name("hookcut-burst", create_if_missing=True)
+
 # Heavy worker image (ffmpeg + rendering + gemini + groq)
 image = (
     modal.Image.debian_slim(python_version="3.11")
@@ -147,6 +151,20 @@ secrets = [
     modal.Secret.from_name("stripe-secret"),      # STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_*
     modal.Secret.from_name("resend-secret"),      # RESEND_API_KEY
 ]
+
+# Lightweight image for the parallel fresh-IP burst — just yt-dlp + Deno (the EJS
+# PO-token/n-sig solver) + ffmpeg. The full worker image is far too heavy to
+# fan out 5-wide (20-40s cold start each); this one cold-starts in seconds, which
+# is exactly what keeps the burst ~15s.
+burst_image = (
+    modal.Image.debian_slim()
+    .pip_install("yt-dlp==2026.8.19", "requests")
+    .run_commands(
+        "apt-get update && apt-get install -y curl ca-certificates ffmpeg unzip",
+        "curl -fsSL https://deno.land/install.sh | sh",
+        "ln -sf /root/.deno/bin/deno /usr/local/bin/deno",
+    )
+)
 
 # ============================================
 # HELPER FUNCTIONS
@@ -2394,8 +2412,96 @@ def trigger_analysis(video_id: str):
 # ============================================
 
 @app.function(
+    image=burst_image,
+    secrets=[modal.Secret.from_name("youtube-cookies")],
+    volumes={"/burst": burst_volume},
+    timeout=120,
+    max_containers=30,             # fan out the burst wide; cheap lightweight containers
+    retries=0,
+)
+def _yt_direct_burst(source_url: str, video_id: str, slot: int):
+    """One fresh-IP direct-download attempt for the parallel YouTube burst.
+
+    Datacenter IPs bot-block ~80% of the time, but each Modal container gets a
+    DIFFERENT egress IP, so firing K of these in parallel lands a free direct
+    download ~2/3 of the time. Runs the same EJS (PO-token) strategy chain as the
+    main worker; on success writes the mp4 to the shared `burst_volume` and
+    returns its slot + title. Keep the strategy list in sync with
+    download_url_and_analyze's YouTube chain."""
+    import os
+    import subprocess
+    import base64
+    import time
+    import glob
+    import json
+    import shutil
+
+    out = {"slot": slot, "ok": False, "reason": "other"}
+    cookies_path = None
+    b64 = os.environ.get("YOUTUBE_COOKIES_B64", "")
+    if b64:
+        cookies_path = "/tmp/c.txt"
+        with open(cookies_path, "wb") as f:
+            f.write(base64.b64decode(b64))
+    ck = ["--cookies", cookies_path] if cookies_path else []
+    ejs = ["--remote-components", "ejs:github"]
+    tmpl = f"/tmp/burst_{slot}.%(ext)s"
+    common = ["--merge-output-format", "mp4", "--no-playlist", "--no-check-certificates",
+              "--socket-timeout", "30", "--retries", "2", "--max-filesize", "2000M",
+              "--write-info-json", "-o", tmpl, source_url]
+    strategies = [
+        ["yt-dlp", *ejs, "-f", YT_FORMAT_H264, *ck, *common],
+        ["yt-dlp", *ejs, "-f", YT_FORMAT_H264, *ck, "--extractor-args", "youtube:player_client=tv", *common],
+        ["yt-dlp", *ejs, "-f", YT_FORMAT_H264, *ck, "--extractor-args", "youtube:player_client=web_safari", *common],
+        ["yt-dlp", *ejs, "-f", YT_FORMAT_H264, *ck, "--extractor-args", "youtube:player_client=mweb;formats=missing_pot", *common],
+        ["yt-dlp", *ejs, "-f", YT_FORMAT_ANY, "--extractor-args", "youtube:player_client=android_vr", *common],
+        ["yt-dlp", *ejs, "-f", YT_FORMAT_ANY, "--extractor-args", "youtube:formats=missing_pot", *common],
+    ]
+    start = time.time()
+    for cmd in strategies:
+        if time.time() - start > 30:  # match the orchestrator's 30s direct budget
+            out["reason"] = "timeout"
+            break
+        for p in glob.glob(f"/tmp/burst_{slot}.*"):
+            try:
+                os.unlink(p)
+            except Exception:
+                pass
+        try:
+            r = subprocess.run(cmd, capture_output=True, text=True,
+                               timeout=max(5, 30 - (time.time() - start)))
+        except subprocess.TimeoutExpired:
+            out["reason"] = "timeout"
+            continue
+        mp4s = [p for p in glob.glob(f"/tmp/burst_{slot}.*") if p.endswith(".mp4")]
+        mp4 = mp4s[0] if mp4s else None
+        if r.returncode == 0 and mp4 and os.path.getsize(mp4) > 10000:
+            title = ""
+            infos = glob.glob(f"/tmp/burst_{slot}*.info.json")
+            if infos:
+                try:
+                    with open(infos[0]) as jf:
+                        title = (json.load(jf).get("title") or "")[:100]
+                except Exception:
+                    pass
+            dest_dir = f"/burst/{video_id}"
+            os.makedirs(dest_dir, exist_ok=True)
+            shutil.copy(mp4, f"{dest_dir}/{slot}.mp4")
+            burst_volume.commit()
+            out.update(ok=True, title=title, mb=round(os.path.getsize(mp4) / 1e6, 1))
+            return out
+        err = (r.stderr or "")
+        if "not a bot" in err or "Sign in to confirm" in err:
+            out["reason"] = "bot"
+        elif "403" in err or "reloaded" in err:
+            out["reason"] = "403pot"
+    return out
+
+
+@app.function(
     image=image,
     secrets=secrets,
+    volumes={"/burst": burst_volume},
     timeout=1800,                  # 30 min (download + AV1→H264 transcode + upload)
     memory=4096,
     cpu=2.0,                       # 2 CPU cores for FFmpeg transcode
@@ -2491,49 +2597,12 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
             source_url,
         ]
 
+        # YouTube uses a PARALLEL fresh-IP burst (below) instead of a single
+        # in-container attempt: ~80% of Modal datacenter IPs bot-block, but each
+        # container gets a different IP, so K parallel tries land a free download
+        # ~2/3 of the time. Non-YouTube platforms aren't IP-hostile → inline chain.
         if platform == "youtube":
-            # Optional diagnostic (OFF by default — it adds a full extra yt-dlp
-            # round-trip, up to 90s, before every single download). Set YTDLP_DEBUG=1
-            # in the worker env to re-enable when debugging SABR/bot-check state.
-            if os.environ.get("YTDLP_DEBUG"):
-                diag_cmd = [
-                    "yt-dlp", *ejs_args,
-                    "--list-formats", "--no-playlist",
-                    "--no-check-certificates",
-                    *proxy_args,
-                    *cookie_args,
-                    source_url,
-                ]
-                try:
-                    diag_result = subprocess.run(diag_cmd, capture_output=True, text=True, timeout=90)
-                    print(f"📋 Available formats:\n{(diag_result.stdout or '')[-800:]}")
-                    if diag_result.stderr:
-                        print(f"📋 Diag stderr:\n{(diag_result.stderr or '')[-400:]}")
-                except Exception as diag_err:
-                    print(f"📋 Diag skipped (non-fatal): {diag_err}")
-
-            # June 2026 reality: web_creator client is login-only/removed, SABR is
-            # enforced aggressively, and public Cobalt/Invidious/Piped instances are
-            # dead. tv/web_safari survive SABR best; android_vr rejects cookies.
-            yt_dlp_strategies = [
-                # Strategy 1: default clients (tv,web_safari,web) + cookies + EJS + H.264
-                ["yt-dlp", *ejs_args, "-f", YT_FORMAT_H264, *cookie_args, *common_args],
-                # Strategy 2: tv client + cookies + EJS + H.264
-                ["yt-dlp", *ejs_args, "-f", YT_FORMAT_H264, *cookie_args,
-                 "--extractor-args", "youtube:player_client=tv", *common_args],
-                # Strategy 3: web_safari client + cookies + EJS + H.264
-                ["yt-dlp", *ejs_args, "-f", YT_FORMAT_H264, *cookie_args,
-                 "--extractor-args", "youtube:player_client=web_safari", *common_args],
-                # Strategy 4: mweb client + missing_pot formats + cookies + EJS
-                ["yt-dlp", *ejs_args, "-f", YT_FORMAT_H264, *cookie_args,
-                 "--extractor-args", "youtube:player_client=mweb;formats=missing_pot", *common_args],
-                # Strategy 5: android_vr WITHOUT cookies (client rejects them) + any codec
-                ["yt-dlp", *ejs_args, "-f", YT_FORMAT_ANY,
-                 "--extractor-args", "youtube:player_client=android_vr", *common_args],
-                # Strategy 6: anonymous + missing_pot + any codec (last resort)
-                ["yt-dlp", *ejs_args, "-f", YT_FORMAT_ANY,
-                 "--extractor-args", "youtube:formats=missing_pot", *common_args],
-            ]
+            yt_dlp_strategies = []  # handled by the burst, not the inline loop
         else:
             # Non-YouTube platforms are far less hostile to server IPs
             yt_dlp_strategies = [
@@ -2548,10 +2617,46 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
         downloaded = False
         last_error = ""
         definitive_failure = False  # private/removed/geo/members-only — no IP change can fix it
-        apify_title = ""             # real title from Apify (yt-dlp --get-title bot-blocks too)
+        apify_title = ""             # real title from Apify/burst (yt-dlp --get-title bot-blocks too)
+
+        # ── Parallel fresh-IP burst (YouTube only) ──
+        # Fire K lightweight helpers, each trying the full EJS strategy chain on a
+        # DIFFERENT Modal egress IP. The first to land the file wins (free); its mp4
+        # comes back via the shared Volume. Only if ALL K are blocked do we fall
+        # through to the paid Apify fallback below.
+        if platform == "youtube":
+            try:
+                K = 5
+                print(f"🎰 Direct burst: {K} parallel attempts on fresh IPs...")
+                burst = list(_yt_direct_burst.map([source_url] * K, [video_id] * K, list(range(K))))
+                wins = [b for b in burst if b.get("ok")]
+                blocked = sum(1 for b in burst if b.get("reason") == "bot")
+                print(f"🎰 Burst: {len(wins)}/{K} landed, {blocked} bot-blocked, "
+                      f"{K - len(wins) - blocked} other")
+                if wins:
+                    w = wins[0]
+                    burst_volume.reload()
+                    src = f"/burst/{video_id}/{w['slot']}.mp4"
+                    if os.path.exists(src) and os.path.getsize(src) > 10000:
+                        import shutil as _shutil
+                        _shutil.copy(src, video_path)
+                        downloaded = True
+                        apify_title = (w.get("title") or "")[:100]
+                        print(f"✅ Direct burst won (slot {w['slot']}, {w.get('mb')}MB) — free, no Apify")
+                    else:
+                        print("⚠️ Burst winner's file missing on volume — falling through")
+                # best-effort cleanup of this video's burst files
+                try:
+                    import shutil as _shutil
+                    _shutil.rmtree(f"/burst/{video_id}", ignore_errors=True)
+                    burst_volume.commit()
+                except Exception:
+                    pass
+            except Exception as burst_err:
+                print(f"⚠️ Direct burst errored (non-fatal → Apify): {burst_err}")
 
         import time as _time
-        _dl_start = _time.time()  # cap the free direct phase — it mostly bot-blocks
+        _dl_start = _time.time()  # cap the (non-YouTube) direct phase — it mostly bot-blocks
         for i, cmd in enumerate(yt_dlp_strategies):
             # If the free direct path hasn't landed the file in ~30s, stop grinding
             # strategies and hand off to the fast Apify fallback (~13s). (A good-IP
