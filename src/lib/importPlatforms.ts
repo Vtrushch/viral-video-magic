@@ -1,12 +1,7 @@
-// Mirrors IMPORT_URL_PATTERNS in modal_worker.py — keep in sync
+// Link import is intentionally YouTube-only (the backend can fetch more, but we
+// only surface + accept YouTube URLs — other platforms go through the Upload File tab).
 export const SUPPORTED_PLATFORMS: { key: string; label: string; pattern: RegExp }[] = [
   { key: "youtube", label: "YouTube", pattern: /^https?:\/\/((www|m)\.)?(youtube\.com|youtu\.be)\// },
-  { key: "tiktok", label: "TikTok", pattern: /^https?:\/\/((www|vm|vt|m)\.)?tiktok\.com\// },
-  { key: "vimeo", label: "Vimeo", pattern: /^https?:\/\/(www\.)?vimeo\.com\/\d+/ },
-  { key: "twitch", label: "Twitch", pattern: /^https?:\/\/(www\.)?twitch\.tv\/videos\/\d+/ },
-  { key: "rumble", label: "Rumble", pattern: /^https?:\/\/(www\.)?rumble\.com\// },
-  { key: "dailymotion", label: "Dailymotion", pattern: /^https?:\/\/(www\.)?dailymotion\.com\/video\// },
-  { key: "loom", label: "Loom", pattern: /^https?:\/\/(www\.)?loom\.com\/share\// },
 ];
 
 export function detectPlatform(url: string): { key: string; label: string } | null {
