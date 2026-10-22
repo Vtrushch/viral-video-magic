@@ -3,12 +3,14 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import DemoVideoModal from "./DemoVideoModal";
 
 const Hero = () => {
   const { t } = useTranslation();
   const cyclingWords = t("landing.hero.cyclingWords", { returnObjects: true }) as string[];
   const [wordIndex, setWordIndex] = useState(0);
   const [visible, setVisible] = useState(true);
+  const [demoOpen, setDemoOpen] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -68,13 +70,18 @@ const Hero = () => {
               <ArrowRight className="w-4 h-4 ml-1" />
             </Link>
           </Button>
-          <Button variant="hero-outline" size="lg" className="text-base px-8 py-6 min-h-[44px]" asChild>
-            <a href="#how-it-works">
-              <Play className="w-4 h-4 mr-1 fill-current" />
-              {t("landing.hero.seeHowItWorks")}
-            </a>
+          <Button
+            variant="hero-outline"
+            size="lg"
+            className="text-base px-8 py-6 min-h-[44px]"
+            onClick={() => setDemoOpen(true)}
+          >
+            <Play className="w-4 h-4 mr-1 fill-current" />
+            {t("landing.hero.seeHowItWorks")}
           </Button>
         </div>
+
+        <DemoVideoModal open={demoOpen} onOpenChange={setDemoOpen} />
 
         <div
           className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-16 text-xs sm:text-sm text-muted-foreground opacity-0 animate-fade-in"
