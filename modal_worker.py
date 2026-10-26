@@ -3041,14 +3041,22 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
             "source_url": source_url,
         }).eq("id", video_id).eq("user_id", user_id).execute()
 
-        # Do NOT auto-trigger analysis — let user configure settings first
-        # (clip count, caption style, reframe mode, etc.)
-        # User will click "Start Analysis" from the VideoConfig page
+        # Auto-start analysis with the user's default settings so "Import & Analyze"
+        # actually analyzes in one step. It used to stop at 'uploaded' and require a
+        # 2nd "Start with Defaults" click — dozens of imports got stuck there, never
+        # analyzed. trigger_analysis reads the video's settings (falls back to
+        # defaults); power users can still Re-analyze later with custom settings.
+        analysis_started = False
+        try:
+            trigger_analysis.spawn(video_id)
+            analysis_started = True
+            print("▶️ Auto-started analysis with default settings")
+        except Exception as ta_err:
+            print(f"⚠️ Auto-analyze spawn failed (user can start it manually): {ta_err}")
 
         print(f"🚀 URL import complete [{platform}]: {yt_title}")
         print(f"   Duration: {duration_str}, Size: {file_size / (1024*1024):.1f} MB")
-        print(f"   Status set to 'uploaded' — waiting for user to configure and start analysis")
-        return {"success": True, "title": yt_title}
+        return {"success": True, "title": yt_title, "analysis_started": analysis_started}
 
     except Exception as e:
         print(f"❌ URL import failed [{platform}]: {e}")
