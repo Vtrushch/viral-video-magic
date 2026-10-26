@@ -4324,7 +4324,13 @@ def webhook():
                     "plan": plan,
                     "total_credits": credits, "used_credits": 0,
                 }).eq("user_id", user_id).execute()
-                sb.table("profiles").update({"plan": plan}).eq("user_id", user_id).execute()
+                # Store the Stripe linkage so paying users are visible/manageable in the DB
+                # (was missing — real subscribers showed up with a null stripe_subscription_id).
+                sb.table("profiles").update({
+                    "plan": plan,
+                    "stripe_customer_id": session.get("customer"),
+                    "stripe_subscription_id": session.get("subscription"),
+                }).eq("user_id", user_id).execute()
                 print(f"✅ Plan activated: user={user_id[:8]}, plan={plan}, credits={credits}")
 
         elif event["type"] == "customer.subscription.deleted":
@@ -4337,7 +4343,28 @@ def webhook():
                 sb.table("profiles").update({"plan": "free"}).eq("user_id", user_id).execute()
                 print(f"⬇️ Downgraded to free: user={user_id[:8]}")
 
-        elif event["type"] == "invoice.paid":
+        elif event["type"] == "customer.subscription.updated":
+            # Keep the DB in sync with Stripe sub state (upgrades, dunning, re-activations).
+            sub = event["data"]["object"]
+            user_id = sub.get("metadata", {}).get("supabase_user_id", "")
+            plan = sub.get("metadata", {}).get("plan", "")
+            status = sub.get("status")
+            if user_id:
+                if status in ("active", "trialing") and plan in PLAN_CREDITS:
+                    sb.table("profiles").update({
+                        "plan": plan,
+                        "stripe_subscription_id": sub.get("id"),
+                        "stripe_customer_id": sub.get("customer"),
+                    }).eq("user_id", user_id).execute()
+                elif status in ("canceled", "unpaid", "incomplete_expired"):
+                    sb.table("user_credits").update({"plan": "free", "total_credits": 10}).eq("user_id", user_id).execute()
+                    sb.table("profiles").update({"plan": "free"}).eq("user_id", user_id).execute()
+                print(f"🔁 sub.updated: user={user_id[:8]} status={status} plan={plan}")
+
+        elif event["type"] in ("invoice.paid", "invoice.payment_succeeded"):
+            # Stripe delivers `invoice.payment_succeeded` on renewals; the endpoint was only
+            # registered for that event, so the old `invoice.paid`-only check never ran and
+            # monthly credits were NEVER reset for active subscribers. Handle both names.
             invoice = event["data"]["object"]
             sub_id = invoice.get("subscription")
             if sub_id:
@@ -4368,6 +4395,12 @@ def webhook():
                         sb.table("user_credits").update({
                             "total_credits": new_total,
                             "used_credits": 0,
+                        }).eq("user_id", user_id).execute()
+                        # Also (re)store the Stripe linkage in case the initial checkout missed it.
+                        sb.table("profiles").update({
+                            "plan": plan,
+                            "stripe_subscription_id": sub_id,
+                            "stripe_customer_id": invoice.get("customer"),
                         }).eq("user_id", user_id).execute()
 
                         print(
