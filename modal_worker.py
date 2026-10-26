@@ -711,10 +711,48 @@ def send_low_credits_email(to: str, remaining: int):
 # GEMINI VIDEO ANALYSIS
 # ============================================
 
+def _call_with_deadline(fn, timeout_s, label):
+    """Run blocking fn() with a HARD wall-clock deadline.
+
+    The google-genai SDK calls we make (files.upload, files.get,
+    models.generate_content) have no reliable client-side timeout: a stalled
+    upload, a file stuck in PROCESSING, or a request Gemini never finishes can
+    block the worker forever. That is exactly how long-video analyses got stuck
+    in 'analyzing' — a call hung, Modal killed the container at its 1800s
+    timeout WITHOUT running the except-block that writes status='failed', and
+    the row sat 'analyzing' until the 45-min cleanup cron swept it.
+
+    Running fn() in a daemon thread and join()-ing with a deadline turns a hang
+    into a prompt, catchable TimeoutError. If fn() overruns, its thread is a
+    daemon doing network I/O (GIL released) and is reclaimed when the container
+    is torn down — we never block waiting on it. This is SDK-version-independent
+    (google-genai is unpinned), unlike http_options timeouts.
+    """
+    import threading
+
+    box = {}
+
+    def _runner():
+        try:
+            box["value"] = fn()
+        except Exception as e:  # re-raised on the caller's thread below
+            box["error"] = e
+
+    t = threading.Thread(target=_runner, daemon=True)
+    t.start()
+    t.join(timeout_s)
+    if t.is_alive():
+        raise TimeoutError(f"{label} did not return within {timeout_s:.0f}s (hard deadline)")
+    if "error" in box:
+        raise box["error"]
+    return box.get("value")
+
+
 @app.function(
     image=image,
     secrets=secrets,
-    timeout=1800,       # 30 min (large videos need time to download + compress + analyze)
+    timeout=1800,       # 30 min hard cap; the in-function ANALYSIS_BUDGET_SEC (27 min)
+                        # fails cleanly first so status is always written to 'failed'
     memory=4096,        # 4GB RAM
     cpu=2.0,            # 2 cores for ffmpeg chunk-extraction / compression on long videos
     scaledown_window=300,  # Keep warm 5 min so upload bursts reuse the container
@@ -741,6 +779,36 @@ def analyze_video_with_gemini(video_url: str, video_id: str, user_id: str, auth_
 
     print(f"🤖 Starting Gemini analysis for video: {video_id}")
     print(f"⚙️ Settings: {num_clips} clips, {clip_length} length ({min_len}-{max_len}s)")
+
+    # ── Overall wall-clock budget ──────────────────────────────────────────
+    # Fail cleanly (write status='failed' + a real error_message, below) BEFORE
+    # Modal's 1800s function timeout silently kills the container. Without this,
+    # a slow/hung analysis left the video stuck in 'analyzing' for ~45 min until
+    # cleanup_stale_jobs swept it. 27 min leaves ~3 min head-room for the
+    # except/finally cleanup to run before Modal's hard kill.
+    # These per-call caps are HANG-catchers (a stuck socket), not expected
+    # durations — set generously so legit work never false-times-out; the overall
+    # ANALYSIS_BUDGET_SEC is the real ceiling and always wins.
+    ANALYSIS_BUDGET_SEC = 1620
+    UPLOAD_DEADLINE_SEC = 600    # one files.upload (a large copied chunk can be ~1GB)
+    POLL_GET_DEADLINE_SEC = 45   # one files.get metadata poll (normally < 1s)
+    GENERATE_DEADLINE_SEC = 600  # one generate_content call over up to ~45 min of video
+    _analysis_started = time.time()
+
+    def _remaining_budget():
+        return ANALYSIS_BUDGET_SEC - (time.time() - _analysis_started)
+
+    def _check_budget(stage):
+        if _remaining_budget() <= 0:
+            raise TimeoutError(
+                f"Analysis exceeded its {ANALYSIS_BUDGET_SEC // 60}-minute time budget "
+                f"(stalled at: {stage}). Please try again or use a shorter video."
+            )
+
+    def _call_budget(hard_cap):
+        # Per-call deadline: the hard cap, but never longer than the remaining
+        # overall budget (floored so join() always gets a positive timeout).
+        return max(5.0, min(hard_cap, _remaining_budget()))
 
     client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
     
@@ -911,7 +979,8 @@ def analyze_video_with_gemini(video_url: str, video_id: str, user_id: str, auth_
                 os.unlink(thumb_path)
 
         print("⬆️ Preparing video for AI analysis...")
-        
+        _check_budget("preparing video for analysis")
+
         # Gemini token calculation:
         # Video: 263 tokens/sec, Audio: 32 tokens/sec = ~295 tokens/sec total
         # 1M token limit → max ~3400 sec (~56 min) per request
@@ -958,8 +1027,13 @@ def analyze_video_with_gemini(video_url: str, video_id: str, user_id: str, auth_
                     
                     # Upload chunk to Gemini
                     print(f"  ⬆️ Uploading chunk {chunk_idx+1} to Gemini...")
-                    chunk_file = client.files.upload(file=chunk_path)
-                    
+                    _check_budget(f"chunk {chunk_idx+1} upload")
+                    chunk_file = _call_with_deadline(
+                        lambda: client.files.upload(file=chunk_path),
+                        _call_budget(UPLOAD_DEADLINE_SEC),
+                        f"Gemini chunk {chunk_idx+1} upload",
+                    )
+
                     # Wait for processing
                     wait_start = time.time()
                     while True:
@@ -968,10 +1042,15 @@ def analyze_video_with_gemini(video_url: str, video_id: str, user_id: str, auth_
                             break
                         if "FAILED" in state_str:
                             raise RuntimeError(f"Chunk file failed: {chunk_file.state}")
+                        _check_budget(f"chunk {chunk_idx+1} processing")
                         if time.time() - wait_start > 300:
                             raise TimeoutError("Chunk processing timeout")
                         time.sleep(2)
-                        chunk_file = client.files.get(name=chunk_file.name)
+                        chunk_file = _call_with_deadline(
+                            lambda: client.files.get(name=chunk_file.name),
+                            POLL_GET_DEADLINE_SEC,
+                            f"Gemini chunk {chunk_idx+1} files.get",
+                        )
                     
                     print(f"  ✅ Chunk ready, analyzing...")
                     
@@ -1007,9 +1086,14 @@ Return ONLY valid JSON array:
 [{{"start_time": {chunk_start + 15}, "end_time": {chunk_start + 55}, "title": "Example Title", "hook_strength": 8, "viral_score": 8, "reason": "Strong opening hook", "detected_language": "en"}}]
 """
                     
-                    chunk_resp = client.models.generate_content(
-                        model=selected_model,
-                        contents=[chunk_file, chunk_prompt],
+                    _check_budget(f"chunk {chunk_idx+1} analysis")
+                    chunk_resp = _call_with_deadline(
+                        lambda: client.models.generate_content(
+                            model=selected_model,
+                            contents=[chunk_file, chunk_prompt],
+                        ),
+                        _call_budget(GENERATE_DEADLINE_SEC),
+                        f"Gemini chunk {chunk_idx+1} generate_content",
                     )
                     
                     chunk_text = getattr(chunk_resp, "text", "") or ""
@@ -1057,15 +1141,22 @@ Return ONLY valid JSON array:
                 ))
 
             print("⬆️ Uploading to Gemini...")
+            _check_budget("Gemini upload")
             video_file = None
             for up_attempt in range(4):
                 try:
-                    video_file = client.files.upload(file=video_path)
+                    video_file = _call_with_deadline(
+                        lambda: client.files.upload(file=video_path),
+                        _call_budget(UPLOAD_DEADLINE_SEC),
+                        "Gemini upload",
+                    )
                     break
                 except Exception as up_err:
-                    if _gemini_transient(up_err) and up_attempt < 3:
-                        wait = 5 * (up_attempt + 1)
-                        print(f"⚠️ Gemini upload transient error ({str(up_err)[:90]}) — retry in {wait}s...")
+                    # Retry only genuine transient blips — a hard-deadline
+                    # TimeoutError means the upload is stuck, so fail fast.
+                    if _gemini_transient(up_err) and up_attempt < 3 and _remaining_budget() > 30:
+                        wait = min(5 * (up_attempt + 1), max(0.0, _remaining_budget() - 10))
+                        print(f"⚠️ Gemini upload transient error ({str(up_err)[:90]}) — retry in {wait:.0f}s...")
                         time.sleep(wait)
                     else:
                         raise
@@ -1078,6 +1169,7 @@ Return ONLY valid JSON array:
                     break
                 if "FAILED" in state_str:
                     raise RuntimeError(f"Gemini file processing failed. State={video_file.state}")
+                _check_budget("Gemini file processing")
                 if time.time() - started > max_wait_sec:
                     raise TimeoutError(f"Gemini file stuck in processing > {max_wait_sec}s. State={video_file.state}")
                 elapsed = int(time.time() - started)
@@ -1085,10 +1177,18 @@ Return ONLY valid JSON array:
                     print(f"⏳ Processing... ({elapsed}s, state={video_file.state})")
                 time.sleep(2)  # Poll every 2s instead of 5s — saves 15-30s
                 try:
-                    video_file = client.files.get(name=video_file.name)
+                    # Hard per-call deadline so one stuck metadata call can't blow
+                    # past the loop/budget deadlines (they're only checked between calls).
+                    video_file = _call_with_deadline(
+                        lambda: client.files.get(name=video_file.name),
+                        POLL_GET_DEADLINE_SEC,
+                        "Gemini files.get",
+                    )
                 except Exception as poll_err:
-                    # Transient blip while polling — keep the last state, retry next tick.
-                    if _gemini_transient(poll_err):
+                    # Transient blip or a single stuck poll — keep the last state,
+                    # retry next tick. The loop (max_wait_sec) and overall budget
+                    # still guarantee we stop eventually.
+                    if _gemini_transient(poll_err) or isinstance(poll_err, TimeoutError):
                         print(f"⚠️ Transient error polling Gemini file state ({str(poll_err)[:90]}) — retrying...")
                         continue
                     raise
@@ -1153,30 +1253,40 @@ Return ONLY valid JSON array:
 """
             print("🧠 Analyzing viral moments...")
 
-            # Retry logic for Gemini (handles 429 rate limits)
+            # Retry logic for Gemini (handles 429 rate limits). Each attempt has a
+            # hard deadline so a hung generate_content can't block forever; a
+            # TimeoutError is not a transient 429/5xx, so it falls through to
+            # `raise` and fails the analysis fast and cleanly.
             resp = None
             max_retries = 5
             for attempt in range(max_retries):
+                _check_budget("Gemini analysis")
                 try:
-                    resp = client.models.generate_content(
-                        model=selected_model,
-                        contents=[video_file, prompt],
-                        config=gen_config,
+                    resp = _call_with_deadline(
+                        lambda: client.models.generate_content(
+                            model=selected_model,
+                            contents=[video_file, prompt],
+                            config=gen_config,
+                        ),
+                        _call_budget(GENERATE_DEADLINE_SEC),
+                        "Gemini generate_content",
                     )
                     break
                 except Exception as gemini_err:
                     err_str = str(gemini_err)
                     if "429" in err_str or "ResourceExhausted" in err_str or "quota" in err_str.lower():
                         wait_time = min(15 * (3 ** attempt), 300)
-                        remaining = max_retries - attempt - 1
-                        print(f"⚠️ Gemini rate limited. Waiting {wait_time}s (attempt {attempt+1}/{max_retries}, {remaining} retries left)...")
-                        time.sleep(wait_time)
                     elif "500" in err_str or "503" in err_str or "InternalError" in err_str:
                         wait_time = 10 * (attempt + 1)
-                        print(f"⚠️ Gemini server error. Waiting {wait_time}s (attempt {attempt+1}/{max_retries})...")
-                        time.sleep(wait_time)
                     else:
                         raise
+                    # Never sleep past the overall budget — bail instead of overshooting.
+                    wait_time = min(wait_time, _remaining_budget() - 15)
+                    if wait_time <= 0:
+                        raise
+                    remaining = max_retries - attempt - 1
+                    print(f"⚠️ Gemini error ({err_str[:80]}). Waiting {wait_time:.0f}s (attempt {attempt+1}/{max_retries}, {remaining} retries left)...")
+                    time.sleep(wait_time)
 
             if resp is None:
                 raise RuntimeError(f"Gemini failed after {max_retries} retries (rate limited). Try again in a few minutes.")
@@ -1192,10 +1302,14 @@ Return ONLY valid JSON array:
                             "IMPORTANT: You MUST respond with a JSON array. Do NOT return empty text.\n\n" 
                             + prompt
                         )
-                        resp = client.models.generate_content(
-                            model=selected_model,
-                            contents=[video_file, stronger_prompt],
-                            config=gen_config,
+                        resp = _call_with_deadline(
+                            lambda: client.models.generate_content(
+                                model=selected_model,
+                                contents=[video_file, stronger_prompt],
+                                config=gen_config,
+                            ),
+                            _call_budget(GENERATE_DEADLINE_SEC),
+                            "Gemini generate_content (empty-response retry)",
                         )
                         resp_text = getattr(resp, "text", "") or ""
                         print(f"📝 Retry response length: {len(resp_text)} chars")
@@ -1258,10 +1372,15 @@ Return ONLY valid JSON array:
         if not cleaned:
             print("⚠️ No valid clips from primary model. Retrying with gemini-2.5-flash...")
             try:
-                resp2 = client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=[video_file, prompt],
-                    config=gen_config,
+                _check_budget("Gemini fallback analysis")
+                resp2 = _call_with_deadline(
+                    lambda: client.models.generate_content(
+                        model="gemini-2.5-flash",
+                        contents=[video_file, prompt],
+                        config=gen_config,
+                    ),
+                    _call_budget(GENERATE_DEADLINE_SEC),
+                    "Gemini generate_content (fallback)",
                 )
                 clips_raw2 = extract_json_array(getattr(resp2, "text", ""))
                 
