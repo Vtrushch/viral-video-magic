@@ -161,9 +161,15 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
       });
 
       toast.success(t("toasts.uploadSuccess"));
+      // Auto-start analysis (the row already carries the user's default settings) so a
+      // file upload analyzes in one step instead of stalling on the configure page —
+      // which left dozens of uploads stuck in 'uploaded', never producing clips.
+      if (videoData) {
+        apiFetch("/analyze", { video_id: videoData.id }).catch((e) => console.error("auto-analyze failed", e));
+      }
       setTimeout(() => {
         handleCancel();
-        if (videoData) navigate(`/dashboard/videos/configure/${videoData.id}`);
+        if (videoData) navigate(`/dashboard/videos/${videoData.id}`);
       }, 300);
     } catch (error: any) {
       console.error("Upload error:", error);
