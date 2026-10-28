@@ -150,6 +150,10 @@ secrets = [
     modal.Secret.from_name("youtube-cookies"),    # YOUTUBE_COOKIES_B64 + optional: YTDLP_PROXY, COBALT_API_URL/KEY, INSTAGRAM/TIKTOK/FACEBOOK/TWITTER_COOKIES_B64
     modal.Secret.from_name("stripe-secret"),      # STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_*
     modal.Secret.from_name("resend-secret"),      # RESEND_API_KEY
+    # APIFY_API_TOKEN lives in its OWN secret (not youtube-cookies) so a `--force`
+    # cookies refresh can never wipe it again. Listed last: if the key also lingers
+    # in youtube-cookies, this authoritative value wins. See [[hookcut-youtube-ingestion]].
+    modal.Secret.from_name("apify-secret"),       # APIFY_API_TOKEN (YouTube dami_studio fallback)
 ]
 
 # Lightweight image for the parallel fresh-IP burst — just yt-dlp + Deno (the EJS
@@ -2970,7 +2974,7 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
         # Apify storage), bypassing BOTH the datacenter bot-block AND googlevideo's
         # media 403. Billed per GB (~$4.5/GB ≈ $0.37 for a 6-min 720p video), only
         # for the blocked videos the free path couldn't fetch. YouTube only; needs
-        # APIFY_API_TOKEN in the youtube-cookies secret.
+        # APIFY_API_TOKEN in the dedicated `apify-secret` Modal secret.
         apify_token = os.environ.get("APIFY_API_TOKEN", "").strip()
         apify_used = False
         if not downloaded and not definitive_failure and platform == "youtube" and apify_token:
