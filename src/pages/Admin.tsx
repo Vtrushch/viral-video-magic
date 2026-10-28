@@ -495,6 +495,7 @@ const Admin = () => {
                   <SelectItem value="hormozi">Hormozi</SelectItem>
                   <SelectItem value="mrbeast">MrBeast</SelectItem>
                   <SelectItem value="minimal">Minimal</SelectItem>
+                  <SelectItem value="none">No subtitles</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -275,6 +275,7 @@
     "deleteConfirm": "Це видалить відео та всі його кліпи. Після видалення можна завантажити нове. Продовжити?"
   },
   "videoConfig": {
+    "noSubtitles": "Без субтитрів",
     "configureAnalysis": "Налаштувати Аналіз",
     "backToVideos": "Назад до відео",
     "numberOfClips": "Кількість кліпів для генерації",
@@ -538,6 +539,7 @@
     "usedOfTotal": "{{used}} з {{total}} використано"
   },
   "settings": {
+    "noSubtitles": "Без субтитрів",
     "title": "Налаштування",
     "subtitle": "Управління акаунтом, планом та налаштуваннями",
     "profile": "Профіль",
@@ -620,6 +622,7 @@
     "rendersPerMonth": "{{count}} рендерів/міс"
   },
   "reanalyze": {
+    "noSubtitles": "Без субтитрів",
     "reanalyze": "Повторний аналіз",
     "regenerateClips": "Перегенерувати Кліпи",
     "replaceClips": "Це замінить ваші поточні кліпи",
@@ -822,6 +825,8 @@
     "upgradePlan": "Покращити План"
   },
   "subtitlePicker": {
+    "noSubtitles": "Без субтитрів",
+    "noSubtitlesHint": "Субтитри вимкнено — кліп збереже оригінальне відео та звук без тексту.",
     "subtitleStyle": "Стиль Субтитрів",
     "captionLayout": "Розташування Субтитрів",
     "customize": "Налаштувати",

@@ -275,6 +275,7 @@
     "deleteConfirm": "This will remove the video and all its clips. You can upload a new one after deleting. Continue?"
   },
   "videoConfig": {
+    "noSubtitles": "No subtitles",
     "configureAnalysis": "Configure Analysis",
     "backToVideos": "Back to videos",
     "numberOfClips": "Number of clips to generate",
@@ -538,6 +539,7 @@
     "usedOfTotal": "{{used}} of {{total}} used"
   },
   "settings": {
+    "noSubtitles": "None — no subtitles",
     "title": "Settings",
     "subtitle": "Manage your account, plan, and brand preferences",
     "profile": "Profile",
@@ -620,6 +622,7 @@
     "rendersPerMonth": "{{count}} renders/month"
   },
   "reanalyze": {
+    "noSubtitles": "No Subtitles",
     "reanalyze": "Re-analyze",
     "regenerateClips": "Regenerate Clips",
     "replaceClips": "This will replace your current clips",
@@ -822,6 +825,8 @@
     "upgradePlan": "Upgrade Plan"
   },
   "subtitlePicker": {
+    "noSubtitles": "No subtitles",
+    "noSubtitlesHint": "Subtitles are off — your clip keeps the original video and audio with no text overlay.",
     "subtitleStyle": "Subtitle Style",
     "captionLayout": "Caption Layout",
     "customize": "Customize",

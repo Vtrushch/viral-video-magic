@@ -27,7 +27,7 @@ const captionStyleOptions = [
   { value: "hormozi", label: "Hormozi" },
   { value: "mrbeast", label: "MrBeast" },
   { value: "minimal", label: "Minimal" },
-  { value: "custom", label: "Custom", pro: true },
+  { value: "none", label: "No Subtitles" },
 ];
 const outputFormatOptions = [
   { value: "9:16", label: "9:16", desc: "TikTok, Reels" },
@@ -146,15 +146,15 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
         {/* Caption Style */}
         <div className="space-y-2">
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("reanalyze.captionStyle")}</label>
-          <div className="flex gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {captionStyleOptions.map((opt) => (
               <button key={opt.value} onClick={() => setCaptionStyle(opt.value)}
                 className={cn(
-                  "flex-1 relative",
+                  "relative",
                   btnBase,
                   captionStyle === opt.value ? btnActive : btnInactive
                 )}>
-                {opt.label}
+                {opt.value === "none" ? t("reanalyze.noSubtitles") : opt.label}
                 {opt.pro && (
                   <span className="absolute -top-1.5 -right-1.5 text-[8px] font-bold bg-primary text-primary-foreground px-1 py-0.5 rounded-full leading-none">
                     PRO

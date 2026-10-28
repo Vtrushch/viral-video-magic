@@ -982,6 +982,7 @@ export default function HighlightReelPage() {
                 {(() => {
                   const clipId = playerMode.type === "source" ? playerMode.clipId : null;
                   if (!clipId) return null;
+                  if (subtitleStyle.presetId === "none") return null;
                   const trans = clipTranscriptions[clipId];
                   if (!trans || trans.words.length === 0) return null;
                   const timing = timingOverrides[clipId] || { startTime: trans.startTime, endTime: trans.endTime };

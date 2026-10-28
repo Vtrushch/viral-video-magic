@@ -198,6 +198,7 @@ const SettingsPage = () => {
                   <SelectItem value="fire">Fire — Orange-red gradient</SelectItem>
                   <SelectItem value="elegant">Elegant — Soft white, thin outline</SelectItem>
                   <SelectItem value="bold-pop">Bold Pop — High contrast punch</SelectItem>
+                  <SelectItem value="none">{t("settings.noSubtitles")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>

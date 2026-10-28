@@ -645,6 +645,7 @@ const ClipEdit = () => {
                 >
                   <RefreshCw className="w-3.5 h-3.5 text-white/80" />
                 </button>
+                {subtitleStyle.presetId !== "none" && (
                 <StyledLiveSubtitles
                   words={activeWords}
                   relativeTime={relativeTime}
@@ -654,6 +655,7 @@ const ClipEdit = () => {
                   sampleText={activeWords.length === 0 ? t("clipEdit.captionsWillAppear") : undefined}
                   containerWidth={previewWidth}
                 />
+                )}
                 {!playing && !loading && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer" onClick={togglePlay}>
                     <div className="w-14 h-14 rounded-full gradient-bg flex items-center justify-center shadow-lg glow-primary hover:scale-110 transition-transform">
@@ -712,6 +714,7 @@ const ClipEdit = () => {
                   <button onClick={handleReload} className="absolute top-2 left-2 z-20 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors" title="Reload video">
                     <RefreshCw className="w-3.5 h-3.5 text-white/80" />
                   </button>
+                  {subtitleStyle.presetId !== "none" && (
                   <StyledLiveSubtitles
                     words={activeWords}
                     relativeTime={relativeTime}
@@ -721,6 +724,7 @@ const ClipEdit = () => {
                    sampleText={activeWords.length === 0 ? t("clipEdit.captionsWillAppear") : undefined}
                     containerWidth={previewWidth}
                   />
+                  )}
                   {!playing && !loading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer" onClick={togglePlay}>
                       <div className="w-14 h-14 rounded-full gradient-bg flex items-center justify-center shadow-lg glow-primary hover:scale-110 transition-transform">

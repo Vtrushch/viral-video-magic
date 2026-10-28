@@ -1,7 +1,7 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { SUBTITLE_PRESETS, loadAllPresetFonts } from "@/config/subtitlePresets";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Sparkles, Loader2, Clock, HardDrive, Calendar, Info, Monitor, User, Crop, ChevronLeft, ChevronRight, Maximize2, Crosshair } from "lucide-react";
+import { ArrowLeft, Sparkles, Loader2, Clock, HardDrive, Calendar, Info, Monitor, User, Crop, ChevronLeft, ChevronRight, Maximize2, Crosshair, Ban } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -282,6 +282,20 @@ const VideoConfig = () => {
             🎨 {t("videoConfig.captionStyle")}
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <button
+              type="button"
+              className={`${radioCard(captionStyle === "none")} items-center text-center`}
+              style={{ background: radioCardBg(captionStyle === "none") }}
+              onClick={() => setCaptionStyle("none")}
+            >
+              <div
+                className="w-full rounded-lg p-3 flex items-center justify-center min-h-[48px]"
+                style={{ background: "hsl(0,0%,0%,0.4)" }}
+              >
+                <Ban className="w-5 h-5 text-muted-foreground" />
+              </div>
+              <span className="font-semibold text-foreground text-xs mt-1">{t("videoConfig.noSubtitles")}</span>
+            </button>
             {SUBTITLE_PRESETS.map((preset) => (
               <button
                 key={preset.presetId}

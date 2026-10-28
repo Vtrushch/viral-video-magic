@@ -275,6 +275,7 @@
     "deleteConfirm": "Esto eliminará el video y todos sus clips. Podrás subir uno nuevo después. ¿Continuar?"
   },
   "videoConfig": {
+    "noSubtitles": "Sin subtítulos",
     "configureAnalysis": "Configurar Análisis",
     "backToVideos": "Volver a videos",
     "numberOfClips": "Número de clips a generar",
@@ -538,6 +539,7 @@
     "usedOfTotal": "{{used}} de {{total}} usados"
   },
   "settings": {
+    "noSubtitles": "Sin subtítulos",
     "title": "Configuración",
     "subtitle": "Gestiona tu cuenta, plan y preferencias",
     "profile": "Perfil",
@@ -620,6 +622,7 @@
     "rendersPerMonth": "{{count}} renders/mes"
   },
   "reanalyze": {
+    "noSubtitles": "Sin subtítulos",
     "reanalyze": "Re-analizar",
     "regenerateClips": "Regenerar Clips",
     "replaceClips": "Esto reemplazará tus clips actuales",
@@ -822,6 +825,8 @@
     "upgradePlan": "Mejorar Plan"
   },
   "subtitlePicker": {
+    "noSubtitles": "Sin subtítulos",
+    "noSubtitlesHint": "Los subtítulos están desactivados: el clip conserva el vídeo y el audio originales, sin texto.",
     "subtitleStyle": "Estilo de Subtítulos",
     "captionLayout": "Diseño de Subtítulos",
     "customize": "Personalizar",

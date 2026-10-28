@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Check, ChevronDown, RotateCcw } from "lucide-react";
+import { Ban, Check, ChevronDown, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
@@ -85,6 +85,47 @@ function PresetCard({
   );
 }
 
+/* ─── "No subtitles" / off card ─── */
+function NoSubtitlesCard({
+  isSelected,
+  onSelect,
+  label,
+  className,
+}: {
+  isSelected: boolean;
+  onSelect: () => void;
+  label: string;
+  className?: string;
+}) {
+  return (
+    <button
+      onClick={onSelect}
+      className={cn(
+        "relative rounded-xl p-2.5 text-left transition-all duration-200 group my-0.5",
+        isSelected
+          ? "ring-2 ring-primary/60 bg-primary/8 shadow-[0_0_20px_-4px_hsl(349,100%,59%,0.2)] z-10"
+          : "ring-1 ring-border/40 hover:ring-border/70 bg-card/30 hover:bg-card/50",
+        className
+      )}
+    >
+      {isSelected && (
+        <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center z-10 shadow-md shadow-primary/30">
+          <Check className="w-3 h-3 text-primary-foreground" />
+        </div>
+      )}
+      <div
+        className="w-full h-8 rounded-lg mb-1.5 flex items-center justify-center overflow-hidden"
+        style={{ background: "hsl(240, 15%, 8%)" }}
+      >
+        <Ban className="w-4 h-4 text-muted-foreground" />
+      </div>
+      <div className="text-[10px] font-medium text-muted-foreground group-hover:text-foreground transition-colors truncate text-center">
+        {label}
+      </div>
+    </button>
+  );
+}
+
 export default function SubtitleStylePicker({
   value,
   onChange,
@@ -140,6 +181,12 @@ export default function SubtitleStylePicker({
           className="flex gap-2 overflow-x-auto py-1 pb-2 scrollbar-hide px-4"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
+          <NoSubtitlesCard
+            isSelected={value.presetId === "none"}
+            onSelect={() => onChange({ ...value, presetId: "none" })}
+            label={t("subtitlePicker.noSubtitles")}
+            className="flex-shrink-0 w-[105px]"
+          />
           {SUBTITLE_PRESETS.map((preset) => (
             <PresetCard
               key={preset.presetId}
@@ -156,6 +203,11 @@ export default function SubtitleStylePicker({
 
       {/* Desktop: 2-row grid */}
       <div className="hidden md:grid grid-rows-2 grid-flow-col auto-cols-[112px] gap-2 overflow-x-auto py-1 pb-2 px-0.5 scrollbar-hide">
+        <NoSubtitlesCard
+          isSelected={value.presetId === "none"}
+          onSelect={() => onChange({ ...value, presetId: "none" })}
+          label={t("subtitlePicker.noSubtitles")}
+        />
         {SUBTITLE_PRESETS.map((preset) => (
           <PresetCard
             key={preset.presetId}
@@ -168,7 +220,7 @@ export default function SubtitleStylePicker({
       </div>
 
       {/* ─── Section: Caption Layout ─── */}
-      {onSubtitleYChange && (
+      {value.presetId !== "none" && onSubtitleYChange && (
         <div className="space-y-2 pt-1">
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
             {t("subtitlePicker.captionLayout")}
@@ -200,7 +252,16 @@ export default function SubtitleStylePicker({
         </div>
       )}
 
+      {/* "No subtitles" selected → nothing to style */}
+      {value.presetId === "none" && (
+        <p className="text-[11px] text-muted-foreground px-0.5 pt-1 leading-relaxed">
+          {t("subtitlePicker.noSubtitlesHint")}
+        </p>
+      )}
+
       {/* ─── Customize toggle ─── */}
+      {value.presetId !== "none" && (
+      <>
       <button
         onClick={() => setCustomizeOpen(!customizeOpen)}
         className={cn(
@@ -357,6 +418,8 @@ export default function SubtitleStylePicker({
             {t("subtitlePicker.resetDefaults")}
           </Button>
         </div>
+      )}
+      </>
       )}
     </div>
   );

@@ -1977,8 +1977,12 @@ def render_clip(
 
         duration = max(0.1, float(end_time) - float(start_time))
 
-        # Check if SRT has content
-        srt_has_content = os.path.exists(srt_path) and os.path.getsize(srt_path) > 10
+        # Check if SRT has content.
+        # caption_style == "none" means the user turned subtitles OFF → skip burning
+        # text entirely (reuses the proven no-subtitles render branch below). The clip
+        # keeps its original video + audio with no overlay.
+        captions_disabled = str(caption_style or "").strip().lower() == "none"
+        srt_has_content = (not captions_disabled) and os.path.exists(srt_path) and os.path.getsize(srt_path) > 10
 
         # Video filter: reframe to 9:16 based on reframe_mode
         # Get video dimensions with ffprobe
@@ -2066,7 +2070,7 @@ def render_clip(
             print(f"📝 Subtitles: YES ({os.path.getsize(srt_path)} bytes, {len(words)} words)")
         else:
             vf = crop_vf
-            print("📝 Subtitles: NONE (no words extracted)")
+            print(f"📝 Subtitles: NONE ({'disabled by user' if captions_disabled else 'no words extracted'})")
 
         # Add watermark for free tier users
         if is_free_tier:
@@ -3405,8 +3409,10 @@ def create_highlight_reel(
             style_str = CAPTION_STYLES.get(caption_style, CAPTION_STYLES["hormozi"])
             generate_srt(words, srt_path, caption_style)
 
-            # Render segment with crop + subtitles
-            srt_has_content = os.path.exists(srt_path) and os.path.getsize(srt_path) > 10
+            # Render segment with crop + subtitles.
+            # caption_style == "none" = subtitles turned OFF → skip burning text.
+            captions_disabled = str(caption_style or "").strip().lower() == "none"
+            srt_has_content = (not captions_disabled) and os.path.exists(srt_path) and os.path.getsize(srt_path) > 10
             
             # Face-aware crop per segment
             if is_landscape:
