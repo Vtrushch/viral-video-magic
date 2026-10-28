@@ -161,14 +161,14 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
     const el = getVideoEl();
     if (!el) return;
     const val = parseFloat(e.target.value);
-    el.pause();
+    // Preserve playback across the seek. This used to call el.pause() and never
+    // resume, so dragging the scrubber silently stopped the video (you had to
+    // toggle pause→play to get it back). Keep playing if it was playing; browsers
+    // that pause mid-seek resume on their own once the new frame lands.
+    const wasPlaying = !el.paused;
     el.currentTime = val;
-    const onSeeked = () => {
-      el.removeEventListener("seeked", onSeeked);
-      setCurrentTime(val);
-    };
-    el.addEventListener("seeked", onSeeked);
     setCurrentTime(val);
+    if (wasPlaying) el.play().catch(() => {});
   };
 
   // Force-load video when URL becomes available
@@ -282,6 +282,8 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                   onTimeUpdate={handleTimeUpdate}
                   onProgress={handleProgress}
                   onEnded={() => setPlaying(false)}
+                  onPlay={() => setPlaying(true)}
+                  onPause={() => setPlaying(false)}
                   muted={muted}
                   playsInline
                   preload="auto"
@@ -392,6 +394,8 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
                   onTimeUpdate={handleTimeUpdate}
                   onProgress={handleProgress}
                   onEnded={() => setPlaying(false)}
+                  onPlay={() => setPlaying(true)}
+                  onPause={() => setPlaying(false)}
                   muted={muted}
                   playsInline
                   preload="auto"

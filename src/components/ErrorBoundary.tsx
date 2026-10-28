@@ -23,6 +23,24 @@ class ErrorBoundary extends React.Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error("ErrorBoundary caught:", error, errorInfo);
+    // Safety net for the stale-chunk case the `vite:preloadError` handler in
+    // main.tsx didn't catch (e.g. an error rethrown before it fired). A lazy
+    // route chunk that 404s after a deploy reads as "Failed to fetch dynamically
+    // imported module" — reload once (guarded) to load the fresh manifest.
+    const msg = error?.message || "";
+    const isChunkError = /dynamically imported module|importing a module script failed|failed to fetch dynamically|ChunkLoadError/i.test(msg);
+    if (isChunkError) {
+      const KEY = "hc:chunk-reload-at";
+      try {
+        const last = Number(sessionStorage.getItem(KEY) || "0");
+        if (Date.now() - last > 10000) {
+          sessionStorage.setItem(KEY, String(Date.now()));
+          window.location.reload();
+        }
+      } catch {
+        window.location.reload();
+      }
+    }
   }
 
   render() {
