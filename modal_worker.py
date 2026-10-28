@@ -640,6 +640,46 @@ def storage_path_belongs_to(path: str, user_id: str) -> bool:
     return bool(path) and bool(user_id) and path.split("/", 1)[0] == user_id
 
 
+def _reserve_render_credit(sb, user_id: str):
+    """Atomically reserve 1 render credit BEFORE rendering (compare-and-swap on
+    used_credits) so parallel 'Render All' jobs can't all pass a stale remaining>0
+    check and over-spend. Returns (reserved: bool, is_free_tier: bool, reason: str)
+    where reason ∈ {OK, NO_CREDITS, NO_CREDITS_ROW, CONTENTION}. Refund with
+    _refund_render_credit if the render later fails."""
+    for _ in range(10):
+        row = sb.table("user_credits").select("total_credits, used_credits, plan").eq("user_id", user_id).execute()
+        if not row.data:
+            return (False, True, "NO_CREDITS_ROW")
+        total = row.data[0].get("total_credits") or 0
+        used = row.data[0].get("used_credits") or 0
+        is_free = (row.data[0].get("plan") or "free") in ("free", "Free", "")
+        if used >= total:
+            return (False, is_free, "NO_CREDITS")
+        # CAS: only succeeds if used_credits is still what we just read.
+        upd = sb.table("user_credits").update({"used_credits": used + 1}) \
+            .eq("user_id", user_id).eq("used_credits", used).execute()
+        if upd.data:
+            return (True, is_free, "OK")
+        # else another concurrent render moved used_credits — re-read and retry
+    return (False, True, "CONTENTION")
+
+
+def _refund_render_credit(sb, user_id: str):
+    """Give back 1 reserved credit (used_credits -= 1, clamped ≥0) via CAS — used
+    when a reserved render fails or is swept away as stale."""
+    for _ in range(10):
+        row = sb.table("user_credits").select("used_credits").eq("user_id", user_id).execute()
+        if not row.data:
+            return
+        used = row.data[0].get("used_credits") or 0
+        if used <= 0:
+            return
+        upd = sb.table("user_credits").update({"used_credits": used - 1}) \
+            .eq("user_id", user_id).eq("used_credits", used).execute()
+        if upd.data:
+            return
+
+
 def email_base(content: str) -> str:
     """Wrap content in HookCut-branded email template."""
     return f"""<!DOCTYPE html>
@@ -1821,30 +1861,37 @@ def render_clip(
     audio_path = None
     srt_path = None
     output_path = None
+    render_user_id = None
+    credit_reserved = False
 
     try:
         ts = datetime.now(timezone.utc).isoformat()
 
-        # Check credits and plan before starting render
+        # Reserve 1 render credit ATOMICALLY, up-front — not after success. Parallel
+        # renders ("Render All") previously all read the same remaining>0 before any
+        # deducted, so a user could over-spend. We compare-and-swap used_credits before
+        # rendering and refund below if it fails. (#4: a missing user_credits row now
+        # blocks instead of silently rendering for free.)
         is_free_tier = True  # default to free (watermark ON)
         clip_row = supabase.table("clips").select("user_id").eq("id", clip_id).execute()
-        if clip_row.data:
-            render_user_id = clip_row.data[0]["user_id"]
-            credit_row = supabase.table("user_credits").select("total_credits, used_credits, plan").eq("user_id", render_user_id).execute()
-            if credit_row.data:
-                total = credit_row.data[0].get("total_credits", 0)
-                used = credit_row.data[0].get("used_credits", 0)
-                user_plan = credit_row.data[0].get("plan", "free")
-                is_free_tier = user_plan in ("free", "Free", "")
-                remaining = total - used
-                if remaining <= 0:
-                    print(f"❌ No credits remaining for user {render_user_id} ({used}/{total})")
-                    supabase.table("clips").update({
-                        "status": "failed",
-                        "error_message": "No render credits remaining. Please upgrade your plan.",
-                    }).eq("id", clip_id).execute()
-                    return {"success": False, "error": "NO_CREDITS"}
-                print(f"💰 Credits OK: {remaining} remaining ({used}/{total})")
+        if not clip_row.data:
+            print(f"❌ Clip not found: {clip_id}")
+            return {"success": False, "error": "CLIP_NOT_FOUND"}
+        render_user_id = clip_row.data[0]["user_id"]
+
+        reserved, is_free_tier, reason = _reserve_render_credit(supabase, render_user_id)
+        if not reserved:
+            print(f"❌ Credit reserve failed for {render_user_id}: {reason}")
+            msg = ("No render credits remaining. Please upgrade your plan."
+                   if reason in ("NO_CREDITS", "NO_CREDITS_ROW")
+                   else "Could not start render — please try again.")
+            supabase.table("clips").update({
+                "status": "failed",
+                "error_message": msg,
+            }).eq("id", clip_id).execute()
+            return {"success": False, "error": reason}
+        credit_reserved = True
+        print(f"💰 Reserved 1 credit for {render_user_id} (free_tier={is_free_tier})")
 
         supabase.table("clips").update({
             "status": "rendering",
@@ -1956,8 +2003,11 @@ def render_clip(
         print(f"📐 Source: {vid_w}x{vid_h}, Output: {out_w}x{out_h} ({'capped 1080p (free)' if is_free_tier and vid_h > 1080 else 'native quality'}), reframe_mode={reframe_mode}")
         
         if reframe_mode == "full":
-            # Full Frame: scale down to fit width, pad with black bars top/bottom
-            crop_vf = f"scale={out_w}:-2,pad={out_w}:{out_h}:(ow-iw)/2:(oh-ih)/2:black"
+            # Full Frame: fit the WHOLE frame inside the canvas, pad the rest black.
+            # force_original_aspect_ratio=decrease clamps BOTH dims, so a source taller
+            # than the target (e.g. 1080x2400) can't produce a negative pad offset (which
+            # would crash ffmpeg). This is now the DEFAULT reframe, so it must be robust.
+            crop_vf = f"scale={out_w}:{out_h}:force_original_aspect_ratio=decrease,pad={out_w}:{out_h}:(ow-iw)/2:(oh-ih)/2:black"
             print(f"📺 Full Frame: letterbox with black bars")
         else:
             # Smart or Center: crop to 9:16
@@ -2053,10 +2103,17 @@ def render_clip(
             stderr = (ffmpeg_result.stderr or "")[-500:]
             print(f"⚠️ FFmpeg stderr: {stderr}")
 
-            # Retry without subtitles if they caused the failure
+            # Fallback ladder — ALWAYS reaches the robust scale+pad as last resort.
+            # (Previously the robust fallback only ran when there were no subtitles, so a
+            # bad reframe filter + subtitles failed hard with no recovery.)
+            vf_fallback = (
+                "scale=1080:1920:force_original_aspect_ratio=decrease,"
+                "pad=1080:1920:(ow-iw)/2:(oh-ih)/2"
+            )
+            retry_ok = False
             if srt_has_content:
-                print("🔄 Retrying without subtitles...")
-                subprocess.run(
+                print("🔄 Retrying without subtitles (same reframe)...")
+                r_retry = subprocess.run(
                     [
                         "ffmpeg", "-y",
                         "-ss", str(start_time),
@@ -2070,16 +2127,14 @@ def render_clip(
                         "-b:a", "128k",
                         output_path,
                     ],
-                    check=True,
-                    capture_output=True,
+                    capture_output=True, text=True,
                 )
-            else:
+                retry_ok = r_retry.returncode == 0
+                if not retry_ok:
+                    print(f"⚠️ Reframe retry stderr: {(r_retry.stderr or '')[-300:]}")
+            if not retry_ok:
                 # Last resort: simple scale+pad (works for any input)
-                print("🔄 Retrying with scale+pad fallback...")
-                vf_fallback = (
-                    "scale=1080:1920:force_original_aspect_ratio=decrease,"
-                    "pad=1080:1920:(ow-iw)/2:(oh-ih)/2"
-                )
+                print("🔄 Retrying with robust scale+pad fallback...")
                 subprocess.run(
                     [
                         "ffmpeg", "-y",
@@ -2141,36 +2196,33 @@ def render_clip(
             clip_update["thumbnail_url"] = clip_thumb_url
         supabase.table("clips").update(clip_update).eq("id", clip_id).execute()
 
-        # Deduct 1 credit ONLY after successful render
+        # Credit was already reserved up-front (no double-charge here). Just notify
+        # the user when their balance gets low.
         try:
-            clip_row2 = supabase.table("clips").select("user_id").eq("id", clip_id).execute()
-            if clip_row2.data:
-                uid = clip_row2.data[0]["user_id"]
-                supabase.rpc("increment_used_credits", {"p_user_id": uid, "p_amount": 1}).execute()
-                print(f"💰 Deducted 1 credit for user {uid[:8]}")
-
-                # Check remaining credits and notify if low
-                try:
-                    credit_check = supabase.table("user_credits").select("total_credits, used_credits").eq("user_id", uid).execute()
-                    if credit_check.data:
-                        total = credit_check.data[0].get("total_credits", 0)
-                        used_now = credit_check.data[0].get("used_credits", 0)
-                        remaining = total - used_now
-                        if remaining in (3, 1, 0):
-                            email = get_user_email(uid)
-                            if email:
-                                send_low_credits_email(email, max(remaining, 0))
-                except Exception:
-                    pass  # Non-fatal
-
-        except Exception as credit_err:
-            print(f"⚠️ Credit deduction failed (non-fatal): {credit_err}")
+            credit_check = supabase.table("user_credits").select("total_credits, used_credits").eq("user_id", render_user_id).execute()
+            if credit_check.data:
+                total = credit_check.data[0].get("total_credits", 0)
+                used_now = credit_check.data[0].get("used_credits", 0)
+                remaining = total - used_now
+                if remaining in (3, 1, 0):
+                    email = get_user_email(render_user_id)
+                    if email:
+                        send_low_credits_email(email, max(remaining, 0))
+        except Exception:
+            pass  # Non-fatal
 
         print(f"🎉 Clip ready: {clip_url}")
         return {"success": True, "clip_url": clip_url, "transcription": full_text}
 
     except Exception as e:
         print(f"❌ Error: {str(e)}")
+        # Give back the credit we reserved — the render didn't produce a clip.
+        if credit_reserved and render_user_id:
+            try:
+                _refund_render_credit(supabase, render_user_id)
+                print(f"↩️ Refunded 1 credit for {render_user_id} (render failed)")
+            except Exception as refund_err:
+                print(f"⚠️ Credit refund failed: {refund_err}")
         supabase.table("clips").update({
             "status": "failed",
             "error_message": str(e),
@@ -3783,8 +3835,19 @@ def cleanup_stale_jobs():
             "status": "pending",
             "error_message": "Render timed out. Please try again.",
         }).eq("status", "rendering").lt("render_started_at", cutoff_clip).execute()
-        if result.data:
-            print(f"🔄 Reset {len(result.data)} stuck clip renders")
+        swept = result.data or []
+        if swept:
+            print(f"🔄 Reset {len(swept)} stuck clip renders")
+            # Each swept clip has render_started_at set → render_clip had reserved a
+            # credit that Modal's hard 15-min timeout killed before it could refund.
+            # Give those credits back (1 per swept clip) so a timeout isn't charged.
+            for row in swept:
+                uid = row.get("user_id")
+                if uid:
+                    try:
+                        _refund_render_credit(supabase, uid)
+                    except Exception as rf_err:
+                        print(f"⚠️ Refund-on-sweep failed for {uid}: {rf_err}")
     except Exception as e:
         print(f"⚠️ Clip cleanup error: {e}")
 

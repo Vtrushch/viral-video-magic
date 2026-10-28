@@ -532,7 +532,11 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
         caption_style: settings?.captionStyle || "hormozi",
       });
       if (!res.ok) throw new Error("Render request failed");
-      await supabase.from("clips").update({ status: "rendering" } as any).eq("id", clip.id);
+      // Don't write status='rendering' to the DB here — render_clip owns that
+      // transition and stamps render_started_at with it. A 'rendering' row with a
+      // NULL render_started_at would never be swept by the stale-job cron (its
+      // filter excludes NULLs), so a render that never starts could stick forever.
+      // Local state below gives immediate UI feedback; realtime syncs the rest.
       setClips(prev => prev.map(c => c.id === clip.id ? { ...c, status: "rendering" } : c));
     } catch {
       setRenderingIds(prev => { const n = new Set(prev); n.delete(clip.id); return n; });

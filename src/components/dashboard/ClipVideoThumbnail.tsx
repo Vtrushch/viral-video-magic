@@ -31,11 +31,34 @@ const ClipVideoThumbnail = ({
   alt,
   className = "",
 }: ClipVideoThumbnailProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [seeked, setSeeked] = useState(false);
+  // Only mount/fetch the (expensive) raw-preview <video> once the card scrolls into
+  // view. Without this, a grid of 10-15 pending clips mounts 10-15 seeking videos at
+  // once (capped at ~6 conns/host) = a spinner wall. Defaults to true if the browser
+  // lacks IntersectionObserver so nothing silently stays blank.
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === "undefined") { setInView(true); return; }
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setInView(true);
+          obs.disconnect();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   useEffect(() => {
     // If we have a direct public URL (rendered clip), use it immediately
@@ -49,6 +72,10 @@ const ClipVideoThumbnail = ({
       setFailed(true);
       return;
     }
+
+    // Wait until the card is near the viewport before fetching a signed URL
+    // and mounting the <video> (lazy — avoids the pending-grid spinner wall).
+    if (!inView) return;
 
     let cancelled = false;
 
@@ -67,7 +94,7 @@ const ClipVideoThumbnail = ({
 
     getUrl();
     return () => { cancelled = true; };
-  }, [renderedUrl, filePath]);
+  }, [renderedUrl, filePath, inView]);
 
   const handleLoadedMetadata = () => {
     const video = videoRef.current;
@@ -105,7 +132,7 @@ const ClipVideoThumbnail = ({
   }
 
   // If video fully failed but we have a fallback image, show it
-  if (failed || (!signedUrl && !loading)) {
+  if (failed || (!signedUrl && !loading && inView)) {
     if (fallbackImageUrl) {
       return (
         <img
@@ -141,13 +168,16 @@ const ClipVideoThumbnail = ({
   }
 
   return (
-    <div className={`w-full h-full relative overflow-hidden ${className}`}>
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-muted/20 z-10">
-          <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
+    <div ref={containerRef} className={`w-full h-full relative overflow-hidden ${className}`}>
+      {/* Parent-thumbnail placeholder shows instantly until the clip frame is ready */}
+      {!seeked && fallbackImageUrl && (
+        <img
+          src={fallbackImageUrl}
+          alt={alt}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
       )}
-      {signedUrl && (
+      {inView && signedUrl && (
         <video
           ref={videoRef}
           src={signedUrl}
@@ -161,13 +191,10 @@ const ClipVideoThumbnail = ({
           style={cropStyle}
         />
       )}
-      {/* Show fallback image while video is loading/seeking */}
-      {!seeked && fallbackImageUrl && !loading && (
-        <img
-          src={fallbackImageUrl}
-          alt={alt}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+      {loading && inView && signedUrl && (
+        <div className="absolute inset-0 flex items-center justify-center bg-muted/20 z-10">
+          <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
       )}
     </div>
   );
