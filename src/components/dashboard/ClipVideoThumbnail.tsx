@@ -27,7 +27,7 @@ const ClipVideoThumbnail = ({
   posterUrl,
   fallbackImageUrl,
   faceX,
-  reframeMode = "smart",
+  reframeMode = "full",
   alt,
   className = "",
 }: ClipVideoThumbnailProps) => {

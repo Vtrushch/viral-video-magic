@@ -48,7 +48,7 @@ const UploadModal = ({ open, onClose }: UploadModalProps) => {
     clipCount: parseInt(user?.user_metadata?.clip_count || "10", 10),
     clipLength: user?.user_metadata?.clip_length || "medium",
     captionStyle: user?.user_metadata?.caption_style || "hormozi",
-    reframeMode: user?.user_metadata?.reframe_mode || "smart",
+    reframeMode: user?.user_metadata?.reframe_mode || "full",
   };
 
   const MAX_FILE_SIZE_BYTES = 5120 * 1024 * 1024; // 5GB

@@ -524,12 +524,19 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
     if (!video.file_path) { toast.error(t("videoDetail.videoFileNotFound")); return; }
     setRenderingIds(prev => new Set(prev).add(clip.id));
     try {
+      const va = clip.viral_analysis as any;
       const res = await apiFetch("/render", {
         clip_id: clip.id,
         video_storage_path: video.file_path,
         start_time: parseFloat(clip.start_time || "0"),
         end_time: parseFloat(clip.end_time || "0"),
         caption_style: settings?.captionStyle || "hormozi",
+        // Propagate the reframe choice to the renderer. Without these two fields the
+        // backend defaulted to "center" and EVERY clip was center-cropped regardless
+        // of the Full Frame / Smart / Center selection. Source of truth = the video's
+        // configured mode; the per-clip face_x positions the Smart crop.
+        reframe_mode: settings?.reframeMode || va?.reframe_mode || "full",
+        crop_x: va?.face_x ?? 0.5,
       });
       if (!res.ok) throw new Error("Render request failed");
       // Don't write status='rendering' to the DB here — render_clip owns that
@@ -691,7 +698,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
         reason: "Manually created by user",
         detected_language: "en",
         face_x: 0.5,
-        reframe_mode: "center",
+        reframe_mode: "full",
         manual: true,
       },
       status: "pending",
@@ -951,7 +958,7 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                         posterUrl={clip.thumbnail_url || null}
                         fallbackImageUrl={video.thumbnail_url || null}
                         faceX={(clip.viral_analysis as any)?.face_x ?? 0.5}
-                        reframeMode={settings?.reframeMode || "center"}
+                        reframeMode={settings?.reframeMode || "full"}
                         alt={clip.title}
                         className="w-full h-full"
                       />

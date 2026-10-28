@@ -210,7 +210,9 @@ const ClipPreviewModal = ({ clip, video, open, onClose }: ClipPreviewModalProps)
   // --- 9:16 crop simulation from 16:9 source ---
   const isRendered = isRenderedClip;
   const faceX = viralAnalysis?.face_x ?? 0.5;
-  const reframeMode = (viralAnalysis as any)?.reframe_mode || "center";
+  // Same precedence as the renderer (VideoDetail → /render) so the preview is WYSIWYG:
+  // the video's configured mode wins, then the per-clip baked mode, then Full Frame.
+  const reframeMode = (video?.settings as any)?.reframeMode || (viralAnalysis as any)?.reframe_mode || "full";
 
   let cropVideoClass: string;
   let cropVideoStyle: React.CSSProperties = {};

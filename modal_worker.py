@@ -1467,7 +1467,7 @@ Return ONLY valid JSON array:
         print(f"✅ Found {len(cleaned)} viral moments!")
 
         # Reframe mode: "smart" (AI face), "full" (letterbox), "center" (center crop)
-        reframe_mode = settings.get("reframeMode", settings.get("smartReframe", "center"))
+        reframe_mode = settings.get("reframeMode", settings.get("smartReframe", "full"))
         # Backward compat: old smartReframe: true/false → "smart"/"center"
         if reframe_mode is True:
             reframe_mode = "smart"
@@ -1535,7 +1535,7 @@ Return ONLY valid JSON array:
                     "reason": clip["reason"],
                     "detected_language": clip.get("detected_language", detected_lang),
                     "face_x": clip.get("face_x", 0.5),
-                    "reframe_mode": clip.get("reframe_mode", "center"),
+                    "reframe_mode": clip.get("reframe_mode", "full"),
                     "hook_variants": clip.get("hook_variants", []),
                 },
                 "status": "pending",
@@ -1837,7 +1837,7 @@ def render_clip(
     crop_x: float = 0.5,           # 0.0=left, 0.5=center, 1.0=right (from face detection or user slider)
     subtitle_size: str = "medium",  # small/medium/large
     subtitle_y: float = 0.85,      # 0.0=top, 0.5=middle, 1.0=bottom (vertical position)
-    reframe_mode: str = "center",  # "smart", "full", "center"
+    reframe_mode: str = "full",    # "smart", "full", "center" — full = whole frame (default)
 ):
     from datetime import datetime, timezone
 
@@ -4133,7 +4133,7 @@ def webhook():
         crop_x: float = 0.5            # 0.0=left, 0.5=center, 1.0=right
         subtitle_size: str = "medium"   # small/medium/large
         subtitle_y: float = 0.85        # 0.0=top, 1.0=bottom
-        reframe_mode: str = "center"    # "smart", "full", "center"
+        reframe_mode: str = "full"      # "smart", "full", "center" — full = whole frame (default)
 
     class TranscribeClipRequest(BaseModel):
         clip_id: str

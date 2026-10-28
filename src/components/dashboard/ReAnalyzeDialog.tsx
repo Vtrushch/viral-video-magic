@@ -43,7 +43,7 @@ const ReAnalyzeDialog = ({ open, onClose, video, existingClipCount, onSuccess }:
   const [clipLength, setClipLength] = useState<string>((settings?.clipLength as string) || "medium");
   const [captionStyle, setCaptionStyle] = useState<string>((settings?.captionStyle as string) || "hormozi");
   const [outputFormat, setOutputFormat] = useState<string>((settings?.outputFormat as string) || "9:16");
-  const [reframeMode, setReframeMode] = useState<"smart" | "full" | "center">((settings?.reframeMode as "smart" | "full" | "center") || "smart");
+  const [reframeMode, setReframeMode] = useState<"smart" | "full" | "center">((settings?.reframeMode as "smart" | "full" | "center") || "full");
   const [submitting, setSubmitting] = useState(false);
 
   if (!open) return null;
