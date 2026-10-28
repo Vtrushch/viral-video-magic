@@ -8,6 +8,8 @@ interface ClipVideoThumbnailProps {
   /** Storage path in raw-videos bucket (for pending/preview clips) */
   filePath?: string | null;
   startTime?: string | null;
+  /** Per-clip poster image (clips.thumbnail_url) — shown instantly for rendered clips */
+  posterUrl?: string | null;
   /** Fallback image (e.g. parent video thumbnail_url) */
   fallbackImageUrl?: string | null;
   /** face_x (0-1) for 9:16 crop simulation from 16:9 source */
@@ -22,6 +24,7 @@ const ClipVideoThumbnail = ({
   renderedUrl,
   filePath,
   startTime,
+  posterUrl,
   fallbackImageUrl,
   faceX,
   reframeMode = "smart",
@@ -84,6 +87,22 @@ const ClipVideoThumbnail = ({
     setFailed(true);
     setLoading(false);
   };
+
+  // Rendered clips: show a lightweight poster <img> instead of mounting a live
+  // <video> that must download metadata and seek to a frame. A grid of 10-15
+  // seeking videos (capped at ~6 connections/host) is the slow "spinner wall";
+  // actual playback happens in the preview modal when the card is clicked.
+  const posterForRendered = renderedUrl ? (posterUrl || fallbackImageUrl) : null;
+  if (posterForRendered) {
+    return (
+      <img
+        src={posterForRendered}
+        alt={alt}
+        loading="lazy"
+        className={`w-full h-full object-cover ${className}`}
+      />
+    );
+  }
 
   // If video fully failed but we have a fallback image, show it
   if (failed || (!signedUrl && !loading)) {

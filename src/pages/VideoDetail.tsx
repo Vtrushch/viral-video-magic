@@ -944,7 +944,8 @@ const ReadyState = ({ video, clips: initialClips, onReAnalyze }: { video: Tables
                         renderedUrl={clip.status === "ready" && clip.file_path ? clip.file_path : null}
                         filePath={clip.status !== "ready" ? video.file_path : null}
                         startTime={clip.start_time}
-                        fallbackImageUrl={clip.thumbnail_url || video.thumbnail_url || null}
+                        posterUrl={clip.thumbnail_url || null}
+                        fallbackImageUrl={video.thumbnail_url || null}
                         faceX={(clip.viral_analysis as any)?.face_x ?? 0.5}
                         reframeMode={settings?.reframeMode || "center"}
                         alt={clip.title}

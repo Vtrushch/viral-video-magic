@@ -34,7 +34,9 @@ const VideoConfig = () => {
   const [clipLength, setClipLength] = useState("medium");
   const [captionStyle, setCaptionStyle] = useState("bold-pop");
   const [outputFormat, setOutputFormat] = useState("9:16");
-  const [reframeMode, setReframeMode] = useState<"smart" | "full" | "center">("smart");
+  // Default to "full" (whole frame, nothing cropped out). Speaker-crop ("smart")
+  // is opt-in — the user chooses it themselves.
+  const [reframeMode, setReframeMode] = useState<"smart" | "full" | "center">("full");
 
   const clipCountOptions = [
     { value: 5, desc: t("videoConfig.quickTesting") },

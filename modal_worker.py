@@ -2104,15 +2104,42 @@ def render_clip(
         s3_key = f"clips/{clip_id}.mp4"
         clip_url = upload_to_r2(output_path, s3_key, content_type="video/mp4")
 
+        # Per-clip poster — a lightweight JPEG so the clips grid can show an <img>
+        # instead of mounting a live <video> that must download metadata and seek
+        # to a frame. A grid of 10-15 seeking videos is the slow "spinner wall".
+        # Non-fatal: a missing poster falls back to the parent thumbnail client-side.
+        clip_thumb_url = None
+        clip_thumb_path = output_path.replace(".mp4", "_thumb.jpg")
+        try:
+            subprocess.run([
+                "ffmpeg", "-y", "-ss", "0.5", "-i", output_path,
+                "-vframes", "1", "-q:v", "3", "-vf", "scale=480:-2",
+                clip_thumb_path,
+            ], check=True, capture_output=True, timeout=30)
+            clip_thumb_url = upload_to_r2(
+                clip_thumb_path, f"clips/thumbs/{clip_id}.jpg", content_type="image/jpeg")
+            print(f"🖼️ Clip poster uploaded: {clip_thumb_url}")
+        except Exception as thumb_err:
+            print(f"⚠️ Clip poster generation failed (non-fatal): {thumb_err}")
+        finally:
+            if os.path.exists(clip_thumb_path):
+                try:
+                    os.unlink(clip_thumb_path)
+                except Exception:
+                    pass
+
         ts2 = datetime.now(timezone.utc).isoformat()
 
-        supabase.table("clips").update({
+        clip_update = {
             "status": "ready",
             "file_path": clip_url,
             "render_completed_at": ts2,
             "transcription": full_text[:5000] if full_text else None,
             "transcription_words": words[:500] if words else None,
-        }).eq("id", clip_id).execute()
+        }
+        if clip_thumb_url:
+            clip_update["thumbnail_url"] = clip_thumb_url
+        supabase.table("clips").update(clip_update).eq("id", clip_id).execute()
 
         # Deduct 1 credit ONLY after successful render
         try:
