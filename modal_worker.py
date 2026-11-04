@@ -1613,6 +1613,28 @@ Return ONLY valid JSON array:
                     else:
                         print(f"  ⚠️ Audio extraction failed for clip {clip_id[:8]}")
 
+                    # Per-clip poster at ANALYSIS → R2, so the pending-clips grid shows
+                    # an <img> instead of streaming the raw source from Supabase to seek a
+                    # frame (that streaming was the main Supabase cached-egress drain).
+                    # Same R2 key the render step uses, so a later render overwrites it.
+                    # Non-fatal: a missing poster falls back to the parent thumbnail.
+                    try:
+                        poster_tmp = f"/tmp/poster_{clip_id}.jpg"
+                        poster_res = subprocess.run(
+                            ["ffmpeg", "-y", "-ss", str(clip_start), "-i", video_path,
+                             "-vframes", "1", "-q:v", "3", "-vf", "scale=480:-2", poster_tmp],
+                            check=False, capture_output=True, timeout=30,
+                        )
+                        if poster_res.returncode == 0 and os.path.exists(poster_tmp) and os.path.getsize(poster_tmp) > 0:
+                            poster_url = upload_to_r2(
+                                poster_tmp, f"clips/thumbs/{clip_id}.jpg", content_type="image/jpeg")
+                            supabase.table("clips").update(
+                                {"thumbnail_url": poster_url}).eq("id", clip_id).execute()
+                        if os.path.exists(poster_tmp):
+                            os.unlink(poster_tmp)
+                    except Exception as poster_err:
+                        print(f"  ⚠️ Poster generation failed for clip {clip_id[:8]} (non-fatal): {poster_err}")
+
                 print(f"🎵 Extracted audio for {len(audio_files)}/{len(clip_rows)} clips")
 
                 # Step 2: Transcribe in parallel batches of 3 (Groq rate limit friendly)
