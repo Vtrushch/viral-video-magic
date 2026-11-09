@@ -2992,22 +2992,83 @@ def download_url_and_analyze(source_url: str, video_id: str, user_id: str, platf
             else:
                 print("ℹ️ No COBALT_API_URL configured — skipping API fallback")
 
-        # ── Apify YouTube downloader fallback (the FAST one) ──
-        # When the free direct path fails with a non-definitive block, hand the
-        # download to Apify's `dami_studio/youtube-video-downloader` actor. It
-        # downloads multi-connection (~6 MB/s → ~13s for a 6-min 720p clip, vs the
-        # per-minute johnvc actor's ~7 min), returning a ready MP4 (mediaUrl on
-        # Apify storage), bypassing BOTH the datacenter bot-block AND googlevideo's
-        # media 403. Billed per GB (~$4.5/GB ≈ $0.37 for a 6-min 720p video), only
-        # for the blocked videos the free path couldn't fetch. YouTube only; needs
-        # APIFY_API_TOKEN in the dedicated `apify-secret` Modal secret.
+        # ── Paid fallback: johnvc (primary, ~free) → dami (fast backup) ──
+        # The free burst lands ~2/3 of YouTube videos for free. For the rest, hand off
+        # to an Apify actor that downloads server-side from a clean IP pool (bypasses
+        # the datacenter bot-block + the googlevideo 403). johnvc bills per DELIVERED
+        # MINUTE (~$0.00001/min → ~$0.001/video, SIZE-INDEPENDENT) — reliable but slower
+        # (~7-10s per video-minute, verified by shadow test); dami bills per MB
+        # (~$4.21/GB = dollars on long videos) but is fast (~13-22s). We try johnvc
+        # first so long videos cost ~nothing; dami's existing `not downloaded` guard
+        # runs it only as a FAST BACKUP when johnvc didn't land the file. Set
+        # USE_JOHNVC_FALLBACK=0 in the apify-secret to revert to dami-only instantly
+        # (resolved per-container; no redeploy). YouTube only; needs APIFY_API_TOKEN.
         apify_token = os.environ.get("APIFY_API_TOKEN", "").strip()
         apify_used = False
+        use_johnvc = os.environ.get("USE_JOHNVC_FALLBACK", "true").strip().lower() not in ("0", "false", "no")
+        if use_johnvc and not downloaded and not definitive_failure and platform == "youtube" and apify_token:
+            apify_used = True
+            try:
+                import time as _t
+                print("🎬 Direct failed — downloading via johnvc (per-minute, ~$0/video)...")
+                jhdr = {"Authorization": f"Bearer {apify_token}"}
+                start = req.post(
+                    "https://api.apify.com/v2/acts/johnvc~youtube-download-api/runs?memory=2048",
+                    headers={**jhdr, "Content-Type": "application/json"},
+                    json={"videoUrls": [source_url], "format": "video",
+                          "quality": "720p", "maxMegabytes": 4000},
+                    timeout=60,
+                )
+                run = (start.json() or {}).get("data", {})
+                run_id = run.get("id")
+                ds_id = run.get("defaultDatasetId")
+                status = run.get("status")
+                deadline = _t.time() + 1500  # johnvc on a 2h video ≈ ~14 min
+                while run_id and status not in ("SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT") and _t.time() < deadline:
+                    _t.sleep(5)
+                    rr = req.get(f"https://api.apify.com/v2/actor-runs/{run_id}", headers=jhdr, timeout=30)
+                    run = (rr.json() or {}).get("data", {})
+                    status = run.get("status")
+                    ds_id = run.get("defaultDatasetId") or ds_id
+                if status == "SUCCEEDED" and ds_id:
+                    items = req.get(f"https://api.apify.com/v2/datasets/{ds_id}/items", headers=jhdr, timeout=60).json() or []
+                    item = items[0] if items else {}
+                    file_url = item.get("fileUrl") or item.get("mediaUrl")
+                    apify_title = (item.get("title") or "").strip()[:100]
+                    if file_url:
+                        size_mb = (item.get("fileSizeBytes") or 0) / (1024 * 1024)
+                        print(f"🎬 johnvc returned MP4 ({item.get('quality') or item.get('resolution')}, {size_mb:.1f}MB) — fetching to container...")
+                        if os.path.exists(video_path):
+                            os.unlink(video_path)
+                        with req.get(file_url, stream=True, timeout=600) as mr:
+                            mr.raise_for_status()
+                            with open(video_path, "wb") as f:
+                                for chunk in mr.iter_content(1 << 20):
+                                    f.write(chunk)
+                        if os.path.exists(video_path) and os.path.getsize(video_path) > 10000:
+                            downloaded = True
+                            print(f"✅ johnvc download worked! File: {os.path.getsize(video_path)/(1024*1024):.1f} MB")
+                        else:
+                            last_error = "johnvc MP4 fetch produced an empty/tiny file"
+                            print(f"⚠️ {last_error}")
+                    else:
+                        note = item.get("note") or item.get("error") or str(item)[:200]
+                        last_error = f"johnvc returned no fileUrl: {note}"
+                        print(f"⚠️ {last_error}")
+                else:
+                    last_error = f"johnvc run ended status={status}"
+                    print(f"⚠️ {last_error}")
+            except Exception as je:
+                last_error = f"johnvc download failed: {str(je)[:200]}"
+                print(f"⚠️ {last_error}")
+
+        # dami_studio (per-MB, fast) — BACKUP: the `not downloaded` guard runs it only
+        # when johnvc is disabled or didn't land the file.
         if not downloaded and not definitive_failure and platform == "youtube" and apify_token:
             apify_used = True
             try:
                 import time as _t
-                print("🎬 Direct failed — downloading via Apify (dami_studio, fast)...")
+                print("🎬 Downloading via Apify (dami_studio, fast backup)...")
                 ahdr = {"Authorization": f"Bearer {apify_token}"}
                 # Start ASYNC + poll (run-sync caps at 5 min). 720p = smaller + native
                 # H.264 so nothing transcodes; a vertical 1080x1920 clip is a center
